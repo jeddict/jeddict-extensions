@@ -15,6 +15,7 @@
  */
 package org.netbeans.jcode.stack.ejb;
 
+import java.awt.event.ItemEvent;
 import javax.swing.ComboBoxModel;
 import javax.swing.text.JTextComponent;
 import org.apache.commons.lang.StringUtils;
@@ -93,6 +94,11 @@ public class SessionBeanPanel extends LayerConfigPanel<SessionBeanData> {
 
         packageCombo.setEditable(true);
         packageCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { " " }));
+        packageCombo.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                packageComboItemStateChanged(evt);
+            }
+        });
         wrapperPanel.add(packageCombo, java.awt.BorderLayout.CENTER);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -112,6 +118,12 @@ public class SessionBeanPanel extends LayerConfigPanel<SessionBeanData> {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void packageComboItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_packageComboItemStateChanged
+        if(evt.getStateChange() == ItemEvent.SELECTED){
+            this.getConfigData().setPackage(getPackage());
+        }
+    }//GEN-LAST:event_packageComboItemStateChanged
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

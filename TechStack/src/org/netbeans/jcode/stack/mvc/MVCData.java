@@ -23,4 +23,20 @@ import org.netbeans.jcode.stack.config.data.LayerConfigData;
  */
 public class MVCData extends LayerConfigData {
     
+    private String _package;
+
+    /**
+     * @return the _package
+     */
+    public String getPackage() {
+        return _package;
+    }
+
+    /**
+     * @param _package the _package to set
+     */
+    public void setPackage(String _package) {
+        this._package = _package;
+    }
+    
 }

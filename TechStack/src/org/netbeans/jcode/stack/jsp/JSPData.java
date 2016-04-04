@@ -22,5 +22,20 @@ import org.netbeans.jcode.stack.config.data.LayerConfigData;
  * @author Gaurav Gupta
  */
 public class JSPData extends LayerConfigData {
-    
+       
+    private String folder;
+
+    /**
+     * @return the folder
+     */
+    public String getFolder() {
+        return folder;
+    }
+
+    /**
+     * @param folder the folder to set
+     */
+    public void setFolder(String folder) {
+        this.folder = folder;
+    }
 }

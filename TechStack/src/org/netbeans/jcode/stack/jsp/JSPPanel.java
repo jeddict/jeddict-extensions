@@ -15,6 +15,7 @@
  */
 package org.netbeans.jcode.stack.jsp;
 
+import java.awt.event.ItemEvent;
 import javax.swing.ComboBoxModel;
 import javax.swing.text.JTextComponent;
 import org.apache.commons.lang.StringUtils;
@@ -32,27 +33,28 @@ public class JSPPanel extends LayerConfigPanel<JSPData> {
 
     public JSPPanel() {
         initComponents();
-       
+
     }
-    
+
     @Override
     public void init(String _package, SourceGroup sourceGroup) {
         this.setConfigData(new JSPData());
-         if (sourceGroup != null) {
+        if (sourceGroup != null) {
             folderCombo.setRenderer(PackageView.listRenderer());
             ComboBoxModel model = PackageView.createListView(sourceGroup);
             if (model.getSize() > 0) {
                 model.setSelectedItem(model.getElementAt(0));
             }
             folderCombo.setModel(model);
-            setPackage(DEFAULT_FOLDER);
+            setFolder(DEFAULT_FOLDER);
         }
     }
-        public String getPackage() {
+
+    public String getFolder() {
         return ((JTextComponent) folderCombo.getEditor().getEditorComponent()).getText();
     }
 
-    private void setPackage(String _package) {
+    private void setFolder(String _package) {
         ComboBoxModel model = folderCombo.getModel();
         for (int i = 0; i < model.getSize(); i++) {
             if (model.getElementAt(i).toString().equals(_package)) {
@@ -62,6 +64,7 @@ public class JSPPanel extends LayerConfigPanel<JSPData> {
         }
         ((JTextComponent) folderCombo.getEditor().getEditorComponent()).setText(_package);
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -79,6 +82,11 @@ public class JSPPanel extends LayerConfigPanel<JSPData> {
 
         folderCombo.setEditable(true);
         folderCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { " " }));
+        folderCombo.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                folderComboItemStateChanged(evt);
+            }
+        });
         wrapperPanel.add(folderCombo, java.awt.BorderLayout.CENTER);
 
         org.openide.awt.Mnemonics.setLocalizedText(folderLabel, org.openide.util.NbBundle.getMessage(JSPPanel.class, "JSPPanel.folderLabel.text")); // NOI18N
@@ -101,6 +109,12 @@ public class JSPPanel extends LayerConfigPanel<JSPData> {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void folderComboItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_folderComboItemStateChanged
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            this.getConfigData().setFolder(getFolder());
+        }        // TODO add your handling code here:
+    }//GEN-LAST:event_folderComboItemStateChanged
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

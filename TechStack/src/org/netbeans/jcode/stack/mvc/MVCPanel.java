@@ -15,6 +15,7 @@
  */
 package org.netbeans.jcode.stack.mvc;
 
+import java.awt.event.ItemEvent;
 import javax.swing.ComboBoxModel;
 import javax.swing.text.JTextComponent;
 import org.apache.commons.lang.StringUtils;
@@ -32,28 +33,28 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
 
     public MVCPanel() {
         initComponents();
-       
+
     }
-    
+
     @Override
     public void init(String _package, SourceGroup sourceGroup) {
         this.setConfigData(new MVCData());
-         if (sourceGroup != null) {
+        if (sourceGroup != null) {
             packageCombo.setRenderer(PackageView.listRenderer());
             ComboBoxModel model = PackageView.createListView(sourceGroup);
             if (model.getSize() > 0) {
                 model.setSelectedItem(model.getElementAt(0));
             }
             packageCombo.setModel(model);
-             if (StringUtils.isBlank(_package)) {
+            if (StringUtils.isBlank(_package)) {
                 setPackage(DEFAULT_PACKAGE);
             } else {
                 setPackage(_package + '.' + DEFAULT_PACKAGE);
             }
         }
     }
-    
-        public String getPackage() {
+
+    public String getPackage() {
         return ((JTextComponent) packageCombo.getEditor().getEditorComponent()).getText();
     }
 
@@ -67,7 +68,7 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
         }
         ((JTextComponent) packageCombo.getEditor().getEditorComponent()).setText(_package);
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -89,6 +90,11 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
 
         packageCombo.setEditable(true);
         packageCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { " " }));
+        packageCombo.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                packageComboItemStateChanged(evt);
+            }
+        });
         wrapperPanel.add(packageCombo, java.awt.BorderLayout.CENTER);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -108,6 +114,12 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void packageComboItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_packageComboItemStateChanged
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            this.getConfigData().setPackage(getPackage());
+        }        // TODO add your handling code here:
+    }//GEN-LAST:event_packageComboItemStateChanged
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
