@@ -16,23 +16,26 @@
 package org.netbeans.jcode.stack;
 
 import org.netbeans.jcode.stack.config.panel.LayerConfigPanel;
-import org.netbeans.jcode.stack.ejb.SessionBeanPanel;
+import org.netbeans.jcode.ejb.facade.SessionBeanPanel;
+import static org.netbeans.jcode.stack.ControllerLayer.MVC;
 
 /**
  *
  * @author Gaurav Gupta
  */
-public enum BussinessLayer implements TechnologyLayer {
+public enum BusinessLayer implements TechnologyLayer {
 
-    NONE(NONE_LABEL, null),
-    SESSION_BEAN("Session Bean Facade", SessionBeanPanel.class);
+    NONE(NONE_LABEL, null, new ControllerLayer[]{ControllerLayer.NONE}),
+    SESSION_BEAN("Session Bean Facade", SessionBeanPanel.class, new ControllerLayer[]{ControllerLayer.NONE, MVC});
 
     private final String label;
+    private final ControllerLayer[] controllerLayer;
     private final Class<? extends LayerConfigPanel> configPanel;
 
-    private BussinessLayer(String label,Class<? extends LayerConfigPanel> configPanel) {
+    private BusinessLayer(String label, Class<? extends LayerConfigPanel> configPanel, ControllerLayer[] controllerLayer) {
         this.label = label;
-        this.configPanel=configPanel;
+        this.configPanel = configPanel;
+        this.controllerLayer= controllerLayer;
     }
 
     /**
@@ -52,6 +55,13 @@ public enum BussinessLayer implements TechnologyLayer {
      */
     public Class<? extends LayerConfigPanel> getConfigPanel() {
         return configPanel;
+    }
+
+    /**
+     * @return the controllerLayer
+     */
+    public ControllerLayer[] getControllerLayer() {
+        return controllerLayer;
     }
 
 }

@@ -24,6 +24,7 @@ import org.netbeans.jcode.stack.config.panel.LayerConfigPanel;
 public interface TechnologyLayer {
 
     String NONE_LABEL = "< none >";
+
     public Class<? extends LayerConfigPanel> getConfigPanel();
 
     public String getLabel();

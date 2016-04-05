@@ -17,27 +17,25 @@ package org.netbeans.jcode.stack;
 
 import org.netbeans.jcode.stack.config.panel.LayerConfigPanel;
 import static org.netbeans.jcode.stack.ControllerLayer.MVC;
-import org.netbeans.jcode.stack.jsp.JSPPanel;
+import org.netbeans.jcode.mvc.viewer.JSPPanel;
 
 /**
  *
  * @author Gaurav Gupta
  */
-public enum ViewerLayer implements TechnologyLayer{
+public enum ViewerLayer implements TechnologyLayer {
 
-    NONE(NONE_LABEL, null, new ControllerLayer[]{}),
-    JSP("JSP (Java Server Page)" , JSPPanel.class, new ControllerLayer[]{MVC});//,HTML5_ANGULAR_JS("HTML5 & Angular JS");
+    NONE(NONE_LABEL, null),
+    JSP("JSP (Java Server Page)", JSPPanel.class);//,HTML5_ANGULAR_JS("HTML5 & Angular JS");
 
     private final String label;
-    private final ControllerLayer[] controllerLayers;
     private final Class<? extends LayerConfigPanel> configPanel;
 
-    private ViewerLayer(String label,Class<? extends LayerConfigPanel> configPanel, ControllerLayer[] controllerLayers) {
+    private ViewerLayer(String label, Class<? extends LayerConfigPanel> configPanel) {
         this.label = label;
-        this.configPanel=configPanel;
-        this.controllerLayers = controllerLayers;
+        this.configPanel = configPanel;
     }
-    
+
     /**
      * @return the configPanel
      */
@@ -50,13 +48,6 @@ public enum ViewerLayer implements TechnologyLayer{
      */
     public String getLabel() {
         return label;
-    }
-
-    /**
-     * @return the controllerLayers
-     */
-    public ControllerLayer[] getControllerLayers() {
-        return controllerLayers;
     }
 
     @Override

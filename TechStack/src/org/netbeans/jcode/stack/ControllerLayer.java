@@ -17,27 +17,27 @@ package org.netbeans.jcode.stack;
 
 import org.netbeans.jcode.stack.config.panel.LayerConfigPanel;
 import static org.netbeans.jcode.stack.ViewerLayer.JSP;
-import org.netbeans.jcode.stack.mvc.MVCPanel;
+import org.netbeans.jcode.mvc.controller.MVCPanel;
 
 /**
  *
  * @author Gaurav Gupta
  */
 public enum ControllerLayer implements TechnologyLayer {
-    
-    NONE(NONE_LABEL,null,  new ViewerLayer[]{ViewerLayer.NONE}),
-    MVC("MVC 1.0",MVCPanel.class, new ViewerLayer[]{ViewerLayer.NONE,JSP});//, REST("Rest");
-    
+
+    NONE(NONE_LABEL, null, new ViewerLayer[]{ViewerLayer.NONE}),
+    MVC("MVC 1.0", MVCPanel.class, new ViewerLayer[]{ViewerLayer.NONE, JSP});//, REST("Rest");
+
     private final String label;
     private final ViewerLayer[] viewerLayers;
     private final Class<? extends LayerConfigPanel> configPanel;
 
-    private ControllerLayer(String label,Class<? extends LayerConfigPanel> configPanel, ViewerLayer[] viewerLayers) {
+    private ControllerLayer(String label, Class<? extends LayerConfigPanel> configPanel, ViewerLayer[] viewerLayers) {
         this.label = label;
-        this.configPanel=configPanel;
+        this.configPanel = configPanel;
         this.viewerLayers = viewerLayers;
     }
-  
+
     /**
      * @return the configPanel
      */
@@ -58,10 +58,10 @@ public enum ControllerLayer implements TechnologyLayer {
     public ViewerLayer[] getViewerLayers() {
         return viewerLayers;
     }
-    
+
     @Override
     public String toString() {
         return label;
     }
-    
+
 }
