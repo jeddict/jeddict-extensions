@@ -22,16 +22,25 @@ import org.netbeans.jcode.task.ITaskSupervisor;
  * @author Gaurav Gupta
  */
 public class ProgressConsoleHandler implements ProgressHandler {
-
+    private final static int LIMIT = 100;
+    private int taskLimit,state =0;//TODO taskLimit with %
     private final ITaskSupervisor taskSupervisor;
 
     public ProgressConsoleHandler(ITaskSupervisor taskSupervisor) {
         this.taskSupervisor = taskSupervisor;
+        this.taskLimit=LIMIT;
+    }
+    
+    public ProgressConsoleHandler(ITaskSupervisor taskSupervisor, int taskLimit) {
+        this.taskSupervisor = taskSupervisor;
+        this.taskLimit= taskLimit;
     }
 
     @Override
     public void progress(String message) {
-        taskSupervisor.increment();
+        if (++state < taskLimit) {
+            taskSupervisor.proceed(1);
+        }
         taskSupervisor.log(message, true);
     }
 
@@ -42,7 +51,7 @@ public class ProgressConsoleHandler implements ProgressHandler {
 
     @Override
     public void start() {
-        taskSupervisor.start(100);
+        taskSupervisor.start(taskLimit);
     }
 
     @Override
