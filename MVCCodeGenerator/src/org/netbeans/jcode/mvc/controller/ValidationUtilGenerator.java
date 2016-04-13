@@ -35,8 +35,10 @@ import org.netbeans.api.java.source.TreeMaker;
 import org.netbeans.api.java.source.WorkingCopy;
 import org.netbeans.jcode.core.util.JavaSourceHelper;
 import static org.netbeans.jcode.mvc.controller.ErrorBeanGenerator.ERROR_BEAN_CLASS;
-import static org.netbeans.jcode.mvc.controller.MVCControllerGenerator.FOLDER_NAME_EXP;
+import org.netbeans.jcode.mvc.controller.api.returntype.ControllerReturnType;
+import org.netbeans.jcode.mvc.util.MVCConstants;
 import static org.netbeans.jcode.mvc.util.MVCConstants.BINDING_RESULT;
+import static org.netbeans.jcode.mvc.util.MVCConstants.VIEWABLE_UNQF;
 import static org.netbeans.jcode.rest.util.RestConstant.RESPONSE;
 import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
 import org.netbeans.modules.j2ee.core.api.support.java.SourceUtils;
@@ -52,21 +54,20 @@ public class ValidationUtilGenerator {
     public static final String METHOD_NAME = "getResponse";
     public static final String BINDING_RESULT_VAR = "validationResult";
     public static final String ERROR_BEAN_VAR = "error";
-    private static final String METHID_BODY = "{"
-            + "            final java.util.Set<javax.validation.ConstraintViolation<?>> set = validationResult.getAllViolations();\n"
+    private static final String METHID_BODY =  "            final java.util.Set<javax.validation.ConstraintViolation<?>> set = validationResult.getAllViolations();\n"
             + "            final javax.validation.ConstraintViolation<?> cv = set.iterator().next();\n"
             + "            final String property = cv.getPropertyPath().toString();\n\n"
             + "            error.setProperty(property.substring(property.lastIndexOf('.') + 1));\n"
             + "            error.setValue(cv.getInvalidValue());\n"
             + "            error.setMessage(cv.getMessage());\n\n"
-            + "            return Response.status(javax.ws.rs.core.Response.Status.BAD_REQUEST).entity(\""+FOLDER_NAME_EXP+"/error.jsp\").build();"
-            + "}";
+            + "            return ";
+            
 
-    public static FileObject generate(FileObject packageFolder, String webPath) throws IOException {
+    public static FileObject generate(MVCData mvcData, FileObject packageFolder, String webPath) throws IOException {
 
         FileObject configFO = packageFolder.getFileObject(VALIDATION_UTIL_CLASS, "java");
         if (configFO != null) {
-            return configFO;
+            configFO.delete();
         }
 
         FileObject appClass = GenerationUtils.createClass(packageFolder, VALIDATION_UTIL_CLASS, null);
@@ -88,8 +89,23 @@ public class ValidationUtilGenerator {
 
                 ExpressionTree packageTree = workingCopy.getCompilationUnit().getPackageName();
                 String packageName = packageTree.toString();
-
-                Tree returnType = genUtils.createType(RESPONSE, classElement);
+                
+                String errorFile = webPath + "/error.jsp";
+                StringBuilder body = new StringBuilder();
+                body.append("{").append(METHID_BODY);//.replaceAll(FOLDER_NAME_EXP, webPath);
+                Tree returnType = null;
+                if (mvcData.getReturnType() == ControllerReturnType.STRING) {
+                    returnType = genUtils.createType(String.class.getName(), classElement);
+                    body.append("\"").append(errorFile).append("\";");
+                } else if (mvcData.getReturnType() == ControllerReturnType.VIEWABLE) {
+                    returnType = genUtils.createType(MVCConstants.VIEWABLE, classElement);
+                    body.append("new ").append(VIEWABLE_UNQF).append("(\"").append(errorFile).append("\");");
+                } else if (mvcData.getReturnType() == ControllerReturnType.VIEW_ANNOTATION || mvcData.getReturnType() == ControllerReturnType.JAXRS_RESPONSE) {
+                    returnType = genUtils.createType(RESPONSE, classElement);
+                    body.append("Response.status(Response.Status.BAD_REQUEST).entity(\"").append(errorFile).append("\").build()");
+                }
+                body.append("}");
+                
                 List<VariableTree> vars = new ArrayList<>();
                 ModifiersTree paramModifier = maker.Modifiers(Collections.<Modifier>emptySet());
                 VariableTree validationResult = maker.Variable(paramModifier,
@@ -104,7 +120,7 @@ public class ValidationUtilGenerator {
                         Collections.<TypeParameterTree>emptyList(),
                         vars,
                         Collections.<ExpressionTree>emptyList(),
-                        METHID_BODY.replaceAll(FOLDER_NAME_EXP, webPath), null);
+                       body.toString(), null);
                 members.add(methodTree);
 
                 ClassTree newClassTree = maker.Class(
