@@ -1,5 +1,5 @@
 /**
- * Copyright [2014] Gaurav Gupta
+ * Copyright [2016] Gaurav Gupta
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,39 +13,29 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.netbeans.jcode.layer;
+package org.netbeans.jcode.stack.jsp;
 
-import static org.netbeans.jcode.layer.ViewerLayer.JSP;
+import org.netbeans.jcode.stack.config.data.LayerConfigData;
 
 /**
  *
  * @author Gaurav Gupta
  */
-public enum ControllerLayer {
-    
-    MVC("MVC 1.0", new ViewerLayer[]{JSP});//, REST("Rest");
-    
-    private final String label;
-    private final ViewerLayer[] viewerLayers;
-
-    private ControllerLayer(String label, ViewerLayer[] viewerLayers) {
-        this.label = label;
-        this.viewerLayers = viewerLayers;
-    }
-  
+public class JSPData extends LayerConfigData {
+       
+    private String folder;
 
     /**
-     * @return the label
+     * @return the folder
      */
-    public String getLabel() {
-        return label;
+    public String getFolder() {
+        return folder;
     }
 
     /**
-     * @return the viewerLayers
+     * @param folder the folder to set
      */
-    public ViewerLayer[] getViewerLayers() {
-        return viewerLayers;
+    public void setFolder(String folder) {
+        this.folder = folder;
     }
-    
 }

@@ -15,6 +15,7 @@
  */
 package org.netbeans.jcode.mvc.controller.api.returntype;
 
+import org.netbeans.jcode.mvc.util.MVCConstants;
 import org.openide.util.NbBundle;
 
 /**
@@ -22,12 +23,12 @@ import org.openide.util.NbBundle;
  * @author Gaurav Gupta
  */
 public enum ControllerReturnType {
-   
-    VIEW_ANNOTATION("@View", NbBundle.getMessage(ControllerReturnType.class, "Controller.returnType.void")),
-    STRING("String", NbBundle.getMessage(ControllerReturnType.class, "Controller.returnType.String")),
-    VIEWABLE("Viewable", NbBundle.getMessage(ControllerReturnType.class, "Controller.returnType.Viewable")),
-    JAXRS_RESPONSE("Response", NbBundle.getMessage(ControllerReturnType.class, "Controller.returnType.Response"));
-    
+
+    JAXRS_RESPONSE("JAX-RS Response "/*(" + RESPONSE + ")"*/, NbBundle.getMessage(ControllerReturnType.class, "Controller.returnType.Response")),
+    STRING("String e.g: \"page/viewer.jsp\"", NbBundle.getMessage(ControllerReturnType.class, "Controller.returnType.String")),
+    VIEW_ANNOTATION("@View void ", NbBundle.getMessage(ControllerReturnType.class, "Controller.returnType.void")),
+    VIEWABLE(MVCConstants.VIEWABLE /*+ " e.g: new "+MVCConstants.VIEWABLE_UNQF+"(\"page/viewer.jsp\")"*/, NbBundle.getMessage(ControllerReturnType.class, "Controller.returnType.Viewable"));
+
     private final String title;
     private final String description;
 
@@ -54,5 +55,5 @@ public enum ControllerReturnType {
     public String toString() {
         return title;
     }
-    
+
 }

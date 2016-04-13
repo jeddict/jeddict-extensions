@@ -1,5 +1,5 @@
 /**
- * Copyright [2014] Gaurav Gupta
+ * Copyright [2016] Gaurav Gupta
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,27 +13,29 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.netbeans.jcode.layer;
+package org.netbeans.jcode.stack.jsp;
+
+import org.netbeans.jcode.stack.config.data.LayerConfigData;
 
 /**
  *
  * @author Gaurav Gupta
  */
-public enum BussinessLayer {
-    
-    SESSION_BEAN("Session Bean Facade");
-    
-    private final String label;
+public class JSPData extends LayerConfigData {
+       
+    private String folder;
 
-    private BussinessLayer(String label) {
-        this.label = label;
+    /**
+     * @return the folder
+     */
+    public String getFolder() {
+        return folder;
     }
 
     /**
-     * @return the label
+     * @param folder the folder to set
      */
-    public String getLabel() {
-        return label;
+    public void setFolder(String folder) {
+        this.folder = folder;
     }
-    
 }
