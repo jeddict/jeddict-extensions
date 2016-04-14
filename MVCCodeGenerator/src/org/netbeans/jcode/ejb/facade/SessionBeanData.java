@@ -13,8 +13,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.netbeans.jcode.stack.ejb;
+package org.netbeans.jcode.ejb.facade;
 
+import org.apache.commons.lang.StringUtils;
 import org.netbeans.jcode.stack.config.data.LayerConfigData;
 
 /**
@@ -22,7 +23,9 @@ import org.netbeans.jcode.stack.config.data.LayerConfigData;
  * @author Gaurav Gupta
  */
 public class SessionBeanData extends LayerConfigData {
-       
+
+    private String prefixName;
+    private String suffixName;
     private String _package;
 
     /**
@@ -37,5 +40,36 @@ public class SessionBeanData extends LayerConfigData {
      */
     public void setPackage(String _package) {
         this._package = _package;
+    }
+    
+        /**
+     * @return the suffixName
+     */
+    public String getSuffixName() {
+        if(StringUtils.isBlank(suffixName)){
+            suffixName = "Facade";
+        }
+        return suffixName;
+    }
+
+    /**
+     * @param suffixName the suffixName to set
+     */
+    public void setSuffixName(String suffixName) {
+        this.suffixName = suffixName;
+    }
+
+    /**
+     * @return the prefixName
+     */
+    public String getPrefixName() {
+        return prefixName;
+    }
+
+    /**
+     * @param prefixName the prefixName to set
+     */
+    public void setPrefixName(String prefixName) {
+        this.prefixName = prefixName;
     }
 }
