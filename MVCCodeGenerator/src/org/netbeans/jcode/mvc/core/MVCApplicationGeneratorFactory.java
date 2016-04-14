@@ -13,16 +13,23 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.netbeans.jcode.rest.util;
+package org.netbeans.jcode.mvc.core;
 
-public interface RestMethod {
+import org.netbeans.api.project.Project;
+import org.netbeans.modules.websvc.rest.spi.MiscUtilities;
 
-    String getMethod();
+/**
+ *
+ * @author Gaurav Gupta
+ */
+public class MVCApplicationGeneratorFactory {
 
-    String getMethodName();
+    public static MVCBaseApplicationGenerator newInstance(Project project) {
 
-    String getUriPath();
-
-    String getView();
-
+        if (MiscUtilities.isJavaEE6AndHigher(project)) {
+            return new MVCApplicationGenerator();
+        } else {
+            throw new IllegalStateException("JEE6+ supported");
+        }
+    }
 }
