@@ -13,24 +13,30 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.netbeans.jcode.mvc.viewer.dto;
+package org.netbeans.jcode.mvc.viewer.jsp;
+
+import org.netbeans.jcode.stack.config.data.LayerConfigData;
 
 /**
  *
  * @author Gaurav Gupta
  */
-public enum HtmlType {
+public class JSPData extends LayerConfigData {
+    
+    public static final String DEFAULT_FOLDER = "view";
+    private String folder;
 
-    TEXT("text"), NUMBER("number"), DATE("date"), CHECKBOX("checkbox"), INVALID("invalid");
-
-    private final String type;
-
-    private HtmlType(String type) {
-        this.type = type;
+    /**
+     * @return the folder
+     */
+    public String getFolder() {
+        return folder;
     }
 
-    public String type() {
-        return type;
+    /**
+     * @param folder the folder to set
+     */
+    public void setFolder(String folder) {
+        this.folder = folder;
     }
-
 }
