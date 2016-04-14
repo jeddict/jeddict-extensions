@@ -36,10 +36,11 @@ import org.netbeans.api.java.source.WorkingCopy;
 import org.netbeans.jcode.core.util.JavaSourceHelper;
 import static org.netbeans.jcode.mvc.controller.ErrorBeanGenerator.ERROR_BEAN_CLASS;
 import org.netbeans.jcode.mvc.controller.api.returntype.ControllerReturnType;
-import org.netbeans.jcode.mvc.util.MVCConstants;
-import static org.netbeans.jcode.mvc.util.MVCConstants.BINDING_RESULT;
-import static org.netbeans.jcode.mvc.util.MVCConstants.VIEWABLE_UNQF;
-import static org.netbeans.jcode.rest.util.RestConstant.RESPONSE;
+import org.netbeans.jcode.mvc.MVCConstants;
+import static org.netbeans.jcode.mvc.MVCConstants.BINDING_RESULT;
+import static org.netbeans.jcode.mvc.MVCConstants.VIEWABLE_UNQF;
+import static org.netbeans.jcode.mvc.viewer.jsp.JSPViewerGenerator.TARGET_COMMON_TEMPLATE_PATH;
+import static org.netbeans.jcode.rest.RestConstant.RESPONSE;
 import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
 import org.netbeans.modules.j2ee.core.api.support.java.SourceUtils;
 import org.openide.filesystems.FileObject;
@@ -90,7 +91,7 @@ public class ValidationUtilGenerator {
                 ExpressionTree packageTree = workingCopy.getCompilationUnit().getPackageName();
                 String packageName = packageTree.toString();
                 
-                String errorFile = webPath + "/error.jsp";
+                String errorFile = webPath + "/" + TARGET_COMMON_TEMPLATE_PATH + "error.jsp";
                 StringBuilder body = new StringBuilder();
                 body.append("{").append(METHID_BODY);//.replaceAll(FOLDER_NAME_EXP, webPath);
                 Tree returnType = null;

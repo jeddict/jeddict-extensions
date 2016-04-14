@@ -17,7 +17,7 @@ package org.netbeans.jcode.mvc.controller;
 
 import org.apache.commons.lang.StringUtils;
 import org.netbeans.jcode.mvc.controller.api.returntype.ControllerReturnType;
-import org.netbeans.jcode.rest.RestConfigData;
+import org.netbeans.jcode.rest.applicationconfig.RestConfigData;
 import org.netbeans.jcode.stack.config.data.LayerConfigData;
 
 /**

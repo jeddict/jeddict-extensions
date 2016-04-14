@@ -45,9 +45,9 @@ import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.core.util.StringHelper;
 import org.netbeans.jcode.ejb.facade.SessionBeanData;
-import org.netbeans.jcode.mvc.util.MVCConstants;
-import static org.netbeans.jcode.mvc.util.MVCConstants.INJECT;
-import static org.netbeans.jcode.mvc.util.MVCConstants.MODELS;
+import org.netbeans.jcode.mvc.MVCConstants;
+import static org.netbeans.jcode.mvc.MVCConstants.INJECT;
+import static org.netbeans.jcode.mvc.MVCConstants.MODELS;
 import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
 import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
 import org.netbeans.modules.j2ee.core.api.support.java.SourceUtils;
@@ -59,16 +59,18 @@ import static org.netbeans.jcode.mvc.controller.ErrorBeanGenerator.ERROR_BEAN_CL
 import static org.netbeans.jcode.mvc.controller.ValidationUtilGenerator.BINDING_RESULT_VAR;
 import static org.netbeans.jcode.mvc.controller.ValidationUtilGenerator.ERROR_BEAN_VAR;
 import org.netbeans.jcode.mvc.controller.api.returntype.ControllerReturnType;
-import static org.netbeans.jcode.mvc.util.MVCConstants.BINDING_RESULT;
-import static org.netbeans.jcode.mvc.util.MVCConstants.REDIRECT;
-import static org.netbeans.jcode.mvc.util.MVCConstants.VALID;
-import static org.netbeans.jcode.mvc.util.MVCConstants.VIEWABLE;
+import static org.netbeans.jcode.mvc.MVCConstants.BINDING_RESULT;
+import static org.netbeans.jcode.mvc.MVCConstants.EXECUTABLE_TYPE;
+import static org.netbeans.jcode.mvc.MVCConstants.REDIRECT;
+import static org.netbeans.jcode.mvc.MVCConstants.VALID;
+import static org.netbeans.jcode.mvc.MVCConstants.VALIDATE_ON_EXECUTION;
+import static org.netbeans.jcode.mvc.MVCConstants.VIEWABLE;
 import org.netbeans.modules.websvc.rest.model.api.RestConstants;
 import org.netbeans.jcode.mvc.util.Util;
-import org.netbeans.jcode.mvc.viewer.JSPData;
-import static org.netbeans.jcode.rest.util.RestConstant.BEAN_PARAM;
-import static org.netbeans.jcode.rest.util.RestConstant.RESPONSE;
-import static org.netbeans.jcode.rest.util.RestConstant.RESPONSE_UNQF;
+import org.netbeans.jcode.mvc.viewer.jsp.JSPData;
+import static org.netbeans.jcode.rest.RestConstant.BEAN_PARAM;
+import static org.netbeans.jcode.rest.RestConstant.RESPONSE;
+import static org.netbeans.jcode.rest.RestConstant.RESPONSE_UNQF;
 import org.netbeans.jcode.rest.util.RestUtils;
 import org.netbeans.jcode.source.SourceGroupSupport;
 import org.netbeans.jcode.task.progress.ProgressHandler;
@@ -247,8 +249,15 @@ public class MVCControllerGenerator {
                     StringBuilder body = new StringBuilder(option.getBody().replaceAll(ENTITY_NAME_EXP, constantName));
                     if (mvcData.isBeanValidation() && beanParamExist) {
                         body.insert(0, VALIDATION_FILTER);
-                    }
 
+                        // add @ValidateOnExecution annotation
+                        modifiersTree
+                                = maker.addModifiersAnnotation(modifiersTree,
+                                        genUtils.createAnnotation(VALIDATE_ON_EXECUTION, 
+                                                Collections.singletonList(genUtils.createAnnotationArgument("type", EXECUTABLE_TYPE, "NONE"))));
+                    
+                    }    
+                        
                     Tree returnType = null;
                     String view = option.getRestMethod().getView();
                     view = view.replaceAll(ENTITY_NAME_EXP, variableName).replaceAll(FOLDER_NAME_EXP, webPath);
