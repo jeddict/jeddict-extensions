@@ -127,7 +127,7 @@ import static org.netbeans.jcode.jpa.JPAConstants.ID;
 import org.netbeans.jcode.mvc.controller.MVCData;
 import org.netbeans.jcode.mvc.viewer.jsp.JSPData;
 import org.netbeans.jcode.servlet.util.ServletUtil;
-import org.netbeans.jcode.source.SourceGroups;
+import org.netbeans.jcode.core.util.SourceGroups;
 
 /**
  * Copy of j2ee/utilities Util class

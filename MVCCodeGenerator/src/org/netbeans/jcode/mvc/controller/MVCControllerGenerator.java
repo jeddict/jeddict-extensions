@@ -72,7 +72,7 @@ import static org.netbeans.jcode.rest.RestConstant.BEAN_PARAM;
 import static org.netbeans.jcode.rest.RestConstant.RESPONSE;
 import static org.netbeans.jcode.rest.RestConstant.RESPONSE_UNQF;
 import org.netbeans.jcode.rest.util.RestUtils;
-import org.netbeans.jcode.source.SourceGroupSupport;
+import org.netbeans.jcode.core.util.SourceGroupSupport;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.modules.websvc.rest.spi.RestSupport;
 import org.openide.filesystems.FileObject;
@@ -291,7 +291,7 @@ public class MVCControllerGenerator {
 
                     members.add(maker.Method(
                             modifiersTree,
-                            option.getRestMethod().getMethodName(),
+                            option.getRestMethod().getMethodName()+entitySimpleName ,
                             returnType,
                             Collections.EMPTY_LIST,
                             vars,

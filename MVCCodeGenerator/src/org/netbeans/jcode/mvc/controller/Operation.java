@@ -22,11 +22,11 @@ import static org.netbeans.modules.websvc.rest.model.api.RestConstants.POST;
 public enum Operation implements RestMethod {
 
     //CRUD => Create, List, Update, Remove
-    REDIRECT_TO_CREATE(GET, "redirectToCreatePage",
+    REDIRECT_TO_CREATE(GET, "empty",
             "new", "/<folder>/<entity>/create.jsp"),
     CREATE(POST, "create",
-            null, "redirect:<entity>/list"),
-    REDIRECT_TO_UPDATE(GET, "redirectToUpdatePage",
+            "new", "redirect:<entity>/list"),
+    REDIRECT_TO_UPDATE(GET, "edit,"
             "update/{id}", "/<folder>/<entity>/update.jsp"),
     UPDATE(POST, "update",
             "update", "redirect:<entity>/list"),

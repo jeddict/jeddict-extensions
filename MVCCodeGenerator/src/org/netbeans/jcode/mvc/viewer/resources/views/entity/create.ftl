@@ -24,7 +24,7 @@
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-lg-12">
-                            <form role="form" action="${r"${appPath}"}/${entityName}" method="POST">
+                            <form role="form" action="${r"${appPath}"}/${entityName}/new" method="POST">
                                           <#list entityDescriptors as entityDescriptor>
                                             <#-- Skip this field if it is an identity field that has an auto-generated value       -->
                                             <#-- Skip this field if we are dealing with many:many and this entity is not the owner -->

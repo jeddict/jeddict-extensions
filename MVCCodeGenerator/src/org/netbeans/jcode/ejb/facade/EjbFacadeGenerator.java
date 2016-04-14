@@ -63,7 +63,7 @@ import org.netbeans.api.project.libraries.Library;
 import org.netbeans.api.project.libraries.LibraryManager;
 import static org.netbeans.jcode.core.util.Constants.NAMED;
 import org.netbeans.jcode.core.util.StringHelper;
-import org.netbeans.jcode.source.SourceGroupSupport;
+import org.netbeans.jcode.core.util.SourceGroupSupport;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
 import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
