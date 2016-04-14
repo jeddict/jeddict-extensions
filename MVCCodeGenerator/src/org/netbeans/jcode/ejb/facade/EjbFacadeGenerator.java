@@ -366,7 +366,7 @@ public final class EjbFacadeGenerator {
                 GenerationUtils genUtils = GenerationUtils.newInstance(wc);
                 TreeMaker maker = wc.getTreeMaker();
 
-                List<Tree> implementsClause = new ArrayList<Tree>(classTree.getImplementsClause());
+                List<Tree> implementsClause = new ArrayList<>(classTree.getImplementsClause());
                 if (hasLocal) {
                     implementsClause.add(genUtils.createType(localInterfaceFQN, classElement));
                 }
@@ -374,7 +374,7 @@ public final class EjbFacadeGenerator {
                     implementsClause.add(genUtils.createType(remoteInterfaceFQN, classElement));
                 }
 
-                List<Tree> members = new ArrayList<Tree>(classTree.getMembers());
+                List<Tree> members = new ArrayList<>(classTree.getMembers());
                 MethodTree constructor = maker.Constructor(
                         genUtils.createModifiers(Modifier.PUBLIC),
                         Collections.<TypeParameterTree>emptyList(),

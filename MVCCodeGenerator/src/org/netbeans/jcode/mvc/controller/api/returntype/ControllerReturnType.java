@@ -15,7 +15,7 @@
  */
 package org.netbeans.jcode.mvc.controller.api.returntype;
 
-import org.netbeans.jcode.mvc.util.MVCConstants;
+import org.netbeans.jcode.mvc.MVCConstants;
 import org.openide.util.NbBundle;
 
 /**
