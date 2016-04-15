@@ -15,20 +15,15 @@
  */
 package org.netbeans.jcode.entity.info;
 
-import static com.sun.javafx.scene.CameraHelper.project;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import javax.lang.model.element.TypeElement;
-import org.netbeans.api.java.source.ElementHandle;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.entity.info.EntityClassInfo.FieldInfo;
-import org.netbeans.jcode.core.util.SourceGroupSupport;
 import org.openide.util.Exceptions;
 
 public class EntityResourceModelBuilder {

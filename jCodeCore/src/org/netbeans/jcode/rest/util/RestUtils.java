@@ -50,7 +50,7 @@ import org.netbeans.api.java.source.WorkingCopy;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.core.util.JavaSourceHelper;
-import org.netbeans.jcode.source.SourceGroupSupport;
+import org.netbeans.jcode.core.util.SourceGroupSupport;
 import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
 import org.netbeans.modules.j2ee.core.api.support.java.SourceUtils;
 import org.netbeans.modules.j2ee.deployment.common.api.Datasource;
