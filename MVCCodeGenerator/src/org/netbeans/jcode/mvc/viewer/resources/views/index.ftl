@@ -26,8 +26,8 @@
 
 <div id="page-wrapper">
     <div class="row">
-        <#assign icon = ['tasks', 'comments',  'shopping-cart', 'support']>
-        <#assign color = ['primary', 'green',  'red', 'yellow']>
+        <#assign icon = ['tasks', 'laptop',  'list-alt', 'table', 'money']>
+        <#assign color = ['primary', 'green',  'red', 'yellow' , 'purple']>
         <#assign row=0>
         <#assign keys = entities?keys>
         <#list keys as key> 
@@ -43,9 +43,9 @@
                         <div class="col-xs-3">
                             <i class="fa fa-${icon[index]} fa-5x"></i>
                         </div>
-                        <div class="col-xs-9 text-right">
-                            <div class="huge">${r"${"}${key}${r".count()}"}</div>
-                            <div>${entities[key]}</div>
+                        <div class="col-xs-9 text-right entity">
+                            <div class="huge count">${r"${"}${key}${r".count()}"}</div>
+                            <div class="title">${entities[key]}</div>
                         </div>
                     </div>
                 </div>
@@ -60,14 +60,12 @@
         </div> 
         <#assign row = row + 1>
         </#list>
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        <div id="morris-donut-chart"></div>
-                        <div style="display: none" id="morris-area-chart"></div>
-                        <!-- /.panel-body -->
-                    </div>
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div id="morris-donut-chart"></div>
+                    <div style="display: none" id="morris-area-chart"></div>
+                    <!-- /.panel-body -->
                 </div>
             </div>
         </div>

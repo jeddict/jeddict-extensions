@@ -12,9 +12,6 @@
   License for the specific language governing permissions and limitations under
   the License.
   -->
-<!-- jQuery -->
-<script src="${r"${webPath}"}/static/script/jquery.min.js"></script>
-
 <!-- Bootstrap Core JavaScript -->
 <script src="${r"${webPath}"}/static/script/bootstrap.min.js"></script>
 
