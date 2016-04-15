@@ -31,7 +31,7 @@ public enum Operation implements RestMethod {
     UPDATE(POST, "update",
             "update", "redirect:<entity>/list"),
     REMOVE(GET, "remove",
-            "remove/{id}", "redirect:/<entity>/list"),
+            "remove/{id}", "redirect:<entity>/list"),
     FIND(GET, "find",
             "{id}", "/<folder>/<entity>/view.jsp"),
     FIND_ALL(GET, "findAll",

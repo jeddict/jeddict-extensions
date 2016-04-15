@@ -25,45 +25,56 @@
 
 
 <div id="page-wrapper">
-     <div class="row">
+    <div class="row">
+        <#assign icon = ['tasks', 'comments',  'shopping-cart', 'support']>
+        <#assign color = ['primary', 'green',  'red', 'yellow']>
+        <#assign row=0>
         <#assign keys = entities?keys>
         <#list keys as key> 
+        <#assign index=row>
+        
+        <#if color?size-1 < index>
+        <#assign index = index % color?size>
+        </#if>
         <div class="col-lg-3 col-md-6">
-            <div class="panel panel-primary">
+            <div class="panel panel-${color[index]}">
                 <div class="panel-heading">
                     <div class="row">
                         <div class="col-xs-3">
-                            <div>${entities[key]}</div>
-                            </div>
+                            <i class="fa fa-${icon[index]} fa-5x"></i>
+                        </div>
                         <div class="col-xs-9 text-right">
                             <div class="huge">${r"${"}${key}${r".count()}"}</div>
-                            </div>
+                            <div>${entities[key]}</div>
                         </div>
                     </div>
+                </div>
                 <a href="${r"${appPath}"}/${key}/list">
                     <div class="panel-footer">
                         <span class="pull-left">View Details</span>
                         <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
                         <div class="clearfix"></div>
-                        </div>
-                    </a>
-                </div>
-            </div>                               
-           </#list>
-        </div>
-
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <div id="morris-donut-chart"></div>
-                    <div style="display: none" id="morris-area-chart"></div>
                     </div>
-                    <!-- /.panel-body -->
+                </a>
+            </div>  
+        </div> 
+        <#assign row = row + 1>
+        </#list>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div id="morris-donut-chart"></div>
+                        <div style="display: none" id="morris-area-chart"></div>
+                        <!-- /.panel-body -->
+                    </div>
                 </div>
             </div>
         </div>
+    
     </div>
+</div>
+</div>
 
 <!-- Morris Charts JavaScript -->
 <script src="${r"${webPath}"}/static/script/raphael-min.js"></script>
