@@ -285,14 +285,14 @@ public class MVCControllerGenerator {
                                                     Collections.<ExpressionTree>singletonList(
                                                             annArgument)));
                             returnType = maker.PrimitiveType(TypeKind.VOID);
-                    } else if (mvcData.getReturnType() == ControllerReturnType.STRING) {
+                    } else if (mvcData.getReturnType() == ControllerReturnType.STRING ||
+                            (mvcData.getReturnType() == ControllerReturnType.VIEW_ANNOTATION && mvcData.isBeanValidation() && beanParamExist)) {
                         body.append("\n").append("return \"").append(view).append("\";");
                         returnType = genUtils.createType(String.class.getName(), classElement);
                     } else if (mvcData.getReturnType() == ControllerReturnType.VIEWABLE) {
                         body.append("\n").append("return new ").append(MVCConstants.VIEWABLE_UNQF).append("(\"").append(view).append("\");");
                         returnType = genUtils.createType(VIEWABLE, classElement);
-                    } else if (mvcData.getReturnType() == ControllerReturnType.JAXRS_RESPONSE ||
-                            (mvcData.getReturnType() == ControllerReturnType.VIEW_ANNOTATION && mvcData.isBeanValidation() && beanParamExist)) {
+                    } else if (mvcData.getReturnType() == ControllerReturnType.JAXRS_RESPONSE) {
                         if (view.startsWith(REDIRECT)) {
                             body.append("\n").append("return ").append(RESPONSE_UNQF).append(".seeOther(").append(URI.class.getName()).append(".create(\"").append(view.substring(REDIRECT.length())).append("\")).build()");
                         } else {

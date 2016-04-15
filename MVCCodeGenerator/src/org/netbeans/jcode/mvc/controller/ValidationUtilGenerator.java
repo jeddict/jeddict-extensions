@@ -103,13 +103,13 @@ public class ValidationUtilGenerator {
                 StringBuilder body = new StringBuilder();
                 body.append("{").append(METHID_BODY);//.replaceAll(FOLDER_NAME_EXP, webPath);
                 Tree returnType = null;
-                if (mvcData.getReturnType() == ControllerReturnType.STRING) {
+                if (mvcData.getReturnType() == ControllerReturnType.VIEW_ANNOTATION || mvcData.getReturnType() == ControllerReturnType.STRING) {
                     returnType = genUtils.createType(String.class.getName(), classElement);
                     body.append("\"").append(errorFile).append("\";");
                 } else if (mvcData.getReturnType() == ControllerReturnType.VIEWABLE) {
                     returnType = genUtils.createType(MVCConstants.VIEWABLE, classElement);
                     body.append("new ").append(VIEWABLE_UNQF).append("(\"").append(errorFile).append("\");");
-                } else if (mvcData.getReturnType() == ControllerReturnType.VIEW_ANNOTATION || mvcData.getReturnType() == ControllerReturnType.JAXRS_RESPONSE) {
+                } else if (mvcData.getReturnType() == ControllerReturnType.JAXRS_RESPONSE) {
                     returnType = genUtils.createType(RESPONSE, classElement);
                     body.append("Response.status(Response.Status.BAD_REQUEST).entity(\"").append(errorFile).append("\").build()");
                 }

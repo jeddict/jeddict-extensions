@@ -24,9 +24,9 @@ import org.openide.util.NbBundle;
  */
 public enum ControllerReturnType {
 
-    JAXRS_RESPONSE("JAX-RS Response "/*(" + RESPONSE + ")"*/, NbBundle.getMessage(ControllerReturnType.class, "Controller.returnType.Response")),
     STRING("String e.g: \"page/viewer.jsp\"", NbBundle.getMessage(ControllerReturnType.class, "Controller.returnType.String")),
     VIEW_ANNOTATION("@View void ", NbBundle.getMessage(ControllerReturnType.class, "Controller.returnType.void")),
+    JAXRS_RESPONSE("JAX-RS Response "/*(" + RESPONSE + ")"*/, NbBundle.getMessage(ControllerReturnType.class, "Controller.returnType.Response")),
     VIEWABLE(MVCConstants.VIEWABLE /*+ " e.g: new "+MVCConstants.VIEWABLE_UNQF+"(\"page/viewer.jsp\")"*/, NbBundle.getMessage(ControllerReturnType.class, "Controller.returnType.Viewable"));
 
     private final String title;
