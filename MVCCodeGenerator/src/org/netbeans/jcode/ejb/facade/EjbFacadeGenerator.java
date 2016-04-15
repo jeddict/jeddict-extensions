@@ -117,6 +117,7 @@ public final class EjbFacadeGenerator {
         FileObject targetFolder = SourceGroupSupport.getFolderForPackage(targetSourceGroup, beanData.getPackage(), true);
         initEntityNames();
 
+        generateAbstract(project, targetFolder, beanData, true);
         for (String entity : entities) {
             handler.progress(beanData.getPrefixName() + JavaIdentifiers.unqualify(entity) + beanData.getSuffixName());
             createdFiles.addAll(generate(project, targetFolder, entity, beanData, false, false, project, project, true));
@@ -143,38 +144,11 @@ public final class EjbFacadeGenerator {
         return generate(project, targetFolder, entityClass, beanData, hasRemote, hasLocal, remoteProject, entityProject, ContainerManagedJTAInjectableInEJB.class, overrideExisting);
     }
 
-    /**
-     * Generates the facade and the loca/remote interface(s) for thhe given
-     * entity class.
-     * <i>Package private visibility for tests</i>.
-     *
-     * @param targetFolder the folder where the facade and interfaces are
-     * generated.
-     * @param entityClass the FQN of the entity class for which the facade is
-     * generated.
-     * @param pkg the package prefix for the generated facede.
-     * @param hasRemote specifies whether a remote interface is generated.
-     * @param hasLocal specifies whether a local interface is generated.
-     * @param strategyClass the entity manager lookup strategy.
-     *
-     * @return a set containing the generated files.
-     */
-    Set<FileObject> generate(final Project project, final FileObject targetFolder, final String entityFQN,
-            final SessionBeanData beanData, final boolean hasRemote, final boolean hasLocal,
-            final Project remoteProject,
-            final Project entityProject,
-            final Class<? extends EntityManagerGenerationStrategy> strategyClass,
-            boolean overrideExisting) throws IOException {
-
-        final Set<FileObject> createdFiles = new HashSet<FileObject>();
-        final String entitySimpleName = JavaIdentifiers.unqualify(entityFQN);
-        final String variableName = StringHelper.firstLower(entitySimpleName);
+    private FileObject generateAbstract(final Project project, final FileObject targetFolder,
+            final SessionBeanData beanData, boolean overrideExisting) throws IOException {
 
         //create the abstract facade class
-        
         String fileName = beanData.getPrefixName() + FACADE_ABSTRACT + beanData.getSuffixName();
-        final String afName = beanData.getPackage().isEmpty() ? fileName : beanData.getPackage() + "." + fileName; //NOI18N
-        
         FileObject afFO = targetFolder.getFileObject(fileName, "java");//skips here
 
         if (afFO != null) {
@@ -185,8 +159,6 @@ public final class EjbFacadeGenerator {
             }
         }
         afFO = GenerationUtils.createClass(targetFolder, fileName, null);
-        createdFiles.add(afFO);
-
         JavaSource source = JavaSource.forFileObject(afFO);
         source.runModificationTask(new Task<WorkingCopy>() {
             @Override
@@ -257,7 +229,50 @@ public final class EjbFacadeGenerator {
                 workingCopy.rewrite(classTree, newClassTree);
             }
         }).commit();
+        
+        try {
+            JavaSource.forFileObject(afFO).runWhenScanFinished((CompilationController cc) -> {
+                cc.toPhase(Phase.ELEMENTS_RESOLVED);
+            }, true).get();
+        } catch (InterruptedException | ExecutionException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        return afFO;
+    }
 
+    /**
+     * Generates the facade and the loca/remote interface(s) for thhe given
+     * entity class.
+     * <i>Package private visibility for tests</i>.
+     *
+     * @param targetFolder the folder where the facade and interfaces are
+     * generated.
+     * @param entityClass the FQN of the entity class for which the facade is
+     * generated.
+     * @param pkg the package prefix for the generated facede.
+     * @param hasRemote specifies whether a remote interface is generated.
+     * @param hasLocal specifies whether a local interface is generated.
+     * @param strategyClass the entity manager lookup strategy.
+     *
+     * @return a set containing the generated files.
+     */
+    Set<FileObject> generate(final Project project, final FileObject targetFolder, final String entityFQN,
+            final SessionBeanData beanData, final boolean hasRemote, final boolean hasLocal,
+            final Project remoteProject,
+            final Project entityProject,
+            final Class<? extends EntityManagerGenerationStrategy> strategyClass,
+            boolean overrideExisting) throws IOException {
+
+        final Set<FileObject> createdFiles = new HashSet<FileObject>();
+        final String entitySimpleName = JavaIdentifiers.unqualify(entityFQN);
+        final String variableName = StringHelper.firstLower(entitySimpleName);
+
+        //create the abstract facade class
+        
+        String fileName = beanData.getPrefixName() + FACADE_ABSTRACT + beanData.getSuffixName();
+        final String afName = beanData.getPackage().isEmpty() ? fileName : beanData.getPackage() + "." + fileName; //NOI18N
+    
+       
         String facadeName = beanData.getPrefixName() + entitySimpleName + beanData.getSuffixName();
         // create the facade
         FileObject existingFO = targetFolder.getFileObject(facadeName, "java");
@@ -321,16 +336,7 @@ public final class EjbFacadeGenerator {
             }
         }
 
-        final FileObject abstractFacadeFO = afFO;
 
-
-        try {
-            JavaSource.forFileObject(afFO).runWhenScanFinished((CompilationController cc) -> {
-                cc.toPhase(Phase.ELEMENTS_RESOLVED);
-            }, true).get();
-        } catch (InterruptedException | ExecutionException ex) {
-            Exceptions.printStackTrace(ex);
-        }
 
         JavaSource facadeJS = JavaSource.forFileObject(facade);
         if (facadeJS == null) {
@@ -385,16 +391,6 @@ public final class EjbFacadeGenerator {
 
                 TypeElement abstactFacadeElement = wc.getElements().getTypeElement(afName);
                 TypeElement entityElement = wc.getElements().getTypeElement(entityFQN);
-                if (abstactFacadeElement == null) {
-                    LOGGER.log(Level.SEVERE, "TypeElement not found for {0}", afName);
-                    LOGGER.log(Level.SEVERE, "AbstractFacade:path={0},valid={1},canRead={2},", new Object[]{
-                        abstractFacadeFO.getPath(), abstractFacadeFO.isValid(), abstractFacadeFO.canRead()});
-                } else if (entityElement == null) {
-                    LOGGER.log(Level.SEVERE, "TypeElement not found for {0}", entityFQN);
-                }
-
-                TypeMirror eeType = entityElement.asType();
-                LOGGER.log(Level.INFO, "Entity element type:kind={0},type={1}", new Object[]{eeType.getKind().toString(), eeType.toString()});
 
                 DeclaredType declaredType = wc.getTypes().getDeclaredType(abstactFacadeElement, entityElement.asType());
                 Tree extendsClause = maker.Type(declaredType);
