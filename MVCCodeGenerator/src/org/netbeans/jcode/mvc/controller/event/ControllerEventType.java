@@ -28,15 +28,15 @@ public enum ControllerEventType {
     POST_CONSTRUCT(Constants.POST_CONSTRUCT, "init",
             "logger.config(() -> this.getClass().getSimpleName() + \" created\");"),
     BEFORE_CONTROLLER_EVENT("javax.mvc.event.BeforeControllerEvent", "onBeforeController",
-            "logger.info(() -> \"Controller matched for \" + event.getUriInfo().getRequestUri());"),
+            "logger.info(() -> \"Controller matched for \" + e.getUriInfo().getRequestUri());"),
     AFTER_CONTROLLER_EVENT("javax.mvc.event.AfterControllerEvent", "onAfterController",
-            "logger.info(() -> \"Controller: \" + e.getResourceInfo().getResourceMethod());"),
+            "logger.info(() -> \"Controller executed : \" + e.getResourceInfo().getResourceMethod());"),
     BEFORE_PROCESSVIEW_EVENT("javax.mvc.event.BeforeProcessViewEvent", "onBeforeProcessView",
-            "logger.info(() -> \"View engine: \" + event.getView());"),
+            "logger.info(() -> \"View : \" + e.getView());"),
     AFTER_PROCESSVIEW_EVENT("javax.mvc.event.AfterProcessViewEvent", "onAfterProcessView",
-            "logger.info(() -> \"View engine: \" + event.getEngine());"),
+            "logger.info(() -> \"View engine: \" + e.getEngine());"),
     CONTROLLER_REDIRECT_EVENT("javax.mvc.event.ControllerRedirectEvent", "onControllerRedirect",
-            "logger.info(() -> \"Location: \" + e.getLocation());"),;
+            "logger.info(() -> \"Redirect location: \" + e.getLocation());"),;
 
     private String className;
     private String methodName;
