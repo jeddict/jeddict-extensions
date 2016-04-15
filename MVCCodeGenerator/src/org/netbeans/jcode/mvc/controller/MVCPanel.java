@@ -16,10 +16,15 @@
 package org.netbeans.jcode.mvc.controller;
 
 import java.awt.Component;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import javax.lang.model.SourceVersion;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JCheckBox;
 import javax.swing.JList;
 import javax.swing.event.ChangeEvent;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
@@ -29,6 +34,7 @@ import org.netbeans.api.java.source.ui.ScanDialog;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.mvc.controller.api.returntype.ControllerReturnType;
+import org.netbeans.jcode.mvc.controller.event.ControllerEventType;
 import org.netbeans.jcode.rest.applicationconfig.RestConfigData;
 import org.netbeans.jcode.rest.applicationconfig.RestConfigDialog;
 import org.netbeans.jcode.stack.config.panel.*;
@@ -53,6 +59,7 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
     private boolean configuredREST;
     private List<RestApplication> restApplications;
     private RestConfigDialog configDialog;
+    private Map<JCheckBox,ControllerEventType> eventTypeBoxs = new HashMap<>();
 
     public MVCPanel() {
         initComponents();
@@ -102,6 +109,7 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
         this.getConfigData().setRestConfigData(restConfigData);
         this.getConfigData().setBeanValidation(getBeanValidation());
         this.getConfigData().setReturnType(getReturnType());
+        this.getConfigData().setEventType(getSelectedEventType());
     }
 
     private String _package;
@@ -131,6 +139,16 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
         }
         addChangeListener(prefixField);
         addChangeListener(suffixField);
+        
+        eventObserversPanel.removeAll();
+        
+        for (ControllerEventType type : ControllerEventType.values()) {
+            JCheckBox eventTypeBox = new JCheckBox();
+            org.openide.awt.Mnemonics.setLocalizedText(eventTypeBox, type.toString()); // NOI18N
+            eventObserversPanel.add(eventTypeBox);
+            eventTypeBoxs.put(eventTypeBox, type);
+        }
+         
 
         final RestSupport restSupport = project.getLookup().lookup(RestSupport.class);
         if (restSupport != null) {
@@ -189,6 +207,15 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
         return prefixField.getText().trim();
     }
 
+    public List<ControllerEventType> getSelectedEventType(){
+         List<ControllerEventType> eventTypes = new ArrayList<>();
+        for(Entry<JCheckBox,ControllerEventType> eventTypeBoxEntry : eventTypeBoxs.entrySet()){
+            if (eventTypeBoxEntry.getKey().isSelected()) {
+                eventTypes.add(eventTypeBoxEntry.getValue());
+            }
+        }
+        return eventTypes;
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -214,6 +241,9 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
         viewLabel = new javax.swing.JLabel();
         viewCombo = new javax.swing.JComboBox();
         beanValidation = new javax.swing.JCheckBox();
+        eventObserversPanel = new javax.swing.JPanel();
+        jCheckBox4 = new javax.swing.JCheckBox();
+        jCheckBox1 = new javax.swing.JCheckBox();
 
         packagePanel.setLayout(new java.awt.BorderLayout(10, 0));
 
@@ -320,21 +350,42 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
         org.openide.awt.Mnemonics.setLocalizedText(beanValidation, org.openide.util.NbBundle.getMessage(MVCPanel.class, "MVCPanel.beanValidation.text")); // NOI18N
         beanValidation.setToolTipText(org.openide.util.NbBundle.getMessage(MVCPanel.class, "MVCPanel.beanValidation.toolTipText")); // NOI18N
 
+        eventObserversPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, org.openide.util.NbBundle.getMessage(MVCPanel.class, "MVCPanel.eventObserversPanel.border.title"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 12), new java.awt.Color(100, 100, 100))); // NOI18N
+        eventObserversPanel.setLayout(new java.awt.GridLayout(2, 3));
+
+        org.openide.awt.Mnemonics.setLocalizedText(jCheckBox4, org.openide.util.NbBundle.getMessage(MVCPanel.class, "MVCPanel.jCheckBox4.text")); // NOI18N
+        jCheckBox4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBox4ActionPerformed(evt);
+            }
+        });
+        eventObserversPanel.add(jCheckBox4);
+
+        org.openide.awt.Mnemonics.setLocalizedText(jCheckBox1, org.openide.util.NbBundle.getMessage(MVCPanel.class, "MVCPanel.jCheckBox1.text")); // NOI18N
+        eventObserversPanel.add(jCheckBox1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(packagePanel, javax.swing.GroupLayout.DEFAULT_SIZE, 676, Short.MAX_VALUE)
-                    .addComponent(suffixPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 676, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(109, 109, 109)
-                        .addComponent(beanValidation)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(applicationConfigButton))
-                    .addComponent(viewPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 676, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(packagePanel, javax.swing.GroupLayout.DEFAULT_SIZE, 676, Short.MAX_VALUE)
+                            .addComponent(suffixPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 676, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(applicationConfigButton))
+                            .addComponent(viewPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 676, Short.MAX_VALUE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addGap(15, 15, 15)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(beanValidation)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(eventObserversPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
@@ -351,14 +402,16 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
                 .addComponent(packagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(viewPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                .addComponent(eventObserversPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(applicationConfigButton)
                     .addComponent(beanValidation))
                 .addGap(42, 42, 42))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                    .addContainerGap(160, Short.MAX_VALUE)
+                    .addContainerGap(257, Short.MAX_VALUE)
                     .addComponent(warningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap()))
         );
@@ -399,6 +452,10 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
     private void viewComboPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_viewComboPropertyChange
         // TODO add your handling code here:
     }//GEN-LAST:event_viewComboPropertyChange
+
+    private void jCheckBox4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox4ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jCheckBox4ActionPerformed
     private void openApplicationConfig() {
         if (configDialog == null) {
             configDialog = new RestConfigDialog();
@@ -416,6 +473,9 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
     private javax.swing.JButton applicationConfigButton;
     private javax.swing.JCheckBox beanValidation;
     private javax.swing.JLabel entityLabel;
+    private javax.swing.JPanel eventObserversPanel;
+    private javax.swing.JCheckBox jCheckBox1;
+    private javax.swing.JCheckBox jCheckBox4;
     private javax.swing.JLabel nameLabel;
     private javax.swing.JLayeredPane namePane;
     private javax.swing.JComboBox packageCombo;

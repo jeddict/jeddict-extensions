@@ -29,8 +29,5 @@ public class MVCConstants {
     public static final String INJECT = "javax.inject.Inject"; //NOI18N
     public static final String REDIRECT  = "redirect:";
     public static final String BINDING_RESULT  = "javax.mvc.binding.BindingResult";
-    public static final String VALID  = "javax.validation.Valid";
-    public static final String VALIDATE_ON_EXECUTION  = "javax.validation.executable.ValidateOnExecution";
-    public static final String EXECUTABLE_TYPE  = "javax.validation.executable.ExecutableType";
     
 }

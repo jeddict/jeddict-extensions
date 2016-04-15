@@ -559,10 +559,25 @@
                 </dependency>
             </module-dependencies>
             <public-packages>
+                <package>org.netbeans.jcode.cdi</package>
+                <package>org.netbeans.jcode.cdi.logger</package>
                 <package>org.netbeans.jcode.ejb.facade</package>
+                <package>org.netbeans.jcode.jpa</package>
+                <package>org.netbeans.jcode.mvc</package>
                 <package>org.netbeans.jcode.mvc.controller</package>
+                <package>org.netbeans.jcode.mvc.controller.api.returntype</package>
+                <package>org.netbeans.jcode.mvc.controller.event</package>
                 <package>org.netbeans.jcode.mvc.core</package>
+                <package>org.netbeans.jcode.mvc.util</package>
                 <package>org.netbeans.jcode.mvc.viewer</package>
+                <package>org.netbeans.jcode.mvc.viewer.dto</package>
+                <package>org.netbeans.jcode.mvc.viewer.jsp</package>
+                <package>org.netbeans.jcode.mvc.viewer.resources</package>
+                <package>org.netbeans.jcode.mvc.viewer.resources.views</package>
+                <package>org.netbeans.jcode.mvc.viewer.resources.views.common</package>
+                <package>org.netbeans.jcode.mvc.viewer.resources.views.entity</package>
+                <package>org.netbeans.jcode.rest.applicationconfig</package>
+                <package>org.netbeans.jcode.servlet.util</package>
             </public-packages>
         </data>
     </configuration>

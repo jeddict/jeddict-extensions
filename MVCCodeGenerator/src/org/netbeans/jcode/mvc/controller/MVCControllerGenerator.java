@@ -17,6 +17,7 @@ package org.netbeans.jcode.mvc.controller;
 
 import com.sun.source.tree.AnnotationTree;
 import com.sun.source.tree.ClassTree;
+import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.ModifiersTree;
 import com.sun.source.tree.Tree;
@@ -43,6 +44,10 @@ import org.netbeans.api.java.source.TreeMaker;
 import org.netbeans.api.java.source.WorkingCopy;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
+import static org.netbeans.jcode.beanvalidation.BeanVaildationConstants.EXECUTABLE_TYPE;
+import static org.netbeans.jcode.beanvalidation.BeanVaildationConstants.VALID;
+import static org.netbeans.jcode.beanvalidation.BeanVaildationConstants.VALIDATE_ON_EXECUTION;
+import org.netbeans.jcode.cdi.logger.LoggerProducerGenerator;
 import org.netbeans.jcode.core.util.StringHelper;
 import org.netbeans.jcode.ejb.facade.SessionBeanData;
 import org.netbeans.jcode.mvc.MVCConstants;
@@ -60,10 +65,7 @@ import static org.netbeans.jcode.mvc.controller.ValidationUtilGenerator.BINDING_
 import static org.netbeans.jcode.mvc.controller.ValidationUtilGenerator.ERROR_BEAN_VAR;
 import org.netbeans.jcode.mvc.controller.api.returntype.ControllerReturnType;
 import static org.netbeans.jcode.mvc.MVCConstants.BINDING_RESULT;
-import static org.netbeans.jcode.mvc.MVCConstants.EXECUTABLE_TYPE;
 import static org.netbeans.jcode.mvc.MVCConstants.REDIRECT;
-import static org.netbeans.jcode.mvc.MVCConstants.VALID;
-import static org.netbeans.jcode.mvc.MVCConstants.VALIDATE_ON_EXECUTION;
 import static org.netbeans.jcode.mvc.MVCConstants.VIEWABLE;
 import org.netbeans.modules.websvc.rest.model.api.RestConstants;
 import org.netbeans.jcode.mvc.util.Util;
@@ -73,6 +75,8 @@ import static org.netbeans.jcode.rest.RestConstant.RESPONSE;
 import static org.netbeans.jcode.rest.RestConstant.RESPONSE_UNQF;
 import org.netbeans.jcode.rest.util.RestUtils;
 import org.netbeans.jcode.core.util.SourceGroupSupport;
+import static org.netbeans.jcode.mvc.controller.ValidationUtilGenerator.VALIDATION_UTIL_CLASS;
+import org.netbeans.jcode.mvc.controller.event.ControllerEventGenerator;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.modules.websvc.rest.spi.RestSupport;
 import org.openide.filesystems.FileObject;
@@ -86,6 +90,7 @@ public class MVCControllerGenerator {
 
     public final static String ENTITY_NAME_EXP = "<entity>";
     public final static String FOLDER_NAME_EXP = "<folder>";
+    public final static String UTIL_PACKAGE = "util";
 
     private final static String MODEL_VAR_DECLARATION = "model";
     private final static String SESSION_BEAN_VAR_DECLARATION = "facade";
@@ -119,6 +124,8 @@ public class MVCControllerGenerator {
         handler.progress(controllerFileName);
 
         FileObject targetFolder = SourceGroupSupport.getFolderForPackage(sourceGroup, mvcData.getPackage(), true);
+        FileObject utilFolder = SourceGroupSupport.getFolderForPackage(targetFolder, UTIL_PACKAGE, true);
+        String utilPackage = SourceGroupSupport.getPackageForFolder(sourceGroup, utilFolder);
 
         FileObject controllerFO = targetFolder.getFileObject(controllerFileName, "java");//skips here
 
@@ -154,8 +161,13 @@ public class MVCControllerGenerator {
                 assert classTree != null;
                 GenerationUtils genUtils = GenerationUtils.newInstance(wc);
                 TreeMaker maker = wc.getTreeMaker();
-                ExpressionTree packageTree = wc.getCompilationUnit().getPackageName();
-                String packageName = packageTree.toString();
+                CompilationUnitTree cut = wc.getCompilationUnit();
+                CompilationUnitTree newCut = maker.addCompUnitImport(cut, maker.Import(maker.Identifier(utilPackage + "." + ERROR_BEAN_CLASS), false));
+                newCut = maker.addCompUnitImport(newCut, maker.Import(maker.Identifier(utilPackage + "." + VALIDATION_UTIL_CLASS), false));
+                wc.rewrite(cut, newCut);
+                            
+//                ExpressionTree packageTree = wc.getCompilationUnit().getPackageName();
+//                String packageName = packageTree.toString();
 
                 List<Tree> members = new ArrayList<>(classTree.getMembers());
 
@@ -170,7 +182,7 @@ public class MVCControllerGenerator {
                             BINDING_RESULT_VAR, genUtils.createType(BINDING_RESULT, classElement), null));
 
                     members.add(maker.Variable(maker.addModifiersAnnotation(genUtils.createModifiers(Modifier.PRIVATE), genUtils.createAnnotation(INJECT)),
-                            ERROR_BEAN_VAR, genUtils.createType(packageName + "." + ERROR_BEAN_CLASS, classElement), null));
+                            ERROR_BEAN_VAR, genUtils.createType(ERROR_BEAN_CLASS, classElement), null));
                 }
 
                 List<RestGenerationOptions> restGenerationOptions
@@ -327,10 +339,14 @@ public class MVCControllerGenerator {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-
+        
         if (mvcData.isBeanValidation()) {
-            ValidationUtilGenerator.generate(mvcData, targetFolder, webPath);
-            ErrorBeanGenerator.generate(targetFolder);
+            ValidationUtilGenerator.generate(mvcData, utilFolder, webPath);
+            ErrorBeanGenerator.generate(utilFolder);
+        }
+        if(!mvcData.getEventType().isEmpty()){
+            LoggerProducerGenerator.generate(utilFolder);
+            ControllerEventGenerator.generate(mvcData.getEventType(), utilFolder);
         }
         return createdFiles;
     }

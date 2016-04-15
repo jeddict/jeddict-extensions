@@ -26,7 +26,7 @@ public enum Operation implements RestMethod {
             "new", "/<folder>/<entity>/create.jsp"),
     CREATE(POST, "create",
             "new", "redirect:<entity>/list"),
-    REDIRECT_TO_UPDATE(GET, "edit,"
+    REDIRECT_TO_UPDATE(GET, "edit",
             "update/{id}", "/<folder>/<entity>/update.jsp"),
     UPDATE(POST, "update",
             "update", "redirect:<entity>/list"),
@@ -36,7 +36,6 @@ public enum Operation implements RestMethod {
             "{id}", "/<folder>/<entity>/view.jsp"),
     FIND_ALL(GET, "findAll",
             "list", "/<folder>/<entity>/list.jsp");
-
 
     private final String method, methodName;
     private final String uriPath, view;

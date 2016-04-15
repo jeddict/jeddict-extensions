@@ -15,8 +15,11 @@
  */
 package org.netbeans.jcode.mvc.controller;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.netbeans.jcode.mvc.controller.api.returntype.ControllerReturnType;
+import org.netbeans.jcode.mvc.controller.event.ControllerEventType;
 import org.netbeans.jcode.rest.applicationconfig.RestConfigData;
 import org.netbeans.jcode.stack.config.data.LayerConfigData;
 
@@ -32,6 +35,7 @@ public class MVCData extends LayerConfigData {
     private boolean beanValidation;
     private ControllerReturnType returnType;
     private RestConfigData restConfigData;
+    private List<ControllerEventType> eventTypes;
 
     /**
      * @return the _package
@@ -108,5 +112,29 @@ public class MVCData extends LayerConfigData {
         this.beanValidation = beanValidation;
     }
 
+    /**
+     * @return the eventTypes
+     */
+    public List<ControllerEventType> getEventType() {
+        if(eventTypes==null){
+            eventTypes = new ArrayList<ControllerEventType>();
+        }
+        return eventTypes;
+    }
+
+    /**
+     * @param eventType the eventTypes to set
+     */
+    public void setEventType(List<ControllerEventType> eventType) {
+        this.eventTypes = eventType;
+    }
+
+    public boolean addEventType(ControllerEventType eventType) {
+        return getEventType().add(eventType);
+    }
+
+    public boolean removeEventType(ControllerEventType eventType) {
+        return getEventType().remove(eventType);
+    }
 
 }

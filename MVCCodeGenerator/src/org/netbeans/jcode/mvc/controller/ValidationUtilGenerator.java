@@ -16,6 +16,7 @@
 package org.netbeans.jcode.mvc.controller;
 
 import com.sun.source.tree.ClassTree;
+import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.MethodTree;
 import com.sun.source.tree.ModifiersTree;
@@ -33,12 +34,14 @@ import org.netbeans.api.java.source.JavaSource;
 import org.netbeans.api.java.source.Task;
 import org.netbeans.api.java.source.TreeMaker;
 import org.netbeans.api.java.source.WorkingCopy;
+import static org.netbeans.jcode.beanvalidation.BeanVaildationConstants.CONSTRAINT_VIOLATION;
+import static org.netbeans.jcode.core.util.Constants.SET_TYPE;
 import org.netbeans.jcode.core.util.JavaSourceHelper;
-import static org.netbeans.jcode.mvc.controller.ErrorBeanGenerator.ERROR_BEAN_CLASS;
 import org.netbeans.jcode.mvc.controller.api.returntype.ControllerReturnType;
 import org.netbeans.jcode.mvc.MVCConstants;
 import static org.netbeans.jcode.mvc.MVCConstants.BINDING_RESULT;
 import static org.netbeans.jcode.mvc.MVCConstants.VIEWABLE_UNQF;
+import static org.netbeans.jcode.mvc.controller.ErrorBeanGenerator.ERROR_BEAN_CLASS;
 import static org.netbeans.jcode.mvc.viewer.jsp.JSPViewerGenerator.TARGET_COMMON_TEMPLATE_PATH;
 import static org.netbeans.jcode.rest.RestConstant.RESPONSE;
 import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
@@ -55,8 +58,8 @@ public class ValidationUtilGenerator {
     public static final String METHOD_NAME = "getResponse";
     public static final String BINDING_RESULT_VAR = "validationResult";
     public static final String ERROR_BEAN_VAR = "error";
-    private static final String METHID_BODY =  "            final java.util.Set<javax.validation.ConstraintViolation<?>> set = validationResult.getAllViolations();\n"
-            + "            final javax.validation.ConstraintViolation<?> cv = set.iterator().next();\n"
+    private static final String METHID_BODY =  "            final Set<ConstraintViolation<?>> set = validationResult.getAllViolations();\n"
+            + "            final ConstraintViolation<?> cv = set.iterator().next();\n"
             + "            final String property = cv.getPropertyPath().toString();\n\n"
             + "            error.setProperty(property.substring(property.lastIndexOf('.') + 1));\n"
             + "            error.setValue(cv.getInvalidValue());\n"
@@ -79,16 +82,21 @@ public class ValidationUtilGenerator {
         javaSource.runModificationTask(new Task<WorkingCopy>() {
 
             @Override
-            public void run(WorkingCopy workingCopy) throws Exception {
-                workingCopy.toPhase(JavaSource.Phase.RESOLVED);
-                TypeElement classElement = SourceUtils.getPublicTopLevelElement(workingCopy);
-                ClassTree classTree = JavaSourceHelper.getTopLevelClassTree(workingCopy);
-                TreeMaker maker = workingCopy.getTreeMaker();
-                GenerationUtils genUtils = GenerationUtils.newInstance(workingCopy);
+            public void run(WorkingCopy wc) throws Exception {
+                wc.toPhase(JavaSource.Phase.RESOLVED);
+                TypeElement classElement = SourceUtils.getPublicTopLevelElement(wc);
+                ClassTree classTree = JavaSourceHelper.getTopLevelClassTree(wc);
+                TreeMaker maker = wc.getTreeMaker();
+                GenerationUtils genUtils = GenerationUtils.newInstance(wc);
                 ModifiersTree modifiersTree = maker.Modifiers(EnumSet.of(Modifier.PUBLIC, Modifier.STATIC));
                 List<Tree> members = new ArrayList<>(classTree.getMembers());
 
-                ExpressionTree packageTree = workingCopy.getCompilationUnit().getPackageName();
+                CompilationUnitTree cut = wc.getCompilationUnit();
+                CompilationUnitTree newCut = maker.addCompUnitImport(cut, maker.Import(maker.Identifier(CONSTRAINT_VIOLATION), false));
+                newCut = maker.addCompUnitImport(newCut, maker.Import(maker.Identifier(SET_TYPE), false));
+                wc.rewrite(cut, newCut);
+                
+                ExpressionTree packageTree = wc.getCompilationUnit().getPackageName();
                 String packageName = packageTree.toString();
                 
                 String errorFile = webPath + "/" + TARGET_COMMON_TEMPLATE_PATH + "error.jsp";
@@ -132,7 +140,7 @@ public class ValidationUtilGenerator {
                         classTree.getImplementsClause(),
                         members);
 
-                workingCopy.rewrite(classTree, newClassTree);
+                wc.rewrite(classTree, newClassTree);
             }
 
         }).commit();
