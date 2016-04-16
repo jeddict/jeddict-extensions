@@ -15,17 +15,18 @@
  */
 package org.netbeans.jcode.ejb.facade;
 
-import java.awt.event.ItemEvent;
+import java.util.prefs.Preferences;
 import javax.lang.model.SourceVersion;
 import javax.swing.ComboBoxModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.text.JTextComponent;
 import org.apache.commons.lang.StringUtils;
 import org.netbeans.api.project.Project;
+import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.mvc.controller.MVCData;
-import org.netbeans.jcode.mvc.controller.MVCPanel;
 import org.netbeans.jcode.stack.config.panel.LayerConfigPanel;
+import org.netbeans.jcode.util.PreferenceUtils;
 import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
 import org.netbeans.spi.java.project.support.ui.PackageView;
 import org.openide.util.NbBundle;
@@ -37,6 +38,7 @@ import org.openide.util.NbBundle;
 public class SessionBeanPanel extends LayerConfigPanel<SessionBeanData> {
 
     private static final String DEFAULT_PACKAGE = "service.facade";
+    private Preferences pref;
 
     public SessionBeanPanel() {
         initComponents();
@@ -71,18 +73,32 @@ public class SessionBeanPanel extends LayerConfigPanel<SessionBeanData> {
     
     @Override
     public void read(){
-    
+        this.setConfigData(PreferenceUtils.get(pref,SessionBeanData.class));
+        SessionBeanData data = this.getConfigData();
+        if(StringUtils.isNotBlank(data.getPackage())){
+            setPackage(data.getPackage());
+        }
+        
+        if(StringUtils.isNotBlank(data.getPrefixName())){
+            setPrefix(data.getPrefixName());
+        }
+        
+        if(StringUtils.isNotBlank(data.getSuffixName())){
+            setSuffix(data.getSuffixName());
+        }
+        
     }
     @Override
     public void store(){
         this.getConfigData().setPrefixName(getPrefix());
         this.getConfigData().setSuffixName(getSuffix());
         this.getConfigData().setPackage(getPackage());
+        PreferenceUtils.set(pref, this.getConfigData());
     }
     
     @Override
     public void init(String _package, Project project, SourceGroup sourceGroup) {
-        this.setConfigData(new SessionBeanData());
+        pref = ProjectUtils.getPreferences(project, SessionBeanData.class, true);
         if (sourceGroup != null) {
             packageCombo.setRenderer(PackageView.listRenderer());
             ComboBoxModel model = PackageView.createListView(sourceGroup);
@@ -122,6 +138,13 @@ public class SessionBeanPanel extends LayerConfigPanel<SessionBeanData> {
     
     public String getPrefix() {
         return prefixField.getText().trim();
+    }
+    
+      private void setPrefix(String prefix) {
+        prefixField.setText(prefix);
+    }
+    private void setSuffix(String suffix) {
+        suffixField.setText(suffix);
     }
 
     /**
