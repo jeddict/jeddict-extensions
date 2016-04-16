@@ -39,6 +39,8 @@ public class RestConfigDialog extends GenericDialog {
 
       public void init(String _package,Project project, SourceGroup sourceGroup) {
        restConfigPanel1.init(_package, project, sourceGroup);
+       restConfigPanel1.read();
+       
       }
     public RestConfigData getRestConfigData() {
         return restConfigPanel1.getConfigData();

@@ -19,14 +19,18 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.prefs.Preferences;
 import javax.lang.model.SourceVersion;
 import javax.swing.ComboBoxModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.text.JTextComponent;
 import org.apache.commons.lang.StringUtils;
 import org.netbeans.api.project.Project;
+import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.SourceGroup;
+import org.netbeans.jcode.mvc.controller.MVCData;
 import org.netbeans.jcode.stack.config.panel.LayerConfigPanel;
+import org.netbeans.jcode.util.PreferenceUtils;
 import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
 import org.netbeans.modules.websvc.rest.model.api.RestApplication;
 import org.netbeans.spi.java.project.support.ui.PackageView;
@@ -38,6 +42,7 @@ import org.openide.util.NbBundle;
  */
 public class RestConfigPanel extends LayerConfigPanel<RestConfigData> {
 
+    private Preferences pref;
     private static final String DEFAULT_PACKAGE = "controller";
     private Map<String,RestApplication> restApplications = Collections.EMPTY_MAP;
     public RestConfigPanel() {
@@ -88,18 +93,32 @@ public class RestConfigPanel extends LayerConfigPanel<RestConfigData> {
     
     @Override
     public void read(){
-    
+    this.setConfigData(PreferenceUtils.get(pref,RestConfigData.class));
+        RestConfigData data = this.getConfigData();
+        if(StringUtils.isNotBlank(data.getPackage())){
+            setPackage(data.getPackage());
+        }
+        
+        if(StringUtils.isNotBlank(data.getApplicationPath())){
+            setRestPath(data.getApplicationPath());
+        }
+        
+        if(StringUtils.isNotBlank(data.getApplicationClass())){
+            setRestClass(data.getApplicationClass());
+        }
+        
     }
     @Override
     public void store(){
         this.getConfigData().setApplicationClass(getRestClass());
         this.getConfigData().setApplicationPath(getRestPath());
         this.getConfigData().setPackage(getPackage());
+        PreferenceUtils.set(pref, this.getConfigData());
     }
     
     @Override
     public void init(String _package,Project project, SourceGroup sourceGroup) {
-        this.setConfigData(new RestConfigData());
+        pref = ProjectUtils.getPreferences(project, RestConfigData.class, true);
         if (sourceGroup != null) {
             packageCombo.setRenderer(PackageView.listRenderer());
             ComboBoxModel model = PackageView.createListView(sourceGroup);
@@ -138,12 +157,20 @@ public class RestConfigPanel extends LayerConfigPanel<RestConfigData> {
     
    
     
-     public String getRestClass() {
+    public String getRestClass() {
         return restConfigClassField.getText().trim();
     }
-     
-       public String getRestPath() {
+
+    public String getRestPath() {
         return restPathField.getText().trim();
+    }
+
+    public void setRestClass(String _class) {
+        restConfigClassField.setText(_class);
+    }
+
+    public void setRestPath(String path) {
+        restPathField.setText(path);
     }
 
     
