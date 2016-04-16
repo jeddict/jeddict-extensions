@@ -35,6 +35,7 @@ import java.util.concurrent.ExecutionException;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
+import org.apache.commons.lang.StringUtils;
 
 import org.netbeans.api.java.source.CompilationController;
 import org.netbeans.api.java.source.JavaSource;
@@ -124,8 +125,6 @@ public class MVCControllerGenerator {
         handler.progress(controllerFileName);
 
         FileObject targetFolder = SourceGroupSupport.getFolderForPackage(sourceGroup, mvcData.getPackage(), true);
-        FileObject utilFolder = SourceGroupSupport.getFolderForPackage(targetFolder, UTIL_PACKAGE, true);
-        String utilPackage = SourceGroupSupport.getPackageForFolder(sourceGroup, utilFolder);
 
         FileObject controllerFO = targetFolder.getFileObject(controllerFileName, "java");//skips here
 
@@ -161,11 +160,14 @@ public class MVCControllerGenerator {
                 assert classTree != null;
                 GenerationUtils genUtils = GenerationUtils.newInstance(wc);
                 TreeMaker maker = wc.getTreeMaker();
-                CompilationUnitTree cut = wc.getCompilationUnit();
-                CompilationUnitTree newCut = maker.addCompUnitImport(cut, maker.Import(maker.Identifier(utilPackage + "." + ERROR_BEAN_CLASS), false));
-                newCut = maker.addCompUnitImport(newCut, maker.Import(maker.Identifier(utilPackage + "." + VALIDATION_UTIL_CLASS), false));
-                wc.rewrite(cut, newCut);
-                            
+
+                if (mvcData.isBeanValidation()) {
+                    String utilPackage = StringUtils.isBlank(mvcData.getPackage()) ? UTIL_PACKAGE : mvcData.getPackage() + "." + UTIL_PACKAGE;
+                    CompilationUnitTree cut = wc.getCompilationUnit();
+                    CompilationUnitTree newCut = maker.addCompUnitImport(cut, maker.Import(maker.Identifier(utilPackage + "." + ERROR_BEAN_CLASS), false));
+                    newCut = maker.addCompUnitImport(newCut, maker.Import(maker.Identifier(utilPackage + "." + VALIDATION_UTIL_CLASS), false));
+                    wc.rewrite(cut, newCut);
+                }
 //                ExpressionTree packageTree = wc.getCompilationUnit().getPackageName();
 //                String packageName = packageTree.toString();
 
@@ -265,28 +267,26 @@ public class MVCControllerGenerator {
                         // add @ValidateOnExecution annotation
                         modifiersTree
                                 = maker.addModifiersAnnotation(modifiersTree,
-                                        genUtils.createAnnotation(VALIDATE_ON_EXECUTION, 
+                                        genUtils.createAnnotation(VALIDATE_ON_EXECUTION,
                                                 Collections.singletonList(genUtils.createAnnotationArgument("type", EXECUTABLE_TYPE, "NONE"))));
-                    
-                    }    
-                        
+
+                    }
+
                     Tree returnType = null;
                     String view = option.getRestMethod().getView();
                     view = view.replaceAll(ENTITY_NAME_EXP, variableName).replaceAll(FOLDER_NAME_EXP, webPath);
 
-                    
-                    
                     if (mvcData.getReturnType() == ControllerReturnType.VIEW_ANNOTATION && !(mvcData.isBeanValidation() && beanParamExist)) {
-                         // add @View annotation
-                            ExpressionTree annArgument = maker.Literal(view);
-                            modifiersTree
-                                    = maker.addModifiersAnnotation(modifiersTree,
-                                            genUtils.createAnnotation(MVCConstants.VIEW,
-                                                    Collections.<ExpressionTree>singletonList(
-                                                            annArgument)));
-                            returnType = maker.PrimitiveType(TypeKind.VOID);
-                    } else if (mvcData.getReturnType() == ControllerReturnType.STRING ||
-                            (mvcData.getReturnType() == ControllerReturnType.VIEW_ANNOTATION && mvcData.isBeanValidation() && beanParamExist)) {
+                        // add @View annotation
+                        ExpressionTree annArgument = maker.Literal(view);
+                        modifiersTree
+                                = maker.addModifiersAnnotation(modifiersTree,
+                                        genUtils.createAnnotation(MVCConstants.VIEW,
+                                                Collections.<ExpressionTree>singletonList(
+                                                        annArgument)));
+                        returnType = maker.PrimitiveType(TypeKind.VOID);
+                    } else if (mvcData.getReturnType() == ControllerReturnType.STRING
+                            || (mvcData.getReturnType() == ControllerReturnType.VIEW_ANNOTATION && mvcData.isBeanValidation() && beanParamExist)) {
                         body.append("\n").append("return \"").append(view).append("\";");
                         returnType = genUtils.createType(String.class.getName(), classElement);
                     } else if (mvcData.getReturnType() == ControllerReturnType.VIEWABLE) {
@@ -303,7 +303,7 @@ public class MVCControllerGenerator {
 
                     members.add(maker.Method(
                             modifiersTree,
-                            option.getRestMethod().getMethodName()+entitySimpleName ,
+                            option.getRestMethod().getMethodName() + entitySimpleName,
                             returnType,
                             Collections.EMPTY_LIST,
                             vars,
@@ -339,16 +339,32 @@ public class MVCControllerGenerator {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-        
+
+        return createdFiles;
+    }
+
+    public void generateUtil(final Project project, final SourceGroup sourceGroup,
+            final MVCData mvcData, JSPData viewerData, ProgressHandler handler) throws IOException {
+        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(sourceGroup, mvcData.getPackage(), true);
+        FileObject utilFolder = SourceGroupSupport.getFolderForPackage(targetFolder, UTIL_PACKAGE, true);
+        String webPath;
+        if (viewerData != null) {
+            webPath = viewerData.getFolder();
+        } else {
+            webPath = JSPData.DEFAULT_FOLDER;
+        }
+
         if (mvcData.isBeanValidation()) {
             ValidationUtilGenerator.generate(mvcData, utilFolder, webPath);
             ErrorBeanGenerator.generate(utilFolder);
         }
-        if(!mvcData.getEventType().isEmpty()){
+        if (!mvcData.getEventType().isEmpty()) {
             LoggerProducerGenerator.generate(utilFolder);
             ControllerEventGenerator.generate(mvcData.getEventType(), utilFolder);
         }
-        return createdFiles;
+
+        generateApplicationConfig(project, sourceGroup,
+                mvcData, handler);
     }
 
     public void generateApplicationConfig(final Project project, final SourceGroup sourceGroup,

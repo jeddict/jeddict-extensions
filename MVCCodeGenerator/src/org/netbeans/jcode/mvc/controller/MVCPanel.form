@@ -23,10 +23,7 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="packagePanel" alignment="0" pref="676" max="32767" attributes="0"/>
                           <Component id="suffixPanel" alignment="0" pref="676" max="32767" attributes="0"/>
-                          <Group type="102" alignment="1" attributes="0">
-                              <EmptySpace max="32767" attributes="0"/>
-                              <Component id="applicationConfigButton" min="-2" max="-2" attributes="0"/>
-                          </Group>
+                          <Component id="applicationConfigButton" alignment="1" min="-2" max="-2" attributes="0"/>
                           <Component id="viewPanel" alignment="0" pref="676" max="32767" attributes="0"/>
                       </Group>
                   </Group>

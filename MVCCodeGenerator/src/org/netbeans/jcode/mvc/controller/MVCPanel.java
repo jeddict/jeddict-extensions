@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.prefs.Preferences;
 import javax.lang.model.SourceVersion;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
@@ -32,12 +33,14 @@ import javax.swing.text.JTextComponent;
 import org.apache.commons.lang.StringUtils;
 import org.netbeans.api.java.source.ui.ScanDialog;
 import org.netbeans.api.project.Project;
+import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.mvc.controller.api.returntype.ControllerReturnType;
 import org.netbeans.jcode.mvc.controller.event.ControllerEventType;
 import org.netbeans.jcode.rest.applicationconfig.RestConfigData;
 import org.netbeans.jcode.rest.applicationconfig.RestConfigDialog;
 import org.netbeans.jcode.stack.config.panel.*;
+import org.netbeans.jcode.util.PreferenceUtils;
 import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
 import org.netbeans.modules.websvc.rest.model.api.RestApplication;
 import org.netbeans.modules.websvc.rest.spi.RestSupport;
@@ -59,7 +62,8 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
     private boolean configuredREST;
     private List<RestApplication> restApplications;
     private RestConfigDialog configDialog;
-    private Map<JCheckBox,ControllerEventType> eventTypeBoxs = new HashMap<>();
+    private Map<JCheckBox, ControllerEventType> eventTypeBoxs = new HashMap<>();
+    private Preferences pref;
 
     public MVCPanel() {
         initComponents();
@@ -94,7 +98,26 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
 
     @Override
     public void read() {
-
+        this.setConfigData(PreferenceUtils.get(pref,MVCData.class));
+        MVCData data = this.getConfigData();
+        if(StringUtils.isNotBlank(data.getPackage())){
+            setPackage(data.getPackage());
+        }
+        
+        if(StringUtils.isNotBlank(data.getPrefixName())){
+            setPrefix(data.getPrefixName());
+        }
+        
+        if(StringUtils.isNotBlank(data.getSuffixName())){
+            setSuffix(data.getSuffixName());
+        }
+        
+        if(data.getReturnType() != null){
+            viewCombo.setSelectedItem(data.getReturnType());
+            beanValidation.setSelected(data.isBeanValidation());
+        }
+        
+        setSelectedEventType(data.getEventType());
     }
 
     @Override
@@ -102,27 +125,27 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
         this.getConfigData().setPrefixName(getPrefix());
         this.getConfigData().setSuffixName(getSuffix());
         this.getConfigData().setPackage(getPackage());
-        if (restConfigData == null && !useJersey) {// && !configuredREST){
-            restConfigData = new RestConfigData();
+        if (this.getConfigData().getRestConfigData() == null && !useJersey) {// && !configuredREST){
+            RestConfigData restConfigData = new RestConfigData();
             restConfigData.setPackage(getPackage());
+            this.getConfigData().setRestConfigData(restConfigData);
         }
-        this.getConfigData().setRestConfigData(restConfigData);
         this.getConfigData().setBeanValidation(getBeanValidation());
         this.getConfigData().setReturnType(getReturnType());
         this.getConfigData().setEventType(getSelectedEventType());
+        
+        PreferenceUtils.set(pref, this.getConfigData());
     }
 
-    private String _package;
     private Project project;
     private SourceGroup sourceGroup;
 
     @Override
     public void init(String _package, Project project, SourceGroup sourceGroup) {
-        this._package = _package;
+        pref = ProjectUtils.getPreferences(project, MVCData.class, true);
         this.project = project;
         this.sourceGroup = sourceGroup;
 
-        this.setConfigData(new MVCData());
         if (sourceGroup != null) {
             packageCombo.setRenderer(PackageView.listRenderer());
             ComboBoxModel model = PackageView.createListView(sourceGroup);
@@ -132,23 +155,23 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
             packageCombo.setModel(model);
             addChangeListener(packageCombo);
             if (StringUtils.isBlank(_package)) {
-                setPackage(DEFAULT_PACKAGE);
+            _package = DEFAULT_PACKAGE;
             } else {
-                setPackage(_package + '.' + DEFAULT_PACKAGE);
+                _package = _package + '.' + DEFAULT_PACKAGE;
             }
+            setPackage(_package);
         }
         addChangeListener(prefixField);
         addChangeListener(suffixField);
-        
+
         eventObserversPanel.removeAll();
-        
+
         for (ControllerEventType type : ControllerEventType.values()) {
             JCheckBox eventTypeBox = new JCheckBox();
             org.openide.awt.Mnemonics.setLocalizedText(eventTypeBox, type.toString()); // NOI18N
             eventObserversPanel.add(eventTypeBox);
             eventTypeBoxs.put(eventTypeBox, type);
         }
-         
 
         final RestSupport restSupport = project.getLookup().lookup(RestSupport.class);
         if (restSupport != null) {
@@ -164,11 +187,11 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
             if (!configured) {
                 configured = restApplications != null && !restApplications.isEmpty();
             }
-            if(configDialog!=null){
+            if (configDialog != null) {
                 configDialog.setRestApplicationClasses(restApplications);
             }
             configurREST(configured);
-        },getMessage(MVCPanel.class, "MVCPanel.scanningExistingApp.text") );
+        }, getMessage(MVCPanel.class, "MVCPanel.scanningExistingApp.text"));
 
     }
 
@@ -179,11 +202,11 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
     public String getPackage() {
         return ((JTextComponent) packageCombo.getEditor().getEditorComponent()).getText().trim();
     }
-    
+
     public boolean getBeanValidation() {
         return beanValidation.isSelected();
     }
-    
+
     public ControllerReturnType getReturnType() {
         return (ControllerReturnType) viewCombo.getSelectedItem();
     }
@@ -206,16 +229,29 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
     public String getPrefix() {
         return prefixField.getText().trim();
     }
+    private void setPrefix(String prefix) {
+        prefixField.setText(prefix);
+    }
+    private void setSuffix(String suffix) {
+        suffixField.setText(suffix);
+    }
 
-    public List<ControllerEventType> getSelectedEventType(){
-         List<ControllerEventType> eventTypes = new ArrayList<>();
-        for(Entry<JCheckBox,ControllerEventType> eventTypeBoxEntry : eventTypeBoxs.entrySet()){
+    public List<ControllerEventType> getSelectedEventType() {
+        List<ControllerEventType> eventTypes = new ArrayList<>();
+        for (Entry<JCheckBox, ControllerEventType> eventTypeBoxEntry : eventTypeBoxs.entrySet()) {
             if (eventTypeBoxEntry.getKey().isSelected()) {
                 eventTypes.add(eventTypeBoxEntry.getValue());
             }
         }
         return eventTypes;
     }
+    
+    public void setSelectedEventType(List<ControllerEventType> controllerEventTypes) {
+        for (Entry<JCheckBox, ControllerEventType> eventTypeBoxEntry : eventTypeBoxs.entrySet()) {
+            eventTypeBoxEntry.getKey().setSelected(controllerEventTypes.contains(eventTypeBoxEntry.getValue()));
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -462,11 +498,11 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
             if (restApplications != null) {
                 configDialog.setRestApplicationClasses(restApplications);
             }
-            configDialog.init(_package, project, sourceGroup);
+            configDialog.init(getPackage(), project, sourceGroup);
         }
         configDialog.setVisible(true);
         if (configDialog.getDialogResult() == javax.swing.JOptionPane.OK_OPTION) {
-            restConfigData = configDialog.getRestConfigData();
+            this.getConfigData().setRestConfigData(configDialog.getRestConfigData());
         }
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables

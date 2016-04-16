@@ -117,7 +117,7 @@ public class MVCData extends LayerConfigData {
      */
     public List<ControllerEventType> getEventType() {
         if(eventTypes==null){
-            eventTypes = new ArrayList<ControllerEventType>();
+            eventTypes = new ArrayList<>();
         }
         return eventTypes;
     }
