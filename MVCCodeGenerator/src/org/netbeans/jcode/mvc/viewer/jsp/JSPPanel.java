@@ -15,6 +15,7 @@
  */
 package org.netbeans.jcode.mvc.viewer.jsp;
 
+import java.util.prefs.Preferences;
 import javax.swing.event.ChangeEvent;
 import org.apache.commons.lang.StringUtils;
 import org.netbeans.api.project.Project;
@@ -23,6 +24,7 @@ import org.netbeans.api.project.SourceGroup;
 import org.netbeans.api.project.Sources;
 import org.netbeans.jcode.stack.config.panel.*;
 import org.netbeans.jcode.ui.browse.BrowseFolders;
+import org.netbeans.jcode.util.PreferenceUtils;
 import org.netbeans.modules.web.api.webmodule.WebProjectConstants;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
@@ -35,7 +37,8 @@ import org.openide.util.NbBundle;
 public class JSPPanel extends LayerConfigPanel<JSPData> {
 
     private static final String DEFAULT_FOLDER = "view";
-
+    private Preferences pref;
+    
     public JSPPanel() {
         initComponents();
     }
@@ -57,12 +60,17 @@ public class JSPPanel extends LayerConfigPanel<JSPData> {
 
     @Override
     public void read() {
-
+        this.setConfigData(PreferenceUtils.get(pref,JSPData.class));
+        JSPData data = this.getConfigData();
+        if(StringUtils.isNotBlank(data.getFolder())){
+            setFolder(data.getFolder());
+        }
     }
 
     @Override
     public void store() {
         this.getConfigData().setFolder(getFolder().trim());
+        PreferenceUtils.set(pref, this.getConfigData());
     }
 
     private SourceGroup sourceGroup;
@@ -70,8 +78,8 @@ public class JSPPanel extends LayerConfigPanel<JSPData> {
 
     @Override
     public void init(String folder, Project project, SourceGroup sourceGroup) {
+        pref = ProjectUtils.getPreferences(project, JSPData.class, true);
         this.project = project;
-        this.setConfigData(new JSPData());
         addChangeListener(folderTextField);
         setFolder(DEFAULT_FOLDER);
     }
