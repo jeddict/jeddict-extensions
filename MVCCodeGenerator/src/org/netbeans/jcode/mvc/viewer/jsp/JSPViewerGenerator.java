@@ -148,35 +148,24 @@ public class JSPViewerGenerator {
         }
     }
 
-    /**
-     * Generates the facade and the local/remote interface(s) for the given
-     * entity class.
-     * <i>Package private visibility for tests</i>.
-     *
-     * @param project
-     * @param entityNames the FQN of the entity class for which the facade is
-     * generated.
-     * @param entityFQN
-     * @param idClass
-     * @param overrideExisting
-     * @param handler
-     * @param crudPath the folder name in which crud generated.
-     *
-     * @throws java.io.IOException
-     */
-    public void generate(final Project project, final String entityFQN, final String crudPath, boolean overrideExisting, ProgressHandler handler) throws IOException {
+    public void generate(final Project project, final String entityFQN, MVCData mvcData, JSPData jspData, boolean overrideExisting, ProgressHandler handler) throws IOException {
         Sources sources = ProjectUtils.getSources(project);
         SourceGroup sourceGroups[] = sources.getSourceGroups(WebProjectConstants.TYPE_DOC_ROOT);
         FileObject webRoot = sourceGroups[0].getRootFolder();
         String entityClass = entityFQN;
+        String crudPath = jspData.getFolder();
         String jspEntityIncludeFolder;
         if (StringUtils.isNotBlank(crudPath)) {
             jspEntityIncludeFolder = "/" + crudPath;
         } else {
             jspEntityIncludeFolder = "/" + DEFAULT_GENERATED_CRUD_PATH;
         }
+        
 
         Map<String, Object> params = FromEntityBase.createFieldParameters(webRoot, entityClass, entityClass, null, false, true);        
+        params.put("CSRFPrevention", mvcData.isCSRF());
+        params.put("XSSPrevention", mvcData.isXSS());
+        
         for (Entry<Operation, String> entry : CRUD_FILES.entrySet()) {
             expandSingleJSPTemplate(TEMPLATE_PATH + CRUD_PATH + entry.getValue(),
                     getJSPFileName(entityClass,  jspEntityIncludeFolder,GENERATED_CRUD_FILES.get(entry.getKey())) + JSP_EXT,

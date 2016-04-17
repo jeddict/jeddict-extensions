@@ -76,6 +76,7 @@ import static org.netbeans.jcode.rest.RestConstant.RESPONSE;
 import static org.netbeans.jcode.rest.RestConstant.RESPONSE_UNQF;
 import org.netbeans.jcode.rest.util.RestUtils;
 import org.netbeans.jcode.core.util.SourceGroupSupport;
+import static org.netbeans.jcode.mvc.MVCConstants.CSRF_VALID;
 import static org.netbeans.jcode.mvc.controller.ValidationUtilGenerator.VALIDATION_UTIL_CLASS;
 import org.netbeans.jcode.mvc.controller.event.ControllerEventGenerator;
 import org.netbeans.jcode.task.progress.ProgressHandler;
@@ -270,6 +271,11 @@ public class MVCControllerGenerator {
                                         genUtils.createAnnotation(VALIDATE_ON_EXECUTION,
                                                 Collections.singletonList(genUtils.createAnnotationArgument("type", EXECUTABLE_TYPE, "NONE"))));
 
+                    }
+                    
+                    if (mvcData.isCSRF() && beanParamExist) {
+                         // add @CsrfValid annotation
+                        modifiersTree = maker.addModifiersAnnotation(modifiersTree,genUtils.createAnnotation(CSRF_VALID));
                     }
 
                     Tree returnType = null;

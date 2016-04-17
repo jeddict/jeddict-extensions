@@ -35,7 +35,11 @@
                                 <a href="#" class="list-group-item">
                                     <div class="row">
                                         <div class="col-lg-4"><span class="small">${entityDescriptor.label} :</span></div>
+                                        <#if XSSPrevention>
+                                        <div class="col-lg-8">${r"${mvc.encoders.html("}${entityConstant}.${entityDescriptor.propertyName}${r")}"}</div>
+                                        <#else>
                                         <div class="col-lg-8">${r"${"}${entityConstant}.${entityDescriptor.propertyName}${r"}"}</div>
+                                        </#if>
                                         </div>
                                     </a>             
                                               </#if>

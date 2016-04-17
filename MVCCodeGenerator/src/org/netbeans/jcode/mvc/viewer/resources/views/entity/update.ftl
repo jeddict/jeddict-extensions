@@ -47,6 +47,9 @@
                                 <input type="hidden" name="${entityDescriptor.propertyName}" value="${r"${"}${entityConstant}.${entityDescriptor.propertyName}${r"}"}" />
                                                </#if>
                                           </#list>
+                                <#if CSRFPrevention>
+                                <input type="hidden" name="${mvc.csrf.name}" value="${mvc.csrf.token}"/>
+                                </#if>
                                 <button type="submit" class="btn btn-primary"><i class="fa fa-check fa-fw"></i>Update</button>
                                 <a href="${r"${appPath}"}/${entityName}/list" class="btn btn-default"><i class="fa fa-close fa-fw"></i>Cancel</a>
                                 </form>

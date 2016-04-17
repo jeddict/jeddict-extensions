@@ -30,27 +30,39 @@ the License.
                         <a href="#" class="list-group-item">
                             <div class="row">
                                 <div class="col-lg-4"><span class="small">Property :</span></div>
-                                <div class="col-lg-8">${errorBean.property}</div>
+                                <#if XSSPrevention>
+                                <div class="col-lg-8">${r"${mvc.encoders.html(errorBean.property)}"}</div>
+                                <#else>
+                                <div class="col-lg-8">${r"${errorBean.property}"}</div>
+                                </#if>
                             </div>
                         </a>  
 
                         <a href="#" class="list-group-item">
                             <div class="row">
                                 <div class="col-lg-4"><span class="small">Value :</span></div>
-                                <div class="col-lg-8">${errorBean.value}</div>
+                                <#if XSSPrevention>
+                                <div class="col-lg-8">${r"${mvc.encoders.html(errorBean.value)}"}</div>
+                                <#else>
+                                <div class="col-lg-8">${r"${errorBean.value}"}</div>
+                                </#if>
                             </div>
                         </a>  
 
                         <a href="#" class="list-group-item">
                             <div class="row">
                                 <div class="col-lg-4"><span class="small">Message :</span></div>
-                                <div class="col-lg-8">${errorBean.message}</div>
+                                <#if XSSPrevention>
+                                <div class="col-lg-8">${r"${mvc.encoders.html(errorBean.message)}"}</div>
+                                <#else>
+                                <div class="col-lg-8">${r"${errorBean.message}"}</div>
+                                </#if>
                             </div>
                         </a>  
                     </div>
                 </div>
                 <div class="panel-footer">
-                    <a href="index.html" class="btn btn-lg btn-defult btn-block">Back</a>
+                        <a onclick="history.back()" class="btn btn-lg btn-defult btn-block">Retry</a>
                 </div>
             </div>
         </div>

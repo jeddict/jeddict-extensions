@@ -510,7 +510,7 @@ public class Util {
             return;
         }
         handler.progress(Console.wrap(MVCControllerGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
-        controllerGenerator.generateApplicationConfig(project, source, mvcData, handler);
+        controllerGenerator.generateUtil(project, source, mvcData, jspData, handler);
         for (Entry<String, String> entry : selectedEntityNames.entrySet()) {
             controllerGenerator.generate(project, source, entry.getKey(), entry.getValue(), beanData, mvcData, jspData, false, false, true, handler);
         }
@@ -528,7 +528,7 @@ public class Util {
 
         handler.progress(Console.wrap(JSPViewerGenerator.class, "MSG_Generating_CRUD_Template", FG_RED, BOLD, UNDERLINE));
         for (Entry<String, String> entry : selectedEntityNames.entrySet()) {
-            viewerGenerator.generate(project, entry.getKey(), jspData.getFolder(), true, handler);
+            viewerGenerator.generate(project, entry.getKey(),mvcData, jspData, true, handler);
         }
 
     }
@@ -644,6 +644,7 @@ public class Util {
     private static void addFormParamAnnotation(WorkingCopy working, TreeMaker maker) {
         TypeElement entityElement = working.getTopLevelElements().get(0);
         List<VariableElement> variableElements = ElementFilter.fieldsIn(working.getElements().getAllMembers(entityElement));
+        GenerationUtils genUtils = GenerationUtils.newInstance(working);
         for (VariableElement variableElement : variableElements) {
             List<? extends AnnotationMirror> annotationMirrors = working.getElements().getAllAnnotationMirrors(variableElement);
             boolean hasCustomAnnotation = false, isFormVariable = false;
@@ -662,12 +663,28 @@ public class Util {
             }
             if (!hasCustomAnnotation && isFormVariable) {
                 VariableTree varTree = (VariableTree) working.getTrees().getTree(variableElement);
-                        GenerationUtils genUtils = GenerationUtils.newInstance(working);
-                       AnnotationTree annotationTree =   genUtils.createAnnotation(FORM_PARAM,
-                              Collections.<ExpressionTree>singletonList(
-                                      maker.Literal(variableElement.getSimpleName().toString())));
-                ModifiersTree modifiersTree = maker.addModifiersAnnotation(varTree.getModifiers(), annotationTree);
-                working.rewrite(varTree.getModifiers(), modifiersTree);
+                AnnotationTree annotationTree = genUtils.createAnnotation(FORM_PARAM,
+                        Collections.<ExpressionTree>singletonList(maker.Literal(variableElement.getSimpleName().toString())));
+                working.rewrite(varTree.getModifiers(), maker.addModifiersAnnotation(varTree.getModifiers(), annotationTree));
+                VariableTree newVarTree = (VariableTree) varTree;
+                newVarTree = genUtils.addAnnotation(newVarTree, annotationTree);
+                System.out.println("newVarTree :" + newVarTree);
+                working.rewrite(varTree, newVarTree);
+                System.out.println("working.getTrees().getTree(variableElement) " + working.getTrees().getTree(variableElement));
+
+                    
+            
+//                for (AnnotationMirror annotationMirror : working.getElements().getAllAnnotationMirrors(variableElement)) {
+//                DeclaredType type = annotationMirror.getAnnotationType();
+//                Element annotationElement = type.asElement();
+//                if (annotationElement instanceof TypeElement) {
+//                    Name annotationName = ((TypeElement) annotationElement).getQualifiedName();
+//                    if (annotationName.contentEquals(FORM_PARAM)) {
+//                        return;
+//                    }
+//                }
+//            }
+//                System.out.println("Not F");
             }           
         }
     }

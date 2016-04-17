@@ -52,13 +52,19 @@ public class MVCApplicationGenerator extends MVCBaseApplicationGenerator {
         for (EntityClassInfo info : getModel().getEntityInfos()) {
             String entity = info.getEntityFqn();
             entities.add(entity);
-            Util.modifyEntity(applicationConfigData.getProject(), applicationConfigData.getSourceGroup(), entity);
         }
 
 
         preGenerate(new ArrayList<>(entities));
         Util.generateMVCCRUD(entities, getModel(), handle, applicationConfigData);
+        
+        for (EntityClassInfo info : getModel().getEntityInfos()) {
+            String entity = info.getEntityFqn();
+            Util.modifyEntity(applicationConfigData.getProject(), applicationConfigData.getSourceGroup(), entity);
+        }
         finishProgressReporting();
+        
+        
 
         return new HashSet<>();
     }

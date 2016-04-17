@@ -36,6 +36,8 @@ public class MVCData extends LayerConfigData {
     private ControllerReturnType returnType;
     private RestConfigData restConfigData;
     private List<ControllerEventType> eventTypes;
+    private boolean csrf;
+    private boolean xss;
 
     /**
      * @return the _package
@@ -135,6 +137,34 @@ public class MVCData extends LayerConfigData {
 
     public boolean removeEventType(ControllerEventType eventType) {
         return getEventType().remove(eventType);
+    }
+
+    /**
+     * @return the csrf
+     */
+    public boolean isCSRF() {
+        return csrf;
+    }
+
+    /**
+     * @param csrf the csrf to set
+     */
+    public void setCSRF(boolean csrf) {
+        this.csrf = csrf;
+    }
+
+    /**
+     * @return the xss
+     */
+    public boolean isXSS() {
+        return xss;
+    }
+
+    /**
+     * @param xss the xss to set
+     */
+    public void setXSS(boolean xss) {
+        this.xss = xss;
     }
 
 }

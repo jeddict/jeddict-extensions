@@ -63,7 +63,12 @@
                                                                  entityDescriptor.returnType != "invalid" &&
                                                                  !(entityDescriptor.relationshipMany && entityDescriptor.relationshipOne)> 
                                                                                     <#-- ${r"${"}${primaryKey}${r"}"}   -->
-                                                                     <td>${r"${"}${entityConstant}.${entityDescriptor.propertyName}${r"}"}</td>
+                                                                        <#if XSSPrevention>
+                                                                        <td>${r"${mvc.encoders.html("}${entityConstant}.${entityDescriptor.propertyName}${r")}"}</td>
+                                                                        <#else>
+                                                                        <td>${r"${"}${entityConstant}.${entityDescriptor.propertyName}${r"}"}</td>
+                                                                        </#if>
+                                                                     
                                                             </#if>
                                                             <#if entityDescriptor.primaryKey>
                                                                  <#assign primaryKey = entityConstant + "." +entityDescriptor.propertyName >
@@ -93,7 +98,7 @@
                                                         <h4 class="modal-title">Confirmation</h4>
                                                         </div>
                                                     <div class="modal-body">
-                                                        <p>Are you sure to delete ?</p>
+                                                        <p>Are you sure to delete ${entityLabel} ?</p>
                                                         </div>
                                                     <div class="modal-footer">
                                                         <form action="${r"${appPath}"}/${entityName}/remove/${r"${"}${primaryKey}${r"}"}" method="DELETE">

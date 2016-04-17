@@ -115,6 +115,8 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
         if(data.getReturnType() != null){
             viewCombo.setSelectedItem(data.getReturnType());
             beanValidation.setSelected(data.isBeanValidation());
+            csrfCheckbox.setSelected(data.isCSRF());
+            xssCheckbox.setSelected(data.isXSS());
         }
         
         setSelectedEventType(data.getEventType());
@@ -131,6 +133,8 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
             this.getConfigData().setRestConfigData(restConfigData);
         }
         this.getConfigData().setBeanValidation(getBeanValidation());
+        this.getConfigData().setCSRF(getCSRF());
+        this.getConfigData().setXSS(getXSS());
         this.getConfigData().setReturnType(getReturnType());
         this.getConfigData().setEventType(getSelectedEventType());
         
@@ -206,6 +210,13 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
     public boolean getBeanValidation() {
         return beanValidation.isSelected();
     }
+    
+     public boolean getCSRF() {
+        return csrfCheckbox.isSelected();
+    }
+      public boolean getXSS() {
+        return xssCheckbox.isSelected();
+    }
 
     public ControllerReturnType getReturnType() {
         return (ControllerReturnType) viewCombo.getSelectedItem();
@@ -280,6 +291,11 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
         eventObserversPanel = new javax.swing.JPanel();
         jCheckBox4 = new javax.swing.JCheckBox();
         jCheckBox1 = new javax.swing.JCheckBox();
+        securityPanel = new javax.swing.JPanel();
+        securityLabel = new javax.swing.JLabel();
+        securityCompPanel = new javax.swing.JLayeredPane();
+        csrfCheckbox = new javax.swing.JCheckBox();
+        xssCheckbox = new javax.swing.JCheckBox();
 
         packagePanel.setLayout(new java.awt.BorderLayout(10, 0));
 
@@ -400,28 +416,45 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
         org.openide.awt.Mnemonics.setLocalizedText(jCheckBox1, org.openide.util.NbBundle.getMessage(MVCPanel.class, "MVCPanel.jCheckBox1.text")); // NOI18N
         eventObserversPanel.add(jCheckBox1);
 
+        securityPanel.setLayout(new java.awt.BorderLayout(10, 0));
+
+        org.openide.awt.Mnemonics.setLocalizedText(securityLabel, org.openide.util.NbBundle.getMessage(MVCPanel.class, "MVCPanel.securityLabel.text")); // NOI18N
+        securityLabel.setPreferredSize(new java.awt.Dimension(100, 17));
+        securityPanel.add(securityLabel, java.awt.BorderLayout.LINE_START);
+
+        securityCompPanel.setLayout(new java.awt.GridLayout());
+
+        org.openide.awt.Mnemonics.setLocalizedText(csrfCheckbox, org.openide.util.NbBundle.getMessage(MVCPanel.class, "MVCPanel.csrfCheckbox.text")); // NOI18N
+        securityCompPanel.add(csrfCheckbox);
+
+        org.openide.awt.Mnemonics.setLocalizedText(xssCheckbox, org.openide.util.NbBundle.getMessage(MVCPanel.class, "MVCPanel.xssCheckbox.text")); // NOI18N
+        securityCompPanel.add(xssCheckbox);
+
+        securityPanel.add(securityCompPanel, java.awt.BorderLayout.CENTER);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(packagePanel, javax.swing.GroupLayout.DEFAULT_SIZE, 676, Short.MAX_VALUE)
-                            .addComponent(suffixPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 676, Short.MAX_VALUE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(applicationConfigButton))
-                            .addComponent(viewPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 676, Short.MAX_VALUE)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                            .addComponent(packagePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(suffixPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(applicationConfigButton, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(viewPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(layout.createSequentialGroup()
                         .addGap(15, 15, 15)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(beanValidation)
                                 .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(eventObserversPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(eventObserversPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(securityPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
@@ -438,8 +471,10 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
                 .addComponent(packagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(viewPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
-                .addComponent(eventObserversPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(securityPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(eventObserversPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 99, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(applicationConfigButton)
@@ -447,7 +482,7 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
                 .addGap(42, 42, 42))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                    .addContainerGap(257, Short.MAX_VALUE)
+                    .addContainerGap(310, Short.MAX_VALUE)
                     .addComponent(warningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap()))
         );
@@ -508,6 +543,7 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton applicationConfigButton;
     private javax.swing.JCheckBox beanValidation;
+    private javax.swing.JCheckBox csrfCheckbox;
     private javax.swing.JLabel entityLabel;
     private javax.swing.JPanel eventObserversPanel;
     private javax.swing.JCheckBox jCheckBox1;
@@ -518,6 +554,9 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
     private javax.swing.JLabel packageLabel;
     private javax.swing.JPanel packagePanel;
     private javax.swing.JTextField prefixField;
+    private javax.swing.JLayeredPane securityCompPanel;
+    private javax.swing.JLabel securityLabel;
+    private javax.swing.JPanel securityPanel;
     private javax.swing.JTextField suffixField;
     private javax.swing.JPanel suffixPanel;
     private javax.swing.JComboBox viewCombo;
@@ -525,5 +564,6 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
     private javax.swing.JPanel viewPanel;
     private javax.swing.JLabel warningLabel;
     private javax.swing.JPanel warningPanel;
+    private javax.swing.JCheckBox xssCheckbox;
     // End of variables declaration//GEN-END:variables
 }

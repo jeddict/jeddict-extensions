@@ -47,6 +47,9 @@
                                                  </#if>
                                             </#if>
                                         </#list>
+                                <#if CSRFPrevention>
+                                <input type="hidden" name="${mvc.csrf.name}" value="${mvc.csrf.token}"/>
+                                </#if>
                                 <button type="submit" class="btn btn-primary"><i class="fa fa-check fa-fw"></i>Submit</button>
                                 <a href="${r"${appPath}"}/${entityName}/list" class="btn btn-default"><i class="fa fa-close fa-fw"></i>Cancel</a>
                                 </form>

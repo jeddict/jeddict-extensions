@@ -25,9 +25,9 @@ public class MVCConstants {
     public static final String VIEWABLE_UNQF = "Viewable";
     public static final String VIEWABLE = "javax.mvc.Viewable";
     public static final String VIEW = "javax.mvc.annotation.View";
-    public static final String MODELS = "javax.mvc.Models"; //NOI18N
-    public static final String INJECT = "javax.inject.Inject"; //NOI18N
+    public static final String MODELS = "javax.mvc.Models"; 
+    public static final String INJECT = "javax.inject.Inject"; 
     public static final String REDIRECT  = "redirect:";
     public static final String BINDING_RESULT  = "javax.mvc.binding.BindingResult";
-    
+    public static final String CSRF_VALID  = "javax.mvc.annotation.CsrfValid";
 }

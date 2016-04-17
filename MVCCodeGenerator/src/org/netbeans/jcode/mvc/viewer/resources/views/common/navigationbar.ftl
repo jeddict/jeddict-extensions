@@ -1,17 +1,3 @@
- <#--  Copyright [2016] Gaurav Gupta
- 
-  Licensed under the Apache License, Version 2.0 (the "License"); you may not
-  use this file except in compliance with the License. You may obtain a copy of
-  the License at
- 
-  http://www.apache.org/licenses/LICENSE-2.0
- 
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-  License for the specific language governing permissions and limitations under
-  the License.
-  -->
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -24,11 +10,15 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="http://jpamodeler.github.io" target="_blank"><img src="${r"${webPath}"}/static/images/logo.png" /></a>
+        <a class="navbar-brand" href="http://jpamodeler.github.io" target="_blank"><img src="${webPath}/static/images/logo.png" /></a>
     </div>
     <!-- /.navbar-header -->
 
     <ul class="nav navbar-top-links navbar-right">
+        <li><a href="https://twitter.com/JPAModeler" target="_blank"><i class="fa fa-twitter"></i></a></li>
+        <li><a href="https://youtube.com/JPAModeler" target="_blank"><i class="fa fa-youtube"></i></a></li>
+        <li><a href="https://github.com/jGauravGupta/jpamodeler" target="_blank"><i class="fa fa-github"></i></a></li>
+        <li><a href="https://twitter.com/intent/tweet?text=%40JPAModeler%20%3C3" target="_blank"><i class="fa fa-heart"></i></a></li>
         <li class="dropdown">
             <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                 <i class="fa fa-envelope fa-fw"></i>  <i class="fa fa-caret-down"></i>
@@ -63,7 +53,7 @@
         <div class="sidebar-nav navbar-collapse">
             <ul class="nav" id="side-menu">
                 <li>
-                    <a href="${r"${webPath}"}/index.jsp"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                    <a href="${webPath}/index.jsp"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                 </li>
                 <li>
                     <a href="https://blogs.oracle.com/theaquarium/entry/why_another_mvc_framework_in"  target="_blank"><i class="fa fa-question-circle fa-fw"></i>Why Another MVC?</a>
@@ -73,13 +63,13 @@
                     <ul class="nav nav-second-level">
                         <li>
                             <a href="https://www.jcp.org/en/jsr/detail?id=371"  target="_blank">MVC 1.0 - JSR 371</a>
-                            </li>
+                        </li>
                         <li>
                             <a href="https://ozark.java.net/"  target="_blank">MVC RI</a>
-                            </li>
+                        </li>
                         <li>
                             <a href="https://java.net/projects/mvc-spec/pages/Home"  target="_blank">MVC Project</a>
-                            </li>
+                        </li>
                     </ul>
                     <!-- /.nav-second-level -->
                 </li>
