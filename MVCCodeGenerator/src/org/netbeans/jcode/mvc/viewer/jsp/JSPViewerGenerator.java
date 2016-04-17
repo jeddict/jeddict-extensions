@@ -137,6 +137,8 @@ public class JSPViewerGenerator {
         params.put("webPath", jspData.getFolder());
         String applicationPath = mvcData.getRestConfigData()==null?"":mvcData.getRestConfigData().getApplicationPath();
         params.put("applicationPath", applicationPath);
+        params.put("CSRFPrevention", mvcData.isCSRF());
+        params.put("XSSPrevention", mvcData.isXSS());
         
         handler.append(Console.wrap(JSPViewerGenerator.class, "MSG_Generating_Static_Template", FG_RED, BOLD));
         for (Entry<String, String> entry : TEMPLATE_PATTERN_FILES.entrySet()) {

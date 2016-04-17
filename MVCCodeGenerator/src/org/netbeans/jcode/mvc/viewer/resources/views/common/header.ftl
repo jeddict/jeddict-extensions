@@ -26,9 +26,8 @@
 
         <title></title>
         
-        <c:set var="contextPath" value="${r"${pageContext.request.contextPath}"}"/>
-        <c:set var="appPath" value="${r"${contextPath}"}/${applicationPath}"/>
-        <c:set var="webPath" value="${r"${contextPath}"}/${webPath}"/>
+        <c:set var="appPath" value="${r"${mvc.contextPath}"}/${applicationPath}"/>
+        <c:set var="webPath" value="${r"${mvc.contextPath}"}/${webPath}"/>
 
         <!-- Bootstrap Core CSS -->
         <link href="${r"${webPath}"}/static/style/bootstrap.min.css" rel="stylesheet">

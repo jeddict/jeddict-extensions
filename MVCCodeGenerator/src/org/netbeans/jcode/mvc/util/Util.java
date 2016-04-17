@@ -601,7 +601,7 @@ public class Util {
     }
 
     public static void modifyEntity(Project project, SourceGroup sourceGroup, final String entityFqn) {
-
+        System.out.println("wingUtilities.isEventDispatchThread() : " + SwingUtilities.isEventDispatchThread());
 //        try {
             JavaSource javaSource = SourceGroups.getJavaSource(sourceGroup,entityFqn);
              if (javaSource == null) {
@@ -668,23 +668,8 @@ public class Util {
                 working.rewrite(varTree.getModifiers(), maker.addModifiersAnnotation(varTree.getModifiers(), annotationTree));
                 VariableTree newVarTree = (VariableTree) varTree;
                 newVarTree = genUtils.addAnnotation(newVarTree, annotationTree);
-                System.out.println("newVarTree :" + newVarTree);
                 working.rewrite(varTree, newVarTree);
-                System.out.println("working.getTrees().getTree(variableElement) " + working.getTrees().getTree(variableElement));
 
-                    
-            
-//                for (AnnotationMirror annotationMirror : working.getElements().getAllAnnotationMirrors(variableElement)) {
-//                DeclaredType type = annotationMirror.getAnnotationType();
-//                Element annotationElement = type.asElement();
-//                if (annotationElement instanceof TypeElement) {
-//                    Name annotationName = ((TypeElement) annotationElement).getQualifiedName();
-//                    if (annotationName.contentEquals(FORM_PARAM)) {
-//                        return;
-//                    }
-//                }
-//            }
-//                System.out.println("Not F");
             }           
         }
     }

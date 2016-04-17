@@ -19,6 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -58,7 +59,7 @@ public class PreferenceUtils {
         return baos.toByteArray();
     }
 
-    private static Object deserialize(InputStream inputStream) {
+    private static Object deserialize(InputStream inputStream) throws InvalidClassException {
         if (inputStream == null) {
             throw new IllegalArgumentException("The InputStream must not be null");
         }
@@ -70,7 +71,9 @@ public class PreferenceUtils {
 
         } catch (ClassNotFoundException ex) {
             throw new SerializationException(ex);
-        } catch (IOException ex) {
+        } catch (InvalidClassException ex) {
+           throw ex;
+        }  catch (IOException ex) {
             throw new SerializationException(ex);
         } finally {
             try {
@@ -83,7 +86,7 @@ public class PreferenceUtils {
         }
     }
 
-    private static Object deserialize(byte[] objectData) {
+    private static Object deserialize(byte[] objectData) throws InvalidClassException {
         if (objectData == null) {
             throw new IllegalArgumentException("The byte[] must not be null");
         }
@@ -92,11 +95,13 @@ public class PreferenceUtils {
     }
 
     public static <T> T get(Preferences pref,Class<T> _class) {
+        T newInstance = null;
         try {
-            return (T) PreferenceUtils.deserialize(pref.getByteArray(_class.getName(), PreferenceUtils.serialize((Serializable) _class.newInstance())));
-        } catch (InstantiationException ex) {
-            Exceptions.printStackTrace(ex);
-        } catch (IllegalAccessException ex) {
+            newInstance = _class.newInstance();
+            return (T) PreferenceUtils.deserialize(pref.getByteArray(_class.getName(), PreferenceUtils.serialize((Serializable)newInstance)));
+        } catch (InvalidClassException ex) {
+           return newInstance;
+        } catch (InstantiationException | IllegalAccessException ex) {
             Exceptions.printStackTrace(ex);
         }
         return null;
