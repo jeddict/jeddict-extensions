@@ -17,6 +17,9 @@ package org.netbeans.jcode.stack.config.panel;
 
 import java.awt.Panel;
 import java.awt.event.KeyAdapter;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.List;
 import javax.swing.JComboBox;
@@ -97,10 +100,10 @@ public abstract class LayerConfigPanel<T extends LayerConfigData> extends Panel 
             ((JTextComponent) component).getDocument().addDocumentListener(documentListener);
         }
     }
-    
-    protected void fire(){
+
+    protected void fire() {
         changeSupport.fireChange();
     }
 
-
+    
 }

@@ -96,33 +96,5 @@ public class FileUtil {
         }
     }
 
-    public static boolean isValidUri(String uri) {
-        StringTokenizer segments = new StringTokenizer(uri, "/ "); //NOI18N
-        Set<String> uriParts = new HashSet<String>();
-        while (segments.hasMoreTokens()) {
-            String segment = segments.nextToken();
-            if (segment.startsWith("{")) { //NOI18N
-                if (segment.length() > 2 && segment.endsWith("}")) { //NOI18N
-                    String uriPart = segment.substring(1, segment.length() - 1);
-                    if (!Utilities.isJavaIdentifier(uriPart)) {
-                        return false;
-                    }
-                    if (uriParts.contains(uriPart)) {
-                        return false;
-                    } else {
-                        uriParts.add(uriPart);
-                    }
-
-                } else {
-                    return false;
-                }
-            } else {
-                if (segment.contains("{") || segment.contains("}")) { //NOI18N
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
+  
 }

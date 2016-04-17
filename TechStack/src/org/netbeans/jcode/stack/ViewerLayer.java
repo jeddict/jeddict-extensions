@@ -16,8 +16,7 @@
 package org.netbeans.jcode.stack;
 
 import org.netbeans.jcode.stack.config.panel.LayerConfigPanel;
-import static org.netbeans.jcode.stack.ControllerLayer.MVC;
-import org.netbeans.jcode.mvc.viewer.JSPPanel;
+import org.netbeans.jcode.mvc.viewer.jsp.JSPPanel;
 
 /**
  *

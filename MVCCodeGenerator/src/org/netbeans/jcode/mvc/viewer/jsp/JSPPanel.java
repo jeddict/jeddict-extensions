@@ -15,6 +15,8 @@
  */
 package org.netbeans.jcode.mvc.viewer.jsp;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.prefs.Preferences;
 import javax.swing.event.ChangeEvent;
 import org.apache.commons.lang.StringUtils;
@@ -22,6 +24,7 @@ import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.api.project.Sources;
+import static org.netbeans.jcode.core.util.WebUtil.isInternetReachable;
 import org.netbeans.jcode.stack.config.panel.*;
 import org.netbeans.jcode.ui.browse.BrowseFolders;
 import org.netbeans.jcode.util.PreferenceUtils;
@@ -29,6 +32,7 @@ import org.netbeans.modules.web.api.webmodule.WebProjectConstants;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.util.NbBundle;
+import static org.openide.util.NbBundle.getMessage;
 
 /**
  *
@@ -38,7 +42,7 @@ public class JSPPanel extends LayerConfigPanel<JSPData> {
 
     private static final String DEFAULT_FOLDER = "view";
     private Preferences pref;
-    
+
     public JSPPanel() {
         initComponents();
     }
@@ -60,16 +64,18 @@ public class JSPPanel extends LayerConfigPanel<JSPData> {
 
     @Override
     public void read() {
-        this.setConfigData(PreferenceUtils.get(pref,JSPData.class));
+        this.setConfigData(PreferenceUtils.get(pref, JSPData.class));
         JSPData data = this.getConfigData();
-        if(StringUtils.isNotBlank(data.getFolder())){
+        if (StringUtils.isNotBlank(data.getFolder())) {
             setFolder(data.getFolder());
         }
+        cdnCheckBox.setSelected(data.isOnlineTheme());
     }
 
     @Override
     public void store() {
-        this.getConfigData().setFolder(getFolder().trim());
+        this.getConfigData().setFolder(getFolder());
+        this.getConfigData().setOnlineTheme(isOnlineTheme());
         PreferenceUtils.set(pref, this.getConfigData());
     }
 
@@ -82,10 +88,15 @@ public class JSPPanel extends LayerConfigPanel<JSPData> {
         this.project = project;
         addChangeListener(folderTextField);
         setFolder(DEFAULT_FOLDER);
+        checkCDNAvailable();
     }
 
     public String getFolder() {
-        return folderTextField.getText();
+        return folderTextField.getText().trim();
+    }
+
+    public boolean isOnlineTheme() {
+        return cdnCheckBox.isSelected();
     }
 
     private void setFolder(String folder) {
@@ -107,6 +118,9 @@ public class JSPPanel extends LayerConfigPanel<JSPData> {
         browseButton1 = new javax.swing.JButton();
         warningPanel = new javax.swing.JPanel();
         warningLabel = new javax.swing.JLabel();
+        cdnPanel = new javax.swing.JPanel();
+        cdnCheckBox = new javax.swing.JCheckBox();
+        internetNotAvailable = new javax.swing.JLabel();
 
         wrapperPanel.setLayout(new java.awt.BorderLayout(10, 0));
 
@@ -136,13 +150,42 @@ public class JSPPanel extends LayerConfigPanel<JSPData> {
         org.openide.awt.Mnemonics.setLocalizedText(warningLabel, org.openide.util.NbBundle.getMessage(JSPPanel.class, "JSPPanel.warningLabel.text")); // NOI18N
         warningPanel.add(warningLabel, java.awt.BorderLayout.CENTER);
 
+        cdnCheckBox.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(cdnCheckBox, org.openide.util.NbBundle.getMessage(JSPPanel.class, "JSPPanel.cdnCheckBox.text")); // NOI18N
+
+        internetNotAvailable.setForeground(new java.awt.Color(206, 0, 0));
+
+        javax.swing.GroupLayout cdnPanelLayout = new javax.swing.GroupLayout(cdnPanel);
+        cdnPanel.setLayout(cdnPanelLayout);
+        cdnPanelLayout.setHorizontalGroup(
+            cdnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(cdnPanelLayout.createSequentialGroup()
+                .addGap(61, 61, 61)
+                .addComponent(cdnCheckBox)
+                .addGap(18, 18, 18)
+                .addComponent(internetNotAvailable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        cdnPanelLayout.setVerticalGroup(
+            cdnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(cdnPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(cdnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(cdnPanelLayout.createSequentialGroup()
+                        .addComponent(cdnCheckBox)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(internetNotAvailable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(wrapperPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 553, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(cdnPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(wrapperPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 553, Short.MAX_VALUE))
                 .addContainerGap())
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
@@ -155,10 +198,12 @@ public class JSPPanel extends LayerConfigPanel<JSPData> {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(wrapperPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(50, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cdnPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(42, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                    .addContainerGap(57, Short.MAX_VALUE)
+                    .addContainerGap(103, Short.MAX_VALUE)
                     .addComponent(warningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap()))
         );
@@ -172,18 +217,35 @@ public class JSPPanel extends LayerConfigPanel<JSPData> {
         Sources sources = ProjectUtils.getSources(project);
         SourceGroup sourceGroups[] = sources.getSourceGroups(WebProjectConstants.TYPE_DOC_ROOT);
         FileObject fileObject = BrowseFolders.showDialog(new SourceGroup[]{sourceGroups[0]},
-                    org.openide.loaders.DataFolder.class, "");
+                org.openide.loaders.DataFolder.class, "");
         String folderPath = FileUtil.getRelativePath(sourceGroups[0].getRootFolder(), fileObject);
         setFolder(folderPath);
     }//GEN-LAST:event_browseButton1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton browseButton1;
+    private javax.swing.JCheckBox cdnCheckBox;
+    private javax.swing.JPanel cdnPanel;
     private javax.swing.JLabel folderLabel;
     private javax.swing.JTextField folderTextField;
+    private javax.swing.JLabel internetNotAvailable;
     private javax.swing.JLabel warningLabel;
     private javax.swing.JPanel warningPanel;
     private javax.swing.JPanel wrapperPanel;
     // End of variables declaration//GEN-END:variables
 
+    private void checkCDNAvailable() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.submit(() -> {
+            if (isInternetReachable(getMessage(JSPPanel.class, "JSPPanel.internet.check"))) {
+                cdnCheckBox.setSelected(true);
+                cdnCheckBox.setEnabled(true);
+                internetNotAvailable.removeAll();
+            } else {
+                 cdnCheckBox.setSelected(false);
+                 cdnCheckBox.setEnabled(false);
+                 internetNotAvailable.setText(getMessage(JSPPanel.class, "JSPPanel.internetNotAvailable.text"));
+            }
+        });
+    }
 }

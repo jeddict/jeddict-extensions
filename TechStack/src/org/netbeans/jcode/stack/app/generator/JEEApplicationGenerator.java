@@ -18,20 +18,14 @@ package org.netbeans.jcode.stack.app.generator;
 import java.io.IOException;
 import java.util.List;
 import org.netbeans.api.project.Project;
+import org.netbeans.api.project.SourceGroup;
+import org.netbeans.jcode.core.util.PersistenceHelper;
 import org.netbeans.jcode.entity.info.EntityResourceBeanModel;
 import org.netbeans.jcode.entity.info.EntityResourceModelBuilder;
-import org.netbeans.jcode.helper.PersistenceHelper;
 import org.netbeans.jcode.mvc.core.MVCApplicationGeneratorFactory;
 import org.netbeans.jcode.mvc.core.MVCBaseApplicationGenerator;
-import org.netbeans.jcode.rest.util.RestUtils;
-import org.netbeans.jcode.source.SourceGroupSupport;
 import org.netbeans.jcode.stack.config.data.*;
-import org.netbeans.jcode.mvc.controller.MVCData;
 import org.netbeans.jcode.task.progress.ProgressHandler;
-import org.netbeans.modules.j2ee.deployment.devmodules.api.J2eeModule;
-import org.netbeans.modules.websvc.rest.spi.RestSupport;
-import org.openide.filesystems.FileObject;
-import org.openide.filesystems.FileUtil;
 import org.openide.util.Exceptions;
 
 /**
@@ -60,26 +54,10 @@ public class JEEApplicationGenerator {
     public static void generate(ProgressHandler progressHandler, ApplicationConfigData applicationConfigData) {
         try {
             final Project project = applicationConfigData.getProject();
+            final SourceGroup sourceGroup = applicationConfigData.getSourceGroup();
 
-            String restAppPackage = null;
-            String restAppClass = null;
-
-            final RestSupport restSupport = project.getLookup().lookup(RestSupport.class);
-            boolean useJersey = false;//Boolean.TRUE.equals(wizard.getProperty(WizardProperties.USE_JERSEY));
-            if (!useJersey) {
-                RestSupport.RestConfig.IDE.setAppClassName(restAppPackage + "." + restAppClass); //NOI18N
-            }
-            if (restSupport != null) {
-                try {
-                    restSupport.ensureRestDevelopmentReady(useJersey
-                            ? RestSupport.RestConfig.DD : RestSupport.RestConfig.IDE);
-                } catch (IOException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-            }
-
-            FileObject targetFolder = applicationConfigData.getSourceGroup().getRootFolder();
-            FileObject wizardSrcRoot = targetFolder;//(FileObject)wizard.getProperty(         WizardProperties.TARGET_SRC_ROOT);
+//            FileObject targetFolder = sourceGroup.getRootFolder();
+//            FileObject wizardSrcRoot = targetFolder;//(FileObject)wizard.getProperty(         WizardProperties.TARGET_SRC_ROOT);
 
             /*
              *  Visual panel is used from several wizards. One of them
@@ -89,13 +67,13 @@ public class JEEApplicationGenerator {
              *  which is set up by wizard panel. This property should be used
              *  as target source root folder.
              */
-            if (wizardSrcRoot != null) {
-                targetFolder = wizardSrcRoot;
-            }
+//            if (wizardSrcRoot != null) {
+//                targetFolder = wizardSrcRoot;
+//            }
 
-            String targetPackage = SourceGroupSupport.getPackageForFolder(targetFolder);
-            final String resourcePackage = ((MVCData) applicationConfigData.getControllerLayerConfig()).getPackage();
-            String controllerPackage = resourcePackage;//(String) wizard.getProperty(WizardProperties.CONTROLLER_PACKAGE);
+//            String targetPackage = SourceGroupSupport.getPackageForFolder(targetFolder);
+//            final String resourcePackage = ((MVCData) applicationConfigData.getControllerLayerConfig()).getPackage();//TODO NPE
+//            String controllerPackage = resourcePackage;//(String) wizard.getProperty(WizardProperties.CONTROLLER_PACKAGE);
             List<String> entities = applicationConfigData.getEntities();
             final PersistenceHelper.PersistenceUnit pu = (PersistenceHelper.PersistenceUnit) new PersistenceHelper(project).getPersistenceUnit();
 
@@ -107,41 +85,11 @@ public class JEEApplicationGenerator {
              * for now but should be changed later after  review of its usage.
              */
             EntityResourceModelBuilder builder = new EntityResourceModelBuilder(
-                    project, entities);
+                    project, sourceGroup, entities);
             EntityResourceBeanModel model = builder.build();
             final MVCBaseApplicationGenerator generator = MVCApplicationGeneratorFactory.newInstance(project);
-            generator.initialize(model, project, targetFolder, targetPackage,
-                    resourcePackage, controllerPackage, pu);
-//        pHandle.progress(50);
-
-            // create application config class if required
-            final FileObject restAppPack = restAppPackage == null ? null
-                    : FileUtil.createFolder(targetFolder, restAppPackage.replace('.', '/'));
-            final String appClassName = restAppClass;
-            try {
-                if (restAppPack != null && appClassName != null && !useJersey) {
-                    RestUtils.createApplicationConfigClass(restSupport, restAppPack, appClassName);
-                }
-                RestUtils.disableRestServicesChangeListner(project);
-                generator.generate(progressHandler, applicationConfigData);
-//            pHandle.progress(80);
-                restSupport.configure(resourcePackage);
-            } catch (Exception iox) {
-                Exceptions.printStackTrace(iox);
-            } finally {
-                RestUtils.enableRestServicesChangeListner(project);
-            }
-
-            // logging usage of wizard
-            Object[] params = new Object[5];
-            params[0] = "JAX-RS";
-            params[1] = project.getClass().getName();
-            J2eeModule j2eeModule = RestUtils.getJ2eeModule(project);
-            params[2] = j2eeModule == null ? null : j2eeModule.getModuleVersion() + "(WAR)"; //NOI18N
-            params[3] = "REST FROM ENTITY"; //NOI18N
-//        pHandle.finish();
-//            return Collections.<DataObject>singleton(DataFolder.findFolder(targetFolder));
-
+            generator.initialize(model, project, pu);
+            generator.generate(progressHandler, applicationConfigData);
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
         }

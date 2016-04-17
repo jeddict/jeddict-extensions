@@ -12,6 +12,17 @@
   License for the specific language governing permissions and limitations under
   the License.
   -->
+<#if online>
+<!-- Bootstrap Core JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<!-- Metis Menu Plugin JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/metisMenu/1.1.3/metisMenu.min.js"></script>
+
+<!-- DataTables JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.10/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.10/js/dataTables.bootstrap.min.js"></script>
+<#else>
 <!-- Bootstrap Core JavaScript -->
 <script src="${r"${webPath}"}/static/script/bootstrap.min.js"></script>
 
@@ -21,18 +32,9 @@
 <!-- DataTables JavaScript -->
 <script src="${r"${webPath}"}/static/script/jquery.dataTables.min.js"></script>
 <script src="${r"${webPath}"}/static/script/dataTables.bootstrap.min.js"></script>
-
+</#if>
 <!-- Custom Theme JavaScript -->
 <script src="${r"${webPath}"}/static/script/theme.js"></script>
-
-<!-- Page-Level Demo Scripts - Tables - Use for reference -->
-<script>
-    $(document).ready(function () {
-        $('#dataTables-example').DataTable({
-            responsive: true
-        });
-    });
-</script>
 
 </body>
 

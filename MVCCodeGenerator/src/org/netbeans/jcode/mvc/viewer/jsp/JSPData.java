@@ -25,6 +25,7 @@ public class JSPData extends LayerConfigData {
     
     public static final String DEFAULT_FOLDER = "view";
     private String folder;
+    private boolean onlineTheme = true;
 
     /**
      * @return the folder
@@ -38,5 +39,19 @@ public class JSPData extends LayerConfigData {
      */
     public void setFolder(String folder) {
         this.folder = folder;
+    }
+
+    /**
+     * @return the onlineTheme
+     */
+    public boolean isOnlineTheme() {
+        return onlineTheme;
+    }
+
+    /**
+     * @param onlineTheme the onlineTheme to set
+     */
+    public void setOnlineTheme(boolean onlineTheme) {
+        this.onlineTheme = onlineTheme;
     }
 }

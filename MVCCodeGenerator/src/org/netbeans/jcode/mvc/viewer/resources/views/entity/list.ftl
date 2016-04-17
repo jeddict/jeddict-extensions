@@ -37,7 +37,7 @@
                     <!-- /.panel-heading -->
                 <div class="panel-body">
                     <div class="dataTable_wrapper">
-                        <table class="table table-striped table-bordered table-hover" id="dataTables-example">
+                        <table class="table table-striped table-bordered table-hover" id="${entityConstant}_TABLE">
                             <thead>
                                 <tr>
                                              <#list entityDescriptors as entityDescriptor>
@@ -138,6 +138,13 @@
        <!-- /.row -->
     </div>
 </div>
+<script>
+    $(document).ready(function () {
+        $('${entityConstant}_TABLE').DataTable({
+            responsive: true
+        });
+    });
+</script>
 
 <%--end content--%>
 <%@ include file="../common/footer.jspf"%>

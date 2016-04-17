@@ -22,5 +22,4 @@ import java.io.Serializable;
  * @author Gaurav Gupta
  */
 public class LayerConfigData implements Serializable {
-
 }

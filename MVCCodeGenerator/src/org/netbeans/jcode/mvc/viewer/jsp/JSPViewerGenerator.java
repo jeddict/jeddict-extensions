@@ -57,7 +57,7 @@ public class JSPViewerGenerator {
     private static final String CRUD_HOME_PATH = "views/"; //NOI18N
     private static final String COMMON_TEMPLATE_PATH = "views/common/";
     private static final String CRUD_PATH = "views/entity/"; //NOI18N
-            
+
     private final Map<Operation, String> GENERATED_CRUD_FILES = new HashMap<>();
     private final Map<String, String> TEMPLATE_PATTERN_FILES = new HashMap<>();
     private final Map<Operation, String> CRUD_FILES = new HashMap<>();
@@ -65,20 +65,20 @@ public class JSPViewerGenerator {
     private static final String TEMPALTE_EXT = ".ftl"; //NOI18N
     private static final String JSP_EXT = ".jsp"; //NOI18N
     private static final String JSPF_EXT = ".jspf"; //NOI18N
-    
+
     private static final String DEFAULT_GENERATED_CRUD_PATH = "views/"; //NOI18N
     public static final String TARGET_COMMON_TEMPLATE_PATH = "common/";
-    
+
     private JSPViewerGenerator() {
         final String HEADER = "header"; //NOI18N
         final String NAVIGATIONBAR = "navigationbar"; //NOI18N
         final String ERROR = "error"; //NOI18N
         final String FOOTER = "footer"; //NOI18N
 
-        TEMPLATE_PATTERN_FILES.put(HEADER + TEMPALTE_EXT, TARGET_COMMON_TEMPLATE_PATH + HEADER+ JSPF_EXT);
-        TEMPLATE_PATTERN_FILES.put(NAVIGATIONBAR + TEMPALTE_EXT, TARGET_COMMON_TEMPLATE_PATH + NAVIGATIONBAR+ JSPF_EXT);
-        TEMPLATE_PATTERN_FILES.put(ERROR + TEMPALTE_EXT, TARGET_COMMON_TEMPLATE_PATH + ERROR+ JSP_EXT);
-        TEMPLATE_PATTERN_FILES.put(FOOTER + TEMPALTE_EXT, TARGET_COMMON_TEMPLATE_PATH + FOOTER+ JSPF_EXT);
+        TEMPLATE_PATTERN_FILES.put(HEADER + TEMPALTE_EXT, TARGET_COMMON_TEMPLATE_PATH + HEADER + JSPF_EXT);
+        TEMPLATE_PATTERN_FILES.put(NAVIGATIONBAR + TEMPALTE_EXT, TARGET_COMMON_TEMPLATE_PATH + NAVIGATIONBAR + JSPF_EXT);
+        TEMPLATE_PATTERN_FILES.put(ERROR + TEMPALTE_EXT, TARGET_COMMON_TEMPLATE_PATH + ERROR + JSP_EXT);
+        TEMPLATE_PATTERN_FILES.put(FOOTER + TEMPALTE_EXT, TARGET_COMMON_TEMPLATE_PATH + FOOTER + JSPF_EXT);
 
         final String CREATE = "create.ftl"; //NOI18N
         final String UPDATE = "update.ftl"; //NOI18N
@@ -106,21 +106,44 @@ public class JSPViewerGenerator {
         return instance;
     }
 
-    public void generateStaticResources(Project project,MVCData mvcData, JSPData jspData, ProgressHandler handler) throws IOException {
+    public void generateStaticResources(Project project, MVCData mvcData, JSPData jspData, ProgressHandler handler) throws IOException {
         Sources sources = ProjectUtils.getSources(project);
         SourceGroup sourceGroups[] = sources.getSourceGroups(WebProjectConstants.TYPE_DOC_ROOT);
         FileObject webRoot = sourceGroups[0].getRootFolder();
-        
-        try (ZipInputStream inputStream = new ZipInputStream(JSPViewerGenerator.class.getClassLoader().getResourceAsStream(TEMPLATE_PATH + "static-resources.zip"))) {
-            ZipEntry entry = null;
-            while ((entry = inputStream.getNextEntry()) != null) {
+        if (!jspData.isOnlineTheme()) {
+            copyStaticResource("lib-resources", webRoot, jspData.getFolder(), handler);
+        }
+        copyStaticResource("theme-resources", webRoot, jspData.getFolder(), handler);
 
+        Map<String, Object> params = new HashMap<>();
+        params.put("webPath", jspData.getFolder());
+        String applicationPath = mvcData.getRestConfigData() == null ? "" : mvcData.getRestConfigData().getApplicationPath();
+        params.put("applicationPath", applicationPath);
+        params.put("CSRFPrevention", mvcData.isCSRF());
+        params.put("XSSPrevention", mvcData.isXSS());
+        params.put("online", jspData.isOnlineTheme());
+
+        handler.append(Console.wrap(JSPViewerGenerator.class, "MSG_Generating_Static_Template", FG_RED, BOLD));
+        for (Entry<String, String> entry : TEMPLATE_PATTERN_FILES.entrySet()) {
+            String targetPath = jspData.getFolder() + File.separator + entry.getValue();
+            if (webRoot.getFileObject(targetPath) == null) {
+                expandSingleJSPTemplate(TEMPLATE_PATH + COMMON_TEMPLATE_PATH + entry.getKey(),
+                        targetPath, webRoot, params, handler);
+            }
+        }
+    }
+
+    private void copyStaticResource(String inputRes, FileObject webRoot, String folder, ProgressHandler handler) throws IOException {
+        InputStream stream = JSPViewerGenerator.class.getClassLoader().getResourceAsStream(TEMPLATE_PATH + inputRes + ".zip");
+        try (ZipInputStream inputStream = new ZipInputStream(stream)) {
+            ZipEntry entry;
+            while ((entry = inputStream.getNextEntry()) != null) {
                 if (entry.getName().lastIndexOf('.') == -1) { //skip if not file
                     continue;
                 }
                 handler.progress(entry.getName());
 
-                FileObject target = FileUtil.createData(webRoot, jspData.getFolder() + File.separator + entry.getName());
+                FileObject target = FileUtil.createData(webRoot, folder + File.separator + entry.getName());
                 FileLock lock = target.lock();
                 try (OutputStream outputStream = target.getOutputStream(lock)) {
                     for (int c = inputStream.read(); c != -1; c = inputStream.read()) {
@@ -130,22 +153,6 @@ public class JSPViewerGenerator {
                 } finally {
                     lock.releaseLock();
                 }
-            }
-        }
-        
-        Map<String, Object> params = new HashMap<>();
-        params.put("webPath", jspData.getFolder());
-        String applicationPath = mvcData.getRestConfigData()==null?"":mvcData.getRestConfigData().getApplicationPath();
-        params.put("applicationPath", applicationPath);
-        params.put("CSRFPrevention", mvcData.isCSRF());
-        params.put("XSSPrevention", mvcData.isXSS());
-        
-        handler.append(Console.wrap(JSPViewerGenerator.class, "MSG_Generating_Static_Template", FG_RED, BOLD));
-        for (Entry<String, String> entry : TEMPLATE_PATTERN_FILES.entrySet()) {
-            String targetPath = jspData.getFolder() + File.separator + entry.getValue();
-            if (webRoot.getFileObject(targetPath) == null) {
-                expandSingleJSPTemplate(TEMPLATE_PATH + COMMON_TEMPLATE_PATH + entry.getKey() ,
-                       targetPath, webRoot, params, handler);
             }
         }
     }
@@ -162,27 +169,24 @@ public class JSPViewerGenerator {
         } else {
             jspEntityIncludeFolder = "/" + DEFAULT_GENERATED_CRUD_PATH;
         }
-        
 
-        Map<String, Object> params = FromEntityBase.createFieldParameters(webRoot, entityClass, entityClass, null, false, true);        
+        Map<String, Object> params = FromEntityBase.createFieldParameters(webRoot, entityClass, entityClass, null, false, true);
         params.put("CSRFPrevention", mvcData.isCSRF());
         params.put("XSSPrevention", mvcData.isXSS());
-        
+
         for (Entry<Operation, String> entry : CRUD_FILES.entrySet()) {
             expandSingleJSPTemplate(TEMPLATE_PATH + CRUD_PATH + entry.getValue(),
-                    getJSPFileName(entityClass,  jspEntityIncludeFolder,GENERATED_CRUD_FILES.get(entry.getKey())) + JSP_EXT,
-                     webRoot, params, handler);
+                    getJSPFileName(entityClass, jspEntityIncludeFolder, GENERATED_CRUD_FILES.get(entry.getKey())) + JSP_EXT,
+                    webRoot, params, handler);
         }
-        
-        
     }
 
     public void generateHome(final Project project,
-            final Set<String> entities, final String crudPath,ProgressHandler handler) throws IOException {
+            final Set<String> entities, MVCData mvcData, JSPData jspData, ProgressHandler handler) throws IOException {
         Sources srcs = ProjectUtils.getSources(project);
         SourceGroup sgWeb[] = srcs.getSourceGroups(WebProjectConstants.TYPE_DOC_ROOT);
         FileObject webRoot = sgWeb[0].getRootFolder();
-        
+        String crudPath = jspData.getFolder();
         String jspEntityIncludeFolder;
         if (StringUtils.isNotBlank(crudPath)) {
             jspEntityIncludeFolder = "/" + crudPath;
@@ -197,15 +201,16 @@ public class JSPViewerGenerator {
             entityVarMapping.put(StringHelper.firstLower(entityName), entityName);// "person", "Person"
         });
         params.put("entities", entityVarMapping);
+        params.put("online", jspData.isOnlineTheme());
 
-        expandSingleJSPTemplate(TEMPLATE_PATH + CRUD_HOME_PATH + "index.ftl", 
-                getJSPFileName(null,  jspEntityIncludeFolder,"index") + JSP_EXT,
+        expandSingleJSPTemplate(TEMPLATE_PATH + CRUD_HOME_PATH + "index.ftl",
+                getJSPFileName(null, jspEntityIncludeFolder, "index") + JSP_EXT,
                 webRoot, params, handler);
 
     }
 
-    private static void expandSingleJSPTemplate(String inputTemplatePath,String outputFilePath,
-             FileObject webRoot, Map<String, Object> params, ProgressHandler handler) throws IOException {
+    private static void expandSingleJSPTemplate(String inputTemplatePath, String outputFilePath,
+            FileObject webRoot, Map<String, Object> params, ProgressHandler handler) throws IOException {
 
         InputStream contentStream = org.netbeans.jcode.core.util.FileUtil.loadResource(inputTemplatePath);
 

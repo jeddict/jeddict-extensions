@@ -521,7 +521,7 @@ public class Util {
         JSPViewerGenerator viewerGenerator = JSPViewerGenerator.getInstance();
         handler.append(Console.wrap(JSPViewerGenerator.class, "MSG_Copying_Static_Files", FG_RED, BOLD, UNDERLINE));
         viewerGenerator.generateStaticResources(project, mvcData, jspData, handler);
-        viewerGenerator.generateHome(project, selectedEntityNames.keySet(), jspData.getFolder(), handler);
+        viewerGenerator.generateHome(project, selectedEntityNames.keySet(), mvcData, jspData, handler);
 
         handler.progress(Console.wrap(NbBundle.getMessage(ServletUtil.class, "MSG_Progress_WelcomeFile", jspData.getFolder()), FG_MAGENTA, BOLD, UNDERLINE));
         ServletUtil.setWelcomeFiles(project, jspData.getFolder() + File.separator + "index.jsp");

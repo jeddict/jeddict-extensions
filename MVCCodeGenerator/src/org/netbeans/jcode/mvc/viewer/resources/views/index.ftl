@@ -18,10 +18,14 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ include file="common/header.jspf"%>
 
-<!-- Timeline CSS -->
-<link href="${r"${webPath}"}/static/style/timeline.css" rel="stylesheet">
+
+<#if online>
+<!-- Morris Charts CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.0/morris.css" rel="stylesheet">
+<#else>
 <!-- Morris Charts CSS -->
 <link href="${r"${webPath}"}/static/style/morris.css" rel="stylesheet">
+</#if>
 
 
 <div id="page-wrapper">
@@ -74,10 +78,17 @@
 </div>
 </div>
 
+
+<#if online>
+<!-- Morris Charts JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.4/raphael-min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.0/morris.min.js"></script>
+<script src="${r"${webPath}"}/static/script/morris-data.js"></script>
+<#else>
 <!-- Morris Charts JavaScript -->
 <script src="${r"${webPath}"}/static/script/raphael-min.js"></script>
 <script src="${r"${webPath}"}/static/script/morris.min.js"></script>
 <script src="${r"${webPath}"}/static/script/morris-data.js"></script>
-
+</#if>
 
 <%@ include file="common/footer.jspf"%>

@@ -10,7 +10,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="http://jpamodeler.github.io" target="_blank"><img src="${webPath}/static/images/logo.png" /></a>
+        <a class="navbar-brand" href="http://jpamodeler.github.io" target="_blank"><img src="${r"${webPath}"}/static/images/logo.png" /></a>
     </div>
     <!-- /.navbar-header -->
 
@@ -27,7 +27,18 @@
                 <li>
                     <a href="http://jpamodeler.github.io/tutorial/page.html?l=QuickStart" target="_blank">
                         <div>
-                            <strong>Quick Start</strong>
+                            <strong>MVC Generator Quick Start</strong>
+                            <span class="pull-right text-muted">
+                                <em><i class="fa fa-info-circle fa-fw"></i></em>
+                            </span>
+                        </div>
+                        <div>MVC Generator makes it easy to develop Java EE 8 Enterprise applications. The best thing, in minutes you get an application ready to deploy...</div>
+                    </a>
+                </li>
+                <li>
+                    <a href="http://jpamodeler.github.io/tutorial/page.html?l=QuickStart" target="_blank">
+                        <div>
+                            <strong>JPA Modeler Quick Start</strong>
                             <span class="pull-right text-muted">
                                 <em><i class="fa fa-info-circle fa-fw"></i></em>
                             </span>
@@ -53,7 +64,7 @@
         <div class="sidebar-nav navbar-collapse">
             <ul class="nav" id="side-menu">
                 <li>
-                    <a href="${webPath}/index.jsp"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                    <a href="${r"${webPath}"}/index.jsp"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                 </li>
                 <li>
                     <a href="https://blogs.oracle.com/theaquarium/entry/why_another_mvc_framework_in"  target="_blank"><i class="fa fa-question-circle fa-fw"></i>Why Another MVC?</a>
