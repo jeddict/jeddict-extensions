@@ -38,6 +38,8 @@ public class MVCData extends LayerConfigData {
     private List<ControllerEventType> eventTypes;
     private boolean csrf;
     private boolean xss;
+    private boolean hybridClass = true;
+    
 
     /**
      * @return the _package
@@ -165,6 +167,20 @@ public class MVCData extends LayerConfigData {
      */
     public void setXSS(boolean xss) {
         this.xss = xss;
+    }
+
+    /**
+     * @return the hybridClass
+     */
+    public boolean isHybridClass() {
+        return hybridClass;
+    }
+
+    /**
+     * @param hybridClass the hybridClass to set
+     */
+    public void setHybridClass(boolean hybridClass) {
+        this.hybridClass = hybridClass;
     }
 
 }

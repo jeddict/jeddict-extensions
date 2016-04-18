@@ -214,10 +214,12 @@ public class MVCControllerGenerator {
 
                     }
 
-                    // add @Controller annotation
-                    modifiersTree
-                            = maker.addModifiersAnnotation(modifiersTree,
-                                    genUtils.createAnnotation(MVCConstants.CONTROLLER));
+                    if (mvcData.isHybridClass()) {
+                        // add @Controller annotation
+                        modifiersTree
+                                = maker.addModifiersAnnotation(modifiersTree,
+                                        genUtils.createAnnotation(MVCConstants.CONTROLLER));
+                    }
 
                     // create arguments list
                     List<VariableTree> vars = new ArrayList<>();
@@ -321,10 +323,22 @@ public class MVCControllerGenerator {
 
                 }
 
-                ModifiersTree modifiersTree = maker.addModifiersAnnotation(classTree.getModifiers(),
+                ModifiersTree modifiersTree = classTree.getModifiers();
+                
+                 if (!mvcData.isHybridClass()) {
+                        // add @Controller annotation
+                        modifiersTree
+                                = maker.addModifiersAnnotation(modifiersTree,
+                                        genUtils.createAnnotation(MVCConstants.CONTROLLER));
+                    }
+                
+                 modifiersTree = maker.addModifiersAnnotation(modifiersTree,
                         genUtils.createAnnotation(RestConstants.PATH,
                                 Collections.<ExpressionTree>singletonList(maker.Literal(variableName))
                         ));
+                
+                   
+
 
                 ClassTree newClassTree = maker.Class(
                         modifiersTree,
