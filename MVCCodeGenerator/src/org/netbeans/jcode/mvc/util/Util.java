@@ -524,7 +524,7 @@ public class Util {
         viewerGenerator.generateHome(project, selectedEntityNames.keySet(), mvcData, jspData, handler);
 
         handler.progress(Console.wrap(NbBundle.getMessage(ServletUtil.class, "MSG_Progress_WelcomeFile", jspData.getFolder()), FG_MAGENTA, BOLD, UNDERLINE));
-        ServletUtil.setWelcomeFiles(project, jspData.getFolder() + File.separator + "index.jsp");
+        ServletUtil.setWelcomeFiles(project, jspData.getFolder() + "/index.jsp");
 
         handler.progress(Console.wrap(JSPViewerGenerator.class, "MSG_Generating_CRUD_Template", FG_RED, BOLD, UNDERLINE));
         for (Entry<String, String> entry : selectedEntityNames.entrySet()) {

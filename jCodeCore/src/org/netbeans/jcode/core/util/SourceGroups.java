@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
 import org.netbeans.api.java.project.JavaProjectConstants;
 import org.netbeans.api.java.queries.UnitTestForSourceQuery;
 import org.netbeans.api.java.source.JavaSource;
@@ -254,7 +255,7 @@ public final class SourceGroups {
     }
 
     public static JavaSource getJavaSource(SourceGroup sourceGroup , String fqClassName){
-         FileObject sourceClass = sourceGroup.getRootFolder().getFileObject(fqClassName.replaceAll("\\.", File.separator)+ ".java");
+         FileObject sourceClass = sourceGroup.getRootFolder().getFileObject(fqClassName.replaceAll("\\.", Matcher.quoteReplacement(File.separator))+ ".java");
          return JavaSource.forFileObject(sourceClass);
     }
     

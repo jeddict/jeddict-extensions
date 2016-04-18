@@ -22,10 +22,11 @@ import org.netbeans.modules.websvc.rest.model.api.RestConstants;
 
 public class Constants {
 
+    public static final String WEB_INF = "WEB-INF";        // NOI18N
+    public static final String META_INF = "META-INF";        // NOI18N
     public static final String LOGGER = "java.util.logging.Logger";
     public static final String POST_CONSTRUCT = "javax.annotation.PostConstruct";
-    
-    
+
     public static final String NAMED = "javax.inject.Named"; //NOI18N
     public static final String RESOURCE_SUFFIX = "Resource"; // NOI18N
 
@@ -42,8 +43,6 @@ public class Constants {
     public static final String URI_TYPE = "java.net.URI";       //NOI18N
 
     public static final String PERSISTENCE_PACKAGE = "javax.persistence.";      //NOI18N
-
-
 
     public static final String QUERY_TYPE = PERSISTENCE_PACKAGE + "Query";       //NOI18N
 
@@ -90,7 +89,6 @@ public class Constants {
     public static final String HASH_SET_TYPE = "java.util.HashSet"; //NOI18N
 
     public static final String REQUEST_SCOPE = "javax.enterprise.context.RequestScoped"; //NOI18N
-
 
     static final Modifier[] PUBLIC = new Modifier[]{Modifier.PUBLIC};
 

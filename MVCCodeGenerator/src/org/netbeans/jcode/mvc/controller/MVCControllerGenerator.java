@@ -49,6 +49,7 @@ import static org.netbeans.jcode.beanvalidation.BeanVaildationConstants.EXECUTAB
 import static org.netbeans.jcode.beanvalidation.BeanVaildationConstants.VALID;
 import static org.netbeans.jcode.beanvalidation.BeanVaildationConstants.VALIDATE_ON_EXECUTION;
 import org.netbeans.jcode.cdi.logger.LoggerProducerGenerator;
+import org.netbeans.jcode.cdi.util.CDIUtil;
 import org.netbeans.jcode.core.util.StringHelper;
 import org.netbeans.jcode.ejb.facade.SessionBeanData;
 import org.netbeans.jcode.mvc.MVCConstants;
@@ -368,6 +369,8 @@ public class MVCControllerGenerator {
             LoggerProducerGenerator.generate(utilFolder);
             ControllerEventGenerator.generate(mvcData.getEventType(), utilFolder);
         }
+        
+        CDIUtil.createDD(project);
 
         generateApplicationConfig(project, sourceGroup,
                 mvcData, handler);

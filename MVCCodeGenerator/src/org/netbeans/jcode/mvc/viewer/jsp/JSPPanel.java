@@ -88,7 +88,7 @@ public class JSPPanel extends LayerConfigPanel<JSPData> {
         this.project = project;
         addChangeListener(folderTextField);
         setFolder(DEFAULT_FOLDER);
-        checkCDNAvailable();
+//        checkCDNAvailable();
     }
 
     public String getFolder() {
@@ -234,16 +234,14 @@ public class JSPPanel extends LayerConfigPanel<JSPData> {
     private javax.swing.JPanel wrapperPanel;
     // End of variables declaration//GEN-END:variables
 
-    private void checkCDNAvailable() {
+    private void checkCDNAvailable() {//fix in next release
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(() -> {
-            if (isInternetReachable(getMessage(JSPPanel.class, "JSPPanel.internet.check"))) {
+            if (!isInternetReachable(getMessage(JSPPanel.class, "JSPPanel.internet.check"))) {
                 cdnCheckBox.setSelected(true);
-                cdnCheckBox.setEnabled(true);
-                internetNotAvailable.removeAll();
+                internetNotAvailable.setText("");
             } else {
                  cdnCheckBox.setSelected(false);
-                 cdnCheckBox.setEnabled(false);
                  internetNotAvailable.setText(getMessage(JSPPanel.class, "JSPPanel.internetNotAvailable.text"));
             }
         });
