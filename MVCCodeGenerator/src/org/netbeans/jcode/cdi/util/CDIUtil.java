@@ -81,7 +81,7 @@ public class CDIUtil {
         if (template == null)
             return null;
 
-       return FileUtil.copyFile(RESOURCE_FOLDER + template, dir, name+".xml");
+       return FileUtil.copyFile(CDIUtil.class.getResourceAsStream(RESOURCE_FOLDER + template), dir, name+".xml");
     }
 
 }

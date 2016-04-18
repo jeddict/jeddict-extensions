@@ -17,17 +17,13 @@ package org.netbeans.jcode.core.util;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.logging.Logger;
-import org.netbeans.modules.j2ee.common.dd.DDHelper;
+import java.util.stream.Stream;
 import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
@@ -35,7 +31,6 @@ import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
-import org.openide.util.Utilities;
 
 /**
  *
@@ -108,8 +103,8 @@ public class FileUtil {
         return org.openide.filesystems.FileUtil.createFolder(folder,name);
     }
             
-    public static FileObject copyFile(String fromFile, FileObject toDir, String toFile)  throws IOException{
-        MakeFileCopy action = new MakeFileCopy(fromFile, toDir, toFile);
+    public static FileObject copyFile(InputStream fromStream, FileObject toDir, String toFile)  throws IOException{
+        MakeFileCopy action = new MakeFileCopy(fromStream, toDir, toFile);
         org.openide.filesystems.FileUtil.runAtomicAction(action);
         if (action.getException() != null)
             throw action.getException();
@@ -117,14 +112,14 @@ public class FileUtil {
             return action.getResult();
     }
     private static class MakeFileCopy implements Runnable {
-        private String fromFile;
+        private InputStream fromStream;
         private FileObject toDir;
         private String toFile;
         private IOException exception;
         private FileObject result;
 
-       MakeFileCopy(String fromFile, FileObject toDir, String toFile) {
-            this.fromFile = fromFile;
+       MakeFileCopy(InputStream fromStream, FileObject toDir, String toFile) {
+            this.fromStream = fromStream;
             this.toDir = toDir;
             this.toFile = toFile;
         }
@@ -139,12 +134,11 @@ public class FileUtil {
 
         public void run() {
             try {
-                // PENDING : should be easier to define in layer and copy related FileObject (doesn't require systemClassLoader)
-                if (toDir.getFileObject(toFile) != null) {
-                    return; // #229533, #189768: The file already exists in the file system --> Simply do nothing
-                }
+//                if (toDir.getFileObject(toFile) != null) {
+//                    return; 
+//                }
                 FileObject xml = org.openide.filesystems.FileUtil.createData(toDir, toFile);
-                String content = readResource(DDHelper.class.getResourceAsStream(fromFile));
+                String content = readResource(fromStream);
                 if (content != null) {
                     FileLock lock = xml.lock();
                     BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(xml.getOutputStream(lock)));
