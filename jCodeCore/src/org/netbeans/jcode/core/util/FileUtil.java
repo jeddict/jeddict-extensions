@@ -15,17 +15,31 @@
  */
 package org.netbeans.jcode.core.util;
 
+import com.sun.org.apache.xml.internal.utils.PrefixResolver;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
+import javax.script.Bindings;
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import org.netbeans.api.queries.FileEncodingQuery;
+import static org.netbeans.jcode.core.util.JavaSourceHelper.reformat;
+import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
+import org.openide.loaders.DataObject;
 import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
@@ -98,13 +112,90 @@ public class FileUtil {
             return null;
         }
     }
+
     
+    public static void expandTemplate(String inputTemplatePath,  FileObject toDir, String toFile, Map<String, Object> params) throws IOException {
+
+        InputStream contentStream = org.netbeans.jcode.core.util.FileUtil.loadResource(inputTemplatePath);
+
+        FileObject outputFile = toDir.getFileObject(toFile);
+        if (outputFile == null) {
+            outputFile = org.openide.filesystems.FileUtil.createData(toDir, toFile);
+        }
+        expandTemplate(contentStream, params, outputFile);
+    }
+    
+     public static void expandTemplate(String inputTemplatePath,  FileObject toFile, Map<String, Object> params) throws IOException {
+        InputStream contentStream = org.netbeans.jcode.core.util.FileUtil.loadResource(inputTemplatePath);
+        expandTemplate(contentStream, params, toFile);
+    }
+    
+    private static void expandTemplate(InputStream template, Map<String, Object> values, FileObject target) throws IOException {
+        Charset targetEncoding = FileEncodingQuery.getEncoding(target);
+        FileLock lock = target.lock();
+        Writer w = new OutputStreamWriter(target.getOutputStream(lock), targetEncoding);
+        try {
+            expandTemplate(template, values, targetEncoding, w);
+        } finally {
+            w.close();
+            lock.releaseLock();
+        }
+        DataObject dob = DataObject.find(target);
+        if (dob != null) {
+            reformat(dob);
+        }
+    }
+
+    private static void expandTemplate(InputStream template, Map<String, Object> values, Charset targetEncoding, Writer w) throws IOException {
+//        Charset sourceEnc = FileEncodingQuery.getEncoding(template);
+        ScriptEngine eng = getScriptEngine();
+        Bindings bind = eng.getContext().getBindings(ScriptContext.ENGINE_SCOPE);
+        bind.putAll(values);
+        bind.put(ENCODING_PROPERTY_NAME, targetEncoding.name());
+
+        Reader is = null;
+        try {
+            eng.getContext().setWriter(w);
+            is = new InputStreamReader(template);
+            eng.eval(is);
+        } catch (ScriptException ex) {
+            throw new IOException(ex);
+        } finally {
+            if (is != null) {
+                is.close();
+            }
+        }
+    }
+    private static final String ENCODING_PROPERTY_NAME = "encoding"; //NOI18N
+    private static ScriptEngineManager manager;
+
+    /**
+     * Used core method for getting {@code ScriptEngine} from {@code
+     * org.netbeans.modules.templates.ScriptingCreateFromTemplateHandler}.
+     */
+    private static ScriptEngine getScriptEngine() {
+        if (manager == null) {
+            synchronized (FileUtil.class) {
+                if (manager == null) {
+                    ClassLoader loader = Lookup.getDefault().lookup(ClassLoader.class);
+                    try {
+                        loader.loadClass(PrefixResolver.class.getName());
+                    } catch (ClassNotFoundException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                    manager = new ScriptEngineManager(loader != null ? loader : Thread.currentThread().getContextClassLoader());
+                }
+            }
+        }
+        return manager.getEngineByName((String) "freemarker");
+    }
+
     public static FileObject createFolder(FileObject folder, String name) throws IOException {
         return org.openide.filesystems.FileUtil.createFolder(folder,name);
     }
             
-    public static FileObject copyFile(InputStream fromStream, FileObject toDir, String toFile)  throws IOException{
-        MakeFileCopy action = new MakeFileCopy(fromStream, toDir, toFile);
+    public static FileObject copyFile(String fromFile, FileObject toDir, String toFile)  throws IOException{
+        MakeFileCopy action = new MakeFileCopy(fromFile, toDir, toFile);
         org.openide.filesystems.FileUtil.runAtomicAction(action);
         if (action.getException() != null)
             throw action.getException();
@@ -112,14 +203,14 @@ public class FileUtil {
             return action.getResult();
     }
     private static class MakeFileCopy implements Runnable {
-        private InputStream fromStream;
+        private String fromFile;
         private FileObject toDir;
         private String toFile;
         private IOException exception;
         private FileObject result;
 
-       MakeFileCopy(InputStream fromStream, FileObject toDir, String toFile) {
-            this.fromStream = fromStream;
+       MakeFileCopy(String fromFile, FileObject toDir, String toFile) {
+            this.fromFile = fromFile;
             this.toDir = toDir;
             this.toFile = toFile;
         }
@@ -138,7 +229,7 @@ public class FileUtil {
 //                    return; 
 //                }
                 FileObject xml = org.openide.filesystems.FileUtil.createData(toDir, toFile);
-                String content = readResource(fromStream);
+                String content = readResource(loadResource(fromFile));
                 if (content != null) {
                     FileLock lock = xml.lock();
                     BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(xml.getOutputStream(lock)));

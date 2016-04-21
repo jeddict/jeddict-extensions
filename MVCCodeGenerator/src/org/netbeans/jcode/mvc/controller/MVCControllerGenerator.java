@@ -80,6 +80,7 @@ import org.netbeans.jcode.core.util.SourceGroupSupport;
 import static org.netbeans.jcode.mvc.MVCConstants.CSRF_VALID;
 import static org.netbeans.jcode.mvc.controller.ValidationUtilGenerator.VALIDATION_UTIL_CLASS;
 import org.netbeans.jcode.mvc.controller.event.ControllerEventGenerator;
+import org.netbeans.jcode.rest.converter.ParamConvertorGenerator;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.modules.websvc.rest.spi.RestSupport;
 import org.openide.filesystems.FileObject;
@@ -383,6 +384,8 @@ public class MVCControllerGenerator {
             LoggerProducerGenerator.generate(utilFolder);
             ControllerEventGenerator.generate(mvcData.getEventType(), utilFolder);
         }
+        
+        ParamConvertorGenerator.generate(project, sourceGroup, utilFolder, handler);
         
         CDIUtil.createDD(project);
 

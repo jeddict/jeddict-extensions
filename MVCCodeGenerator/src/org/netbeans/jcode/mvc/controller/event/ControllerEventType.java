@@ -56,24 +56,10 @@ public enum ControllerEventType {
     }
 
     /**
-     * @param className the className to set
-     */
-    public void setClassName(String className) {
-        this.className = className;
-    }
-
-    /**
      * @return the methodName
      */
     public String getMethodName() {
         return methodName;
-    }
-
-    /**
-     * @param methodName the methodName to set
-     */
-    public void setMethodName(String methodName) {
-        this.methodName = methodName;
     }
 
     /**
@@ -83,12 +69,6 @@ public enum ControllerEventType {
         return body;
     }
 
-    /**
-     * @param body the body to set
-     */
-    public void setBody(String body) {
-        this.body = body;
-    }
 
     @Override
     public String toString() {

@@ -24,6 +24,7 @@ import java.util.Set;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.entity.info.EntityClassInfo.FieldInfo;
+import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
 
 public class EntityResourceModelBuilder {
@@ -35,14 +36,15 @@ public class EntityResourceModelBuilder {
     /**
      * Creates a new instance of ModelBuilder
      */
-  public EntityResourceModelBuilder(Project project, SourceGroup sourceGroup, Collection<String> entities) {
+  public EntityResourceModelBuilder(Project project, SourceGroup sourceGroup, Map<String, FileObject> entities) {
         entitiesInRelationMap = new HashMap<>();
         allEntitiesClassInfoMap = new HashMap<>();
-        entities.stream().forEach((entity) -> {
-        EntityClassInfo info = new EntityClassInfo(project,sourceGroup,entity, this);
-            allEntitiesClassInfoMap.put(entity, info);
+        
+        entities.entrySet().stream().forEach((entry) -> {
+        EntityClassInfo info = new EntityClassInfo(project,sourceGroup,entry.getKey(), entry.getValue(), this);
+            allEntitiesClassInfoMap.put(entry.getKey(), info);
             if (!info.getFieldInfos().isEmpty()) {
-                entitiesInRelationMap.put(entity, info);
+                entitiesInRelationMap.put(entry.getKey(), info);
             }
         });
     }

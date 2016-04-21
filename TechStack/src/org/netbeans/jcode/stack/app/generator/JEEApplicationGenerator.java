@@ -17,6 +17,7 @@ package org.netbeans.jcode.stack.app.generator;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.core.util.PersistenceHelper;
@@ -26,6 +27,7 @@ import org.netbeans.jcode.mvc.core.MVCApplicationGeneratorFactory;
 import org.netbeans.jcode.mvc.core.MVCBaseApplicationGenerator;
 import org.netbeans.jcode.stack.config.data.*;
 import org.netbeans.jcode.task.progress.ProgressHandler;
+import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
 
 /**
@@ -74,7 +76,7 @@ public class JEEApplicationGenerator {
 //            String targetPackage = SourceGroupSupport.getPackageForFolder(targetFolder);
 //            final String resourcePackage = ((MVCData) applicationConfigData.getControllerLayerConfig()).getPackage();//TODO NPE
 //            String controllerPackage = resourcePackage;//(String) wizard.getProperty(WizardProperties.CONTROLLER_PACKAGE);
-            List<String> entities = applicationConfigData.getEntities();
+            Map<String, FileObject> entities = applicationConfigData.getEntities();
             final PersistenceHelper.PersistenceUnit pu = (PersistenceHelper.PersistenceUnit) new PersistenceHelper(project).getPersistenceUnit();
 
             /*

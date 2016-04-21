@@ -43,7 +43,7 @@ import org.openide.util.NbBundle;
 public class RestConfigPanel extends LayerConfigPanel<RestConfigData> {
 
     private Preferences pref;
-    private static final String DEFAULT_PACKAGE = "controller";
+    private static final String DEFAULT_PACKAGE = "util";
     private Map<String,RestApplication> restApplications = Collections.EMPTY_MAP;
     public RestConfigPanel() {
         initComponents();
@@ -52,11 +52,7 @@ public class RestConfigPanel extends LayerConfigPanel<RestConfigData> {
     @Override
     public boolean hasError() {
         warningLabel.setText("");
-        
         String _package = getPackage();
-        
-        System.out.println("Called : " + _package);
-
         if (!JavaIdentifiers.isValidPackageName(_package)) {
             warningLabel.setText(NbBundle.getMessage(RestConfigPanel.class, "RestConfigDialog.invalidPackage.message"));
             return true;
@@ -130,7 +126,7 @@ public class RestConfigPanel extends LayerConfigPanel<RestConfigData> {
             if (StringUtils.isBlank(_package)) {
                 setPackage(DEFAULT_PACKAGE);
             } else {
-                setPackage(_package + '.' + DEFAULT_PACKAGE);
+                setPackage(_package);
             }
         }
         addChangeListener(restConfigClassField);

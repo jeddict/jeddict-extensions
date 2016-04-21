@@ -34,17 +34,16 @@ import org.netbeans.api.project.Sources;
 import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.BOLD;
 import static org.netbeans.jcode.console.Console.FG_RED;
+import org.netbeans.jcode.core.util.FileUtil;
 import org.netbeans.jcode.core.util.StringHelper;
 import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
 import org.netbeans.jcode.mvc.controller.MVCData;
 import org.netbeans.jcode.mvc.viewer.dto.FromEntityBase;
-import org.netbeans.jcode.mvc.util.Util;
 import org.netbeans.jcode.mvc.controller.Operation;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.modules.web.api.webmodule.WebProjectConstants;
 import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
-import org.openide.filesystems.FileUtil;
 
 /**
  *
@@ -125,7 +124,7 @@ public class JSPViewerGenerator {
 
         handler.append(Console.wrap(JSPViewerGenerator.class, "MSG_Generating_Static_Template", FG_RED, BOLD));
         for (Entry<String, String> entry : TEMPLATE_PATTERN_FILES.entrySet()) {
-            String targetPath = jspData.getFolder() + File.separator + entry.getValue();
+            String targetPath = jspData.getFolder() + '/' + entry.getValue();
             if (webRoot.getFileObject(targetPath) == null) {
                 expandSingleJSPTemplate(TEMPLATE_PATH + COMMON_TEMPLATE_PATH + entry.getKey(),
                         targetPath, webRoot, params, handler);
@@ -143,7 +142,7 @@ public class JSPViewerGenerator {
                 }
                 handler.progress(entry.getName());
 
-                FileObject target = FileUtil.createData(webRoot, folder + File.separator + entry.getName());
+                FileObject target = org.openide.filesystems.FileUtil.createData(webRoot, folder + '/' + entry.getName());
                 FileLock lock = target.lock();
                 try (OutputStream outputStream = target.getOutputStream(lock)) {
                     for (int c = inputStream.read(); c != -1; c = inputStream.read()) {
@@ -211,16 +210,9 @@ public class JSPViewerGenerator {
 
     private static void expandSingleJSPTemplate(String inputTemplatePath, String outputFilePath,
             FileObject webRoot, Map<String, Object> params, ProgressHandler handler) throws IOException {
+         handler.progress(outputFilePath);
 
-        InputStream contentStream = org.netbeans.jcode.core.util.FileUtil.loadResource(inputTemplatePath);
-
-        FileObject jspFile = webRoot.getFileObject(outputFilePath);
-        if (jspFile == null) {
-            jspFile = FileUtil.createData(webRoot, outputFilePath);
-        }
-        handler.progress(outputFilePath);
-
-        Util.expandJSPTemplate(contentStream, params, jspFile);
+        FileUtil.expandTemplate(inputTemplatePath, webRoot, outputFilePath, params);
     }
 
     private static String getJSPFileName(String entityClass, String jspFolder, String name) {

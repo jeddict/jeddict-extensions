@@ -30,7 +30,7 @@ import org.openide.filesystems.FileUtil;
  * @author Gaurav Gupta
  */
 public class ServletUtil {
-    public static void setWelcomeFiles(Project project, String text) throws IOException {
+    public static boolean setWelcomeFiles(Project project, String text) throws IOException {
         FileObject webXml = null;
         // Create web.xml
         WebModule wm1 = WebModule.getWebModule(project.getProjectDirectory());
@@ -66,6 +66,9 @@ public class ServletUtil {
                     try {
                         welcomeFileList = (WelcomeFileList) webApp.createBean("WelcomeFileList"); //NOI18N
                         webApp.setWelcomeFileList(welcomeFileList);
+                        if(welcomeFileList==null){
+                            return false;
+                        }
                     } catch (ClassNotFoundException ex) {
                     }
                 }
@@ -80,6 +83,7 @@ public class ServletUtil {
             
             webApp.write(webXml);
         }
+        return true;
     }
 
 }

@@ -523,8 +523,12 @@ public class Util {
         viewerGenerator.generateStaticResources(project, mvcData, jspData, handler);
         viewerGenerator.generateHome(project, selectedEntityNames.keySet(), mvcData, jspData, handler);
 
-        handler.progress(Console.wrap(NbBundle.getMessage(ServletUtil.class, "MSG_Progress_WelcomeFile", jspData.getFolder()), FG_MAGENTA, BOLD, UNDERLINE));
-        ServletUtil.setWelcomeFiles(project, jspData.getFolder() + "/index.jsp");
+        boolean sucess = ServletUtil.setWelcomeFiles(project, jspData.getFolder() + "/index.jsp");
+        if (sucess) {
+            handler.progress(Console.wrap(NbBundle.getMessage(ServletUtil.class, "MSG_Progress_WelcomeFile", jspData.getFolder()), FG_MAGENTA, BOLD, UNDERLINE));
+        } else {
+            handler.progress(Console.wrap(NbBundle.getMessage(ServletUtil.class, "MSG_Failure_WelcomeFile", jspData.getFolder()), FG_RED, BOLD, UNDERLINE));
+        }
 
         handler.progress(Console.wrap(JSPViewerGenerator.class, "MSG_Generating_CRUD_Template", FG_RED, BOLD, UNDERLINE));
         for (Entry<String, String> entry : selectedEntityNames.entrySet()) {
@@ -600,16 +604,16 @@ public class Util {
         return entityNames;
     }
 
-    public static void modifyEntity(Project project, SourceGroup sourceGroup, final String entityFqn) {
-        System.out.println("wingUtilities.isEventDispatchThread() : " + SwingUtilities.isEventDispatchThread());
+    public static void modifyEntity(final FileObject entityFileObject) {
+        if(!entityFileObject.canWrite()){
+                    return;
+            }
 //        try {
-            JavaSource javaSource = SourceGroups.getJavaSource(sourceGroup,entityFqn);
+            JavaSource javaSource = JavaSource.forFileObject(entityFileObject);
              if (javaSource == null) {
                 return;
             }
-            if(!javaSource.getFileObjects().toArray(new FileObject[]{})[0].canWrite()){
-                    return;
-            }
+            
            
             
 //            FileLock lock = entityFileObject.lock();
@@ -984,65 +988,5 @@ public class Util {
         }
     }
 
-    public static void expandJSPTemplate(InputStream template, Map<String, Object> values, FileObject target) throws IOException {
-        Charset targetEncoding = FileEncodingQuery.getEncoding(target);
-        FileLock lock = target.lock();
-        Writer w = new OutputStreamWriter(target.getOutputStream(lock), targetEncoding);
-        try {
-            expandJSPTemplate(template, values, targetEncoding, w);
-        } finally {
-            w.close();
-            lock.releaseLock();
-        }
-        DataObject dob = DataObject.find(target);
-        if (dob != null) {
-            reformat(dob);
-        }
-    }
-
-    public static void expandJSPTemplate(InputStream template, Map<String, Object> values, Charset targetEncoding, Writer w) throws IOException {
-//        Charset sourceEnc = FileEncodingQuery.getEncoding(template);
-        ScriptEngine eng = getScriptEngine();
-        Bindings bind = eng.getContext().getBindings(ScriptContext.ENGINE_SCOPE);
-        bind.putAll(values);
-        bind.put(ENCODING_PROPERTY_NAME, targetEncoding.name());
-
-        Reader is = null;
-        try {
-            eng.getContext().setWriter(w);
-            is = new InputStreamReader(template);
-            eng.eval(is);
-        } catch (ScriptException ex) {
-            throw new IOException(ex);
-        } finally {
-            if (is != null) {
-                is.close();
-            }
-        }
-    }
-//      private static final String SCRIPT_ENGINE_ATTR = "javax.script.ScriptEngine"; //NOI18N
-    private static final String ENCODING_PROPERTY_NAME = "encoding"; //NOI18N
-    private static ScriptEngineManager manager;
-
-    /**
-     * Used core method for getting {@code ScriptEngine} from {@code
-     * org.netbeans.modules.templates.ScriptingCreateFromTemplateHandler}.
-     */
-    protected static ScriptEngine getScriptEngine() {
-        if (manager == null) {
-            synchronized (Util.class) {
-                if (manager == null) {
-                    ClassLoader loader = Lookup.getDefault().lookup(ClassLoader.class);
-                    try {
-                        loader.loadClass(PrefixResolver.class.getName());
-                    } catch (ClassNotFoundException ex) {
-                        Exceptions.printStackTrace(ex);
-                    }
-                    manager = new ScriptEngineManager(loader != null ? loader : Thread.currentThread().getContextClassLoader());
-                }
-            }
-        }
-        return manager.getEngineByName((String) "freemarker");
-    }
 
 }

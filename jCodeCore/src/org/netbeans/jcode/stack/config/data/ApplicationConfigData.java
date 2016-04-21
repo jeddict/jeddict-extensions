@@ -16,10 +16,11 @@
 package org.netbeans.jcode.stack.config.data;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
+import org.openide.filesystems.FileObject;
 
 /**
  *
@@ -29,7 +30,8 @@ public class ApplicationConfigData implements Serializable {
 
     private Project project;
     private SourceGroup sourceGroup;
-    private List<String> entities;
+    private Map<String, FileObject> entities;
+
     private LayerConfigData bussinesLayerConfig;
     private LayerConfigData controllerLayerConfig;
     private LayerConfigData viewerLayerConfig;
@@ -107,9 +109,9 @@ public class ApplicationConfigData implements Serializable {
     /**
      * @return the entities
      */
-    public List<String> getEntities() {
+    public Map<String, FileObject> getEntities() {
         if (entities == null) {
-            entities = new ArrayList<String>();
+            entities = new HashMap<>();
         }
         return entities;
     }
@@ -117,8 +119,16 @@ public class ApplicationConfigData implements Serializable {
     /**
      * @param entities the entities to set
      */
-    public void setEntities(List<String> entities) {
+    public void setEntities(Map<String, FileObject> entities) {
         this.entities = entities;
+    }
+    
+    public FileObject getEntity(String key) {
+        return getEntities().get(key);
+    }
+
+    public FileObject putEntity(String key, FileObject value) {
+        return getEntities().put(key, value);
     }
 
 }

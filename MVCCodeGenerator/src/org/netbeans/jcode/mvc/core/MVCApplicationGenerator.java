@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import static java.util.stream.Collectors.toSet;
 
 import org.netbeans.jcode.rest.util.RestUtils;
 import org.netbeans.jcode.entity.info.EntityClassInfo;
@@ -48,19 +49,13 @@ public class MVCApplicationGenerator extends MVCBaseApplicationGenerator {
                 getAllEntityNames(), !RestUtils.hasJTASupport(getProject()));
         configurePersistence();
 
-        Set<String> entities = new HashSet<>();
-        for (EntityClassInfo info : getModel().getEntityInfos()) {
-            String entity = info.getEntityFqn();
-            entities.add(entity);
-        }
-
-
+        Set<String> entities = getModel().getEntityInfos().stream().map(ei -> ei.getEntityFqn()).collect(toSet());
+        
         preGenerate(new ArrayList<>(entities));
         Util.generateMVCCRUD(entities, getModel(), handle, applicationConfigData);
         
         for (EntityClassInfo info : getModel().getEntityInfos()) {
-            String entity = info.getEntityFqn();
-            Util.modifyEntity(applicationConfigData.getProject(), applicationConfigData.getSourceGroup(), entity);
+            Util.modifyEntity(info.getEntityFileObject());
         }
         finishProgressReporting();
         

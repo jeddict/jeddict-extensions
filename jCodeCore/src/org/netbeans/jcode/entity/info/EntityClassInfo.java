@@ -75,6 +75,7 @@ public class EntityClassInfo {
     
     private EntityResourceModelBuilder builder;
     private final String entityFqn;
+    private final FileObject entityFileObject;
     private String name;
     private String type;
     private String packageName;
@@ -82,12 +83,11 @@ public class EntityClassInfo {
     private FieldInfo idFieldInfo;
     private SourceGroup sourceGroup;
 
-    /**
-     * Creates a new instance of ClassInfo
-     */
-    public EntityClassInfo( Project project, SourceGroup sourceGroup, String entityFqn, EntityResourceModelBuilder builder) {
+
+    public EntityClassInfo( Project project, SourceGroup sourceGroup, String entityFqn, FileObject entityFileObject,  EntityResourceModelBuilder builder) {
         this.entityFqn = entityFqn;
-        this.fieldInfos = new ArrayList<FieldInfo>();
+        this.entityFileObject=entityFileObject;
+        this.fieldInfos = new ArrayList<>();
         this.builder = builder;
         extractFields(project,sourceGroup);
 
@@ -110,7 +110,7 @@ public class EntityClassInfo {
 
     protected void extractFields(Project project,SourceGroup sourceGroup) {
         try {
-            JavaSource source = SourceGroups.getJavaSource(sourceGroup,entityFqn);
+            JavaSource source = JavaSource.forFileObject(getEntityFileObject());
             if (source != null) {
                 source.runUserActionTask(new AbstractTask<CompilationController>() {
 
@@ -275,11 +275,6 @@ public class EntityClassInfo {
         return null;
     }
 
-    private JavaSource getJavaSource(Project project) throws IOException {
-        return SourceGroupSupport.getJavaSourceFromClassName(
-                entityFqn, project);
-    }
-
     private boolean useFieldAccess(TypeElement typeElement,
             CompilationController controller) {
         List<VariableElement> fields = ElementFilter.fieldsIn(typeElement.getEnclosedElements());
@@ -414,6 +409,13 @@ public class EntityClassInfo {
             }
         }
         return false;
+    }
+
+    /**
+     * @return the entityFileObject
+     */
+    public FileObject getEntityFileObject() {
+        return entityFileObject;
     }
 
     public static class FieldInfo {

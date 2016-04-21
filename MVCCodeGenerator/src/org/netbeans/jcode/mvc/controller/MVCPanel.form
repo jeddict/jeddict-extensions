@@ -23,15 +23,15 @@
                   <Component id="packagePanel" alignment="0" max="32767" attributes="0"/>
                   <Component id="suffixPanel" alignment="0" max="32767" attributes="0"/>
                   <Component id="viewPanel" alignment="0" max="32767" attributes="0"/>
-                  <Component id="securityPanel" alignment="0" pref="686" max="32767" attributes="0"/>
-                  <Component id="miscPanel" alignment="0" pref="686" max="32767" attributes="0"/>
+                  <Component id="securityPanel" alignment="0" max="32767" attributes="0"/>
+                  <Component id="miscPanel" alignment="0" pref="621" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
               <Group type="102" alignment="1" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="warningPanel" pref="686" max="32767" attributes="0"/>
+                  <Component id="warningPanel" pref="621" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -41,22 +41,22 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
-              <Component id="suffixPanel" min="-2" pref="28" max="-2" attributes="0"/>
+              <Component id="suffixPanel" min="-2" pref="20" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="packagePanel" min="-2" pref="27" max="-2" attributes="0"/>
+              <Component id="packagePanel" min="-2" pref="20" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="miscPanel" min="-2" pref="27" max="-2" attributes="0"/>
+              <Component id="miscPanel" min="-2" pref="20" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="viewPanel" min="-2" pref="27" max="-2" attributes="0"/>
+              <Component id="viewPanel" min="-2" pref="20" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="securityPanel" min="-2" pref="27" max="-2" attributes="0"/>
+              <Component id="securityPanel" min="-2" pref="20" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="eventObserversPanel" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="46" max="32767" attributes="0"/>
+              <EmptySpace pref="40" max="32767" attributes="0"/>
           </Group>
           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
               <Group type="102" alignment="1" attributes="0">
-                  <EmptySpace pref="290" max="32767" attributes="0"/>
+                  <EmptySpace pref="242" max="32767" attributes="0"/>
                   <Component id="warningPanel" min="-2" pref="20" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -172,6 +172,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="a5" green="a9" id="Button.shadow" palette="3" red="ad" type="palette"/>
                 </Property>
+                <Property name="horizontalAlignment" type="int" value="0"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="org/netbeans/jcode/mvc/controller/Bundle.properties" key="MVCPanel.entityLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                 </Property>
@@ -378,7 +379,7 @@
                       <Component id="hybridClassCheckbox" min="-2" pref="172" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="beanValidation" min="-2" pref="151" max="-2" attributes="0"/>
-                      <EmptySpace pref="105" max="32767" attributes="0"/>
+                      <EmptySpace pref="65" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -386,10 +387,11 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="hybridClassCheckbox" alignment="3" min="-2" pref="27" max="-2" attributes="0"/>
-                          <Component id="beanValidation" alignment="3" min="-2" pref="27" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="beanValidation" min="-2" pref="20" max="-2" attributes="0"/>
+                          <Component id="hybridClassCheckbox" pref="0" max="32767" attributes="0"/>
                       </Group>
+                      <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
