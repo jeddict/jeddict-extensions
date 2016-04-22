@@ -21,6 +21,7 @@ package org.netbeans.jcode.beanvalidation;
  */
 public class BeanVaildationConstants {
 
+    public static final String BEAN_VAILDATION_PACKAGE = "javax.validation.constraints";
     public static final String CONSTRAINT_VIOLATION = "javax.validation.ConstraintViolation";
     public static final String VALID  = "javax.validation.Valid";
     public static final String VALIDATE_ON_EXECUTION  = "javax.validation.executable.ValidateOnExecution";
