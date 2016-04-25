@@ -15,7 +15,6 @@
  */
 package org.netbeans.jcode.mvc.viewer.jsp;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -36,6 +35,10 @@ import static org.netbeans.jcode.console.Console.BOLD;
 import static org.netbeans.jcode.console.Console.FG_RED;
 import org.netbeans.jcode.core.util.FileUtil;
 import org.netbeans.jcode.core.util.StringHelper;
+import org.netbeans.jcode.layer.Generator;
+import org.netbeans.jcode.layer.Technology;
+import static org.netbeans.jcode.layer.Technology.Type.VIEWER;
+import org.netbeans.jcode.mvc.controller.MVCControllerGenerator;
 import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
 import org.netbeans.jcode.mvc.controller.MVCData;
 import org.netbeans.jcode.mvc.viewer.dto.FromEntityBase;
@@ -44,22 +47,24 @@ import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.modules.web.api.webmodule.WebProjectConstants;
 import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Gaurav Gupta
  */
-public class JSPViewerGenerator {
+@ServiceProvider(service=Generator.class)
+@Technology(type=VIEWER, label="JSP", panel=JSPPanel.class, parents={MVCControllerGenerator.class})
+public class JSPViewerGenerator implements Generator{
 
-    private static JSPViewerGenerator instance;
     private static final String TEMPLATE_PATH = "org/netbeans/jcode/mvc/viewer/resources/"; //NOI18N
     private static final String CRUD_HOME_PATH = "views/"; //NOI18N
     private static final String COMMON_TEMPLATE_PATH = "views/common/";
     private static final String CRUD_PATH = "views/entity/"; //NOI18N
 
-    private final Map<Operation, String> GENERATED_CRUD_FILES = new HashMap<>();
-    private final Map<String, String> TEMPLATE_PATTERN_FILES = new HashMap<>();
-    private final Map<Operation, String> CRUD_FILES = new HashMap<>();
+    private static final Map<Operation, String> GENERATED_CRUD_FILES = new HashMap<>();
+    private static final Map<String, String> TEMPLATE_PATTERN_FILES = new HashMap<>();
+    private static final Map<Operation, String> CRUD_FILES = new HashMap<>();
 
     private static final String TEMPALTE_EXT = ".ftl"; //NOI18N
     private static final String JSP_EXT = ".jsp"; //NOI18N
@@ -68,8 +73,8 @@ public class JSPViewerGenerator {
     private static final String DEFAULT_GENERATED_CRUD_PATH = "views/"; //NOI18N
     public static final String TARGET_COMMON_TEMPLATE_PATH = "common/";
 
-    private JSPViewerGenerator() {
-        final String HEADER = "header"; //NOI18N
+    static {
+         final String HEADER = "header"; //NOI18N
         final String NAVIGATIONBAR = "navigationbar"; //NOI18N
         final String ERROR = "error"; //NOI18N
         final String FOOTER = "footer"; //NOI18N
@@ -93,17 +98,21 @@ public class JSPViewerGenerator {
         GENERATED_CRUD_FILES.put(Operation.FIND_ALL, "list");
         GENERATED_CRUD_FILES.put(Operation.FIND, "view");
     }
-
-    public static JSPViewerGenerator getInstance() {
-        if (instance == null) {
-            synchronized (JSPViewerGenerator.class) {
-                if (instance == null) {
-                    instance = new JSPViewerGenerator();
-                }
-            }
-        }
-        return instance;
+    
+    public JSPViewerGenerator() {
+       
     }
+
+//    public static JSPViewerGenerator getInstance() {
+//        if (instance == null) {
+//            synchronized (JSPViewerGenerator.class) {
+//                if (instance == null) {
+//                    instance = new JSPViewerGenerator();
+//                }
+//            }
+//        }
+//        return instance;
+//    }
 
     public void generateStaticResources(Project project, MVCData mvcData, JSPData jspData, ProgressHandler handler) throws IOException {
         Sources sources = ProjectUtils.getSources(project);

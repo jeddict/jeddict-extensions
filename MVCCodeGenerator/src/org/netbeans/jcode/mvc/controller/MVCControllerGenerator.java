@@ -77,6 +77,10 @@ import static org.netbeans.jcode.rest.RestConstant.RESPONSE;
 import static org.netbeans.jcode.rest.RestConstant.RESPONSE_UNQF;
 import org.netbeans.jcode.rest.util.RestUtils;
 import org.netbeans.jcode.core.util.SourceGroupSupport;
+import org.netbeans.jcode.ejb.facade.EjbFacadeGenerator;
+import org.netbeans.jcode.layer.Generator;
+import org.netbeans.jcode.layer.Technology;
+import static org.netbeans.jcode.layer.Technology.Type.CONTROLLER;
 import static org.netbeans.jcode.mvc.MVCConstants.CSRF_VALID;
 import static org.netbeans.jcode.mvc.controller.ValidationUtilGenerator.VALIDATION_UTIL_CLASS;
 import org.netbeans.jcode.mvc.controller.event.ControllerEventGenerator;
@@ -85,12 +89,16 @@ import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.modules.websvc.rest.spi.RestSupport;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Gaurav Gupta
  */
-public class MVCControllerGenerator {
+@ServiceProvider(service=Generator.class)
+@Technology(type=CONTROLLER, label="MVC 1.0", panel=MVCPanel.class, parents={EjbFacadeGenerator.class})
+
+public class MVCControllerGenerator implements Generator {
 
     public final static String ENTITY_NAME_EXP = "<entity>";
     public final static String FOLDER_NAME_EXP = "<folder>";

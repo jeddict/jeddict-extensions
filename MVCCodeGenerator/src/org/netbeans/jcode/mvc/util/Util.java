@@ -15,7 +15,6 @@
  */
 package org.netbeans.jcode.mvc.util;
 
-import com.sun.org.apache.xml.internal.utils.PrefixResolver;
 import java.awt.Component;
 
 import javax.lang.model.element.AnnotationMirror;
@@ -86,34 +85,19 @@ import com.sun.source.tree.TypeParameterTree;
 import com.sun.source.tree.VariableTree;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.Writer;
-import java.nio.charset.Charset;
 import java.util.Map.Entry;
 import javax.lang.model.element.AnnotationValue;
-import javax.script.Bindings;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 import org.netbeans.api.project.Project;
-import org.netbeans.api.queries.FileEncodingQuery;
 import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.FG_RED;
 import org.netbeans.jcode.ejb.facade.EjbFacadeGenerator;
-import static org.netbeans.jcode.core.util.JavaSourceHelper.reformat;
 import org.netbeans.jcode.mvc.controller.MVCControllerGenerator;
 import org.netbeans.jcode.mvc.viewer.jsp.JSPViewerGenerator;
 import org.netbeans.jcode.task.progress.ProgressHandler;
-//import org.netbeans.jpa.modeler.rest.wizard.WizardProperties;
 import org.openide.filesystems.FileLock;
-import org.openide.loaders.DataObject;
-import org.openide.util.Exceptions;
-import org.openide.util.Lookup;
 import org.netbeans.api.java.source.Task;
 import static org.netbeans.jcode.console.Console.BOLD;
 import static org.netbeans.jcode.console.Console.FG_MAGENTA;
@@ -127,7 +111,6 @@ import static org.netbeans.jcode.jpa.JPAConstants.ID;
 import org.netbeans.jcode.mvc.controller.MVCData;
 import org.netbeans.jcode.mvc.viewer.jsp.JSPData;
 import org.netbeans.jcode.servlet.util.ServletUtil;
-import org.netbeans.jcode.core.util.SourceGroups;
 
 /**
  * Copy of j2ee/utilities Util class
@@ -518,7 +501,7 @@ public class Util {
         if (jspData == null) {
             return;
         }
-        JSPViewerGenerator viewerGenerator = JSPViewerGenerator.getInstance();
+        JSPViewerGenerator viewerGenerator = new JSPViewerGenerator();
         handler.append(Console.wrap(JSPViewerGenerator.class, "MSG_Copying_Static_Files", FG_RED, BOLD, UNDERLINE));
         viewerGenerator.generateStaticResources(project, mvcData, jspData, handler);
         viewerGenerator.generateHome(project, selectedEntityNames.keySet(), mvcData, jspData, handler);

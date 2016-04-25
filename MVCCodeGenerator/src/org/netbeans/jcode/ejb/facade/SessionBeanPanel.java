@@ -175,7 +175,6 @@ public class SessionBeanPanel extends LayerConfigPanel<SessionBeanData> {
         prefixField.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         prefixField.setText(org.openide.util.NbBundle.getMessage(SessionBeanPanel.class, "SessionBeanPanel.prefixField.text")); // NOI18N
         prefixField.setToolTipText(org.openide.util.NbBundle.getMessage(SessionBeanPanel.class, "SessionBeanPanel.prefixField.toolTipText")); // NOI18N
-        prefixField.setPreferredSize(new java.awt.Dimension(100, 27));
         prefixField.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
             public void propertyChange(java.beans.PropertyChangeEvent evt) {
                 prefixFieldPropertyChange(evt);
@@ -255,17 +254,17 @@ public class SessionBeanPanel extends LayerConfigPanel<SessionBeanData> {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(42, 42, 42)
-                .addComponent(packagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(48, Short.MAX_VALUE))
+                .addGap(52, 52, 52)
+                .addComponent(packagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(51, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(suffixPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(79, Short.MAX_VALUE)))
+                    .addComponent(suffixPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(91, Short.MAX_VALUE)))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                    .addContainerGap(79, Short.MAX_VALUE)
+                    .addContainerGap(98, Short.MAX_VALUE)
                     .addComponent(warningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap()))
         );

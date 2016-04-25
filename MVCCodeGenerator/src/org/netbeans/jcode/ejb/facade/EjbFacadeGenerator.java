@@ -44,7 +44,6 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 import org.netbeans.api.java.classpath.ClassPath;
 import org.netbeans.api.java.classpath.JavaClassPathConstants;
 import org.netbeans.api.java.project.JavaProjectConstants;
@@ -64,6 +63,9 @@ import org.netbeans.api.project.libraries.LibraryManager;
 import static org.netbeans.jcode.core.util.Constants.NAMED;
 import org.netbeans.jcode.core.util.StringHelper;
 import org.netbeans.jcode.core.util.SourceGroupSupport;
+import org.netbeans.jcode.layer.Generator;
+import org.netbeans.jcode.layer.Technology;
+import static org.netbeans.jcode.layer.Technology.Type.BUSINESS;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
 import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
@@ -85,13 +87,17 @@ import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  * Generates EJB facades for entity classes.
  *
  * @author Gaurav Gupta
  */
-public final class EjbFacadeGenerator {
+
+@ServiceProvider(service=Generator.class)
+@Technology(type=BUSINESS, label="Session Bean Facade", panel=SessionBeanPanel.class)
+public final class EjbFacadeGenerator implements Generator{
 
     private static final Logger LOGGER = Logger.getLogger(EjbFacadeGenerator.class.getName());
 
