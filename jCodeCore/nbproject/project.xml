@@ -560,6 +560,7 @@
                 <package>org.netbeans.jcode.task.progress</package>
                 <package>org.netbeans.jcode.ui.browse</package>
                 <package>org.netbeans.jcode.ui.source</package>
+                <package>org.netbeans.jcode.util</package>
             </public-packages>
         </data>
     </configuration>

@@ -28,7 +28,6 @@ import org.apache.commons.lang.StringUtils;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.SourceGroup;
-import org.netbeans.jcode.mvc.controller.MVCData;
 import org.netbeans.jcode.stack.config.panel.LayerConfigPanel;
 import org.netbeans.jcode.util.PreferenceUtils;
 import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;

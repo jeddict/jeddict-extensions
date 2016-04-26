@@ -15,7 +15,6 @@
  */
 package org.netbeans.jcode.cdi.logger;
 
-import org.netbeans.jcode.mvc.controller.*;
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.MethodTree;

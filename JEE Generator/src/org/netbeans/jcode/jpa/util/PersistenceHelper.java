@@ -13,14 +13,16 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.netbeans.jcode.core.util;
+package org.netbeans.jcode.jpa.util;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.netbeans.api.project.Project;
+import org.netbeans.jcode.core.util.DOMHelper;
 import org.netbeans.jcode.rest.util.RestUtils;
+//import org.netbeans.jcode.rest.util.RestUtils;
 //import org.netbeans.jcode.rest.util.RestUtils;
 import org.netbeans.modules.j2ee.deployment.common.api.Datasource;
 import org.netbeans.modules.websvc.rest.spi.RestSupport;

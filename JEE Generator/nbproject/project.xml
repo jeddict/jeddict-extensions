@@ -3,7 +3,7 @@
     <type>org.netbeans.modules.apisupport.project</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/nb-module-project/3">
-            <code-name-base>org.netbeans.jcode.mvc</code-name-base>
+            <code-name-base>org.netbeans.jcode.stack</code-name-base>
             <suite-component/>
             <module-dependencies>
                 <dependency>
@@ -69,14 +69,6 @@
                 </dependency>
                 <dependency>
                     <code-name-base>org.netbeans.jcode.core</code-name-base>
-                    <build-prerequisite/>
-                    <compile-dependency/>
-                    <run-dependency>
-                        <specification-version>1.0</specification-version>
-                    </run-dependency>
-                </dependency>
-                <dependency>
-                    <code-name-base>org.netbeans.jcode.stack</code-name-base>
                     <build-prerequisite/>
                     <compile-dependency/>
                     <run-dependency>
@@ -570,23 +562,27 @@
                 <package>org.netbeans.jcode.beanvalidation</package>
                 <package>org.netbeans.jcode.cdi</package>
                 <package>org.netbeans.jcode.cdi.logger</package>
+                <package>org.netbeans.jcode.cdi.resource</package>
+                <package>org.netbeans.jcode.cdi.util</package>
                 <package>org.netbeans.jcode.ejb.facade</package>
                 <package>org.netbeans.jcode.jpa</package>
-                <package>org.netbeans.jcode.mvc</package>
-                <package>org.netbeans.jcode.mvc.controller</package>
-                <package>org.netbeans.jcode.mvc.controller.api.returntype</package>
-                <package>org.netbeans.jcode.mvc.controller.event</package>
+                <package>org.netbeans.jcode.jpa.util</package>
+                <package>org.netbeans.jcode.layer</package>
                 <package>org.netbeans.jcode.mvc.core</package>
                 <package>org.netbeans.jcode.mvc.util</package>
-                <package>org.netbeans.jcode.mvc.viewer</package>
-                <package>org.netbeans.jcode.mvc.viewer.dto</package>
-                <package>org.netbeans.jcode.mvc.viewer.jsp</package>
-                <package>org.netbeans.jcode.mvc.viewer.resources</package>
-                <package>org.netbeans.jcode.mvc.viewer.resources.views</package>
-                <package>org.netbeans.jcode.mvc.viewer.resources.views.common</package>
-                <package>org.netbeans.jcode.mvc.viewer.resources.views.entity</package>
+                <package>org.netbeans.jcode.rest</package>
                 <package>org.netbeans.jcode.rest.applicationconfig</package>
+                <package>org.netbeans.jcode.rest.converter</package>
+                <package>org.netbeans.jcode.rest.util</package>
                 <package>org.netbeans.jcode.servlet.util</package>
+                <package>org.netbeans.jcode.stack</package>
+                <package>org.netbeans.jcode.stack.app.generator</package>
+                <package>org.netbeans.jcode.stack.config.data</package>
+                <package>org.netbeans.jcode.stack.config.panel</package>
+                <package>org.netbeans.jcode.stack.ejb</package>
+                <package>org.netbeans.jcode.stack.jsp</package>
+                <package>org.netbeans.jcode.stack.mvc</package>
+                <package>org.netbeans.jcode.util</package>
             </public-packages>
         </data>
     </configuration>
