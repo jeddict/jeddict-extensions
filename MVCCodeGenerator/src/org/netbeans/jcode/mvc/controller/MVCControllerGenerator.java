@@ -50,6 +50,10 @@ import static org.netbeans.jcode.beanvalidation.BeanVaildationConstants.VALID;
 import static org.netbeans.jcode.beanvalidation.BeanVaildationConstants.VALIDATE_ON_EXECUTION;
 import org.netbeans.jcode.cdi.logger.LoggerProducerGenerator;
 import org.netbeans.jcode.cdi.util.CDIUtil;
+import org.netbeans.jcode.console.Console;
+import static org.netbeans.jcode.console.Console.BOLD;
+import static org.netbeans.jcode.console.Console.FG_RED;
+import static org.netbeans.jcode.console.Console.UNDERLINE;
 import org.netbeans.jcode.core.util.StringHelper;
 import org.netbeans.jcode.ejb.facade.SessionBeanData;
 import org.netbeans.jcode.mvc.MVCConstants;
@@ -78,6 +82,7 @@ import static org.netbeans.jcode.rest.RestConstant.RESPONSE_UNQF;
 import org.netbeans.jcode.rest.util.RestUtils;
 import org.netbeans.jcode.core.util.SourceGroupSupport;
 import org.netbeans.jcode.ejb.facade.EjbFacadeGenerator;
+import org.netbeans.jcode.layer.ConfigData;
 import org.netbeans.jcode.layer.Generator;
 import org.netbeans.jcode.layer.Technology;
 import static org.netbeans.jcode.layer.Technology.Type.CONTROLLER;
@@ -95,8 +100,8 @@ import org.openide.util.lookup.ServiceProvider;
  *
  * @author Gaurav Gupta
  */
-@ServiceProvider(service=Generator.class)
-@Technology(type=CONTROLLER, label="MVC 1.0", panel=MVCPanel.class, parents={EjbFacadeGenerator.class})
+@ServiceProvider(service = Generator.class)
+@Technology(type = CONTROLLER, label = "MVC 1.0", panel = MVCPanel.class, parents = {EjbFacadeGenerator.class})
 
 public class MVCControllerGenerator implements Generator {
 
@@ -111,11 +116,24 @@ public class MVCControllerGenerator implements Generator {
             + "        }\n\n";
     private EntityResourceBeanModel model;
 
-    public MVCControllerGenerator() {
-    }
+    @ConfigData
+    private SessionBeanData beanData;
+    @ConfigData
+    private JSPData jspData;
+    @ConfigData
+    private MVCData mvcData;
 
-    public MVCControllerGenerator(EntityResourceBeanModel model) {
-        this.model = model;
+    @Override
+    public void execute(Project project, SourceGroup source, EntityResourceBeanModel model, ProgressHandler handler) throws IOException {
+        handler.progress(Console.wrap(MVCControllerGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
+        generateUtil(project, source, mvcData, jspData, handler);
+        for (EntityClassInfo classInfo : model.getEntityInfos()) {
+            generate(project, source, classInfo.getType(), classInfo.getPrimaryKeyType(), beanData, mvcData, jspData, false, false, true, handler);
+        }
+        
+        model.getEntityInfos().stream().forEach((info) -> {
+            Util.modifyEntity(info.getEntityFileObject());
+        });
     }
 
     public Set<FileObject> generate(final Project project, final SourceGroup sourceGroup,
@@ -284,10 +302,10 @@ public class MVCControllerGenerator implements Generator {
                                                 Collections.singletonList(genUtils.createAnnotationArgument("type", EXECUTABLE_TYPE, "NONE"))));
 
                     }
-                    
+
                     if (mvcData.isCSRF() && beanParamExist) {
-                         // add @CsrfValid annotation
-                        modifiersTree = maker.addModifiersAnnotation(modifiersTree,genUtils.createAnnotation(CSRF_VALID));
+                        // add @CsrfValid annotation
+                        modifiersTree = maker.addModifiersAnnotation(modifiersTree, genUtils.createAnnotation(CSRF_VALID));
                     }
 
                     Tree returnType = null;
@@ -333,21 +351,18 @@ public class MVCControllerGenerator implements Generator {
                 }
 
                 ModifiersTree modifiersTree = classTree.getModifiers();
-                
-                 if (!mvcData.isHybridClass()) {
-                        // add @Controller annotation
-                        modifiersTree
-                                = maker.addModifiersAnnotation(modifiersTree,
-                                        genUtils.createAnnotation(MVCConstants.CONTROLLER));
-                    }
-                
-                 modifiersTree = maker.addModifiersAnnotation(modifiersTree,
+
+                if (!mvcData.isHybridClass()) {
+                    // add @Controller annotation
+                    modifiersTree
+                            = maker.addModifiersAnnotation(modifiersTree,
+                                    genUtils.createAnnotation(MVCConstants.CONTROLLER));
+                }
+
+                modifiersTree = maker.addModifiersAnnotation(modifiersTree,
                         genUtils.createAnnotation(RestConstants.PATH,
                                 Collections.<ExpressionTree>singletonList(maker.Literal(variableName))
                         ));
-                
-                   
-
 
                 ClassTree newClassTree = maker.Class(
                         modifiersTree,
@@ -392,9 +407,9 @@ public class MVCControllerGenerator implements Generator {
             LoggerProducerGenerator.generate(utilFolder);
             ControllerEventGenerator.generate(mvcData.getEventType(), utilFolder);
         }
-        
+
         ParamConvertorGenerator.generate(project, sourceGroup, utilFolder, handler);
-        
+
         CDIUtil.createDD(project);
 
         generateApplicationConfig(project, sourceGroup,

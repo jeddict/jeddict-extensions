@@ -22,12 +22,12 @@ import org.netbeans.modules.websvc.rest.spi.MiscUtilities;
  *
  * @author Gaurav Gupta
  */
-public class MVCApplicationGeneratorFactory {
+public class ApplicationGeneratorFactory {
 
-    public static MVCBaseApplicationGenerator newInstance(Project project) {
+    public static BaseApplicationGenerator newInstance(Project project) {
 
         if (MiscUtilities.isJavaEE6AndHigher(project)) {
-            return new MVCApplicationGenerator();
+            return new ApplicationGenerator();
         } else {
             throw new IllegalStateException("JEE6+ supported");
         }

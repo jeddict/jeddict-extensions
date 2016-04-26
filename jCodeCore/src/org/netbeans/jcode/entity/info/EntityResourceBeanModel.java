@@ -23,8 +23,8 @@ import java.util.Map;
 
 public class EntityResourceBeanModel {
 
-    private EntityResourceModelBuilder builder;
-    private Map<String, EntityClassInfo> entityInfos;
+    private final EntityResourceModelBuilder builder;
+    private final Map<String, EntityClassInfo> entityInfos;
     private boolean valid;
 
     /**
@@ -32,7 +32,7 @@ public class EntityResourceBeanModel {
      */
     public EntityResourceBeanModel(EntityResourceModelBuilder builder) {
         this.builder = builder;
-        entityInfos = new HashMap<String, EntityClassInfo>();
+        entityInfos = new HashMap<>();
     }
 
     public EntityClassInfo getEntityInfo(String fqn) {
@@ -40,7 +40,7 @@ public class EntityResourceBeanModel {
     }
 
     public Collection<EntityClassInfo> getEntityInfos() {
-        List<EntityClassInfo> infos = new ArrayList<EntityClassInfo>();
+        List<EntityClassInfo> infos = new ArrayList<>();
 
         infos.addAll(entityInfos.values());
         return infos;

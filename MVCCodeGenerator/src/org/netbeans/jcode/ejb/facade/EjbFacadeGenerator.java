@@ -40,6 +40,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static java.util.stream.Collectors.toList;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -60,9 +61,15 @@ import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.api.project.libraries.Library;
 import org.netbeans.api.project.libraries.LibraryManager;
+import org.netbeans.jcode.console.Console;
+import static org.netbeans.jcode.console.Console.BOLD;
+import static org.netbeans.jcode.console.Console.FG_RED;
+import static org.netbeans.jcode.console.Console.UNDERLINE;
 import static org.netbeans.jcode.core.util.Constants.NAMED;
 import org.netbeans.jcode.core.util.StringHelper;
 import org.netbeans.jcode.core.util.SourceGroupSupport;
+import org.netbeans.jcode.entity.info.EntityResourceBeanModel;
+import org.netbeans.jcode.layer.ConfigData;
 import org.netbeans.jcode.layer.Generator;
 import org.netbeans.jcode.layer.Technology;
 import static org.netbeans.jcode.layer.Technology.Type.BUSINESS;
@@ -71,7 +78,6 @@ import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
 import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
 import org.netbeans.modules.j2ee.core.api.support.java.SourceUtils;
 import org.netbeans.modules.j2ee.metadata.model.api.MetadataModel;
-import org.netbeans.modules.j2ee.metadata.model.api.MetadataModelAction;
 import org.netbeans.modules.j2ee.persistence.action.EntityManagerGenerator;
 import org.netbeans.modules.j2ee.persistence.action.GenerationOptions;
 import org.netbeans.modules.j2ee.persistence.api.EntityClassScope;
@@ -116,6 +122,15 @@ public final class EjbFacadeGenerator implements Generator{
      */
     private final Map<String, String> entityNames = new HashMap<>();
 
+    @ConfigData
+    private SessionBeanData beanData;
+     
+    @Override
+    public void execute(Project project, SourceGroup source,EntityResourceBeanModel model, ProgressHandler handler) throws IOException {
+        handler.progress(Console.wrap(EjbFacadeGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
+        generate(project, source, model.getEntityInfos().stream().map(ei -> ei.getType()).collect(toList()), beanData, handler);
+    }
+    
     public Set<FileObject> generate(Project project, final SourceGroup targetSourceGroup, List<String> entities,
             SessionBeanData beanData, ProgressHandler handler) throws IOException {
         final Set<FileObject> createdFiles = new HashSet<>();
@@ -544,20 +559,14 @@ public final class EjbFacadeGenerator implements Generator{
         try {
             EntityClassScope entityClassScope = EntityClassScope.getEntityClassScope(project.getProjectDirectory());
             MetadataModel<EntityMappingsMetadata> entityMappingsModel = entityClassScope.getEntityMappingsModel(true);
-            Future<Void> result = entityMappingsModel.runReadActionWhenReady(new MetadataModelAction<EntityMappingsMetadata, Void>() {
-
-                @Override
-                public Void run(EntityMappingsMetadata metadata) throws Exception {
-                    for (Entity entity : metadata.getRoot().getEntity()) {
-                        entityNames.put(entity.getClass2(), entity.getName());
-                    }
-                    return null;
+            Future<Void> result = entityMappingsModel.runReadActionWhenReady((EntityMappingsMetadata metadata) -> {
+                for (Entity entity : metadata.getRoot().getEntity()) {
+                    entityNames.put(entity.getClass2(), entity.getName());
                 }
+                return null;
             });
             result.get();
-        } catch (InterruptedException ex) {
-            Exceptions.printStackTrace(ex);
-        } catch (ExecutionException ex) {
+        } catch (InterruptedException | ExecutionException ex) {
             Exceptions.printStackTrace(ex);
         }
     }

@@ -31,7 +31,7 @@ import org.netbeans.jcode.generator.AbstractGenerator;
  *
  * @author Gaurav Gupta
  */
-public abstract class MVCBaseApplicationGenerator extends AbstractGenerator {
+public abstract class BaseApplicationGenerator extends AbstractGenerator {
 
     private PersistenceUnit persistenceUnit;
     private EntityResourceBeanModel model;

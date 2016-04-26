@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
+import org.netbeans.jcode.layer.Generator;
 import org.openide.filesystems.FileObject;
 
 /**
@@ -35,6 +36,9 @@ public class ApplicationConfigData implements Serializable {
     private LayerConfigData bussinesLayerConfig;
     private LayerConfigData controllerLayerConfig;
     private LayerConfigData viewerLayerConfig;
+    private Generator bussinesLayerGenerator;
+    private Generator controllerLayerGenerator;
+    private Generator viewerLayerGenerator;
 
     /**
      * @return the bussinesLayerConfig
@@ -122,13 +126,55 @@ public class ApplicationConfigData implements Serializable {
     public void setEntities(Map<String, FileObject> entities) {
         this.entities = entities;
     }
-    
+
     public FileObject getEntity(String key) {
         return getEntities().get(key);
     }
 
     public FileObject putEntity(String key, FileObject value) {
         return getEntities().put(key, value);
+    }
+
+    /**
+     * @return the bussinesLayerGenerator
+     */
+    public Generator getBussinesLayerGenerator() {
+        return bussinesLayerGenerator;
+    }
+
+    /**
+     * @param bussinesLayerGenerator the bussinesLayerGenerator to set
+     */
+    public void setBussinesLayerGenerator(Generator bussinesLayerGenerator) {
+        this.bussinesLayerGenerator = bussinesLayerGenerator;
+    }
+
+    /**
+     * @return the controllerLayerGenerator
+     */
+    public Generator getControllerLayerGenerator() {
+        return controllerLayerGenerator;
+    }
+
+    /**
+     * @param controllerLayerGenerator the controllerLayerGenerator to set
+     */
+    public void setControllerLayerGenerator(Generator controllerLayerGenerator) {
+        this.controllerLayerGenerator = controllerLayerGenerator;
+    }
+
+    /**
+     * @return the viewerLayerGenerator
+     */
+    public Generator getViewerLayerGenerator() {
+        return viewerLayerGenerator;
+    }
+
+    /**
+     * @param viewerLayerGenerator the viewerLayerGenerator to set
+     */
+    public void setViewerLayerGenerator(Generator viewerLayerGenerator) {
+        this.viewerLayerGenerator = viewerLayerGenerator;
     }
 
 }

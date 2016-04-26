@@ -83,34 +83,30 @@ import com.sun.source.tree.ModifiersTree;
 import com.sun.source.tree.Tree;
 import com.sun.source.tree.TypeParameterTree;
 import com.sun.source.tree.VariableTree;
+import static com.sun.source.util.Trees.instance;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.Map.Entry;
+import java.lang.reflect.Field;
 import javax.lang.model.element.AnnotationValue;
 import org.netbeans.api.project.Project;
-import org.netbeans.jcode.console.Console;
-import static org.netbeans.jcode.console.Console.FG_RED;
-import org.netbeans.jcode.ejb.facade.EjbFacadeGenerator;
-import org.netbeans.jcode.mvc.controller.MVCControllerGenerator;
-import org.netbeans.jcode.mvc.viewer.jsp.JSPViewerGenerator;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.openide.filesystems.FileLock;
 import org.netbeans.api.java.source.Task;
-import static org.netbeans.jcode.console.Console.BOLD;
-import static org.netbeans.jcode.console.Console.FG_MAGENTA;
-import static org.netbeans.jcode.console.Console.UNDERLINE;
 import org.netbeans.jcode.core.util.Constants;
+import org.netbeans.jcode.core.util.Constants;
+import org.netbeans.jcode.core.util.Inflector;
+import org.netbeans.jcode.core.util.JavaSourceHelper;
+import org.netbeans.jcode.core.util.StringHelper;
 import org.netbeans.jcode.core.util.StringHelper;
 import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
-import org.netbeans.jcode.ejb.facade.SessionBeanData;
 import static org.netbeans.jcode.jpa.JPAConstants.BASIC;
 import static org.netbeans.jcode.jpa.JPAConstants.ID;
-import org.netbeans.jcode.mvc.controller.MVCData;
-import org.netbeans.jcode.mvc.viewer.jsp.JSPData;
-import org.netbeans.jcode.servlet.util.ServletUtil;
+import org.netbeans.jcode.layer.ConfigData;
+import org.netbeans.jcode.layer.Generator;
+import org.netbeans.jcode.stack.config.data.LayerConfigData;
 
 /**
  * Copy of j2ee/utilities Util class
@@ -457,72 +453,70 @@ public class Util {
         return "set" + StringHelper.firstUpper(fieldInfo.getName());      //NOI18N
     }
 
-    public static void generateMVCCRUD(Set<String> entities, EntityResourceBeanModel model,
+    public static void generateCRUD(Set<String> entities, EntityResourceBeanModel model,
             ProgressHandler handler, ApplicationConfigData applicationConfigData) throws IOException {
         Project project = applicationConfigData.getProject();
         SourceGroup source = applicationConfigData.getSourceGroup();
 
-        Map<String, String> beanMap = new HashMap<>();
         for (EntityClassInfo classInfo : model.getEntityInfos()) {
             EntityClassInfo.FieldInfo fieldInfo = classInfo.getIdFieldInfo();
+            String primaryKeyType;
             if (fieldInfo != null) {
-                beanMap.put(classInfo.getType(), fieldInfo.getType());
+               primaryKeyType = fieldInfo.getType();
+            } else {
+                primaryKeyType = String.class.getName();
             }
+            classInfo.setPrimaryKeyType(primaryKeyType);
         }
 
-        Map<String, String> selectedEntityNames = new HashMap<>();
-        for (String entity : entities) {
-            String primaryKeyType = beanMap.get(entity);
-            selectedEntityNames.put(entity,
-                    (primaryKeyType == null ? String.class.getName() : primaryKeyType));
-        }
+     
+        LayerConfigData bussinesLayerConfig = applicationConfigData.getBussinesLayerConfig();
+        LayerConfigData controllerLayerConfig = applicationConfigData.getControllerLayerConfig();
+        LayerConfigData viewerLayerConfig = applicationConfigData.getViewerLayerConfig();
 
-        JSPData jspData = (JSPData) applicationConfigData.getViewerLayerConfig();
-
-        EjbFacadeGenerator ejbFacadeGenerator = new EjbFacadeGenerator();
-        SessionBeanData beanData = (SessionBeanData) applicationConfigData.getBussinesLayerConfig();
-        if (beanData == null) {
+        if (bussinesLayerConfig == null) {
             return;
         }
-        handler.progress(Console.wrap(EjbFacadeGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
-        ejbFacadeGenerator.generate(project, source, new ArrayList(selectedEntityNames.keySet()), beanData, handler);
+        inject(applicationConfigData.getBussinesLayerGenerator(), bussinesLayerConfig, controllerLayerConfig, viewerLayerConfig);
+        applicationConfigData.getBussinesLayerGenerator().execute(project, source, model, handler);
 
-        MVCControllerGenerator controllerGenerator = new MVCControllerGenerator(model);
-        MVCData mvcData = (MVCData) applicationConfigData.getControllerLayerConfig();
-        if (mvcData == null) {
+        if (controllerLayerConfig == null) {
             return;
         }
-        handler.progress(Console.wrap(MVCControllerGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
-        controllerGenerator.generateUtil(project, source, mvcData, jspData, handler);
-        for (Entry<String, String> entry : selectedEntityNames.entrySet()) {
-            controllerGenerator.generate(project, source, entry.getKey(), entry.getValue(), beanData, mvcData, jspData, false, false, true, handler);
-        }
+        inject(applicationConfigData.getControllerLayerGenerator(), bussinesLayerConfig, controllerLayerConfig, viewerLayerConfig);
+        applicationConfigData.getControllerLayerGenerator().execute(project, source, model, handler);
 
-        if (jspData == null) {
+        if (viewerLayerConfig == null) {
             return;
         }
-        JSPViewerGenerator viewerGenerator = new JSPViewerGenerator();
-        handler.append(Console.wrap(JSPViewerGenerator.class, "MSG_Copying_Static_Files", FG_RED, BOLD, UNDERLINE));
-        viewerGenerator.generateStaticResources(project, mvcData, jspData, handler);
-        viewerGenerator.generateHome(project, selectedEntityNames.keySet(), mvcData, jspData, handler);
-
-        boolean sucess = ServletUtil.setWelcomeFiles(project, jspData.getFolder() + "/index.jsp");
-        if (sucess) {
-            handler.progress(Console.wrap(NbBundle.getMessage(ServletUtil.class, "MSG_Progress_WelcomeFile", jspData.getFolder()), FG_MAGENTA, BOLD, UNDERLINE));
-        } else {
-            handler.progress(Console.wrap(NbBundle.getMessage(ServletUtil.class, "MSG_Failure_WelcomeFile", jspData.getFolder()), FG_RED, BOLD, UNDERLINE));
-        }
-
-        handler.progress(Console.wrap(JSPViewerGenerator.class, "MSG_Generating_CRUD_Template", FG_RED, BOLD, UNDERLINE));
-        for (Entry<String, String> entry : selectedEntityNames.entrySet()) {
-            viewerGenerator.generate(project, entry.getKey(),mvcData, jspData, true, handler);
-        }
-
+        inject(applicationConfigData.getViewerLayerGenerator(), bussinesLayerConfig, controllerLayerConfig, viewerLayerConfig);
+        applicationConfigData.getViewerLayerGenerator().execute(project, source, model, handler);
     }
 
+    private static void inject(Generator instance, LayerConfigData bussinesLayerConfig, LayerConfigData controllerLayerConfig, LayerConfigData viewerLayerConfig) {
+        Field[] fields = instance.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(ConfigData.class)) {
+                field.setAccessible(true);
+                try {
+                    if (field.getGenericType()== bussinesLayerConfig.getClass()) {
+                        field.set(instance, bussinesLayerConfig);
+                    } else if (field.getGenericType() == controllerLayerConfig.getClass()) {
+                        field.set(instance, controllerLayerConfig);
+                    } else if (field.getGenericType() == viewerLayerConfig.getClass()) {
+                        field.set(instance, viewerLayerConfig);
+                    }
+                } catch (IllegalArgumentException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    
+    
     public static Set<String> getEntities(Project project, Set<FileObject> files)
             throws IOException {
-        final Set<String> entities = new HashSet<String>();
+        final Set<String> entities = new HashSet<>();
         for (FileObject file : files) {
             final JavaSource source = JavaSource.forFileObject(file);
             if (source == null) {

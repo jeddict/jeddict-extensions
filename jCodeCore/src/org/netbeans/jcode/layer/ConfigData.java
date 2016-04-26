@@ -13,20 +13,20 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.netbeans.jcode.stack;
+package org.netbeans.jcode.layer;
 
-import org.netbeans.jcode.stack.config.panel.LayerConfigPanel;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  *
- * @author Gaurav Gupta
+ * @author jGauravGupta <gaurav.gupta.jc@gmail.com>
  */
-public interface TechnologyLayer {
-
-    String NONE_LABEL = "< none >";
-
-    public Class<? extends LayerConfigPanel> getConfigPanel();
-
-    public String getLabel();
-
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface ConfigData {
+        
+    
 }

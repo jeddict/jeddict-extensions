@@ -36,12 +36,12 @@ public class EntityResourceModelBuilder {
     /**
      * Creates a new instance of ModelBuilder
      */
-  public EntityResourceModelBuilder(Project project, SourceGroup sourceGroup, Map<String, FileObject> entities) {
+  public EntityResourceModelBuilder(Map<String, FileObject> entities) {
         entitiesInRelationMap = new HashMap<>();
         allEntitiesClassInfoMap = new HashMap<>();
         
         entities.entrySet().stream().forEach((entry) -> {
-        EntityClassInfo info = new EntityClassInfo(project,sourceGroup,entry.getKey(), entry.getValue(), this);
+        EntityClassInfo info = new EntityClassInfo(entry.getKey(), entry.getValue(), this);
             allEntitiesClassInfoMap.put(entry.getKey(), info);
             if (!info.getFieldInfos().isEmpty()) {
                 entitiesInRelationMap.put(entry.getKey(), info);

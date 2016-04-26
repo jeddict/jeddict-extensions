@@ -15,8 +15,13 @@
  */
 package org.netbeans.jcode.layer;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.netbeans.api.project.Project;
+import org.netbeans.api.project.SourceGroup;
+import org.netbeans.jcode.entity.info.EntityResourceBeanModel;
+import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.openide.util.Lookup;
 
 /**
@@ -24,16 +29,19 @@ import org.openide.util.Lookup;
  * @author Gaurav Gupta
  */
 public interface Generator {
- static TechContext get(String className) {
-     TechContext context = null;
-       for(Generator codeGenerator : Lookup.getDefault().lookupAll(Generator.class)) {
+
+    void execute(Project project, SourceGroup source, EntityResourceBeanModel model, ProgressHandler handler) throws IOException;
+
+    static TechContext get(String className) {
+        TechContext context = null;
+        for (Generator codeGenerator : Lookup.getDefault().lookupAll(Generator.class)) {
             if (codeGenerator.getClass().getSimpleName().equals(className)) {
                 context = new TechContext(codeGenerator);
             }
         }
         return context;
     }
- 
+
     static List<TechContext> getBusinessService() {
         List<TechContext> codeGenerators = new ArrayList<>();
         Lookup.getDefault().lookupAll(Generator.class).stream().forEach((Generator codeGenerator) -> {
@@ -44,18 +52,16 @@ public interface Generator {
         });
         return codeGenerators;
     }
-    
-    
 
     static List<TechContext> getController(TechContext parentCodeGenerator) {
         List<TechContext> codeGenerators = new ArrayList<>();
-      
+
         Lookup.getDefault().lookupAll(Generator.class).stream().forEach((Generator codeGenerator) -> {
             Technology technology = codeGenerator.getClass().getAnnotation(Technology.class);
             if (technology.type() == Technology.Type.CONTROLLER) {
-                 if(codeGenerator.getClass() == DefaultControllerLayer.class){
-                     codeGenerators.add(new TechContext(codeGenerator));
-                 }
+                if (codeGenerator.getClass() == DefaultControllerLayer.class) {
+                    codeGenerators.add(new TechContext(codeGenerator));
+                }
                 for (Class<? extends Generator> genClass : technology.parents()) {
                     if (genClass == parentCodeGenerator.getGenerator().getClass()) {
                         codeGenerators.add(new TechContext(codeGenerator));
@@ -71,8 +77,8 @@ public interface Generator {
         List<TechContext> codeGenerators = new ArrayList<>();
         Lookup.getDefault().lookupAll(Generator.class).stream().forEach((Generator codeGenerator) -> {
             Technology technology = codeGenerator.getClass().getAnnotation(Technology.class);
-            if(codeGenerator.getClass() == DefaultViewerLayer.class){
-                     codeGenerators.add(new TechContext(codeGenerator));
+            if (codeGenerator.getClass() == DefaultViewerLayer.class) {
+                codeGenerators.add(new TechContext(codeGenerator));
             }
             if (technology.type() == Technology.Type.VIEWER) {
                 for (Class<? extends Generator> genClass : technology.parents()) {

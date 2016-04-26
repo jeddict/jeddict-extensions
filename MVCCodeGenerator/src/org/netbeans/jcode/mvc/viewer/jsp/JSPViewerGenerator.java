@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import static java.util.stream.Collectors.toSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.apache.commons.lang.StringUtils;
@@ -32,9 +33,13 @@ import org.netbeans.api.project.SourceGroup;
 import org.netbeans.api.project.Sources;
 import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.BOLD;
+import static org.netbeans.jcode.console.Console.FG_MAGENTA;
 import static org.netbeans.jcode.console.Console.FG_RED;
+import static org.netbeans.jcode.console.Console.UNDERLINE;
 import org.netbeans.jcode.core.util.FileUtil;
 import org.netbeans.jcode.core.util.StringHelper;
+import org.netbeans.jcode.entity.info.EntityResourceBeanModel;
+import org.netbeans.jcode.layer.ConfigData;
 import org.netbeans.jcode.layer.Generator;
 import org.netbeans.jcode.layer.Technology;
 import static org.netbeans.jcode.layer.Technology.Type.VIEWER;
@@ -43,10 +48,12 @@ import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
 import org.netbeans.jcode.mvc.controller.MVCData;
 import org.netbeans.jcode.mvc.viewer.dto.FromEntityBase;
 import org.netbeans.jcode.mvc.controller.Operation;
+import org.netbeans.jcode.servlet.util.ServletUtil;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.modules.web.api.webmodule.WebProjectConstants;
 import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
+import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -98,9 +105,30 @@ public class JSPViewerGenerator implements Generator{
         GENERATED_CRUD_FILES.put(Operation.FIND_ALL, "list");
         GENERATED_CRUD_FILES.put(Operation.FIND, "view");
     }
+
+    @ConfigData
+    private JSPData jspData;
+    @ConfigData
+    private MVCData mvcData;
     
-    public JSPViewerGenerator() {
-       
+    @Override
+    public void execute(Project project,SourceGroup source, EntityResourceBeanModel model, ProgressHandler handler) throws IOException {
+       Set<String> entities = model.getEntityInfos().stream().map(ei -> ei.getType()).collect(toSet());
+        handler.append(Console.wrap(JSPViewerGenerator.class, "MSG_Copying_Static_Files", FG_RED, BOLD, UNDERLINE));
+        generateStaticResources(project, mvcData, jspData, handler);
+        generateHome(project, entities , mvcData, jspData, handler);
+
+        boolean sucess = ServletUtil.setWelcomeFiles(project, jspData.getFolder() + "/index.jsp");
+        if (sucess) {
+            handler.progress(Console.wrap(NbBundle.getMessage(ServletUtil.class, "MSG_Progress_WelcomeFile", jspData.getFolder()), FG_MAGENTA, BOLD, UNDERLINE));
+        } else {
+            handler.progress(Console.wrap(NbBundle.getMessage(ServletUtil.class, "MSG_Failure_WelcomeFile", jspData.getFolder()), FG_RED, BOLD, UNDERLINE));
+        }
+
+        handler.progress(Console.wrap(JSPViewerGenerator.class, "MSG_Generating_CRUD_Template", FG_RED, BOLD, UNDERLINE));
+        for (String entity : entities) {
+            generate(project, entity,mvcData, jspData, true, handler);
+        }
     }
 
 //    public static JSPViewerGenerator getInstance() {

@@ -29,13 +29,15 @@ import org.netbeans.jcode.stack.config.panel.LayerConfigPanel;
 @Target(ElementType.TYPE)
 public @interface Technology {
     
+    public final static String NONE_LABEL = "< none >";
+    
     Type type();
     
     public Class<? extends LayerConfigPanel> panel() default LayerConfigPanel.class;
     
     public Class<? extends Generator>[] parents() default {};
 
-    public String label() default "<none>";
+    public String label() default NONE_LABEL;
     
     enum Type {
         BUSINESS,CONTROLLER,VIEWER;

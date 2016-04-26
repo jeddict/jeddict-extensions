@@ -33,7 +33,7 @@ import org.openide.filesystems.FileObject;
  *
  * @author Gaurav Gupta
  */
-public class MVCApplicationGenerator extends MVCBaseApplicationGenerator {
+public class ApplicationGenerator extends BaseApplicationGenerator {
 
     private ApplicationConfigData applicationConfigData;
     @Override
@@ -52,21 +52,14 @@ public class MVCApplicationGenerator extends MVCBaseApplicationGenerator {
         Set<String> entities = getModel().getEntityInfos().stream().map(ei -> ei.getEntityFqn()).collect(toSet());
         
         preGenerate(new ArrayList<>(entities));
-        Util.generateMVCCRUD(entities, getModel(), handle, applicationConfigData);
+        Util.generateCRUD(entities, getModel(), handle, applicationConfigData);
         
-        for (EntityClassInfo info : getModel().getEntityInfos()) {
-            Util.modifyEntity(info.getEntityFileObject());
-        }
+        
         finishProgressReporting();
-        
-        
 
         return new HashSet<>();
     }
-    
-     /* (non-Javadoc)
-     * @see org.netbeans.modules.websvc.rest.codegen.AbstractGenerator#getTotalWorkUnits()
-     */
+
     @Override
     protected int getTotalWorkUnits() {
         float unit = 1.5f;

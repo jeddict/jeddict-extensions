@@ -81,18 +81,18 @@ public class EntityClassInfo {
     private String packageName;
     private Collection<FieldInfo> fieldInfos;
     private FieldInfo idFieldInfo;
-    private SourceGroup sourceGroup;
+    private String primaryKeyType;
 
 
-    public EntityClassInfo( Project project, SourceGroup sourceGroup, String entityFqn, FileObject entityFileObject,  EntityResourceModelBuilder builder) {
+    public EntityClassInfo(String entityFqn, FileObject entityFileObject,  EntityResourceModelBuilder builder) {
         this.entityFqn = entityFqn;
         this.entityFileObject=entityFileObject;
         this.fieldInfos = new ArrayList<>();
         this.builder = builder;
-        extractFields(project,sourceGroup);
+        extractFields();
 
         if (idFieldInfo != null && idFieldInfo.isEmbeddedId()) {
-            extractPKFields(project);
+            extractPKFields();
         }
     }
 
@@ -108,7 +108,7 @@ public class EntityClassInfo {
         this.type = type;
     }
 
-    protected void extractFields(Project project,SourceGroup sourceGroup) {
+    protected void extractFields() {
         try {
             JavaSource source = JavaSource.forFileObject(getEntityFileObject());
             if (source != null) {
@@ -216,12 +216,9 @@ public class EntityClassInfo {
         extractFieldsFromMethods(originalEntity, superClass, controller);
     }
 
-    protected void extractPKFields(Project project) {
-        FileObject root = MiscUtilities.findSourceRoot(project);
-        if (root != null) {
-            try {
-                final ClasspathInfo cpInfo = ClasspathInfo.create(root);
-                JavaSource pkSource = JavaSource.create(cpInfo);
+    protected void extractPKFields() {
+         try {
+                JavaSource pkSource = JavaSource.forFileObject(getEntityFileObject());
                 if (pkSource == null) {
                     throw new IllegalArgumentException("No JavaSource object for " + idFieldInfo.getType());
                 }
@@ -236,9 +233,7 @@ public class EntityClassInfo {
             } catch (IOException ex) {
                 Exceptions.printStackTrace(ex);
             }
-        } else {
-            throw new IllegalArgumentException("No source root for " + project.getProjectDirectory().getName());
-        }
+       
     }
 
     protected void extractPKFields(TypeElement typeElement,
@@ -416,6 +411,20 @@ public class EntityClassInfo {
      */
     public FileObject getEntityFileObject() {
         return entityFileObject;
+    }
+
+    /**
+     * @return the primaryKeyType
+     */
+    public String getPrimaryKeyType() {
+        return primaryKeyType;
+    }
+
+    /**
+     * @param primaryKeyType the primaryKeyType to set
+     */
+    public void setPrimaryKeyType(String primaryKeyType) {
+        this.primaryKeyType = primaryKeyType;
     }
 
     public static class FieldInfo {
