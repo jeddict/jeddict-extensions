@@ -3,7 +3,7 @@
     <type>org.netbeans.modules.apisupport.project</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/nb-module-project/3">
-            <code-name-base>org.netbeans.jcode.stack</code-name-base>
+            <code-name-base>org.netbeans.jcode.javaee.generator</code-name-base>
             <suite-component/>
             <module-dependencies>
                 <dependency>
@@ -565,6 +565,9 @@
                 <package>org.netbeans.jcode.cdi.resource</package>
                 <package>org.netbeans.jcode.cdi.util</package>
                 <package>org.netbeans.jcode.ejb.facade</package>
+                <package>org.netbeans.jcode.generator.internal</package>
+                <package>org.netbeans.jcode.generator.internal.util</package>
+                <package>org.netbeans.jcode.javaee.generator</package>
                 <package>org.netbeans.jcode.jpa</package>
                 <package>org.netbeans.jcode.jpa.util</package>
                 <package>org.netbeans.jcode.layer</package>
@@ -575,7 +578,6 @@
                 <package>org.netbeans.jcode.rest.converter</package>
                 <package>org.netbeans.jcode.rest.util</package>
                 <package>org.netbeans.jcode.servlet.util</package>
-                <package>org.netbeans.jcode.stack</package>
                 <package>org.netbeans.jcode.stack.app.generator</package>
                 <package>org.netbeans.jcode.stack.config.data</package>
                 <package>org.netbeans.jcode.stack.config.panel</package>

@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.netbeans.jcode.mvc.util;
+package org.netbeans.jcode.generator.internal.util;
 
 public class NotGetterMethodException extends Exception {
 
