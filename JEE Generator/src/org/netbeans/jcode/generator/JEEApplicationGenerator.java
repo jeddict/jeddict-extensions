@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.netbeans.jcode.generator.internal;
+package org.netbeans.jcode.generator;
 
 import java.io.IOException;
 import java.util.Map;
@@ -21,9 +21,9 @@ import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.entity.info.EntityResourceBeanModel;
 import org.netbeans.jcode.entity.info.EntityResourceModelBuilder;
+import org.netbeans.jcode.generator.internal.ApplicationGeneratorFactory;
+import org.netbeans.jcode.generator.internal.BaseApplicationGenerator;
 import org.netbeans.jcode.jpa.util.PersistenceHelper;
-import org.netbeans.jcode.mvc.core.ApplicationGeneratorFactory;
-import org.netbeans.jcode.mvc.core.BaseApplicationGenerator;
 import org.netbeans.jcode.stack.config.data.*;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.openide.filesystems.FileObject;

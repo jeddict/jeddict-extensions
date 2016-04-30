@@ -565,6 +565,7 @@
                 <package>org.netbeans.jcode.cdi.resource</package>
                 <package>org.netbeans.jcode.cdi.util</package>
                 <package>org.netbeans.jcode.ejb.facade</package>
+                <package>org.netbeans.jcode.generator</package>
                 <package>org.netbeans.jcode.generator.internal</package>
                 <package>org.netbeans.jcode.generator.internal.util</package>
                 <package>org.netbeans.jcode.javaee.generator</package>

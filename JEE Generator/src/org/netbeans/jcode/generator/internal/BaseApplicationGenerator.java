@@ -22,9 +22,9 @@ import org.netbeans.api.project.Project;
 import org.netbeans.jcode.entity.info.EntityClassInfo;
 import org.netbeans.jcode.entity.info.EntityClassInfo.FieldInfo;
 import org.netbeans.jcode.entity.info.EntityResourceBeanModel;
-import org.netbeans.jcode.mvc.util.Util;
 
 import org.netbeans.jcode.generator.AbstractGenerator;
+import org.netbeans.jcode.generator.internal.util.Util;
 import org.netbeans.jcode.jpa.util.PersistenceHelper.PersistenceUnit;
 
 /**

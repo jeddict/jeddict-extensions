@@ -20,10 +20,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import static java.util.stream.Collectors.toSet;
+import org.netbeans.jcode.generator.internal.util.Util;
 import org.netbeans.jcode.jpa.util.PersistenceHelper;
 
 import org.netbeans.jcode.rest.util.RestUtils;
-import org.netbeans.jcode.mvc.util.Util;
 import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.openide.filesystems.FileObject;
