@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.prefs.Preferences;
@@ -59,14 +60,14 @@ public class PreferenceUtils {
         return baos.toByteArray();
     }
 
-    private static Object deserialize(InputStream inputStream) throws InvalidClassException {
+    private static Object deserialize(InputStream inputStream, ClassLoader classLoader) throws InvalidClassException {
         if (inputStream == null) {
             throw new IllegalArgumentException("The InputStream must not be null");
         }
         ObjectInputStream in = null;
         try {
             // stream closed in the finally
-            in = new ObjectInputStream(inputStream);
+            in = new ClassLoaderObjectInputStream(classLoader, inputStream);
             return in.readObject();
 
         } catch (ClassNotFoundException ex) {
@@ -86,23 +87,27 @@ public class PreferenceUtils {
         }
     }
 
-    private static Object deserialize(byte[] objectData) throws InvalidClassException {
+    private static Object deserialize(byte[] objectData, ClassLoader classLoader) throws InvalidClassException {
         if (objectData == null) {
             throw new IllegalArgumentException("The byte[] must not be null");
         }
         ByteArrayInputStream bais = new ByteArrayInputStream(objectData);
-        return deserialize(bais);
+        return deserialize(bais, classLoader);
     }
 
     public static <T> T get(Preferences pref,Class<T> _class) {
         T newInstance = null;
+//        ClassLoader ctxLoader = Thread.currentThread().getContextClassLoader();
         try {
+//            Thread.currentThread().setContextClassLoader(_class.getClassLoader());
             newInstance = _class.newInstance();
-            return (T) PreferenceUtils.deserialize(pref.getByteArray(_class.getName(), PreferenceUtils.serialize((Serializable)newInstance)));
+            return (T) PreferenceUtils.deserialize(pref.getByteArray(_class.getName(), PreferenceUtils.serialize((Serializable)newInstance)), _class.getClassLoader());
         } catch (InvalidClassException ex) {
            return newInstance;
         } catch (InstantiationException | IllegalAccessException ex) {
             Exceptions.printStackTrace(ex);
+        } finally {
+//            Thread.currentThread().setContextClassLoader(ctxLoader);
         }
         return null;
     }
@@ -111,4 +116,26 @@ public class PreferenceUtils {
         pref.putByteArray(t.getClass().getName(), PreferenceUtils.serialize((Serializable) t));
     }
 
+}
+
+class ClassLoaderObjectInputStream extends ObjectInputStream{
+
+     private ClassLoader classLoader;
+
+     public ClassLoaderObjectInputStream(ClassLoader classLoader, InputStream in) throws IOException {
+          super(in);
+          this.classLoader = classLoader;
+     }
+     
+     @Override
+     protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException{
+     
+          try{
+               String name = desc.getName();
+               return Class.forName(name, false, classLoader);
+          }
+          catch(ClassNotFoundException e){
+               return super.resolveClass(desc);
+          }
+     }
 }

@@ -22,8 +22,8 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import org.netbeans.api.java.classpath.ClassPath;
 import org.netbeans.api.java.source.ClasspathInfo;
+import org.netbeans.jcode.generator.internal.util.CustomJpaControllerUtil;
 import static org.netbeans.jcode.jpa.JPAConstants.ID;
-import org.netbeans.jcode.mvc.util.CustomJpaControllerUtil;
 import org.openide.filesystems.FileObject;
 
 

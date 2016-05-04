@@ -86,7 +86,6 @@ import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.text.NbDocument;
 import org.openide.util.Exceptions;
 import org.openide.util.Parameters;
-import org.openide.util.Utilities;
 
 /**
  *
@@ -99,7 +98,7 @@ public class JavaSourceHelper {
     static final String JAVA_EXT = "java"; //NOI18N
 
     public static List<JavaSource> getJavaSources(Project project) {
-        List<JavaSource> result = new ArrayList<JavaSource>();
+        List<JavaSource> result = new ArrayList<>();
         SourceGroup[] groups = SourceGroupSupport.getJavaSourceGroups(project);
 
         for (SourceGroup group : groups) {

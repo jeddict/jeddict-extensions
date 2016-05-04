@@ -31,9 +31,11 @@ import java.util.regex.Matcher;
 import org.netbeans.api.java.project.JavaProjectConstants;
 import org.netbeans.api.java.queries.UnitTestForSourceQuery;
 import org.netbeans.api.java.source.JavaSource;
+import org.netbeans.api.project.FileOwnerQuery;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.SourceGroup;
+import static org.netbeans.jcode.core.util.SourceGroupSupport.getJavaSourceGroups;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.filesystems.URLMapper;
@@ -118,6 +120,22 @@ public final class SourceGroups {
             }
         }
         return null;
+    }
+    
+    public static SourceGroup getFolderSourceGroup(FileObject folder) {
+        Parameters.notNull("folder", folder); //NOI18N
+        Project project = FileOwnerQuery.getOwner(folder);
+        for (SourceGroup sourceGroup : getJavaSourceGroups(project)) {
+            if (FileUtil.isParentOf(sourceGroup.getRootFolder(), folder)) {
+                return sourceGroup;
+            }
+        }
+        return null;
+    }
+
+    public static JavaSource getJavaSource(SourceGroup sourceGroup , String fqClassName){
+         FileObject sourceClass = sourceGroup.getRootFolder().getFileObject(fqClassName.replaceAll("\\.", Matcher.quoteReplacement(File.separator))+ ".java");
+         return JavaSource.forFileObject(sourceClass);
     }
 
     /**
@@ -254,9 +272,6 @@ public final class SourceGroups {
         return testGroups;
     }
 
-    public static JavaSource getJavaSource(SourceGroup sourceGroup , String fqClassName){
-         FileObject sourceClass = sourceGroup.getRootFolder().getFileObject(fqClassName.replaceAll("\\.", Matcher.quoteReplacement(File.separator))+ ".java");
-         return JavaSource.forFileObject(sourceClass);
-    }
+    
     
 }

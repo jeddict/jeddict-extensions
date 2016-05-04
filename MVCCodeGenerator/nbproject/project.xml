@@ -76,7 +76,7 @@
                     </run-dependency>
                 </dependency>
                 <dependency>
-                    <code-name-base>org.netbeans.jcode.stack</code-name-base>
+                    <code-name-base>org.netbeans.jcode.javaee.generator</code-name-base>
                     <build-prerequisite/>
                     <compile-dependency/>
                     <run-dependency>
