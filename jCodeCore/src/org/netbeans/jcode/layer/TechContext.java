@@ -15,6 +15,7 @@
  */
 package org.netbeans.jcode.layer;
 
+import java.util.Objects;
 import org.netbeans.jcode.stack.config.panel.LayerConfigPanel;
 
 /**
@@ -74,5 +75,29 @@ public class TechContext {
     public boolean isValid(){
         return getTechnology().panel() != null && getTechnology().panel() != LayerConfigPanel.class;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 31 * hash + Objects.hashCode(this.technology.label());
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TechContext other = (TechContext) obj;
+        if (this.generator.getClass()!= other.generator.getClass()) {
+            return false;
+        }
+        return true;
+    }
+    
+    
     
 }

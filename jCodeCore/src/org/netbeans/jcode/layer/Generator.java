@@ -44,32 +44,41 @@ public interface Generator {
 
     static List<TechContext> getBusinessService() {
         List<TechContext> codeGenerators = new ArrayList<>();
+        List<TechContext> customCodeGenerators = new ArrayList<>();
         Lookup.getDefault().lookupAll(Generator.class).stream().forEach((Generator codeGenerator) -> {
             Technology technology = codeGenerator.getClass().getAnnotation(Technology.class);
             if (technology.type() == Technology.Type.BUSINESS) {
-                codeGenerators.add(new TechContext(codeGenerator));
+                if (technology.panel()== org.netbeans.jcode.stack.config.panel.LayerConfigPanel.class) {
+               codeGenerators.add(new TechContext(codeGenerator));
+                } else {
+                customCodeGenerators.add(new TechContext(codeGenerator));
+                }
             }
         });
+        codeGenerators.addAll(customCodeGenerators);
         return codeGenerators;
     }
 
     static List<TechContext> getController(TechContext parentCodeGenerator) {
         List<TechContext> codeGenerators = new ArrayList<>();
-
+        List<TechContext> customCodeGenerators = new ArrayList<>();
+        
         Lookup.getDefault().lookupAll(Generator.class).stream().forEach((Generator codeGenerator) -> {
             Technology technology = codeGenerator.getClass().getAnnotation(Technology.class);
             if (technology.type() == Technology.Type.CONTROLLER) {
-                if (codeGenerator.getClass() == DefaultControllerLayer.class) {
+                if (technology.panel() == org.netbeans.jcode.stack.config.panel.LayerConfigPanel.class) {
                     codeGenerators.add(new TechContext(codeGenerator));
-                }
-                for (Class<? extends Generator> genClass : technology.parents()) {
-                    if (genClass == parentCodeGenerator.getGenerator().getClass()) {
-                        codeGenerators.add(new TechContext(codeGenerator));
-                        break;
+                } else {
+                    for (Class<? extends Generator> genClass : technology.parents()) {
+                        if (genClass == parentCodeGenerator.getGenerator().getClass()) {
+                            customCodeGenerators.add(new TechContext(codeGenerator));
+                            break;
+                        }
                     }
                 }
             }
         });
+        codeGenerators.addAll(customCodeGenerators);
         return codeGenerators;
     }
 
@@ -77,14 +86,15 @@ public interface Generator {
         List<TechContext> codeGenerators = new ArrayList<>();
         Lookup.getDefault().lookupAll(Generator.class).stream().forEach((Generator codeGenerator) -> {
             Technology technology = codeGenerator.getClass().getAnnotation(Technology.class);
-            if (codeGenerator.getClass() == DefaultViewerLayer.class) {
-                codeGenerators.add(new TechContext(codeGenerator));
-            }
             if (technology.type() == Technology.Type.VIEWER) {
-                for (Class<? extends Generator> genClass : technology.parents()) {
-                    if (genClass == parentCodeGenerator.getGenerator().getClass()) {
-                        codeGenerators.add(new TechContext(codeGenerator));
-                        break;
+                if (technology.panel() == org.netbeans.jcode.stack.config.panel.LayerConfigPanel.class) {
+                    codeGenerators.add(new TechContext(codeGenerator));
+                } else {
+                    for (Class<? extends Generator> genClass : technology.parents()) {
+                        if (genClass == parentCodeGenerator.getGenerator().getClass()) {
+                            codeGenerators.add(new TechContext(codeGenerator));
+                            break;
+                        }
                     }
                 }
             }
