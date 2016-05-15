@@ -35,7 +35,6 @@ import org.netbeans.api.project.FileOwnerQuery;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.SourceGroup;
-import static org.netbeans.jcode.core.util.SourceGroupSupport.getJavaSourceGroups;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.filesystems.URLMapper;
@@ -134,8 +133,12 @@ public final class SourceGroups {
     }
 
     public static JavaSource getJavaSource(SourceGroup sourceGroup , String fqClassName){
-         FileObject sourceClass = sourceGroup.getRootFolder().getFileObject(fqClassName.replaceAll("\\.", Matcher.quoteReplacement(File.separator))+ ".java");
+         FileObject sourceClass = getJavaFileObject(sourceGroup,fqClassName);
          return JavaSource.forFileObject(sourceClass);
+    }
+    
+    public static FileObject getJavaFileObject(SourceGroup sourceGroup , String fqClassName){
+         return sourceGroup.getRootFolder().getFileObject(fqClassName.replaceAll("\\.", Matcher.quoteReplacement(File.separator))+ ".java");
     }
 
     /**

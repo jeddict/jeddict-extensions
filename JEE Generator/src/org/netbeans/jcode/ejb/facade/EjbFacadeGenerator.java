@@ -179,6 +179,7 @@ public final class EjbFacadeGenerator implements Generator{
                 throw new IOException("File already exists exception: " + afFO.getPath());
             }
         }
+        
         afFO = GenerationUtils.createClass(targetFolder, fileName, null);
         JavaSource source = JavaSource.forFileObject(afFO);
         source.runModificationTask(new Task<WorkingCopy>() {
