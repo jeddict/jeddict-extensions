@@ -15,8 +15,16 @@
  */
 package org.netbeans.jcode.core.util;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import org.netbeans.api.java.project.JavaProjectConstants;
 import org.netbeans.api.project.FileOwnerQuery;
 import org.netbeans.api.project.Project;
@@ -27,6 +35,9 @@ import org.netbeans.api.project.ui.OpenProjects;
 import org.netbeans.modules.web.api.webmodule.WebModule;
 import org.netbeans.modules.websvc.rest.spi.MiscUtilities;
 import org.openide.filesystems.FileObject;
+import org.openide.loaders.DataFolder;
+import org.openide.loaders.DataObject;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -77,6 +88,37 @@ public class ProjectHelper {
     
      public static boolean isJavaEE6AndHigher(Project project) {
         return MiscUtilities.isJavaEE6AndHigher(project);
+    }
+     
+    public static Map<String, ?> getTemplateProperties() {
+        FileObject dir = org.openide.filesystems.FileUtil.getConfigFile("Templates/Properties");
+        if (dir == null) {
+            return Collections.emptyMap();
+        }
+        Charset set;
+        InputStream is;
+        
+        Map<String, Object> ret = new HashMap<>();
+        for (Enumeration<? extends FileObject> en = dir.getChildren(true); en.hasMoreElements(); ) {
+            try {
+                FileObject fo = en.nextElement();
+                Properties p = new Properties();
+                is = fo.getInputStream();
+                p.load(is);
+                is.close();
+                for (Map.Entry<Object, Object> entry : p.entrySet()) {
+                    if (entry.getKey() instanceof String) {
+                        String key = (String) entry.getKey();
+                        if (!ret.containsKey(key)) {
+                            ret.put(key, entry.getValue());
+                        }
+                    }
+                }
+            } catch (IOException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }
+        return ret;
     }
 
 }

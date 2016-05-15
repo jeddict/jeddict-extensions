@@ -23,12 +23,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -36,7 +37,6 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import org.netbeans.api.queries.FileEncodingQuery;
 import static org.netbeans.jcode.core.util.JavaSourceHelper.reformat;
-import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
@@ -165,6 +165,27 @@ public class FileUtil {
                 is.close();
             }
         }
+    }
+    
+    public static String expandTemplate(String template, Map<String, Object> values){
+        StringWriter writer= new StringWriter();
+         ScriptEngine eng = getScriptEngine();
+        Bindings bind = eng.getContext().getBindings(ScriptContext.ENGINE_SCOPE);
+        if(values!=null){
+        bind.putAll(values);
+        }
+        bind.put(ENCODING_PROPERTY_NAME, Charset.defaultCharset().name());
+        Reader is = null;
+            eng.getContext().setWriter(writer);
+            is = new StringReader(template);
+        try {
+            eng.eval(is);
+        } catch (ScriptException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        
+        return writer.toString();
+       
     }
     private static final String ENCODING_PROPERTY_NAME = "encoding"; //NOI18N
     private static ScriptEngineManager manager;

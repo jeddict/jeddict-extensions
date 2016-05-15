@@ -57,6 +57,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
+import org.apache.commons.lang.StringUtils;
 import org.netbeans.api.java.project.JavaProjectConstants;
 import org.netbeans.api.java.source.Comment;
 import org.netbeans.api.java.source.Comment.Style;
@@ -71,6 +72,8 @@ import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.api.project.Sources;
+import static org.netbeans.jcode.core.util.FileUtil.expandTemplate;
+import static org.netbeans.jcode.core.util.ProjectHelper.getTemplateProperties;
 import org.netbeans.jcode.task.AbstractTask;
 import org.netbeans.modules.editor.indent.api.Reformat;
 import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
@@ -1119,5 +1122,26 @@ public class JavaSourceHelper {
                 newClassTree = maker.addClassMember(newClassTree, getter);
                 newClassTree = maker.addClassMember(newClassTree, setter);
                 return newClassTree;
+    }
+    
+//    private final static String LICENSE = "<#assign licenseFirst = \"/*\">\n"
+//            + "<#assign licensePrefix = \" * \">\n"
+//            + "<#assign licenseLast = \" */\">\n"
+//            + "<#include \"${project.licensePath}\">";
+//
+//    public static String getLicense() {
+//        return expandTemplate(LICENSE, null);
+//    }
+    private static Map<String, ?> TEMPLATE_PROPERTIES;
+
+    public static String getAuthor() {
+        if(TEMPLATE_PROPERTIES==null){
+            TEMPLATE_PROPERTIES = getTemplateProperties();
+        }
+      String author = (String)TEMPLATE_PROPERTIES.get("user");
+      if(StringUtils.isBlank(author)){
+          author = System.getProperty("user.name");
+      }
+      return author;
     }
 }

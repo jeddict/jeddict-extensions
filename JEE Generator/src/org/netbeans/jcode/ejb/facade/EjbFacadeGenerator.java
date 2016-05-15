@@ -290,7 +290,6 @@ public final class EjbFacadeGenerator implements Generator{
         final String variableName = StringHelper.firstLower(entitySimpleName);
 
         //create the abstract facade class
-        
         String fileName = beanData.getPrefixName() + FACADE_ABSTRACT + beanData.getSuffixName();
         final String afName = beanData.getPackage().isEmpty() ? fileName : beanData.getPackage() + "." + fileName; //NOI18N
     
@@ -393,7 +392,7 @@ public final class EjbFacadeGenerator implements Generator{
                 }
                 GenerationUtils genUtils = GenerationUtils.newInstance(wc);
                 TreeMaker maker = wc.getTreeMaker();
-
+       
                 List<Tree> implementsClause = new ArrayList<>(classTree.getImplementsClause());
                 if (hasLocal) {
                     implementsClause.add(genUtils.createType(localInterfaceFQN, classElement));
