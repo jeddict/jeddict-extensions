@@ -19,16 +19,23 @@ import com.sun.source.tree.AnnotationTree;
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionTree;
+import com.sun.source.tree.MethodTree;
 import com.sun.source.tree.ModifiersTree;
+import com.sun.source.tree.ParameterizedTypeTree;
 import com.sun.source.tree.Tree;
+import com.sun.source.tree.TypeParameterTree;
 import com.sun.source.tree.VariableTree;
+import org.netbeans.jcode.core.util.JavaSourceHelper;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
@@ -91,7 +98,9 @@ import static org.netbeans.jcode.mvc.controller.ValidationUtilGenerator.VALIDATI
 import org.netbeans.jcode.mvc.controller.event.ControllerEventGenerator;
 import org.netbeans.jcode.rest.converter.ParamConvertorGenerator;
 import org.netbeans.jcode.task.progress.ProgressHandler;
+import org.netbeans.modules.websvc.rest.spi.MiscUtilities;
 import org.netbeans.modules.websvc.rest.spi.RestSupport;
+import static org.netbeans.modules.websvc.rest.spi.RestSupport.JAX_RS_APPLICATION_CLASS;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
@@ -130,7 +139,7 @@ public class MVCControllerGenerator implements Generator {
         for (EntityClassInfo classInfo : model.getEntityInfos()) {
             generate(project, source, classInfo.getType(), classInfo.getPrimaryKeyType(), beanData, mvcData, jspData, false, false, true, handler);
         }
-        
+
         model.getEntityInfos().stream().forEach((info) -> {
             Util.modifyEntity(info.getEntityFileObject());
         });
@@ -412,12 +421,10 @@ public class MVCControllerGenerator implements Generator {
 
         CDIUtil.createDD(project);
 
-        generateApplicationConfig(project, sourceGroup,
-                mvcData, handler);
+        generateApplicationConfig(project, sourceGroup, handler);
     }
 
-    public void generateApplicationConfig(final Project project, final SourceGroup sourceGroup,
-            final MVCData mvcData, ProgressHandler handler) throws IOException {
+    public void generateApplicationConfig(final Project project, final SourceGroup sourceGroup, ProgressHandler handler) throws IOException {
 
         if (mvcData.getRestConfigData() == null) {
             return;
@@ -442,7 +449,30 @@ public class MVCControllerGenerator implements Generator {
         final String appClassName = mvcData.getRestConfigData().getApplicationClass();
         try {
             if (restAppPack != null && appClassName != null) {
-                RestUtils.createApplicationConfigClass(restSupport, restAppPack, appClassName, mvcData.getRestConfigData().getApplicationPath());
+
+                FileObject configFO = RestUtils.createApplicationConfigClass(restSupport, restAppPack, appClassName, mvcData.getRestConfigData().getApplicationPath());
+                JavaSource javaSource = JavaSource.forFileObject(configFO);//add some cutom properties/method specific to MVC
+                if (javaSource != null) {
+
+                    javaSource.runModificationTask(new Task<WorkingCopy>() {
+
+                        @Override
+                        public void run(WorkingCopy workingCopy) throws Exception {
+                            workingCopy.toPhase(JavaSource.Phase.RESOLVED);
+                            ClassTree tree = JavaSourceHelper.getTopLevelClassTree(workingCopy);//
+                            TreeMaker maker = workingCopy.getTreeMaker();
+                            ClassTree newTree = tree; // NOI18N
+                            String viewEngineFolder = null;
+                            if (jspData != null) {
+                                viewEngineFolder = jspData.getFolder();
+                            }
+                            newTree = createAppConfigGetProperties(workingCopy, maker, newTree, viewEngineFolder, mvcData.isCSRF());
+                            workingCopy.rewrite(tree, newTree);
+                        }
+
+                    }).commit();
+                }
+
             }
             RestUtils.disableRestServicesChangeListner(project);
             restSupport.configure("JPA Modeler - REST support");
@@ -451,6 +481,48 @@ public class MVCControllerGenerator implements Generator {
         } finally {
             RestUtils.enableRestServicesChangeListner(project);
         }
+    }
+
+    private static ClassTree createAppConfigGetProperties(WorkingCopy workingCopy, TreeMaker maker, ClassTree newTree, String viewEngineFolder, boolean csrfProtection) {
+
+        if (StringUtils.isBlank(viewEngineFolder) && !csrfProtection) {
+            return newTree;
+        }
+
+        CompilationUnitTree cut = workingCopy.getCompilationUnit();
+        CompilationUnitTree newCut = maker.addCompUnitImport(cut, maker.Import(maker.Identifier(HashMap.class.getCanonicalName()), false));
+        newCut = maker.addCompUnitImport(newCut, maker.Import(maker.Identifier(MVCConstants.VIEW_ENGINE), false));
+        workingCopy.rewrite(cut, newCut);
+
+        ModifiersTree modifiersTree = maker.Modifiers(
+                EnumSet.of(Modifier.PUBLIC), Collections.singletonList(
+                        maker.Annotation(maker.QualIdent(
+                                        Override.class.getCanonicalName()),
+                                Collections.<ExpressionTree>emptyList())));
+        List<Tree> typeArguments = new ArrayList<>();
+        typeArguments.add(maker.QualIdent(String.class.getCanonicalName()));
+        typeArguments.add(maker.QualIdent(Object.class.getCanonicalName()));
+
+        ParameterizedTypeTree wildMap = maker.ParameterizedType(maker.QualIdent(Map.class.getCanonicalName()), typeArguments);
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("{").append('\n');
+        builder.append("Map<String, Object> props = new HashMap<>();").append('\n');
+        if (StringUtils.isNotBlank(viewEngineFolder)) {
+            builder.append("props.put(ViewEngine.VIEW_FOLDER, \"/").append(viewEngineFolder).append("/\");").append('\n');
+        }
+        if (csrfProtection) {
+            builder.append("map.put(Csrf.CSRF_PROTECTION, Csrf.CsrfOptions.EXPLICIT);").append('\n');
+        }
+        builder.append("return props;").append('}');
+
+        MethodTree methodTree = maker.Method(modifiersTree,
+                org.netbeans.jcode.core.util.RestConstants.GET_PROPERTIES, wildMap,
+                Collections.<TypeParameterTree>emptyList(),
+                Collections.<VariableTree>emptyList(),
+                Collections.<ExpressionTree>emptyList(),
+                builder.toString(), null);
+        return maker.addClassMember(newTree, methodTree);
     }
 
     private List<RestGenerationOptions> getRestFacadeMethodOptions(

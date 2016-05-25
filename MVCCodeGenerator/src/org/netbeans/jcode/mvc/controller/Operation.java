@@ -23,19 +23,19 @@ public enum Operation implements RestMethod {
 
     //CRUD => Create, List, Update, Remove
     REDIRECT_TO_CREATE(GET, "empty",
-            "new", "/<folder>/<entity>/create.jsp"),
+            "new", "<entity>/create.jsp"),
     CREATE(POST, "create",
             "new", "redirect:<entity>/list"),
     REDIRECT_TO_UPDATE(GET, "edit",
-            "update/{id}", "/<folder>/<entity>/update.jsp"),
+            "update/{id}", "<entity>/update.jsp"),
     UPDATE(POST, "update",
             "update", "redirect:<entity>/list"),
     REMOVE(GET, "remove",
             "remove/{id}", "redirect:<entity>/list"),
     FIND(GET, "find",
-            "{id}", "/<folder>/<entity>/view.jsp"),
+            "{id}", "<entity>/view.jsp"),
     FIND_ALL(GET, "findAll",
-            "list", "/<folder>/<entity>/list.jsp");
+            "list", "<entity>/list.jsp");
 
     private final String method, methodName;
     private final String uriPath, view;

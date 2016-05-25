@@ -36,6 +36,7 @@ import static org.netbeans.jcode.console.Console.BOLD;
 import static org.netbeans.jcode.console.Console.FG_MAGENTA;
 import static org.netbeans.jcode.console.Console.FG_RED;
 import static org.netbeans.jcode.console.Console.UNDERLINE;
+import static org.netbeans.jcode.core.util.Constants.WEB_INF;
 import org.netbeans.jcode.core.util.FileUtil;
 import org.netbeans.jcode.core.util.StringHelper;
 import org.netbeans.jcode.entity.info.EntityResourceBeanModel;
@@ -147,12 +148,13 @@ public class JSPViewerGenerator implements Generator{
         SourceGroup sourceGroups[] = sources.getSourceGroups(WebProjectConstants.TYPE_DOC_ROOT);
         FileObject webRoot = sourceGroups[0].getRootFolder();
         if (!jspData.isOnlineTheme()) {
-            copyStaticResource("lib-resources", webRoot, jspData.getFolder(), handler);
+            copyStaticResource("lib-resources", webRoot, jspData.getResourceFolder(), handler);
         }
-        copyStaticResource("theme-resources", webRoot, jspData.getFolder(), handler);
+        copyStaticResource("theme-resources", webRoot,  jspData.getResourceFolder(), handler);
 
         Map<String, Object> params = new HashMap<>();
         params.put("webPath", jspData.getFolder());
+        params.put("resourcePath", jspData.getResourceFolder());
         String applicationPath = mvcData.getRestConfigData() == null ? "" : mvcData.getRestConfigData().getApplicationPath();
         params.put("applicationPath", applicationPath);
         params.put("CSRFPrevention", mvcData.isCSRF());
@@ -161,7 +163,7 @@ public class JSPViewerGenerator implements Generator{
 
         handler.append(Console.wrap(JSPViewerGenerator.class, "MSG_Generating_Static_Template", FG_RED, BOLD));
         for (Entry<String, String> entry : TEMPLATE_PATTERN_FILES.entrySet()) {
-            String targetPath = jspData.getFolder() + '/' + entry.getValue();
+            String targetPath =  jspData.getResourceFolder() + '/' + entry.getValue();
             if (webRoot.getFileObject(targetPath) == null) {
                 expandSingleJSPTemplate(TEMPLATE_PATH + COMMON_TEMPLATE_PATH + entry.getKey(),
                         targetPath, webRoot, params, handler);
@@ -209,10 +211,12 @@ public class JSPViewerGenerator implements Generator{
         Map<String, Object> params = FromEntityBase.createFieldParameters(webRoot, entityClass, entityClass, null, false, true);
         params.put("CSRFPrevention", mvcData.isCSRF());
         params.put("XSSPrevention", mvcData.isXSS());
+        params.put("webPath", jspData.getFolder());
+        params.put("resourcePath", jspData.getResourceFolder());
 
         for (Entry<Operation, String> entry : CRUD_FILES.entrySet()) {
             expandSingleJSPTemplate(TEMPLATE_PATH + CRUD_PATH + entry.getValue(),
-                    getJSPFileName(entityClass, jspEntityIncludeFolder, GENERATED_CRUD_FILES.get(entry.getKey())) + JSP_EXT,
+                    getJSPFileName(entityClass,jspEntityIncludeFolder, GENERATED_CRUD_FILES.get(entry.getKey())) + JSP_EXT,
                     webRoot, params, handler);
         }
     }
@@ -238,6 +242,8 @@ public class JSPViewerGenerator implements Generator{
         });
         params.put("entities", entityVarMapping);
         params.put("online", jspData.isOnlineTheme());
+        params.put("webPath", jspData.getFolder());
+        params.put("resourcePath", jspData.getResourceFolder());
 
         expandSingleJSPTemplate(TEMPLATE_PATH + CRUD_HOME_PATH + "index.ftl",
                 getJSPFileName(null, jspEntityIncludeFolder, "index") + JSP_EXT,

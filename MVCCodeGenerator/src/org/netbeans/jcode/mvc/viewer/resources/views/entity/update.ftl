@@ -13,7 +13,7 @@
   the License.
   -->
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ include file="../common/header.jspf"%>
+<%@ include file="/${resourcePath}/common/header.jspf"%>
 <div id="page-wrapper">
     <div class="row">
         <div class="col-lg-12">
@@ -62,4 +62,4 @@
     </div>
 </div>
 <%--end content--%>
-<%@ include file="../common/footer.jspf"%>
+<%@ include file="/${resourcePath}/common/footer.jspf"%>

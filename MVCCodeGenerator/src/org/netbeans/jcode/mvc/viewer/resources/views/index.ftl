@@ -16,7 +16,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ include file="common/header.jspf"%>
+<%@ include file="/${resourcePath}/common/header.jspf"%>
 
 
 <#if online>
@@ -91,4 +91,4 @@
 <script src="${r"${webPath}"}/static/script/morris-data.js"></script>
 </#if>
 
-<%@ include file="common/footer.jspf"%>
+<%@ include file="/${resourcePath}/common/footer.jspf"%>

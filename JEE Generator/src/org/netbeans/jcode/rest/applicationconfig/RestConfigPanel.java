@@ -43,6 +43,7 @@ public class RestConfigPanel extends LayerConfigPanel<RestConfigData> {
 
     private Preferences pref;
     private static final String DEFAULT_PACKAGE = "util";
+    public static final String DEFAULT_RESOURCE_FOLDER = "staticresources";
     private Map<String,RestApplication> restApplications = Collections.EMPTY_MAP;
     public RestConfigPanel() {
         initComponents();
@@ -67,6 +68,10 @@ public class RestConfigPanel extends LayerConfigPanel<RestConfigData> {
        
         if (StringUtils.isBlank(restPath)) {
             warningLabel.setText(NbBundle.getMessage(RestConfigPanel.class, "RestConfigDialog.invalidPath.message"));
+            return true;
+        }
+        if (StringUtils.equals(restPath, DEFAULT_RESOURCE_FOLDER)) {
+            warningLabel.setText(NbBundle.getMessage(RestConfigPanel.class, "RestConfigDialog.reservedPath.message", DEFAULT_RESOURCE_FOLDER));
             return true;
         }
         

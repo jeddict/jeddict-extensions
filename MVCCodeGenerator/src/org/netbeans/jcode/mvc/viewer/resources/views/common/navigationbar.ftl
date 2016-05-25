@@ -64,7 +64,7 @@
         <div class="sidebar-nav navbar-collapse">
             <ul class="nav" id="side-menu">
                 <li>
-                    <a href="${r"${webPath}"}/index.jsp"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                    <a href="${r"${mvc.contextPath}"}"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                 </li>
                 <li>
                     <a href="https://blogs.oracle.com/theaquarium/entry/why_another_mvc_framework_in"  target="_blank"><i class="fa fa-question-circle fa-fw"></i>Why Another MVC?</a>

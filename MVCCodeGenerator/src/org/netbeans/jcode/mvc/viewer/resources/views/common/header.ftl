@@ -27,7 +27,7 @@
         <title></title>
         
         <c:set var="appPath" value="${r"${mvc.contextPath}"}/${applicationPath}"/>
-        <c:set var="webPath" value="${r"${mvc.contextPath}"}/${webPath}"/>
+        <c:set var="webPath" value="${r"${mvc.contextPath}"}/${resourcePath}"/>
 
         <#if online>
         <!-- Bootstrap Core CSS -->

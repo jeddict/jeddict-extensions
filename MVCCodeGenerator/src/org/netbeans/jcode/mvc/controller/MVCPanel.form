@@ -47,7 +47,7 @@
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="miscPanel" min="-2" pref="20" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="viewPanel" min="-2" max="-2" attributes="0"/>
+              <Component id="viewPanel" min="-2" pref="27" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="securityPanel" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>

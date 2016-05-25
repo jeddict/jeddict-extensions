@@ -15,6 +15,8 @@
  */
 package org.netbeans.jcode.mvc.viewer.jsp;
 
+import org.apache.commons.lang.StringUtils;
+import static org.netbeans.jcode.rest.applicationconfig.RestConfigPanel.DEFAULT_RESOURCE_FOLDER;
 import org.netbeans.jcode.stack.config.data.LayerConfigData;
 
 /**
@@ -23,8 +25,10 @@ import org.netbeans.jcode.stack.config.data.LayerConfigData;
  */
 public class JSPData extends LayerConfigData {
     
-    public static final String DEFAULT_FOLDER = "view";
+    public static final String DEFAULT_FOLDER = "WEB-INF/views";
     private String folder;
+    
+    private String resourceFolder;
     private boolean onlineTheme = true;
 
     /**
@@ -53,5 +57,22 @@ public class JSPData extends LayerConfigData {
      */
     public void setOnlineTheme(boolean onlineTheme) {
         this.onlineTheme = onlineTheme;
+    }
+
+    /**
+     * @return the resourceFolder
+     */
+    public String getResourceFolder() {
+        if(StringUtils.isBlank(resourceFolder)){
+            return DEFAULT_RESOURCE_FOLDER;
+        }
+        return resourceFolder;
+    }
+
+    /**
+     * @param resourceFolder the resourceFolder to set
+     */
+    public void setResourceFolder(String resourceFolder) {
+        this.resourceFolder = resourceFolder;
     }
 }

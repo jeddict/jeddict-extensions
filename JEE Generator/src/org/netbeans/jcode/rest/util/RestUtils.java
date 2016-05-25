@@ -13,12 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package org.netbeans.jcode.rest.util;
 
 import org.netbeans.jcode.core.util.Constants;
 import com.sun.source.tree.AnnotationTree;
 import com.sun.source.tree.ClassTree;
+import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.MethodTree;
 import com.sun.source.tree.ModifiersTree;
@@ -28,10 +28,13 @@ import com.sun.source.tree.TypeParameterTree;
 import com.sun.source.tree.VariableTree;
 import com.sun.source.tree.WildcardTree;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Modifier;
@@ -52,7 +55,6 @@ import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.core.util.JavaSourceHelper;
 import org.netbeans.jcode.core.util.SourceGroupSupport;
 import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
-import org.netbeans.modules.j2ee.core.api.support.java.SourceUtils;
 import org.netbeans.modules.j2ee.deployment.common.api.Datasource;
 import org.netbeans.modules.j2ee.deployment.devmodules.api.J2eeModule;
 import org.netbeans.modules.j2ee.deployment.devmodules.spi.J2eeModuleProvider;
@@ -206,7 +208,6 @@ public class RestUtils {
         }
         return false;
     }
-
 
     public static boolean isDynamicResource(JavaSource src) {
         List<MethodTree> trees = JavaSourceHelper.getAllMethods(src);
@@ -371,12 +372,12 @@ public class RestUtils {
 
     public static FileObject createApplicationConfigClass(final RestSupport restSupport, FileObject packageFolder,
             String name, final String applicationPath) throws IOException {
-        
+
         FileObject configFO = packageFolder.getFileObject(name, "java");
         if (configFO != null) {
-                configFO.delete();
+            configFO.delete();
         }
-        
+
         FileObject appClass = GenerationUtils.createClass(packageFolder, name, null);
         JavaSource javaSource = JavaSource.forFileObject(appClass);
         if (javaSource == null) {
@@ -395,36 +396,40 @@ public class RestUtils {
                 ClassTree newTree = maker.setExtends(tree,
                         maker.QualIdent(JAX_RS_APPLICATION_CLASS)); // NOI18N
 
-                ModifiersTree modifiersTree = maker.Modifiers(
-                        EnumSet.of(Modifier.PUBLIC), Collections.singletonList(
-                                maker.Annotation(maker.QualIdent(
-                                                Override.class.getCanonicalName()),
-                                        Collections.<ExpressionTree>emptyList())));
-
-                WildcardTree wildCard = maker.Wildcard(Tree.Kind.UNBOUNDED_WILDCARD,
-                        null);
-                ParameterizedTypeTree wildClass = maker.ParameterizedType(
-                        maker.QualIdent(Class.class.getCanonicalName()),
-                        Collections.singletonList(wildCard));
-                ParameterizedTypeTree wildSet = maker.ParameterizedType(
-                maker.QualIdent(Set.class.getCanonicalName()),
-                Collections.singletonList(wildClass));
-
-                MethodTree methodTree = maker.Method(modifiersTree,
-                        RestConstants.GET_CLASSES, wildSet,
-                        Collections.<TypeParameterTree>emptyList(),
-                        Collections.<VariableTree>emptyList(),
-                        Collections.<ExpressionTree>emptyList(),
-                        MiscUtilities.createBodyForGetClassesMethod(restSupport), null);
-                newTree = maker.addClassMember(newTree, methodTree);
-
+                newTree = createGetClasses(maker, newTree, restSupport);
                 newTree = MiscUtilities.createAddResourceClasses(maker, newTree, workingCopy, "{}", true);
-
+               
                 workingCopy.rewrite(tree, newTree);
             }
 
         }).commit();
         return appClass;
+    }
+
+    private static ClassTree createGetClasses(TreeMaker maker, ClassTree newTree, RestSupport restSupport) {
+
+        ModifiersTree modifiersTree = maker.Modifiers(
+                EnumSet.of(Modifier.PUBLIC), Collections.singletonList(
+                        maker.Annotation(maker.QualIdent(
+                                        Override.class.getCanonicalName()),
+                                Collections.<ExpressionTree>emptyList())));
+
+        WildcardTree wildCard = maker.Wildcard(Tree.Kind.UNBOUNDED_WILDCARD,
+                null);
+        ParameterizedTypeTree wildClass = maker.ParameterizedType(
+                maker.QualIdent(Class.class.getCanonicalName()),
+                Collections.singletonList(wildCard));
+        ParameterizedTypeTree wildSet = maker.ParameterizedType(
+                maker.QualIdent(Set.class.getCanonicalName()),
+                Collections.singletonList(wildClass));
+
+        MethodTree methodTree = maker.Method(modifiersTree,
+                RestConstants.GET_CLASSES, wildSet,
+                Collections.<TypeParameterTree>emptyList(),
+                Collections.<VariableTree>emptyList(),
+                Collections.<ExpressionTree>emptyList(),
+                MiscUtilities.createBodyForGetClassesMethod(restSupport), null);
+        return maker.addClassMember(newTree, methodTree);
     }
 
     public static boolean hasProfile(Project project, Profile... profiles) {

@@ -25,6 +25,7 @@ import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.api.project.Sources;
 import static org.netbeans.jcode.core.util.WebUtil.isInternetReachable;
+import static org.netbeans.jcode.mvc.viewer.jsp.JSPData.DEFAULT_FOLDER;
 import org.netbeans.jcode.stack.config.panel.*;
 import org.netbeans.jcode.ui.browse.BrowseFolders;
 import org.netbeans.jcode.util.PreferenceUtils;
@@ -40,7 +41,6 @@ import static org.openide.util.NbBundle.getMessage;
  */
 public class JSPPanel extends LayerConfigPanel<JSPData> {
 
-    private static final String DEFAULT_FOLDER = "view";
     private Preferences pref;
 
     public JSPPanel() {
@@ -79,7 +79,6 @@ public class JSPPanel extends LayerConfigPanel<JSPData> {
         PreferenceUtils.set(pref, this.getConfigData());
     }
 
-    private SourceGroup sourceGroup;
     private Project project;
 
     @Override
@@ -216,8 +215,10 @@ public class JSPPanel extends LayerConfigPanel<JSPData> {
         SourceGroup sourceGroups[] = sources.getSourceGroups(WebProjectConstants.TYPE_DOC_ROOT);
         FileObject fileObject = BrowseFolders.showDialog(new SourceGroup[]{sourceGroups[0]},
                 org.openide.loaders.DataFolder.class, "");
+        if(fileObject!=null){
         String folderPath = FileUtil.getRelativePath(sourceGroups[0].getRootFolder(), fileObject);
         setFolder(folderPath);
+        }
     }//GEN-LAST:event_browseButton1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
