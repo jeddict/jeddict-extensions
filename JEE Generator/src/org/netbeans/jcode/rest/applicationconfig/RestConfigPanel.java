@@ -43,7 +43,7 @@ public class RestConfigPanel extends LayerConfigPanel<RestConfigData> {
 
     private Preferences pref;
     private static final String DEFAULT_PACKAGE = "util";
-    public static final String DEFAULT_RESOURCE_FOLDER = "staticresources";
+    public static final String DEFAULT_RESOURCE_FOLDER = "webresources";
     private Map<String,RestApplication> restApplications = Collections.EMPTY_MAP;
     public RestConfigPanel() {
         initComponents();

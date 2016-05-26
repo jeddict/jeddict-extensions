@@ -22,19 +22,40 @@ package org.netbeans.jcode.rest.util;
 public final class RestGenerationOptions {
 
     private RestMethod method;
-    private String returnType, body;
+    private String returnType;
+    private StringBuilder body;
     private String[] parameterAnnoation, parameterTypes, parameterNames, parameterAnnoationValues, consumes, produces;
 
     public String[] getConsumes() {
         return consumes;
     }
 
-    public String getBody() {
+    public StringBuilder getBody() {
+        if (this.body == null) {
+            this.body = new StringBuilder();
+        }
         return body;
     }
 
-    public void setBody(String body) {
+    public void setBody(StringBuilder body) {
         this.body = body;
+    }
+
+    public StringBuilder setBody(String body) {
+        this.body = new StringBuilder(body);
+        return this.body;
+    }
+
+    public StringBuilder appendBody(String bodyContent) {
+        
+        getBody().append(bodyContent);
+        return this.body;
+    }
+    
+    public StringBuilder appendBody(char bodyContent) {
+        
+        getBody().append(bodyContent);
+        return this.body;
     }
 
     public void setConsumes(String[] consumes) {

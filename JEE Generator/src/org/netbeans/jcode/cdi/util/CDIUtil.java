@@ -46,14 +46,14 @@ public class CDIUtil {
         SourceGroup sourceGroups[] = sources.getSourceGroups(WebProjectConstants.TYPE_DOC_ROOT);
         FileObject webRoot = sourceGroups[0].getRootFolder();
         FileObject targetDir = FileUtil.createFolder(webRoot, WEB_INF);
-        boolean useCDI11 = true;
+        boolean useCDI = true;
         if (project != null) {
             J2eeProjectCapabilities cap = J2eeProjectCapabilities.forProject(project);
             if (cap != null && !cap.isCdi11Supported()) {
-                useCDI11 = false;
+                useCDI = false;
             }
         }
-        FileObject fo = createBeansXml(useCDI11 ? Profile.JAVA_EE_7_FULL : Profile.JAVA_EE_6_FULL, targetDir, defaultName);
+        FileObject fo = createBeansXml(useCDI ? Profile.JAVA_EE_7_FULL : Profile.JAVA_EE_6_FULL, targetDir, defaultName);
         if (fo != null) {
             return Collections.singleton(DataObject.find(fo));
         } else {

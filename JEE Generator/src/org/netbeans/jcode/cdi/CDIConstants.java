@@ -21,6 +21,7 @@ package org.netbeans.jcode.cdi;
  */
 public class CDIConstants {
 
+    public static final String INJECT = "javax.inject.Inject";
     public static final String CONTROLLER = "javax.mvc.annotation.Controller";
     public static final String PRODUCES = "javax.enterprise.inject.Produces";
     public static final String INJECTION_POINT = "javax.enterprise.inject.spi.InjectionPoint";

@@ -55,7 +55,6 @@ public class JEEApplicationGenerator {
     public static void generate(ProgressHandler progressHandler, ApplicationConfigData applicationConfigData) {
         try {
             final Project project = applicationConfigData.getProject();
-            final SourceGroup sourceGroup = applicationConfigData.getSourceGroup();
 
             Map<String, FileObject> entities = applicationConfigData.getEntities();
             final PersistenceHelper.PersistenceUnit pu = (PersistenceHelper.PersistenceUnit) new PersistenceHelper(project).getPersistenceUnit();
