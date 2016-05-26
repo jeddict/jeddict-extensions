@@ -111,7 +111,9 @@ public class JSPViewerGenerator implements Generator{
     private JSPData jspData;
     @ConfigData
     private MVCData mvcData;
-    
+        
+    private static final String WEB_XML_DD = "/org/netbeans/jcode/mvc/dd/welcomefile/web.xml";
+
     @Override
     public void execute(Project project,SourceGroup source, EntityResourceBeanModel model, ProgressHandler handler) throws IOException {
        Set<String> entities = model.getEntityInfos().stream().map(ei -> ei.getType()).collect(toSet());
@@ -119,12 +121,17 @@ public class JSPViewerGenerator implements Generator{
         generateStaticResources(project, mvcData, jspData, handler);
         generateHome(project, entities , mvcData, jspData, handler);
 
-        boolean sucess = ServletUtil.setWelcomeFiles(project, jspData.getFolder() + "/index.jsp");
-        if (sucess) {
-            handler.progress(Console.wrap(NbBundle.getMessage(ServletUtil.class, "MSG_Progress_WelcomeFile", jspData.getFolder()), FG_MAGENTA, BOLD, UNDERLINE));
-        } else {
-            handler.progress(Console.wrap(NbBundle.getMessage(ServletUtil.class, "MSG_Failure_WelcomeFile", jspData.getFolder()), FG_RED, BOLD, UNDERLINE));
+        String welcomeFile = '/' + jspData.getFolder() + "/index.jsp";
+        boolean sucess = ServletUtil.setWelcomeFiles(project, welcomeFile);
+        if (!sucess) { // NetBeans API bug resolution
+            handler.progress(Console.wrap(NbBundle.getMessage(ServletUtil.class, "MSG_Init_WelcomeFile", jspData.getFolder()), FG_MAGENTA, BOLD, UNDERLINE));
+            Map<String, Object> params = new HashMap<>();
+            params.put("WELCOME_FILE", welcomeFile);
+            ServletUtil.createDD(project, WEB_XML_DD, params);
+//            handler.progress(Console.wrap(NbBundle.getMessage(ServletUtil.class, "MSG_Failure_WelcomeFile", jspData.getFolder()), FG_RED, BOLD, UNDERLINE));
         }
+            handler.progress(Console.wrap(NbBundle.getMessage(ServletUtil.class, "MSG_Progress_WelcomeFile", jspData.getFolder()), FG_MAGENTA, BOLD, UNDERLINE));
+        
 
         handler.progress(Console.wrap(JSPViewerGenerator.class, "MSG_Generating_CRUD_Template", FG_RED, BOLD, UNDERLINE));
         for (String entity : entities) {

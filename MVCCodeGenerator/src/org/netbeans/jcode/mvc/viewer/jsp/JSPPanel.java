@@ -74,7 +74,11 @@ public class JSPPanel extends LayerConfigPanel<JSPData> {
 
     @Override
     public void store() {
-        this.getConfigData().setFolder(getFolder());
+        String folder = getFolder();
+        if(StringUtils.isNotBlank(folder) && folder.charAt(0) == '/'){
+            folder = folder.substring(1);
+        }
+        this.getConfigData().setFolder(folder);
         this.getConfigData().setOnlineTheme(isOnlineTheme());
         PreferenceUtils.set(pref, this.getConfigData());
     }

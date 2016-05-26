@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.netbeans.jcode.mvc.controller.api.returntype;
+package org.netbeans.jcode.mvc.controller.returntype;
 
 import org.netbeans.jcode.mvc.MVCConstants;
 import org.openide.util.NbBundle;

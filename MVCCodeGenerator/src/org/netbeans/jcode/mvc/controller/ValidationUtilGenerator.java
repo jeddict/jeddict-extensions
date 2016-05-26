@@ -37,13 +37,13 @@ import org.netbeans.api.java.source.WorkingCopy;
 import static org.netbeans.jcode.beanvalidation.BeanVaildationConstants.CONSTRAINT_VIOLATION;
 import static org.netbeans.jcode.core.util.Constants.SET_TYPE;
 import org.netbeans.jcode.core.util.JavaSourceHelper;
-import org.netbeans.jcode.mvc.controller.api.returntype.ControllerReturnType;
+import org.netbeans.jcode.mvc.controller.returntype.ControllerReturnType;
 import org.netbeans.jcode.mvc.MVCConstants;
 import static org.netbeans.jcode.mvc.MVCConstants.BINDING_RESULT;
 import static org.netbeans.jcode.mvc.MVCConstants.VIEWABLE_UNQF;
 import static org.netbeans.jcode.mvc.controller.ErrorBeanGenerator.ERROR_BEAN_CLASS;
 import static org.netbeans.jcode.mvc.viewer.jsp.JSPViewerGenerator.TARGET_COMMON_TEMPLATE_PATH;
-import static org.netbeans.jcode.rest.RestConstant.RESPONSE;
+import static org.netbeans.jcode.rest.RestConstants.RESPONSE;
 import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
 import org.netbeans.modules.j2ee.core.api.support.java.SourceUtils;
 import org.openide.filesystems.FileObject;
@@ -67,7 +67,7 @@ public class ValidationUtilGenerator {
             + "            return ";
             
 
-    public static FileObject generate(MVCData mvcData, FileObject packageFolder, String webPath) throws IOException {
+    public static FileObject generate(MVCData mvcData, FileObject packageFolder, String resourcePath) throws IOException {
 
         FileObject configFO = packageFolder.getFileObject(VALIDATION_UTIL_CLASS, "java");
         if (configFO != null) {
@@ -99,7 +99,7 @@ public class ValidationUtilGenerator {
                 ExpressionTree packageTree = wc.getCompilationUnit().getPackageName();
                 String packageName = packageTree.toString();
                 
-                String errorFile = webPath + "/" + TARGET_COMMON_TEMPLATE_PATH + "error.jsp";
+                String errorFile = resourcePath + "/" + TARGET_COMMON_TEMPLATE_PATH + "error.jsp";
                 StringBuilder body = new StringBuilder();
                 body.append("{").append(METHID_BODY);//.replaceAll(FOLDER_NAME_EXP, webPath);
                 Tree returnType = null;

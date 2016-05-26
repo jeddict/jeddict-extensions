@@ -55,16 +55,19 @@ import org.netbeans.api.project.SourceGroup;
 import static org.netbeans.jcode.beanvalidation.BeanVaildationConstants.EXECUTABLE_TYPE;
 import static org.netbeans.jcode.beanvalidation.BeanVaildationConstants.VALID;
 import static org.netbeans.jcode.beanvalidation.BeanVaildationConstants.VALIDATE_ON_EXECUTION;
+import static org.netbeans.jcode.cdi.CDIConstants.INJECT;
 import org.netbeans.jcode.cdi.logger.LoggerProducerGenerator;
 import org.netbeans.jcode.cdi.util.CDIUtil;
 import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.BOLD;
 import static org.netbeans.jcode.console.Console.FG_RED;
 import static org.netbeans.jcode.console.Console.UNDERLINE;
+import org.netbeans.jcode.core.util.Constants.MimeType;
+import static org.netbeans.jcode.core.util.Constants.VOID;
+import org.netbeans.jcode.core.util.Inflector;
 import org.netbeans.jcode.core.util.StringHelper;
 import org.netbeans.jcode.ejb.facade.SessionBeanData;
 import org.netbeans.jcode.mvc.MVCConstants;
-import static org.netbeans.jcode.mvc.MVCConstants.INJECT;
 import static org.netbeans.jcode.mvc.MVCConstants.MODELS;
 import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
 import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
@@ -76,15 +79,15 @@ import org.netbeans.jcode.entity.info.EntityResourceBeanModel;
 import static org.netbeans.jcode.mvc.controller.ErrorBeanGenerator.ERROR_BEAN_CLASS;
 import static org.netbeans.jcode.mvc.controller.ValidationUtilGenerator.BINDING_RESULT_VAR;
 import static org.netbeans.jcode.mvc.controller.ValidationUtilGenerator.ERROR_BEAN_VAR;
-import org.netbeans.jcode.mvc.controller.api.returntype.ControllerReturnType;
+import org.netbeans.jcode.mvc.controller.returntype.ControllerReturnType;
 import static org.netbeans.jcode.mvc.MVCConstants.BINDING_RESULT;
 import static org.netbeans.jcode.mvc.MVCConstants.REDIRECT;
 import static org.netbeans.jcode.mvc.MVCConstants.VIEWABLE;
 import org.netbeans.modules.websvc.rest.model.api.RestConstants;
 import org.netbeans.jcode.mvc.viewer.jsp.JSPData;
-import static org.netbeans.jcode.rest.RestConstant.BEAN_PARAM;
-import static org.netbeans.jcode.rest.RestConstant.RESPONSE;
-import static org.netbeans.jcode.rest.RestConstant.RESPONSE_UNQF;
+import static org.netbeans.jcode.rest.RestConstants.BEAN_PARAM;
+import static org.netbeans.jcode.rest.RestConstants.RESPONSE;
+import static org.netbeans.jcode.rest.RestConstants.RESPONSE_UNQF;
 import org.netbeans.jcode.rest.util.RestUtils;
 import org.netbeans.jcode.core.util.SourceGroupSupport;
 import org.netbeans.jcode.ejb.facade.EjbFacadeGenerator;
@@ -98,9 +101,7 @@ import static org.netbeans.jcode.mvc.controller.ValidationUtilGenerator.VALIDATI
 import org.netbeans.jcode.mvc.controller.event.ControllerEventGenerator;
 import org.netbeans.jcode.rest.converter.ParamConvertorGenerator;
 import org.netbeans.jcode.task.progress.ProgressHandler;
-import org.netbeans.modules.websvc.rest.spi.MiscUtilities;
 import org.netbeans.modules.websvc.rest.spi.RestSupport;
-import static org.netbeans.modules.websvc.rest.spi.RestSupport.JAX_RS_APPLICATION_CLASS;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
@@ -115,6 +116,7 @@ import org.openide.util.lookup.ServiceProvider;
 public class MVCControllerGenerator implements Generator {
 
     public final static String ENTITY_NAME_EXP = "<entity>";
+    private final static String ENTITIES_NAME_EXP = "<entities>";
     public final static String FOLDER_NAME_EXP = "<folder>";
     public final static String UTIL_PACKAGE = "util";
 
@@ -154,6 +156,7 @@ public class MVCControllerGenerator implements Generator {
         final Set<FileObject> createdFiles = new HashSet<>();
         final String entitySimpleName = JavaIdentifiers.unqualify(entityFQN);
         final String variableName = StringHelper.firstLower(entitySimpleName);
+        final String listVariableName = Inflector.getInstance().pluralize(variableName);
         final String constantName = StringHelper.toConstant(entitySimpleName);
 
         String facadeFileName = beanData.getPrefixName() + entitySimpleName + beanData.getSuffixName();
@@ -294,13 +297,14 @@ public class MVCControllerGenerator implements Generator {
                             Tree paramTree = genUtils.createType(paramTypes[i],
                                     classElement);
                             VariableTree var = maker.Variable(pathParamTree,
-                                    paramNames[i], paramTree, null); //NOI18N
+                                    paramNames[i].replaceAll(ENTITY_NAME_EXP, variableName)
+                                            .replaceAll(ENTITIES_NAME_EXP, listVariableName), paramTree, null); 
                             vars.add(var);
 
                         }
                     }
 
-                    StringBuilder body = new StringBuilder(option.getBody().replaceAll(ENTITY_NAME_EXP, constantName));
+                    StringBuilder body = option.getBody();
                     if (mvcData.isBeanValidation() && beanParamExist) {
                         body.insert(0, VALIDATION_FILTER);
 
@@ -346,6 +350,9 @@ public class MVCControllerGenerator implements Generator {
                         returnType = genUtils.createType(RESPONSE, classElement);
                     }
 
+                    String bodyContent = body.toString()
+                            .replaceAll(ENTITY_NAME_EXP, variableName).replaceAll(ENTITIES_NAME_EXP, listVariableName);
+                    
                     members.add(maker.Method(
                             modifiersTree,
                             option.getRestMethod().getMethodName() + entitySimpleName,
@@ -353,7 +360,7 @@ public class MVCControllerGenerator implements Generator {
                             Collections.EMPTY_LIST,
                             vars,
                             (List<ExpressionTree>) Collections.EMPTY_LIST,
-                            "{" + body + "}", //NOI18N
+                            "{" + bodyContent + "}", 
                             null)
                     );
 
@@ -401,17 +408,18 @@ public class MVCControllerGenerator implements Generator {
             final MVCData mvcData, JSPData viewerData, ProgressHandler handler) throws IOException {
         FileObject targetFolder = SourceGroupSupport.getFolderForPackage(sourceGroup, mvcData.getPackage(), true);
         FileObject utilFolder = SourceGroupSupport.getFolderForPackage(targetFolder, UTIL_PACKAGE, true);
-        String webPath;
+        
+        
+        String resourcePath = null;
         if (viewerData != null) {
-            webPath = viewerData.getFolder();
-        } else {
-            webPath = JSPData.DEFAULT_FOLDER;
+            resourcePath = viewerData.getResourceFolder();
         }
-
-        if (mvcData.isBeanValidation()) {
-            ValidationUtilGenerator.generate(mvcData, utilFolder, webPath);
+        
+        if (resourcePath!=null && mvcData.isBeanValidation()) {
+            ValidationUtilGenerator.generate(mvcData, utilFolder, resourcePath);
             ErrorBeanGenerator.generate(utilFolder);
         }
+        
         if (!mvcData.getEventType().isEmpty()) {
             LoggerProducerGenerator.generate(utilFolder);
             ControllerEventGenerator.generate(mvcData.getEventType(), utilFolder);
@@ -430,7 +438,7 @@ public class MVCControllerGenerator implements Generator {
             return;
         }
         final RestSupport restSupport = project.getLookup().lookup(RestSupport.class);
-        RestSupport.RestConfig.IDE.setAppClassName(mvcData.getRestConfigData().getPackage() + "." + mvcData.getRestConfigData().getApplicationClass()); //NOI18N
+        RestSupport.RestConfig.IDE.setAppClassName(mvcData.getRestConfigData().getPackage() + "." + mvcData.getRestConfigData().getApplicationClass()); 
         if (restSupport != null) {
             try {
                 restSupport.ensureRestDevelopmentReady(RestSupport.RestConfig.IDE);
@@ -490,9 +498,7 @@ public class MVCControllerGenerator implements Generator {
         }
 
         CompilationUnitTree cut = workingCopy.getCompilationUnit();
-        CompilationUnitTree newCut = maker.addCompUnitImport(cut, maker.Import(maker.Identifier(HashMap.class.getCanonicalName()), false));
-        newCut = maker.addCompUnitImport(newCut, maker.Import(maker.Identifier(MVCConstants.VIEW_ENGINE), false));
-        workingCopy.rewrite(cut, newCut);
+        CompilationUnitTree newCut = cut;
 
         ModifiersTree modifiersTree = maker.Modifiers(
                 EnumSet.of(Modifier.PUBLIC), Collections.singletonList(
@@ -509,15 +515,20 @@ public class MVCControllerGenerator implements Generator {
         builder.append("{").append('\n');
         builder.append("Map<String, Object> props = new HashMap<>();").append('\n');
         if (StringUtils.isNotBlank(viewEngineFolder)) {
+            newCut = maker.addCompUnitImport(cut, maker.Import(maker.Identifier(HashMap.class.getCanonicalName()), false));
+            newCut = maker.addCompUnitImport(newCut, maker.Import(maker.Identifier(MVCConstants.VIEW_ENGINE), false));
             builder.append("props.put(ViewEngine.VIEW_FOLDER, \"/").append(viewEngineFolder).append("/\");").append('\n');
         }
         if (csrfProtection) {
-            builder.append("map.put(Csrf.CSRF_PROTECTION, Csrf.CsrfOptions.EXPLICIT);").append('\n');
+            newCut = maker.addCompUnitImport(newCut, maker.Import(maker.Identifier(MVCConstants.CSRF), false));
+            builder.append("props.put(Csrf.CSRF_PROTECTION, Csrf.CsrfOptions.EXPLICIT);").append('\n');
         }
         builder.append("return props;").append('}');
 
+        workingCopy.rewrite(cut, newCut);
+
         MethodTree methodTree = maker.Method(modifiersTree,
-                org.netbeans.jcode.core.util.RestConstants.GET_PROPERTIES, wildMap,
+                org.netbeans.jcode.rest.RestConstants.GET_PROPERTIES, wildMap,
                 Collections.<TypeParameterTree>emptyList(),
                 Collections.<VariableTree>emptyList(),
                 Collections.<ExpressionTree>emptyList(),
@@ -528,8 +539,8 @@ public class MVCControllerGenerator implements Generator {
     private List<RestGenerationOptions> getRestFacadeMethodOptions(
             String entityFQN, String idClass) {
         String paramArg = "java.lang.Character".equals(idClass)
-                ? "id.charAt(0)" : "id"; //NOI18N
-        String idType = "id".equals(paramArg) ? idClass : "java.lang.String"; //NOI18N
+                ? "id.charAt(0)" : "id"; 
+        String idType = "id".equals(paramArg) ? idClass : "java.lang.String"; 
 
         boolean needPathSegment = false;
         if (model != null) {
@@ -540,55 +551,56 @@ public class MVCControllerGenerator implements Generator {
                         && idFieldInfo.getType() != null;
             }
         }
+        String KEY_NAME = JavaIdentifiers.unqualify(entityFQN).toUpperCase();
 
         RestGenerationOptions redirectCreateOptions = new RestGenerationOptions();
         redirectCreateOptions.setRestMethod(Operation.REDIRECT_TO_CREATE);
-        redirectCreateOptions.setReturnType("void"); //NOI18N
-        redirectCreateOptions.setBody(""); //NOI18N
+        redirectCreateOptions.setReturnType(VOID); 
+        redirectCreateOptions.setBody(""); 
 
         RestGenerationOptions createOptions = new RestGenerationOptions();
         createOptions.setRestMethod(Operation.CREATE);
-        createOptions.setReturnType("void"); //NOI18N
-        createOptions.setParameterNames(new String[]{"entity"}); //NOI18N
+        createOptions.setReturnType(VOID); 
+        createOptions.setParameterNames(new String[]{ENTITY_NAME_EXP}); 
         createOptions.setParameterTypes(new String[]{entityFQN});
         createOptions.setParameterAnnoations(new String[]{BEAN_PARAM});
         createOptions.setParameterAnnoationValues(new String[]{null});
-        createOptions.setConsumes(new String[]{"application/xml", "application/json"}); //NOI18N
-        createOptions.setBody("facade.create(entity);"); //NOI18N
+        createOptions.setConsumes(new String[]{MimeType.XML.toString(), MimeType.JSON.toString()}); 
+        createOptions.setBody("facade.create(").append(ENTITY_NAME_EXP).append(");"); 
 
         RestGenerationOptions redirectUpdateOptions = new RestGenerationOptions();
         redirectUpdateOptions.setRestMethod(Operation.REDIRECT_TO_UPDATE);
-        redirectUpdateOptions.setReturnType("void"); //NOI18N
-        redirectUpdateOptions.setParameterNames(new String[]{"id"}); //NOI18N
+        redirectUpdateOptions.setReturnType(VOID); 
+        redirectUpdateOptions.setParameterNames(new String[]{"id"}); 
         redirectUpdateOptions.setParameterAnnoations(new String[]{RestConstants.PATH_PARAM});
-        redirectUpdateOptions.setParameterAnnoationValues(new String[]{"id"}); //NOI18N
+        redirectUpdateOptions.setParameterAnnoationValues(new String[]{"id"}); 
         if (needPathSegment) {
             redirectUpdateOptions.setParameterTypes(new String[]{"javax.ws.rs.core.PathSegment"}); // NOI18N
         } else {
             redirectUpdateOptions.setParameterTypes(new String[]{idType});
         }
         StringBuilder updateBody = new StringBuilder();
-        updateBody.append("model.put(\"<entity>\",facade.find(");                  //NOI18N
+        updateBody.append("model.put(\"").append(KEY_NAME).append("\" ,facade.find(");                  
         updateBody.append(paramArg);
-        updateBody.append("));");                                  //NOI18N
-        redirectUpdateOptions.setBody(updateBody.toString());
+        updateBody.append("));");                                  
+        redirectUpdateOptions.setBody(updateBody);
 
         RestGenerationOptions updateOptions = new RestGenerationOptions();
         updateOptions.setRestMethod(Operation.UPDATE);
-        updateOptions.setReturnType("void");//NOI18N
-        updateOptions.setParameterNames(new String[]{"entity"}); //NOI18N
+        updateOptions.setReturnType(VOID);
+        updateOptions.setParameterNames(new String[]{ENTITY_NAME_EXP}); 
         updateOptions.setParameterAnnoations(new String[]{BEAN_PARAM});
-        updateOptions.setParameterAnnoationValues(new String[]{null}); //NOI18N
+        updateOptions.setParameterAnnoationValues(new String[]{null}); 
         updateOptions.setParameterTypes(new String[]{entityFQN});
-        updateOptions.setConsumes(new String[]{"application/xml", "application/json"}); //NOI18N
-        updateOptions.setBody("facade.edit(entity);"); //NOI18N
+        updateOptions.setConsumes(new String[]{MimeType.XML.toString(), MimeType.JSON.toString()}); 
+        updateOptions.setBody("facade.edit(").append(ENTITY_NAME_EXP).append(");"); 
 
         RestGenerationOptions destroyOptions = new RestGenerationOptions();
         destroyOptions.setRestMethod(Operation.REMOVE);
-        destroyOptions.setReturnType("void");//NOI18N
-        destroyOptions.setParameterNames(new String[]{"id"}); //NOI18N
+        destroyOptions.setReturnType(VOID);
+        destroyOptions.setParameterNames(new String[]{"id"}); 
         destroyOptions.setParameterAnnoations(new String[]{RestConstants.PATH_PARAM_ANNOTATION});
-        destroyOptions.setParameterAnnoationValues(new String[]{"id"}); //NOI18N
+        destroyOptions.setParameterAnnoationValues(new String[]{"id"}); 
         StringBuilder builder = new StringBuilder();
         if (needPathSegment) {
             destroyOptions.setParameterTypes(new String[]{"javax.ws.rs.core.PathSegment"}); // NOI18N
@@ -599,34 +611,34 @@ public class MVCControllerGenerator implements Generator {
             destroyOptions.setParameterTypes(new String[]{idType});
         }
         StringBuilder removeBody = new StringBuilder(builder);
-        removeBody.append("facade.remove(facade.find(");             //NOI18N
+        removeBody.append("facade.remove(facade.find(");             
         removeBody.append(paramArg);
-        removeBody.append("));");                                  //NOI18N
-        destroyOptions.setBody(removeBody.toString());
+        removeBody.append("));");                                  
+        destroyOptions.setBody(removeBody);
 
         RestGenerationOptions findOptions = new RestGenerationOptions();
         findOptions.setRestMethod(Operation.FIND);
-        findOptions.setReturnType("void");//NOI18N
-        findOptions.setProduces(new String[]{"application/xml", "application/json"}); //NOI18N
-        findOptions.setParameterAnnoationValues(new String[]{"id"}); //NOI18N
+        findOptions.setReturnType(VOID);
+        findOptions.setProduces(new String[]{MimeType.XML.toString(), MimeType.JSON.toString()}); 
+        findOptions.setParameterAnnoationValues(new String[]{"id"}); 
         findOptions.setParameterAnnoations(new String[]{RestConstants.PATH_PARAM_ANNOTATION});
-        findOptions.setParameterNames(new String[]{"id"}); //NOI18N
+        findOptions.setParameterNames(new String[]{"id"}); 
         if (needPathSegment) {
             findOptions.setParameterTypes(new String[]{"javax.ws.rs.core.PathSegment"}); // NOI18N
         } else {
             findOptions.setParameterTypes(new String[]{idType});
         }
         StringBuilder findBody = new StringBuilder(builder);
-        findBody.append("model.put(\"<entity>\",facade.find(");                  //NOI18N
+        findBody.append("model.put(\"").append(KEY_NAME).append("\" ,facade.find(");                  
         findBody.append(paramArg);
-        findBody.append("));");                                  //NOI18N
-        findOptions.setBody(findBody.toString());
+        findBody.append("));");                                  
+        findOptions.setBody(findBody);
 
         RestGenerationOptions findAllOptions = new RestGenerationOptions();
         findAllOptions.setRestMethod(Operation.FIND_ALL);
-        findAllOptions.setReturnType("void");//NOI18N
-        findAllOptions.setProduces(new String[]{"application/xml", "application/json"});
-        findAllOptions.setBody("model.put(\"<entity>_LIST\",facade.findAll());");
+        findAllOptions.setReturnType(VOID);
+        findAllOptions.setProduces(new String[]{MimeType.XML.toString(), MimeType.JSON.toString()});
+        findAllOptions.setBody("model.put(\"").append(KEY_NAME).append("_LIST\",facade.findAll());");
 
         return Arrays.<RestGenerationOptions>asList(
                 redirectCreateOptions,
