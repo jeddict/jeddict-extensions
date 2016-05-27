@@ -128,7 +128,6 @@ public class JSPViewerGenerator implements Generator{
             Map<String, Object> params = new HashMap<>();
             params.put("WELCOME_FILE", welcomeFile);
             ServletUtil.createDD(project, WEB_XML_DD, params);
-//            handler.progress(Console.wrap(NbBundle.getMessage(ServletUtil.class, "MSG_Failure_WelcomeFile", jspData.getFolder()), FG_RED, BOLD, UNDERLINE));
         }
             handler.progress(Console.wrap(NbBundle.getMessage(ServletUtil.class, "MSG_Progress_WelcomeFile", jspData.getFolder()), FG_MAGENTA, BOLD, UNDERLINE));
         
@@ -138,17 +137,6 @@ public class JSPViewerGenerator implements Generator{
             generate(project, entity,mvcData, jspData, true, handler);
         }
     }
-
-//    public static JSPViewerGenerator getInstance() {
-//        if (instance == null) {
-//            synchronized (JSPViewerGenerator.class) {
-//                if (instance == null) {
-//                    instance = new JSPViewerGenerator();
-//                }
-//            }
-//        }
-//        return instance;
-//    }
 
     public void generateStaticResources(Project project, MVCData mvcData, JSPData jspData, ProgressHandler handler) throws IOException {
         Sources sources = ProjectUtils.getSources(project);
@@ -186,9 +174,10 @@ public class JSPViewerGenerator implements Generator{
                 if (entry.getName().lastIndexOf('.') == -1) { //skip if not file
                     continue;
                 }
-                handler.progress(entry.getName());
+                String targetPath = folder + '/' +entry.getName();
+                handler.progress(targetPath);
 
-                FileObject target = org.openide.filesystems.FileUtil.createData(webRoot, folder + '/' + entry.getName());
+                FileObject target = org.openide.filesystems.FileUtil.createData(webRoot, targetPath);
                 FileLock lock = target.lock();
                 try (OutputStream outputStream = target.getOutputStream(lock)) {
                     for (int c = inputStream.read(); c != -1; c = inputStream.read()) {

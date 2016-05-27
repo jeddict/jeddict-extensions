@@ -62,6 +62,8 @@ import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.BOLD;
 import static org.netbeans.jcode.console.Console.FG_RED;
 import static org.netbeans.jcode.console.Console.UNDERLINE;
+import static org.netbeans.jcode.core.util.Constants.JAVA_EXT;
+import static org.netbeans.jcode.core.util.Constants.JAVA_EXT_SUFFIX;
 import org.netbeans.jcode.core.util.Constants.MimeType;
 import static org.netbeans.jcode.core.util.Constants.VOID;
 import org.netbeans.jcode.core.util.Inflector;
@@ -167,7 +169,7 @@ public class MVCControllerGenerator implements Generator {
 
         FileObject targetFolder = SourceGroupSupport.getFolderForPackage(sourceGroup, mvcData.getPackage(), true);
 
-        FileObject controllerFO = targetFolder.getFileObject(controllerFileName, "java");//skips here
+        FileObject controllerFO = targetFolder.getFileObject(controllerFileName, JAVA_EXT);//skips here
 
         if (controllerFO != null) {
             if (overrideExisting) {
@@ -416,13 +418,13 @@ public class MVCControllerGenerator implements Generator {
         }
         
         if (resourcePath!=null && mvcData.isBeanValidation()) {
-            ValidationUtilGenerator.generate(mvcData, utilFolder, resourcePath);
-            ErrorBeanGenerator.generate(utilFolder);
+            ValidationUtilGenerator.generate(mvcData, utilFolder, resourcePath, handler);
+            ErrorBeanGenerator.generate(utilFolder, handler);
         }
         
         if (!mvcData.getEventType().isEmpty()) {
-            LoggerProducerGenerator.generate(utilFolder);
-            ControllerEventGenerator.generate(mvcData.getEventType(), utilFolder);
+            LoggerProducerGenerator.generate(utilFolder, handler);
+            ControllerEventGenerator.generate(mvcData.getEventType(), utilFolder, handler);
         }
 
         ParamConvertorGenerator.generate(project, sourceGroup, utilFolder, handler);
@@ -458,7 +460,7 @@ public class MVCControllerGenerator implements Generator {
         try {
             if (restAppPack != null && appClassName != null) {
 
-                FileObject configFO = RestUtils.createApplicationConfigClass(restSupport, restAppPack, appClassName, mvcData.getRestConfigData().getApplicationPath());
+                FileObject configFO = RestUtils.createApplicationConfigClass(restSupport, restAppPack, appClassName, mvcData.getRestConfigData().getApplicationPath(), handler);
                 JavaSource javaSource = JavaSource.forFileObject(configFO);//add some cutom properties/method specific to MVC
                 if (javaSource != null) {
 

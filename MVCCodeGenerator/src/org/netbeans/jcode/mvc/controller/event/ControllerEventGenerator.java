@@ -35,8 +35,11 @@ import org.netbeans.api.java.source.TreeMaker;
 import org.netbeans.api.java.source.WorkingCopy;
 import static org.netbeans.jcode.cdi.CDIConstants.INJECT;
 import static org.netbeans.jcode.cdi.CDIConstants.OBSERVES;
+import static org.netbeans.jcode.core.util.Constants.JAVA_EXT;
+import static org.netbeans.jcode.core.util.Constants.JAVA_EXT_SUFFIX;
 import static org.netbeans.jcode.core.util.Constants.LOGGER;
 import org.netbeans.jcode.core.util.JavaSourceHelper;
+import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
 import org.netbeans.modules.j2ee.core.api.support.java.SourceUtils;
 import org.openide.filesystems.FileObject;
@@ -49,9 +52,9 @@ public class ControllerEventGenerator {
 
     public static final String CONTROLLER_EVENT_OBSERVER_CLASS = "ControllerEventObserver";
 
-    public static FileObject generate(List<ControllerEventType> controllerEventTypes, FileObject packageFolder) throws IOException {
+    public static FileObject generate(List<ControllerEventType> controllerEventTypes, FileObject packageFolder, ProgressHandler handler) throws IOException {
 
-        FileObject fileObject = packageFolder.getFileObject(CONTROLLER_EVENT_OBSERVER_CLASS, "java");
+        FileObject fileObject = packageFolder.getFileObject(CONTROLLER_EVENT_OBSERVER_CLASS, JAVA_EXT);
         if (fileObject != null) {
             fileObject.delete();
         }
@@ -61,6 +64,7 @@ public class ControllerEventGenerator {
         if (javaSource == null) {
             return null;
         }
+        handler.progress(CONTROLLER_EVENT_OBSERVER_CLASS);
         javaSource.runModificationTask((WorkingCopy workingCopy) -> {
             workingCopy.toPhase(JavaSource.Phase.RESOLVED);
             TypeElement classElement = SourceUtils.getPublicTopLevelElement(workingCopy);
