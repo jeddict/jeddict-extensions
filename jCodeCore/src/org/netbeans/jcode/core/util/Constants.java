@@ -98,7 +98,8 @@ public class Constants {
         Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL
     };
 
-    public static final String JAVA_EXT = "java"; //NI18N
+    public static final String JAVA_EXT = "java"; //NOI18N
+    public static final String JAVA_EXT_SUFFIX = ".java";
 
     public enum MimeType {
 

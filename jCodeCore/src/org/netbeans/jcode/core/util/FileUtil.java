@@ -114,7 +114,7 @@ public class FileUtil {
     }
 
     
-    public static void expandTemplate(String inputTemplatePath,  FileObject toDir, String toFile, Map<String, Object> params) throws IOException {
+    public static FileObject expandTemplate(String inputTemplatePath,  FileObject toDir, String toFile, Map<String, Object> params) throws IOException {
 
         InputStream contentStream = org.netbeans.jcode.core.util.FileUtil.loadResource(inputTemplatePath);
 
@@ -123,6 +123,7 @@ public class FileUtil {
             outputFile = org.openide.filesystems.FileUtil.createData(toDir, toFile);
         }
         expandTemplate(contentStream, params, outputFile);
+        return outputFile;
     }
     
      public static void expandTemplate(String inputTemplatePath,  FileObject toFile, Map<String, Object> params) throws IOException {

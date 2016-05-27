@@ -72,7 +72,7 @@ import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.api.project.Sources;
-import static org.netbeans.jcode.core.util.FileUtil.expandTemplate;
+import static org.netbeans.jcode.core.util.Constants.JAVA_EXT;
 import static org.netbeans.jcode.core.util.ProjectHelper.getTemplateProperties;
 import org.netbeans.jcode.task.AbstractTask;
 import org.netbeans.modules.editor.indent.api.Reformat;
@@ -98,7 +98,6 @@ public class JavaSourceHelper {
 
     static final String CLASS_TEMPLATE = "Templates/Classes/Class.java"; // NOI18N
     static final String INTERFACE_TEMPLATE = "Templates/Classes/Interface.java"; // NOI18N
-    static final String JAVA_EXT = "java"; //NOI18N
 
     public static List<JavaSource> getJavaSources(Project project) {
         List<JavaSource> result = new ArrayList<>();

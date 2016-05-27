@@ -30,13 +30,15 @@ import java.util.List;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import org.netbeans.api.java.source.JavaSource;
-import org.netbeans.api.java.source.Task;
 import org.netbeans.api.java.source.TreeMaker;
 import org.netbeans.api.java.source.WorkingCopy;
 import static org.netbeans.jcode.cdi.CDIConstants.INJECTION_POINT;
 import static org.netbeans.jcode.cdi.CDIConstants.PRODUCES;
+import static org.netbeans.jcode.core.util.Constants.JAVA_EXT;
+import static org.netbeans.jcode.core.util.Constants.JAVA_EXT_SUFFIX;
 import static org.netbeans.jcode.core.util.Constants.LOGGER;
 import org.netbeans.jcode.core.util.JavaSourceHelper;
+import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
 import org.netbeans.modules.j2ee.core.api.support.java.SourceUtils;
 import org.openide.filesystems.FileObject;
@@ -52,9 +54,9 @@ public class LoggerProducerGenerator {
     public static final String INJECTION_POINT_VAR = "injectionPoint";
     private static final String METHID_BODY = "return Logger.getLogger(injectionPoint.getMember().getDeclaringClass().getCanonicalName());";
 
-    public static FileObject generate(FileObject packageFolder) throws IOException {
+    public static FileObject generate(FileObject packageFolder, ProgressHandler handler) throws IOException {
 
-        FileObject fileObject = packageFolder.getFileObject(LOGGER_PRODUCER_CLASS, "java");
+        FileObject fileObject = packageFolder.getFileObject(LOGGER_PRODUCER_CLASS, JAVA_EXT);
         if (fileObject != null) {
             fileObject.delete();
         }
@@ -64,44 +66,40 @@ public class LoggerProducerGenerator {
         if (javaSource == null) {
             return null;
         }
-        javaSource.runModificationTask(new Task<WorkingCopy>() {
-
-            @Override
-            public void run(WorkingCopy workingCopy) throws Exception {
-                workingCopy.toPhase(JavaSource.Phase.RESOLVED);
-                TypeElement classElement = SourceUtils.getPublicTopLevelElement(workingCopy);
-                ClassTree classTree = JavaSourceHelper.getTopLevelClassTree(workingCopy);
-                TreeMaker maker = workingCopy.getTreeMaker();
-                GenerationUtils genUtils = GenerationUtils.newInstance(workingCopy);
-                List<Tree> members = new ArrayList<>(classTree.getMembers());
-
-                ModifiersTree methodModifiersTree = maker.Modifiers(EnumSet.of(Modifier.PUBLIC));
-                methodModifiersTree = maker.addModifiersAnnotation(methodModifiersTree, genUtils.createAnnotation(PRODUCES));
-                Tree returnType = genUtils.createType(LOGGER, classElement);
-                List<VariableTree> params = new ArrayList<>();
-                ModifiersTree paramModifier = maker.Modifiers(Collections.<Modifier>emptySet());
-                VariableTree injectionPoint = maker.Variable(paramModifier,
-                        INJECTION_POINT_VAR, genUtils.createType(INJECTION_POINT, classElement), null); //NOI18N
-                params.add(injectionPoint);
-                MethodTree methodTree = maker.Method(methodModifiersTree,
-                        METHOD_NAME, returnType,
-                        Collections.<TypeParameterTree>emptyList(),
-                        params,
-                        Collections.<ExpressionTree>emptyList(),
-                        "{" + METHID_BODY + "}", null);
-                members.add(methodTree);
-
-                ClassTree newClassTree = maker.Class(
-                        classTree.getModifiers(),
-                        classTree.getSimpleName(),
-                        classTree.getTypeParameters(),
-                        classTree.getExtendsClause(),
-                        classTree.getImplementsClause(),
-                        members);
-
-                workingCopy.rewrite(classTree, newClassTree);
-            }
-
+        handler.progress(LOGGER_PRODUCER_CLASS);
+        javaSource.runModificationTask((WorkingCopy workingCopy) -> {
+            workingCopy.toPhase(JavaSource.Phase.RESOLVED);
+            TypeElement classElement = SourceUtils.getPublicTopLevelElement(workingCopy);
+            ClassTree classTree = JavaSourceHelper.getTopLevelClassTree(workingCopy);
+            TreeMaker maker = workingCopy.getTreeMaker();
+            GenerationUtils genUtils = GenerationUtils.newInstance(workingCopy);
+            List<Tree> members = new ArrayList<>(classTree.getMembers());
+            
+            ModifiersTree methodModifiersTree = maker.Modifiers(EnumSet.of(Modifier.PUBLIC));
+            methodModifiersTree = maker.addModifiersAnnotation(methodModifiersTree, genUtils.createAnnotation(PRODUCES));
+            Tree returnType = genUtils.createType(LOGGER, classElement);
+            List<VariableTree> params = new ArrayList<>();
+            ModifiersTree paramModifier = maker.Modifiers(Collections.<Modifier>emptySet());
+            VariableTree injectionPoint = maker.Variable(paramModifier,
+                    INJECTION_POINT_VAR, genUtils.createType(INJECTION_POINT, classElement), null); //NOI18N
+            params.add(injectionPoint);
+            MethodTree methodTree = maker.Method(methodModifiersTree,
+                    METHOD_NAME, returnType,
+                    Collections.<TypeParameterTree>emptyList(),
+                    params,
+                    Collections.<ExpressionTree>emptyList(),
+                    "{" + METHID_BODY + "}", null);
+            members.add(methodTree);
+            
+            ClassTree newClassTree = maker.Class(
+                    classTree.getModifiers(),
+                    classTree.getSimpleName(),
+                    classTree.getTypeParameters(),
+                    classTree.getExtendsClause(),
+                    classTree.getImplementsClause(),
+                    members);
+            
+            workingCopy.rewrite(classTree, newClassTree);
         }).commit();
         return appClass;
     }

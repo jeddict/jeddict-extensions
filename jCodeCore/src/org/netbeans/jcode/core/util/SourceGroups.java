@@ -35,6 +35,7 @@ import org.netbeans.api.project.FileOwnerQuery;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.SourceGroup;
+import static org.netbeans.jcode.core.util.Constants.JAVA_EXT_SUFFIX;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.filesystems.URLMapper;
@@ -138,7 +139,7 @@ public final class SourceGroups {
     }
     
     public static FileObject getJavaFileObject(SourceGroup sourceGroup , String fqClassName){
-         return sourceGroup.getRootFolder().getFileObject(fqClassName.replaceAll("\\.", Matcher.quoteReplacement(File.separator))+ ".java");
+         return sourceGroup.getRootFolder().getFileObject(fqClassName.replaceAll("\\.", Matcher.quoteReplacement(File.separator))+ JAVA_EXT_SUFFIX);
     }
 
     /**
@@ -212,7 +213,7 @@ public final class SourceGroups {
         Parameters.notNull("project", project); //NOI18N
         Parameters.notEmpty("fqClassName", fqClassName); //NOI18N
 
-        String classFile = fqClassName.replace('.', '/') + ".java"; // NOI18N
+        String classFile = fqClassName.replace('.', '/') + JAVA_EXT_SUFFIX; // NOI18N
         SourceGroup[] sourceGroups = ProjectUtils.getSources(project).getSourceGroups(JavaProjectConstants.SOURCES_TYPE_JAVA);
 
         for (SourceGroup sourceGroup : sourceGroups) {

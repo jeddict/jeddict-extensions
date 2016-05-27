@@ -18,7 +18,6 @@ package org.netbeans.jcode.rest.util;
 import org.netbeans.jcode.core.util.Constants;
 import com.sun.source.tree.AnnotationTree;
 import com.sun.source.tree.ClassTree;
-import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.MethodTree;
 import com.sun.source.tree.ModifiersTree;
@@ -28,13 +27,10 @@ import com.sun.source.tree.TypeParameterTree;
 import com.sun.source.tree.VariableTree;
 import com.sun.source.tree.WildcardTree;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Modifier;
@@ -43,7 +39,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import org.apache.commons.lang.StringUtils;
 import org.netbeans.api.j2ee.core.Profile;
 import org.netbeans.api.java.classpath.ClassPath;
 import org.netbeans.api.java.source.JavaSource;
@@ -52,8 +47,11 @@ import org.netbeans.api.java.source.TreeMaker;
 import org.netbeans.api.java.source.WorkingCopy;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
+import static org.netbeans.jcode.core.util.Constants.JAVA_EXT;
+import static org.netbeans.jcode.core.util.Constants.JAVA_EXT_SUFFIX;
 import org.netbeans.jcode.core.util.JavaSourceHelper;
 import org.netbeans.jcode.core.util.SourceGroupSupport;
+import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
 import org.netbeans.modules.j2ee.deployment.common.api.Datasource;
 import org.netbeans.modules.j2ee.deployment.devmodules.api.J2eeModule;
@@ -371,18 +369,20 @@ public class RestUtils {
     }
 
     public static FileObject createApplicationConfigClass(final RestSupport restSupport, FileObject packageFolder,
-            String name, final String applicationPath) throws IOException {
+            String className, final String applicationPath, ProgressHandler handler) throws IOException {
 
-        FileObject configFO = packageFolder.getFileObject(name, "java");
+        FileObject configFO = packageFolder.getFileObject(className, JAVA_EXT);
         if (configFO != null) {
             configFO.delete();
         }
 
-        FileObject appClass = GenerationUtils.createClass(packageFolder, name, null);
+        FileObject appClass = GenerationUtils.createClass(packageFolder, className, null);
         JavaSource javaSource = JavaSource.forFileObject(appClass);
         if (javaSource == null) {
             return null;
         }
+        handler.progress(className);
+
         javaSource.runModificationTask(new Task<WorkingCopy>() {
 
             @Override

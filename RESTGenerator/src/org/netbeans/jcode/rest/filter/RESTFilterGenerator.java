@@ -13,34 +13,40 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.netbeans.jcode.rest.converter;
+package org.netbeans.jcode.rest.filter;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
-import org.netbeans.jcode.core.util.Constants;
+import static org.netbeans.jcode.core.util.Constants.JAVA_EXT_SUFFIX;
 import org.netbeans.jcode.core.util.FileUtil;
 import static org.netbeans.jcode.core.util.SourceGroupSupport.getPackageForFolder;
 import org.netbeans.jcode.task.progress.ProgressHandler;
+import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
 import org.openide.filesystems.FileObject;
 
 /**
  *
  * @author Gaurav Gupta
  */
-public class ParamConvertorGenerator {
+public class RESTFilterGenerator {
 
-    private static final String PARAM_CONVERTER_CLASS = "CustomParamConverterProvider";
-    private static final String TEMPLATE = "/org/netbeans/jcode/rest/converter/CustomParamConverterProvider.ftl";
+    private static final String TEMPLATE_PATH = "/org/netbeans/jcode/rest/filter/resources/";
+    private static final String TEMPLATE_EXT = ".ftl";
 
-    public static void generate(final Project project, final SourceGroup sourceGroup, FileObject packageFolder, ProgressHandler handler) throws IOException {
+    public static void generate(final Project project, final SourceGroup sourceGroup, FileObject packageFolder, List<FilterType> filterTypes, ProgressHandler handler) throws IOException {
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("package", getPackageForFolder(sourceGroup, packageFolder));
-        handler.progress(PARAM_CONVERTER_CLASS);
-        FileUtil.expandTemplate(TEMPLATE, packageFolder, PARAM_CONVERTER_CLASS + Constants.JAVA_EXT_SUFFIX, params);
-        
+        for (FilterType filterType : filterTypes) {
+            String className = JavaIdentifiers.unqualify(filterType.getClassName());
+            String fileName = className + "Impl";
+            params.put("class", fileName);
+            handler.progress(fileName);
+            FileUtil.expandTemplate(TEMPLATE_PATH + className + TEMPLATE_EXT, packageFolder, fileName + JAVA_EXT_SUFFIX, params);
+        }
     }
 
 }

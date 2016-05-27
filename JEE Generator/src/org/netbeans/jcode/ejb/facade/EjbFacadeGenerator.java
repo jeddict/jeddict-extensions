@@ -65,6 +65,8 @@ import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.BOLD;
 import static org.netbeans.jcode.console.Console.FG_RED;
 import static org.netbeans.jcode.console.Console.UNDERLINE;
+import static org.netbeans.jcode.core.util.Constants.JAVA_EXT;
+import static org.netbeans.jcode.core.util.Constants.JAVA_EXT_SUFFIX;
 import static org.netbeans.jcode.core.util.Constants.NAMED;
 import org.netbeans.jcode.core.util.StringHelper;
 import org.netbeans.jcode.core.util.SourceGroupSupport;
@@ -170,7 +172,7 @@ public final class EjbFacadeGenerator implements Generator{
 
         //create the abstract facade class
         String fileName = beanData.getPrefixName() + FACADE_ABSTRACT + beanData.getSuffixName();
-        FileObject afFO = targetFolder.getFileObject(fileName, "java");//skips here
+        FileObject afFO = targetFolder.getFileObject(fileName, JAVA_EXT);//skips here
 
         if (afFO != null) {
             if (overrideExisting) {
@@ -296,7 +298,7 @@ public final class EjbFacadeGenerator implements Generator{
        
         String facadeName = beanData.getPrefixName() + entitySimpleName + beanData.getSuffixName();
         // create the facade
-        FileObject existingFO = targetFolder.getFileObject(facadeName, "java");
+        FileObject existingFO = targetFolder.getFileObject(facadeName, JAVA_EXT);
         if (existingFO != null) {
             if (overrideExisting) {
                 existingFO.delete();
@@ -572,7 +574,7 @@ public final class EjbFacadeGenerator implements Generator{
     }
 
     String getUniqueClassName(String candidateName, FileObject targetFolder) {
-        return FileUtil.findFreeFileName(targetFolder, candidateName, "java"); //NOI18N
+        return FileUtil.findFreeFileName(targetFolder, candidateName, JAVA_EXT); //NOI18N
     }
 
     /**
@@ -664,7 +666,7 @@ public final class EjbFacadeGenerator implements Generator{
         for (SourceGroup sourceGroup : groups) {
             FileObject pkgFO = sourceGroup.getRootFolder().getFileObject(path);
             if (pkgFO != null) {
-                if (pkgFO.getFileObject(simpleName + ".java") != null) { //NOI18N
+                if (pkgFO.getFileObject(simpleName + JAVA_EXT_SUFFIX) != null) { //NOI18N
                     return true;
                 }
             }

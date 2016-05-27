@@ -47,6 +47,7 @@ import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.api.project.Sources;
+import static org.netbeans.jcode.core.util.Constants.JAVA_EXT;
 import org.netbeans.modules.websvc.rest.spi.MiscUtilities;
 import org.netbeans.spi.java.classpath.ClassPathProvider;
 import org.netbeans.spi.java.classpath.support.ClassPathSupport;
@@ -339,7 +340,7 @@ public class SourceGroupSupport {
             Enumeration<? extends FileObject> files = group.getRootFolder().getChildren(true);
             while (files.hasMoreElements()) {
                 FileObject fo = files.nextElement();
-                if ("java".equals(fo.getExt())) { //NOI18N
+                if (JAVA_EXT.equals(fo.getExt())) { //NOI18N
                     if (name.equals(fo.getName())) {
                         return fo;
                     }
