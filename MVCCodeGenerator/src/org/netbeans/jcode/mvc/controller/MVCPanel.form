@@ -23,7 +23,7 @@
                   <Component id="packagePanel" alignment="0" max="32767" attributes="0"/>
                   <Component id="suffixPanel" alignment="0" max="32767" attributes="0"/>
                   <Component id="viewPanel" alignment="0" max="32767" attributes="0"/>
-                  <Component id="securityPanel" alignment="0" max="32767" attributes="0"/>
+                  <Component id="securityPanel" alignment="0" pref="0" max="32767" attributes="0"/>
                   <Component id="miscPanel" alignment="0" pref="0" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -31,7 +31,7 @@
           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
               <Group type="102" alignment="1" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="warningPanel" pref="621" max="32767" attributes="0"/>
+                  <Component id="warningPanel" pref="853" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -327,6 +327,13 @@
             <Property name="rows" type="int" value="1"/>
           </Layout>
           <SubComponents>
+            <Component class="javax.swing.JCheckBox" name="authenticationCheckbox">
+              <Properties>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="org/netbeans/jcode/mvc/controller/Bundle.properties" key="MVCPanel.authenticationCheckbox.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                </Property>
+              </Properties>
+            </Component>
             <Component class="javax.swing.JCheckBox" name="csrfCheckbox">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
@@ -379,7 +386,7 @@
                       <Component id="hybridClassCheckbox" min="-2" pref="172" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="beanValidation" min="-2" pref="151" max="-2" attributes="0"/>
-                      <EmptySpace pref="65" max="32767" attributes="0"/>
+                      <EmptySpace pref="272" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>

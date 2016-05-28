@@ -578,6 +578,7 @@
                 <package>org.netbeans.jcode.rest.applicationconfig</package>
                 <package>org.netbeans.jcode.rest.converter</package>
                 <package>org.netbeans.jcode.rest.util</package>
+                <package>org.netbeans.jcode.security</package>
                 <package>org.netbeans.jcode.servlet.util</package>
                 <package>org.netbeans.jcode.stack.app.generator</package>
                 <package>org.netbeans.jcode.stack.config.data</package>

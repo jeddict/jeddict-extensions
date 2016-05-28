@@ -73,5 +73,3 @@
     </head>
 
     <body>
-        <div id="wrapper">
-            <%@ include file="navigationbar.jspf"%>

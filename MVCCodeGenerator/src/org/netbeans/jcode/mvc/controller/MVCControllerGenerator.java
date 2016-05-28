@@ -63,8 +63,8 @@ import static org.netbeans.jcode.console.Console.BOLD;
 import static org.netbeans.jcode.console.Console.FG_RED;
 import static org.netbeans.jcode.console.Console.UNDERLINE;
 import static org.netbeans.jcode.core.util.Constants.JAVA_EXT;
-import static org.netbeans.jcode.core.util.Constants.JAVA_EXT_SUFFIX;
 import org.netbeans.jcode.core.util.Constants.MimeType;
+import static org.netbeans.jcode.core.util.Constants.PASSWORD;
 import static org.netbeans.jcode.core.util.Constants.VOID;
 import org.netbeans.jcode.core.util.Inflector;
 import org.netbeans.jcode.core.util.StringHelper;
@@ -99,9 +99,15 @@ import org.netbeans.jcode.layer.Generator;
 import org.netbeans.jcode.layer.Technology;
 import static org.netbeans.jcode.layer.Technology.Type.CONTROLLER;
 import static org.netbeans.jcode.mvc.MVCConstants.CSRF_VALID;
+import org.netbeans.jcode.mvc.auth.controller.AuthMechanismGenerator;
+import org.netbeans.jcode.mvc.auth.controller.LoginControllerGenerator;
 import static org.netbeans.jcode.mvc.controller.ValidationUtilGenerator.VALIDATION_UTIL_CLASS;
 import org.netbeans.jcode.mvc.controller.event.ControllerEventGenerator;
+import static org.netbeans.jcode.security.SecurityConstants.CALLER_NAME;
 import org.netbeans.jcode.rest.converter.ParamConvertorGenerator;
+import static org.netbeans.jcode.security.SecurityConstants.CREDENTIALS;
+import static org.netbeans.jcode.security.SecurityConstants.DEFAULT_CREDENTIALS;
+import static org.netbeans.jcode.security.SecurityConstants.EMBEDDED_IDENTITY_STORE_DEFINITION;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.modules.websvc.rest.spi.RestSupport;
 import org.openide.filesystems.FileObject;
@@ -432,6 +438,11 @@ public class MVCControllerGenerator implements Generator {
         CDIUtil.createDD(project);
 
         generateApplicationConfig(project, sourceGroup, handler);
+        
+        if(mvcData.isAuthentication()){
+            LoginControllerGenerator.generate(project, sourceGroup, targetFolder, handler);
+            AuthMechanismGenerator.generate(project, sourceGroup, targetFolder, handler);
+        }
     }
 
     public void generateApplicationConfig(final Project project, final SourceGroup sourceGroup, ProgressHandler handler) throws IOException {
@@ -464,22 +475,15 @@ public class MVCControllerGenerator implements Generator {
                 JavaSource javaSource = JavaSource.forFileObject(configFO);//add some cutom properties/method specific to MVC
                 if (javaSource != null) {
 
-                    javaSource.runModificationTask(new Task<WorkingCopy>() {
-
-                        @Override
-                        public void run(WorkingCopy workingCopy) throws Exception {
-                            workingCopy.toPhase(JavaSource.Phase.RESOLVED);
-                            ClassTree tree = JavaSourceHelper.getTopLevelClassTree(workingCopy);//
-                            TreeMaker maker = workingCopy.getTreeMaker();
-                            ClassTree newTree = tree; // NOI18N
-                            String viewEngineFolder = null;
-                            if (jspData != null) {
-                                viewEngineFolder = jspData.getFolder();
-                            }
-                            newTree = createAppConfigGetProperties(workingCopy, maker, newTree, viewEngineFolder, mvcData.isCSRF());
-                            workingCopy.rewrite(tree, newTree);
-                        }
-
+                    javaSource.runModificationTask((WorkingCopy workingCopy) -> {
+                        workingCopy.toPhase(JavaSource.Phase.RESOLVED);
+                        ClassTree tree = JavaSourceHelper.getTopLevelClassTree(workingCopy);//
+                        TreeMaker maker = workingCopy.getTreeMaker();
+                        ClassTree newTree = tree; // NOI18N
+                        
+                        newTree = addAuthAnnotation(workingCopy, maker, newTree);
+                        newTree = createAppConfigGetProperties(workingCopy, maker, newTree);
+                        workingCopy.rewrite(tree, newTree);
                     }).commit();
                 }
 
@@ -493,8 +497,44 @@ public class MVCControllerGenerator implements Generator {
         }
     }
 
-    private static ClassTree createAppConfigGetProperties(WorkingCopy workingCopy, TreeMaker maker, ClassTree newTree, String viewEngineFolder, boolean csrfProtection) {
+    private ClassTree addAuthAnnotation(WorkingCopy workingCopy, TreeMaker maker, ClassTree newTree) {
 
+        if (!mvcData.isAuthentication()) {
+            return newTree;
+        }
+        CompilationUnitTree cut = workingCopy.getCompilationUnit();
+        CompilationUnitTree newCut = cut;
+        GenerationUtils genUtils = GenerationUtils.newInstance(workingCopy);
+        
+        
+         ExpressionTree credential = genUtils.createAnnotation(CREDENTIALS, Arrays.asList(
+                        genUtils.createAnnotationArgument(CALLER_NAME, DEFAULT_CREDENTIALS),
+                        genUtils.createAnnotationArgument(PASSWORD, DEFAULT_CREDENTIALS)));
+        
+        ModifiersTree modifiersTree = maker.addModifiersAnnotation(newTree.getModifiers(),
+                                genUtils.createAnnotation(EMBEDDED_IDENTITY_STORE_DEFINITION,
+                                        Collections.<ExpressionTree>singletonList(credential)));
+
+        workingCopy.rewrite(cut, newCut);
+
+        ClassTree newClassTree = maker.Class(
+                        modifiersTree,
+                        newTree.getSimpleName(),
+                        newTree.getTypeParameters(),
+                        newTree.getExtendsClause(),
+                        newTree.getImplementsClause(),
+                        newTree.getMembers());
+
+        return newClassTree;
+    }
+
+    private ClassTree createAppConfigGetProperties(WorkingCopy workingCopy, TreeMaker maker, ClassTree newTree) {
+
+        if (jspData == null) {
+            return newTree;
+        }
+        String viewEngineFolder = jspData.getFolder();
+        boolean csrfProtection=  mvcData.isCSRF();
         if (StringUtils.isBlank(viewEngineFolder) && !csrfProtection) {
             return newTree;
         }
@@ -519,7 +559,7 @@ public class MVCControllerGenerator implements Generator {
         if (StringUtils.isNotBlank(viewEngineFolder)) {
             newCut = maker.addCompUnitImport(cut, maker.Import(maker.Identifier(HashMap.class.getCanonicalName()), false));
             newCut = maker.addCompUnitImport(newCut, maker.Import(maker.Identifier(MVCConstants.VIEW_ENGINE), false));
-            builder.append("props.put(ViewEngine.VIEW_FOLDER, \"/").append(viewEngineFolder).append("/\");").append('\n');
+            builder.append("props.put(ViewEngine.VIEW_FOLDER, \"/").append(viewEngineFolder).append("\");").append('\n');
         }
         if (csrfProtection) {
             newCut = maker.addCompUnitImport(newCut, maker.Import(maker.Identifier(MVCConstants.CSRF), false));

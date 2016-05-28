@@ -38,6 +38,8 @@ public class MVCData extends LayerConfigData {
     private List<ControllerEventType> eventTypes;
     private boolean csrf;
     private boolean xss;
+    private boolean authentication;
+    
     private boolean hybridClass = true;
     
 
@@ -181,6 +183,20 @@ public class MVCData extends LayerConfigData {
      */
     public void setHybridClass(boolean hybridClass) {
         this.hybridClass = hybridClass;
+    }
+
+    /**
+     * @return the authentication
+     */
+    public boolean isAuthentication() {
+        return authentication;
+    }
+
+    /**
+     * @param authentication the authentication to set
+     */
+    public void setAuthentication(boolean authentication) {
+        this.authentication = authentication;
     }
 
 }

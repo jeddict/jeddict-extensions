@@ -116,6 +116,7 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
             beanValidation.setSelected(data.isBeanValidation());
             csrfCheckbox.setSelected(data.isCSRF());
             xssCheckbox.setSelected(data.isXSS());
+            authenticationCheckbox.setSelected(data.isAuthentication());
             hybridClassCheckbox.setSelected(data.isHybridClass());
         }
         
@@ -136,6 +137,7 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
         data.setBeanValidation(getBeanValidation());
         data.setCSRF(getCSRF());
         data.setXSS(getXSS());
+        data.setAuthentication(getAuthentication());
         data.setHybridClass(getHybridClass());
         data.setReturnType(getReturnType());
         data.setEventType(getSelectedEventType());
@@ -220,6 +222,10 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
         return xssCheckbox.isSelected();
     }
       
+        public boolean getAuthentication() {
+        return authenticationCheckbox.isSelected();
+    }
+      
        public boolean getHybridClass() {
         return hybridClassCheckbox.isSelected();
     }
@@ -298,6 +304,7 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
         securityPanel = new javax.swing.JPanel();
         securityLabel = new javax.swing.JLabel();
         securityCompPanel = new javax.swing.JLayeredPane();
+        authenticationCheckbox = new javax.swing.JCheckBox();
         csrfCheckbox = new javax.swing.JCheckBox();
         xssCheckbox = new javax.swing.JCheckBox();
         miscPanel = new javax.swing.JPanel();
@@ -423,6 +430,9 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
 
         securityCompPanel.setLayout(new java.awt.GridLayout(1, 0));
 
+        org.openide.awt.Mnemonics.setLocalizedText(authenticationCheckbox, org.openide.util.NbBundle.getMessage(MVCPanel.class, "MVCPanel.authenticationCheckbox.text")); // NOI18N
+        securityCompPanel.add(authenticationCheckbox);
+
         org.openide.awt.Mnemonics.setLocalizedText(csrfCheckbox, org.openide.util.NbBundle.getMessage(MVCPanel.class, "MVCPanel.csrfCheckbox.text")); // NOI18N
         securityCompPanel.add(csrfCheckbox);
 
@@ -457,7 +467,7 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
                 .addComponent(hybridClassCheckbox, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(beanValidation, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(65, Short.MAX_VALUE))
+                .addContainerGap(272, Short.MAX_VALUE))
         );
         wrapperLayout.setVerticalGroup(
             wrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -484,13 +494,13 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
                     .addComponent(packagePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(suffixPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(viewPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(securityPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(securityPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addComponent(miscPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 621, Short.MAX_VALUE)
+                    .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 853, Short.MAX_VALUE)
                     .addContainerGap()))
         );
         layout.setVerticalGroup(
@@ -571,6 +581,7 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton applicationConfigButton;
+    private javax.swing.JCheckBox authenticationCheckbox;
     private javax.swing.JCheckBox beanValidation;
     private javax.swing.JCheckBox csrfCheckbox;
     private javax.swing.JLabel entityLabel;

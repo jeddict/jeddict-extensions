@@ -57,7 +57,27 @@
             <!-- /.dropdown-messages -->
         </li>
         <!-- /.dropdown -->
+        <#if Authentication>
+        <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-user">
+                <li><a href="#"><i class="fa fa-user fa-fw"></i> User Profile</a>
+                </li>
+                <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
+                </li>
+                <li class="divider"></li>
+                <li><a onclick="document.getElementById('logout').submit();return false;"><i class="fa fa-sign-out fa-fw"></i> Logout</a>                
+                </li>
+            </ul>
+            <!-- /.dropdown-user -->
+        </li>
+        </#if>
     </ul>
+    <#if Authentication>
+    <form id="logout" action="${r"${appPath}"}/app/logout" method="post"></form>
+    </#if>
     <!-- /.navbar-top-links -->
 
     <div class="navbar-default sidebar" role="navigation">

@@ -36,7 +36,6 @@ import static org.netbeans.jcode.console.Console.BOLD;
 import static org.netbeans.jcode.console.Console.FG_MAGENTA;
 import static org.netbeans.jcode.console.Console.FG_RED;
 import static org.netbeans.jcode.console.Console.UNDERLINE;
-import static org.netbeans.jcode.core.util.Constants.WEB_INF;
 import org.netbeans.jcode.core.util.FileUtil;
 import org.netbeans.jcode.core.util.StringHelper;
 import org.netbeans.jcode.entity.info.EntityResourceBeanModel;
@@ -49,6 +48,7 @@ import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
 import org.netbeans.jcode.mvc.controller.MVCData;
 import org.netbeans.jcode.mvc.viewer.dto.FromEntityBase;
 import org.netbeans.jcode.mvc.controller.Operation;
+import org.netbeans.jcode.mvc.controller.event.ControllerEventType;
 import org.netbeans.jcode.servlet.util.ServletUtil;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.modules.web.api.webmodule.WebProjectConstants;
@@ -117,11 +117,20 @@ public class JSPViewerGenerator implements Generator{
     @Override
     public void execute(Project project,SourceGroup source, EntityResourceBeanModel model, ProgressHandler handler) throws IOException {
        Set<String> entities = model.getEntityInfos().stream().map(ei -> ei.getType()).collect(toSet());
-        handler.append(Console.wrap(JSPViewerGenerator.class, "MSG_Copying_Static_Files", FG_RED, BOLD, UNDERLINE));
-        generateStaticResources(project, mvcData, jspData, handler);
-        generateHome(project, entities , mvcData, jspData, handler);
+        generateCRUD(project, entities, true, handler);
+        generateHome(project, entities, handler);
+        generateWelcomeFileDD(project, handler);
+        generateStaticResources(project, handler);
+    }
 
-        String welcomeFile = '/' + jspData.getFolder() + "/index.jsp";
+    
+    public void generateWelcomeFileDD(Project project, ProgressHandler handler) throws IOException {
+        String welcomeFile = null;
+        if (mvcData.isAuthentication()) {
+            welcomeFile = "/index.jsp";
+        } else {
+            welcomeFile = '/' + jspData.getFolder() + "/home.jsp";
+        }
         boolean sucess = ServletUtil.setWelcomeFiles(project, welcomeFile);
         if (!sucess) { // NetBeans API bug resolution
             handler.progress(Console.wrap(NbBundle.getMessage(ServletUtil.class, "MSG_Init_WelcomeFile", jspData.getFolder()), FG_MAGENTA, BOLD, UNDERLINE));
@@ -129,16 +138,11 @@ public class JSPViewerGenerator implements Generator{
             params.put("WELCOME_FILE", welcomeFile);
             ServletUtil.createDD(project, WEB_XML_DD, params);
         }
-            handler.progress(Console.wrap(NbBundle.getMessage(ServletUtil.class, "MSG_Progress_WelcomeFile", jspData.getFolder()), FG_MAGENTA, BOLD, UNDERLINE));
-        
-
-        handler.progress(Console.wrap(JSPViewerGenerator.class, "MSG_Generating_CRUD_Template", FG_RED, BOLD, UNDERLINE));
-        for (String entity : entities) {
-            generate(project, entity,mvcData, jspData, true, handler);
-        }
+        handler.progress(Console.wrap(NbBundle.getMessage(ServletUtil.class, "MSG_Progress_WelcomeFile", jspData.getFolder()), FG_MAGENTA, BOLD, UNDERLINE));
     }
 
-    public void generateStaticResources(Project project, MVCData mvcData, JSPData jspData, ProgressHandler handler) throws IOException {
+    public void generateStaticResources(Project project, ProgressHandler handler) throws IOException {
+        handler.append(Console.wrap(JSPViewerGenerator.class, "MSG_Copying_Static_Files", FG_RED, BOLD, UNDERLINE));
         Sources sources = ProjectUtils.getSources(project);
         SourceGroup sourceGroups[] = sources.getSourceGroups(WebProjectConstants.TYPE_DOC_ROOT);
         FileObject webRoot = sourceGroups[0].getRootFolder();
@@ -154,15 +158,16 @@ public class JSPViewerGenerator implements Generator{
         params.put("applicationPath", applicationPath);
         params.put("CSRFPrevention", mvcData.isCSRF());
         params.put("XSSPrevention", mvcData.isXSS());
+        params.put("Authentication", mvcData.isAuthentication());
         params.put("online", jspData.isOnlineTheme());
 
         handler.append(Console.wrap(JSPViewerGenerator.class, "MSG_Generating_Static_Template", FG_RED, BOLD));
         for (Entry<String, String> entry : TEMPLATE_PATTERN_FILES.entrySet()) {
             String targetPath =  jspData.getResourceFolder() + '/' + entry.getValue();
-            if (webRoot.getFileObject(targetPath) == null) {
+//            if (webRoot.getFileObject(targetPath) == null) {
                 expandSingleJSPTemplate(TEMPLATE_PATH + COMMON_TEMPLATE_PATH + entry.getKey(),
                         targetPath, webRoot, params, handler);
-            }
+//            }
         }
     }
 
@@ -191,7 +196,11 @@ public class JSPViewerGenerator implements Generator{
         }
     }
 
-    public void generate(final Project project, final String entityFQN, MVCData mvcData, JSPData jspData, boolean overrideExisting, ProgressHandler handler) throws IOException {
+    public void generateCRUD(final Project project, Set<String> entities, boolean overrideExisting, ProgressHandler handler) throws IOException {
+        
+        handler.progress(Console.wrap(JSPViewerGenerator.class, "MSG_Generating_CRUD_Template", FG_RED, BOLD, UNDERLINE));
+        for (String entityFQN : entities) {
+        
         Sources sources = ProjectUtils.getSources(project);
         SourceGroup sourceGroups[] = sources.getSourceGroups(WebProjectConstants.TYPE_DOC_ROOT);
         FileObject webRoot = sourceGroups[0].getRootFolder();
@@ -215,10 +224,11 @@ public class JSPViewerGenerator implements Generator{
                     getJSPFileName(entityClass,jspEntityIncludeFolder, GENERATED_CRUD_FILES.get(entry.getKey())) + JSP_EXT,
                     webRoot, params, handler);
         }
+        }
     }
 
     public void generateHome(final Project project,
-            final Set<String> entities, MVCData mvcData, JSPData jspData, ProgressHandler handler) throws IOException {
+            final Set<String> entities, ProgressHandler handler) throws IOException {
         Sources srcs = ProjectUtils.getSources(project);
         SourceGroup sgWeb[] = srcs.getSourceGroups(WebProjectConstants.TYPE_DOC_ROOT);
         FileObject webRoot = sgWeb[0].getRootFolder();
@@ -240,10 +250,21 @@ public class JSPViewerGenerator implements Generator{
         params.put("online", jspData.isOnlineTheme());
         params.put("webPath", jspData.getFolder());
         params.put("resourcePath", jspData.getResourceFolder());
+        params.put("applicationPath", mvcData.getRestConfigData().getApplicationPath());
 
-        expandSingleJSPTemplate(TEMPLATE_PATH + CRUD_HOME_PATH + "index.ftl",
-                getJSPFileName(null, jspEntityIncludeFolder, "index") + JSP_EXT,
+        expandSingleJSPTemplate(TEMPLATE_PATH + CRUD_HOME_PATH + "home.ftl",
+                getJSPFileName(null, jspEntityIncludeFolder, "home") + JSP_EXT,
                 webRoot, params, handler);
+        
+        expandSingleJSPTemplate(TEMPLATE_PATH + CRUD_HOME_PATH + "login.ftl",
+                getJSPFileName(null, jspEntityIncludeFolder, "login") + JSP_EXT,
+                webRoot, params, handler);
+        
+        if(mvcData.isAuthentication()){
+        expandSingleJSPTemplate(TEMPLATE_PATH + CRUD_HOME_PATH + "index.ftl",
+                "index" + JSP_EXT,
+                webRoot, params, handler);
+        }
 
     }
 

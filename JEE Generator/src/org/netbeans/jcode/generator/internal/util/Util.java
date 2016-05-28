@@ -499,11 +499,11 @@ public class Util {
             if (field.isAnnotationPresent(ConfigData.class)) {
                 field.setAccessible(true);
                 try {
-                    if (field.getGenericType()== bussinesLayerConfig.getClass()) {
+                    if (bussinesLayerConfig!=null && field.getGenericType()== bussinesLayerConfig.getClass()) {
                         field.set(instance, bussinesLayerConfig);
-                    } else if (field.getGenericType() == controllerLayerConfig.getClass()) {
+                    } else if (controllerLayerConfig!=null && field.getGenericType() == controllerLayerConfig.getClass()) {
                         field.set(instance, controllerLayerConfig);
-                    } else if (field.getGenericType() == viewerLayerConfig.getClass()) {
+                    } else if (viewerLayerConfig!=null && field.getGenericType() == viewerLayerConfig.getClass()) {
                         field.set(instance, viewerLayerConfig);
                     }
                 } catch (IllegalArgumentException | IllegalAccessException e) {
