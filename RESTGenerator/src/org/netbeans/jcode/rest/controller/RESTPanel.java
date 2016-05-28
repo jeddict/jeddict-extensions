@@ -111,10 +111,6 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         
         if(data.getReturnType() != null){
             viewCombo.setSelectedItem(data.getReturnType());
-            beanValidation.setSelected(data.isBeanValidation());
-//            csrfCheckbox.setSelected(data.isCSRF());
-//            xssCheckbox.setSelected(data.isXSS());
-//            hybridClassCheckbox.setSelected(data.isHybridClass());
         }
         
         setSelectedEventType(data.getFilterTypes());
@@ -131,10 +127,6 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
             restConfigData.setPackage(getPackage());
             data.setRestConfigData(restConfigData);
         }
-        data.setBeanValidation(getBeanValidation());
-//        data.setCSRF(getCSRF());
-//        data.setXSS(getXSS());
-//        data.setHybridClass(getHybridClass());
         data.setReturnType(getReturnType());
         data.setFilterTypes(getSelectedEventType());
         
@@ -199,24 +191,10 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
 
     }
 
-//    private void configurREST(boolean configured) {
-//        configuredREST = configured;
-//    }
-
     public String getPackage() {
         return ((JTextComponent) packageCombo.getEditor().getEditorComponent()).getText().trim();
     }
 
-    public boolean getBeanValidation() {
-        return beanValidation.isSelected();
-    }
-    
-     public boolean getCSRF() {
-        return csrfCheckbox.isSelected();
-    }
-      public boolean getXSS() {
-        return xssCheckbox.isSelected();
-    }
 
     public ControllerReturnType getReturnType() {
         return (ControllerReturnType) viewCombo.getSelectedItem();
@@ -289,15 +267,9 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         eventObserversPanel = new javax.swing.JPanel();
         jCheckBox4 = new javax.swing.JCheckBox();
         jCheckBox1 = new javax.swing.JCheckBox();
-        securityPanel = new javax.swing.JPanel();
-        securityLabel = new javax.swing.JLabel();
-        securityCompPanel = new javax.swing.JLayeredPane();
-        csrfCheckbox = new javax.swing.JCheckBox();
-        xssCheckbox = new javax.swing.JCheckBox();
         miscPanel = new javax.swing.JPanel();
         applicationConfigButton = new javax.swing.JButton();
         wrapper = new javax.swing.JLayeredPane();
-        beanValidation = new javax.swing.JCheckBox();
 
         packagePanel.setLayout(new java.awt.BorderLayout(10, 0));
 
@@ -409,22 +381,6 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         org.openide.awt.Mnemonics.setLocalizedText(jCheckBox1, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.jCheckBox1.text")); // NOI18N
         eventObserversPanel.add(jCheckBox1);
 
-        securityPanel.setLayout(new java.awt.BorderLayout(10, 0));
-
-        org.openide.awt.Mnemonics.setLocalizedText(securityLabel, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.securityLabel.text")); // NOI18N
-        securityLabel.setPreferredSize(new java.awt.Dimension(100, 17));
-        securityPanel.add(securityLabel, java.awt.BorderLayout.LINE_START);
-
-        securityCompPanel.setLayout(new java.awt.GridLayout(1, 0));
-
-        org.openide.awt.Mnemonics.setLocalizedText(csrfCheckbox, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.csrfCheckbox.text")); // NOI18N
-        securityCompPanel.add(csrfCheckbox);
-
-        org.openide.awt.Mnemonics.setLocalizedText(xssCheckbox, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.xssCheckbox.text")); // NOI18N
-        securityCompPanel.add(xssCheckbox);
-
-        securityPanel.add(securityCompPanel, java.awt.BorderLayout.CENTER);
-
         miscPanel.setLayout(new java.awt.BorderLayout());
 
         org.openide.awt.Mnemonics.setLocalizedText(applicationConfigButton, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.applicationConfigButton.text")); // NOI18N
@@ -435,27 +391,16 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         });
         miscPanel.add(applicationConfigButton, java.awt.BorderLayout.EAST);
 
-        beanValidation.setSelected(true);
-        org.openide.awt.Mnemonics.setLocalizedText(beanValidation, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.beanValidation.text")); // NOI18N
-        beanValidation.setToolTipText(org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.beanValidation.toolTipText")); // NOI18N
-
         javax.swing.GroupLayout wrapperLayout = new javax.swing.GroupLayout(wrapper);
         wrapper.setLayout(wrapperLayout);
         wrapperLayout.setHorizontalGroup(
             wrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(wrapperLayout.createSequentialGroup()
-                .addGap(292, 292, 292)
-                .addComponent(beanValidation, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(49, Short.MAX_VALUE))
+            .addGap(0, 492, Short.MAX_VALUE)
         );
         wrapperLayout.setVerticalGroup(
             wrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, wrapperLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(beanValidation, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(10, 10, 10))
+            .addGap(0, 24, Short.MAX_VALUE)
         );
-        wrapper.setLayer(beanValidation, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         miscPanel.add(wrapper, java.awt.BorderLayout.CENTER);
 
@@ -470,7 +415,6 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
                     .addComponent(packagePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(suffixPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(viewPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(securityPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(miscPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -487,17 +431,15 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(packagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(miscPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(viewPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(securityPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(miscPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(eventObserversPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(46, Short.MAX_VALUE))
+                .addContainerGap(105, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                    .addContainerGap(279, Short.MAX_VALUE)
+                    .addContainerGap(306, Short.MAX_VALUE)
                     .addComponent(warningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap()))
         );
@@ -557,8 +499,6 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton applicationConfigButton;
-    private javax.swing.JCheckBox beanValidation;
-    private javax.swing.JCheckBox csrfCheckbox;
     private javax.swing.JLabel entityLabel;
     private javax.swing.JPanel eventObserversPanel;
     private javax.swing.JCheckBox jCheckBox1;
@@ -570,9 +510,6 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
     private javax.swing.JLabel packageLabel;
     private javax.swing.JPanel packagePanel;
     private javax.swing.JTextField prefixField;
-    private javax.swing.JLayeredPane securityCompPanel;
-    private javax.swing.JLabel securityLabel;
-    private javax.swing.JPanel securityPanel;
     private javax.swing.JTextField suffixField;
     private javax.swing.JPanel suffixPanel;
     private javax.swing.JComboBox viewCombo;
@@ -581,6 +518,5 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
     private javax.swing.JLabel warningLabel;
     private javax.swing.JPanel warningPanel;
     private javax.swing.JLayeredPane wrapper;
-    private javax.swing.JCheckBox xssCheckbox;
     // End of variables declaration//GEN-END:variables
 }

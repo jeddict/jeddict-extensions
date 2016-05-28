@@ -42,7 +42,6 @@ import org.netbeans.api.java.source.TreeMaker;
 import org.netbeans.api.java.source.WorkingCopy;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
-import static org.netbeans.jcode.cdi.CDIConstants.INJECT;
 import org.netbeans.jcode.cdi.logger.LoggerProducerGenerator;
 import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.BOLD;
@@ -75,6 +74,7 @@ import static org.netbeans.jcode.layer.Technology.Type.CONTROLLER;
 import org.netbeans.jcode.rest.filter.RESTFilterGenerator;
 import org.netbeans.jcode.rest.returntype.ControllerReturnType;
 import org.netbeans.jcode.task.progress.ProgressHandler;
+import static org.netbeans.modules.websvc.rest.model.api.RestConstants.EJB;
 import org.netbeans.modules.websvc.rest.spi.RestSupport;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
@@ -159,7 +159,7 @@ public class RESTGenerator implements Generator {
 
                 List<Tree> members = new ArrayList<>(classTree.getMembers());
 
-                members.add(maker.Variable(maker.addModifiersAnnotation(genUtils.createModifiers(Modifier.PRIVATE), genUtils.createAnnotation(INJECT)),
+                members.add(maker.Variable(maker.addModifiersAnnotation(genUtils.createModifiers(Modifier.PRIVATE), genUtils.createAnnotation(EJB)),
                         SESSION_BEAN_VAR_DECLARATION, genUtils.createType(fqFacadeFileName, classElement), null));
 
                 List<RestGenerationOptions> restGenerationOptions
@@ -186,13 +186,13 @@ public class RESTGenerator implements Generator {
                                                         annArgument)));
 
                     }
-                      // add @Produces annotation
-        modifiersTree = addMimeHandlerAnnotation(genUtils, maker,
-                modifiersTree, RestConstants.PRODUCE_MIME, option.getProduces());
-        
-        // add @Consumes annotation
-        modifiersTree = addMimeHandlerAnnotation(genUtils, maker,
-                modifiersTree, RestConstants.CONSUME_MIME, option.getConsumes());
+//                      // add @Produces annotation
+//        modifiersTree = addMimeHandlerAnnotation(genUtils, maker,
+//                modifiersTree, RestConstants.PRODUCE_MIME, option.getProduces());
+//        
+//        // add @Consumes annotation
+//        modifiersTree = addMimeHandlerAnnotation(genUtils, maker,
+//                modifiersTree, RestConstants.CONSUME_MIME, option.getConsumes());
 
                     // create arguments list
                     List<VariableTree> vars = new ArrayList<>();

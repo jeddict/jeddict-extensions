@@ -32,7 +32,6 @@ public class RESTData extends LayerConfigData {
     private String prefixName;
     private String suffixName;
     private String _package;
-    private boolean beanValidation;
     private RestConfigData restConfigData;
     private ControllerReturnType returnType;
     private List<FilterType> filterTypes;
@@ -94,14 +93,6 @@ public class RESTData extends LayerConfigData {
      */
     public void setRestConfigData(RestConfigData restConfigData) {
         this.restConfigData = restConfigData;
-    }
-
-    public boolean isBeanValidation() {
-        return beanValidation;
-    }
-
-    public void setBeanValidation(boolean beanValidation) {
-        this.beanValidation = beanValidation;
     }
 
     public ControllerReturnType getReturnType() {
