@@ -324,10 +324,10 @@ public class RESTGenerator implements Generator {
 
     public void generateUtil(final Project project, final SourceGroup sourceGroup, ProgressHandler handler) throws IOException {
         FileObject targetFolder = SourceGroupSupport.getFolderForPackage(sourceGroup, restData.getPackage(), true);
-        FileObject utilFolder = SourceGroupSupport.getFolderForPackage(targetFolder, UTIL_PACKAGE, true);
 
         generateApplicationConfig(project, sourceGroup, handler);
         if (!restData.getFilterTypes().isEmpty()) {
+            FileObject utilFolder = SourceGroupSupport.getFolderForPackage(targetFolder, UTIL_PACKAGE, true);
             LoggerProducerGenerator.generate(utilFolder, handler);
             RESTFilterGenerator.generate(project, sourceGroup, utilFolder, restData.getFilterTypes(), handler);
         }

@@ -65,6 +65,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
 
     public RESTPanel() {
         initComponents();
+        eventObserversPanel.setVisible(false);
     }
 
     @Override
