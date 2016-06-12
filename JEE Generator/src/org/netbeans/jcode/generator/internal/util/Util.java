@@ -68,8 +68,6 @@ import org.netbeans.modules.websvc.api.support.java.SourceUtils;
 import org.netbeans.jcode.entity.info.EntityClassInfo;
 import org.netbeans.jcode.entity.info.EntityResourceBeanModel;
 import org.netbeans.jcode.entity.info.EntityClassInfo.FieldInfo;
-import org.netbeans.jcode.core.util.Inflector;
-import org.netbeans.jcode.core.util.JavaSourceHelper;
 import org.openide.WizardDescriptor;
 import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle;
@@ -83,7 +81,6 @@ import com.sun.source.tree.ModifiersTree;
 import com.sun.source.tree.Tree;
 import com.sun.source.tree.TypeParameterTree;
 import com.sun.source.tree.VariableTree;
-import static com.sun.source.util.Trees.instance;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStream;
@@ -96,14 +93,14 @@ import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.openide.filesystems.FileLock;
 import org.netbeans.api.java.source.Task;
 import org.netbeans.jcode.core.util.Constants;
-import org.netbeans.jcode.core.util.Constants;
 import org.netbeans.jcode.core.util.Inflector;
 import org.netbeans.jcode.core.util.JavaSourceHelper;
 import org.netbeans.jcode.core.util.StringHelper;
-import org.netbeans.jcode.core.util.StringHelper;
 import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
-import static org.netbeans.jcode.jpa.JPAConstants.BASIC;
-import static org.netbeans.jcode.jpa.JPAConstants.ID;
+import static org.netbeans.jcode.jpa.JPAConstants.BASIC_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.ENTITY_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.ID_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.TABLE_FQN;
 import org.netbeans.jcode.layer.ConfigData;
 import org.netbeans.jcode.layer.Generator;
 import org.netbeans.jcode.stack.config.data.LayerConfigData;
@@ -637,7 +634,7 @@ public class Util {
                     if (annotationName.contentEquals(FORM_PARAM)) {
                         hasCustomAnnotation = true;
                     }
-                    if (annotationName.contentEquals(ID) || annotationName.contentEquals(BASIC)) {
+                    if (annotationName.contentEquals(ID_FQN) || annotationName.contentEquals(BASIC_FQN)) {
                         isFormVariable = true;
                     }
                 }
@@ -889,7 +886,7 @@ public class Util {
             }
             String entityName = null;
             TypeElement annotationElement = controller.getElements()
-                    .getTypeElement(Constants.PERSISTENCE_TABLE);
+                    .getTypeElement(TABLE_FQN);
             if (annotationElement == null) {
                 isIncomplete = true;
             } else {
@@ -897,8 +894,7 @@ public class Util {
                         classElement, annotationElement);
             }
             if (entityName == null) {
-                annotationElement = controller.getElements().getTypeElement(
-                        Constants.PERSISTENCE_ENTITY);
+                annotationElement = controller.getElements().getTypeElement(ENTITY_FQN);
                 if (annotationElement == null) {
                     isIncomplete = true;
                     return;
