@@ -77,7 +77,6 @@ import static org.netbeans.jcode.core.util.ProjectHelper.getTemplateProperties;
 import org.netbeans.jcode.task.AbstractTask;
 import org.netbeans.modules.editor.indent.api.Reformat;
 import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
-import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
 import org.netbeans.modules.websvc.rest.model.api.RestConstants;
 import org.openide.cookies.EditorCookie;
 import org.openide.cookies.SaveCookie;
@@ -1093,7 +1092,12 @@ public class JavaSourceHelper {
      * Returns the simple class for the passed fully-qualified class name.
      */
     public static String getSimpleClassName(String fqClassName) {
-        return JavaIdentifiers.unqualify(fqClassName);
+        int genericComp = fqClassName.indexOf('<');
+        if(genericComp!=-1){
+            return JavaIdentifiers.unqualify(fqClassName.substring(0, genericComp)) + fqClassName.substring(genericComp);
+        } else {
+            return JavaIdentifiers.unqualify(fqClassName);
+        }
     }
 
     /**

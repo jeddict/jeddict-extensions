@@ -69,6 +69,9 @@ public class JPAConstants {
     public static final String ENUM_TYPE_FQN = PERSISTENCE_PACKAGE + ENUM_TYPE;
     public static final String ENUM_TYPE_ORDINAL = "EnumType.ORDINAL";
     public static final String ENUM_TYPE_STRING = "EnumType.STRING";
+    
+    public static final String FETCH_TYPE = "javax.persistence.FetchType";
+    public static final String CASCADE_TYPE = "javax.persistence.CascadeType";
 
     public static final String TEMPORAL = "Temporal";
     public static final String TEMPORAL_FQN = PERSISTENCE_PACKAGE + TEMPORAL;
