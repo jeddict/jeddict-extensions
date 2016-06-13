@@ -78,7 +78,7 @@ public final class JavaIdentifiers {
         }
 //        if(packageName.equals("java") || packageName.startsWith("java.")) {//NOI18N
 //            return false;
-//        }
+//        } 
 
         String[] tokens = packageName.split("\\."); //NOI18N
         if (tokens.length == 0) {
@@ -118,7 +118,7 @@ public final class JavaIdentifiers {
      * a valid fully qualified name.
      */
     public static String unqualify(String fqn){
-        checkFQN(fqn); 
+        checkFQN(fqn);  
         int lastDot = fqn.lastIndexOf("."); //NOI18N
         if (lastDot < 0){
             return fqn;

@@ -1090,8 +1090,13 @@ public class JavaSourceHelper {
 
     /**
      * Returns the simple class for the passed fully-qualified class name.
+     * @param fqClassName full qualified class name
+     * @return uqfClassName
      */
     public static String getSimpleClassName(String fqClassName) {
+        if(fqClassName.indexOf('.')==-1){
+            return fqClassName;
+        }
         int genericComp = fqClassName.indexOf('<');
         if(genericComp!=-1){
             return JavaIdentifiers.unqualify(fqClassName.substring(0, genericComp)) + fqClassName.substring(genericComp);
