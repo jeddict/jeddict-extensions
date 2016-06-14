@@ -52,6 +52,7 @@ public class JPAConstants {
     public static final String ORDER_BY = "OrderBy";
     public static final String ORDER_COLUMN = "OrderColumn";
     public static final String MAP_KEY = "MapKey";
+    public static final String MAP_KEY_FQN = PERSISTENCE_PACKAGE + MAP_KEY;
     public static final String MAP_KEY_CLASS = "MapKeyClass";
 
     public static final String MAP_KEY_TEMPORAL = "MapKeyTemporal";

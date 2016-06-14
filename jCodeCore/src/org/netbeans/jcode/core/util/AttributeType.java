@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import static org.netbeans.jcode.core.util.AttributeType.Type.ARRAY;
 import static org.netbeans.jcode.core.util.AttributeType.Type.OTHER;
-import static org.netbeans.jcode.core.util.AttributeType.Type.PREMITIVE;
+import static org.netbeans.jcode.core.util.AttributeType.Type.PRIMITIVE;
 import static org.netbeans.jcode.core.util.AttributeType.Type.PRIMITIVE_ARRAY;
 import static org.netbeans.jcode.core.util.AttributeType.Type.WRAPPER;
 
@@ -83,20 +83,20 @@ public class AttributeType {
         wrapperDataTypes.entrySet().stream().forEach(e -> primitiveDataTypes.put(e.getValue(), e.getKey()));
     }
 
-    public static String getWrapperType(String wrapperType) {
-        return primitiveDataTypes.get(wrapperType);
+    public static String getWrapperType(String primitiveType) {
+        return primitiveDataTypes.get(primitiveType);
     }
 
     public static enum Type {
 
-        PREMITIVE, WRAPPER, ARRAY, PRIMITIVE_ARRAY, STRING, OTHER;
+        PRIMITIVE, WRAPPER, ARRAY, PRIMITIVE_ARRAY, STRING, OTHER;
     }
 
     public static Type getType(String type) {
         if (wrapperDataTypes.containsKey(type)) {
             return WRAPPER;
         } else if (primitiveDataTypes.containsKey(type)) {
-            return PREMITIVE;
+            return PRIMITIVE;
         } else if (isArray(type)) {
             if (isPrimitiveArray(type)) {
                 return PRIMITIVE_ARRAY;

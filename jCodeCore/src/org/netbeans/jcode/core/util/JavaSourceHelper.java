@@ -58,6 +58,7 @@ import javax.lang.model.util.ElementFilter;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 import org.apache.commons.lang.StringUtils;
+import static org.apache.commons.lang.StringUtils.EMPTY;
 import org.netbeans.api.java.project.JavaProjectConstants;
 import org.netbeans.api.java.source.Comment;
 import org.netbeans.api.java.source.Comment.Style;
@@ -1094,6 +1095,9 @@ public class JavaSourceHelper {
      * @return uqfClassName
      */
     public static String getSimpleClassName(String fqClassName) {
+        if(fqClassName==null){
+            return EMPTY;
+        }
         if(fqClassName.indexOf('.')==-1){
             return fqClassName;
         }
