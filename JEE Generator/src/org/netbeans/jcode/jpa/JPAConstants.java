@@ -33,6 +33,10 @@ public class JPAConstants {
 
     public static final String ENTITY = "Entity";
     public static final String ENTITY_FQN = PERSISTENCE_PACKAGE + ENTITY;
+        
+    public static final String EMBEDDED = "Embedded";
+    public static final String EMBEDDED_FQN = PERSISTENCE_PACKAGE + EMBEDDED;
+    
 
     public static final String TABLE = "Table";
     public static final String TABLE_FQN = PERSISTENCE_PACKAGE + TABLE;
@@ -54,6 +58,7 @@ public class JPAConstants {
     public static final String MAP_KEY = "MapKey";
     public static final String MAP_KEY_FQN = PERSISTENCE_PACKAGE + MAP_KEY;
     public static final String MAP_KEY_CLASS = "MapKeyClass";
+    public static final String MAP_KEY_CLASS_FQN = PERSISTENCE_PACKAGE + MAP_KEY_CLASS;
 
     public static final String MAP_KEY_TEMPORAL = "MapKeyTemporal";
     public static final String MAP_KEY_TEMPORAL_FQN = PERSISTENCE_PACKAGE + MAP_KEY_TEMPORAL;
@@ -62,6 +67,7 @@ public class JPAConstants {
 
     public static final String MAP_KEY_ATTRIBUTE_OVERRIDE = "MapKeyAttributeOverride";
     public static final String MAP_KEY_COLUMN = "MapKeyColumn";
+    public static final String MAP_KEY_COLUMN_FQN = PERSISTENCE_PACKAGE + MAP_KEY_COLUMN;
     public static final String MAP_KEY_JOIN_COLUMN = "MapKeyJoinColumn";
     public static final String COLUMN = "Column";
     public static final String ENUMERATED = "Enumerated";
