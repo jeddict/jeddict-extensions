@@ -129,7 +129,7 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
         data.setPrefixName(getPrefix());
         data.setSuffixName(getSuffix());
         data.setPackage(getPackage());
-        if (data.getRestConfigData() == null && !useJersey) {// && !configuredREST){
+        if (data.getRestConfigData() == null) {// && !useJersey// && !configuredREST){
             RestConfigData restConfigData = new RestConfigData();
             restConfigData.setPackage(getPackage());
             data.setRestConfigData(restConfigData);
@@ -540,10 +540,10 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
     }//GEN-LAST:event_suffixFieldPropertyChange
 
     private void applicationConfigButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applicationConfigButtonActionPerformed
-        if (useJersey) {
-            NotifyDescriptor d = new NotifyDescriptor.Message(getMessage(MVCPanel.class, "MVCPanel.notSupported.text"), NotifyDescriptor.INFORMATION_MESSAGE);
-            d.setTitle(getMessage(MVCPanel.class, "MVCPanel.notSupported.title"));
-            DialogDisplayer.getDefault().notify(d);
+//        if (useJersey) {
+//            NotifyDescriptor d = new NotifyDescriptor.Message(getMessage(MVCPanel.class, "MVCPanel.notSupported.text"), NotifyDescriptor.INFORMATION_MESSAGE);
+//            d.setTitle(getMessage(MVCPanel.class, "MVCPanel.notSupported.title"));
+//            DialogDisplayer.getDefault().notify(d);
 //        } else if (configuredREST) { //Don't delete it
 //            final RestSupport restSupport = project.getLookup().lookup(RestSupport.class);
 //            List<RestApplication> restApplications = restSupport.getRestApplications();
@@ -554,9 +554,9 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
 //            if (reply == JOptionPane.YES_OPTION) {
 //                openApplicationConfig();
 //            }
-        } else {
+//        } else {
             openApplicationConfig();
-        }
+//        }
     }//GEN-LAST:event_applicationConfigButtonActionPerformed
 
     private void viewComboPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_viewComboPropertyChange
