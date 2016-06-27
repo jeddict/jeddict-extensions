@@ -33,10 +33,9 @@ public class JPAConstants {
 
     public static final String ENTITY = "Entity";
     public static final String ENTITY_FQN = PERSISTENCE_PACKAGE + ENTITY;
-        
+
     public static final String EMBEDDED = "Embedded";
     public static final String EMBEDDED_FQN = PERSISTENCE_PACKAGE + EMBEDDED;
-    
 
     public static final String TABLE = "Table";
     public static final String TABLE_FQN = PERSISTENCE_PACKAGE + TABLE;
@@ -68,15 +67,25 @@ public class JPAConstants {
     public static final String MAP_KEY_ATTRIBUTE_OVERRIDE = "MapKeyAttributeOverride";
     public static final String MAP_KEY_COLUMN = "MapKeyColumn";
     public static final String MAP_KEY_COLUMN_FQN = PERSISTENCE_PACKAGE + MAP_KEY_COLUMN;
+    public static final String MAP_KEY_JOIN_COLUMNS = "MapKeyJoinColumns";
+    public static final String MAP_KEY_JOIN_COLUMNS_FQN = PERSISTENCE_PACKAGE + MAP_KEY_JOIN_COLUMNS;
     public static final String MAP_KEY_JOIN_COLUMN = "MapKeyJoinColumn";
+    public static final String MAP_KEY_JOIN_COLUMN_FQN = PERSISTENCE_PACKAGE + MAP_KEY_JOIN_COLUMN;
+
+    public static final String JOIN_COLUMNS = "JoinColumns";
+    public static final String JOIN_COLUMNS_FQN = PERSISTENCE_PACKAGE + JOIN_COLUMNS;
+    public static final String JOIN_COLUMN = "JoinColumn";
+    public static final String JOIN_COLUMN_FQN = PERSISTENCE_PACKAGE + JOIN_COLUMN;
+
     public static final String COLUMN = "Column";
+    public static final String COLUMN_FQN = PERSISTENCE_PACKAGE + COLUMN;
     public static final String ENUMERATED = "Enumerated";
     public static final String ENUMERATED_FQN = PERSISTENCE_PACKAGE + ENUMERATED;
     public static final String ENUM_TYPE = "EnumType";
     public static final String ENUM_TYPE_FQN = PERSISTENCE_PACKAGE + ENUM_TYPE;
     public static final String ENUM_TYPE_ORDINAL = "EnumType.ORDINAL";
     public static final String ENUM_TYPE_STRING = "EnumType.STRING";
-    
+
     public static final String FETCH_TYPE = "javax.persistence.FetchType";
     public static final String CASCADE_TYPE = "javax.persistence.CascadeType";
 
@@ -92,5 +101,6 @@ public class JPAConstants {
     public static final String ATTRIBUTE_OVERRIDE = "AttributeOverride";
     public static final String ASSOCIATION_OVERRIDE = "AssociationOverride";
     public static final String COLLECTION_TABLE = "CollectionTable";
+    public static final String COLLECTION_TABLE_FQN = PERSISTENCE_PACKAGE + COLLECTION_TABLE;
 
 }

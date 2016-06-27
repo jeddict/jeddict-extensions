@@ -40,6 +40,7 @@ public class AttributeType {
     public static final String BOOLEAN = "boolean";
     public static final String CHAR = "char";
     public static final String STRING = "String";
+    public static final String STRING_FQN = "java.lang.String";
 
     public static final String BYTE_WRAPPER = "Byte";
     public static final String SHORT_WRAPPER = "Short";

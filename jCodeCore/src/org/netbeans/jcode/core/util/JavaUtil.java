@@ -59,5 +59,17 @@ public class JavaUtil {
             primitiveTypes.put("java.lang.Short[]", Short[].class);
         }
     }
+    
+    public static boolean isMap(String _className) {
+        Class _class = null;
+        try {
+            _class = Class.forName(_className);
+        } catch (ClassNotFoundException ex) {
+        }
+        if (_class == null) {
+            return false;
+        }
+        return Map.class.isAssignableFrom(_class);
+    }
 
 }
