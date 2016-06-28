@@ -1103,7 +1103,18 @@ public class JavaSourceHelper {
         }
         int genericComp = fqClassName.indexOf('<');
         if(genericComp!=-1){
-            return JavaIdentifiers.unqualify(fqClassName.substring(0, genericComp)) + fqClassName.substring(genericComp);
+            StringBuilder sb = new StringBuilder(JavaIdentifiers.unqualify(fqClassName.substring(0, genericComp).trim()));
+            sb.append('<');
+            String[] genericElements = fqClassName.substring(genericComp+1, fqClassName.length()-1).split(",");
+            for (String genericElement : genericElements) {
+                genericElement = genericElement.trim();
+                if(genericElement.indexOf('.')!=-1){
+                    genericElement = JavaIdentifiers.unqualify(genericElement);
+                } 
+                sb.append(genericElement).append(',');
+            }
+            sb.setCharAt(sb.length()-1, '>');
+            return  sb.toString();
         } else {
             return JavaIdentifiers.unqualify(fqClassName);
         }
