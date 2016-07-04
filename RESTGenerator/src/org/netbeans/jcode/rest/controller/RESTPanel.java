@@ -23,30 +23,41 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.prefs.Preferences;
 import javax.lang.model.SourceVersion;
+import static javax.lang.model.SourceVersion.isName;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JList;
+import static javax.swing.JOptionPane.OK_OPTION;
 import javax.swing.event.ChangeEvent;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.text.JTextComponent;
 import org.apache.commons.lang.StringUtils;
+import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import org.netbeans.api.java.source.ui.ScanDialog;
+import static org.netbeans.api.java.source.ui.ScanDialog.runWhenScanFinished;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectUtils;
+import static org.netbeans.api.project.ProjectUtils.getPreferences;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.rest.filter.FilterType;
 import org.netbeans.jcode.rest.applicationconfig.RestConfigData;
 import org.netbeans.jcode.rest.applicationconfig.RestConfigDialog;
+import static org.netbeans.jcode.rest.filter.FilterType.values;
 import org.netbeans.jcode.rest.returntype.ControllerReturnType;
 import org.netbeans.jcode.stack.config.panel.*;
 import org.netbeans.jcode.util.PreferenceUtils;
+import static org.netbeans.jcode.util.PreferenceUtils.get;
+import static org.netbeans.jcode.util.PreferenceUtils.set;
 import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
+import static org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers.isValidPackageName;
 import org.netbeans.modules.websvc.rest.model.api.RestApplication;
 import org.netbeans.modules.websvc.rest.spi.RestSupport;
 import org.netbeans.spi.java.project.support.ui.PackageView;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
+import static org.openide.awt.Mnemonics.setLocalizedText;
 import org.openide.util.NbBundle;
 import static org.openide.util.NbBundle.getMessage;
 
@@ -71,19 +82,19 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
     @Override
     public boolean hasError() {
         warningLabel.setText("");
-        if (!JavaIdentifiers.isValidPackageName(getPackage())) {
-            warningLabel.setText(NbBundle.getMessage(RESTPanel.class, "RESTPanel.invalidPackage.message"));
+        if (!isValidPackageName(getPackage())) {
+            warningLabel.setText(getMessage(RESTPanel.class, "RESTPanel.invalidPackage.message"));
             return true;
         }
         String prefix = getPrefix();
         String suffix = getSuffix();
 
-        if (StringUtils.isNotBlank(prefix) && !SourceVersion.isName(prefix)) {
-            warningLabel.setText(NbBundle.getMessage(RESTPanel.class, "RESTPanel.invalidPrefix.message"));
+        if (isNotBlank(prefix) && !isName(prefix)) {
+            warningLabel.setText(getMessage(RESTPanel.class, "RESTPanel.invalidPrefix.message"));
             return true;
         }
-        if (StringUtils.isNotBlank(suffix) && !SourceVersion.isName(prefix + '_' + suffix)) {
-            warningLabel.setText(NbBundle.getMessage(RESTPanel.class, "RESTPanel.invalidSuffix.message"));
+        if (isNotBlank(suffix) && !isName(prefix + '_' + suffix)) {
+            warningLabel.setText(getMessage(RESTPanel.class, "RESTPanel.invalidSuffix.message"));
             return true;
         }
         return false;
@@ -96,17 +107,17 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
 
     @Override
     public void read() {
-        this.setConfigData(PreferenceUtils.get(pref,RESTData.class));
+        this.setConfigData(get(pref,RESTData.class));
         RESTData data = this.getConfigData();
-        if(StringUtils.isNotBlank(data.getPackage())){
+        if(isNotBlank(data.getPackage())){
             setPackage(data.getPackage());
         }
         
-        if(StringUtils.isNotBlank(data.getPrefixName())){
+        if(isNotBlank(data.getPrefixName())){
             setPrefix(data.getPrefixName());
         }
         
-        if(StringUtils.isNotBlank(data.getSuffixName())){
+        if(isNotBlank(data.getSuffixName())){
             setSuffix(data.getSuffixName());
         }
         
@@ -131,7 +142,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         data.setReturnType(getReturnType());
         data.setFilterTypes(getSelectedEventType());
         
-        PreferenceUtils.set(pref, data);
+        set(pref, data);
     }
 
     private Project project;
@@ -139,7 +150,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
 
     @Override
     public void init(String _package, Project project, SourceGroup sourceGroup) {
-        pref = ProjectUtils.getPreferences(project, RESTData.class, true);
+        pref = getPreferences(project, RESTData.class, true);
         this.project = project;
         this.sourceGroup = sourceGroup;
 
@@ -151,7 +162,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
             }
             packageCombo.setModel(model);
             addChangeListener(packageCombo);
-            if (StringUtils.isBlank(_package)) {
+            if (isBlank(_package)) {
             _package = DEFAULT_PACKAGE;
             } else {
                 _package = _package + '.' + DEFAULT_PACKAGE;
@@ -163,9 +174,9 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
 
         eventObserversPanel.removeAll();
 
-        for (FilterType type : FilterType.values()) {
+        for (FilterType type : values()) {
             JCheckBox eventTypeBox = new JCheckBox();
-            org.openide.awt.Mnemonics.setLocalizedText(eventTypeBox, type.toString()); // NOI18N
+            setLocalizedText(eventTypeBox, type.toString()); // NOI18N
             eventObserversPanel.add(eventTypeBox);
             eventTypeBoxs.put(eventTypeBox, type);
         }
@@ -177,7 +188,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
                 useJersey = true;
             }
         }
-        ScanDialog.runWhenScanFinished(() -> {
+        runWhenScanFinished(() -> {
             boolean configured;//restSupport.isRestSupportOn();
             configured = restSupport.hasJerseyServlet();
             restApplications = restSupport.getRestApplications();
@@ -494,7 +505,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
             configDialog.init(getPackage(), project, sourceGroup);
         }
         configDialog.setVisible(true);
-        if (configDialog.getDialogResult() == javax.swing.JOptionPane.OK_OPTION) {
+        if (configDialog.getDialogResult() == OK_OPTION) {
             this.getConfigData().setRestConfigData(configDialog.getRestConfigData());
         }
     }

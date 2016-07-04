@@ -23,9 +23,11 @@ import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import static org.netbeans.jcode.core.util.Constants.JAVA_EXT_SUFFIX;
 import org.netbeans.jcode.core.util.FileUtil;
+import static org.netbeans.jcode.core.util.FileUtil.expandTemplate;
 import static org.netbeans.jcode.core.util.SourceGroupSupport.getPackageForFolder;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
+import static org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers.unqualify;
 import org.openide.filesystems.FileObject;
 
 /**
@@ -41,11 +43,11 @@ public class RESTFilterGenerator {
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("package", getPackageForFolder(sourceGroup, packageFolder));
         for (FilterType filterType : filterTypes) {
-            String className = JavaIdentifiers.unqualify(filterType.getClassName());
+            String className = unqualify(filterType.getClassName());
             String fileName = className + "Impl";
             params.put("class", fileName);
             handler.progress(fileName);
-            FileUtil.expandTemplate(TEMPLATE_PATH + className + TEMPLATE_EXT, packageFolder, fileName + JAVA_EXT_SUFFIX, params);
+            expandTemplate(TEMPLATE_PATH + className + TEMPLATE_EXT, packageFolder, fileName + JAVA_EXT_SUFFIX, params);
         }
     }
 

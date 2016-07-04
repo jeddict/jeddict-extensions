@@ -18,6 +18,7 @@ package org.netbeans.jcode.rest.controller;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
+import static org.apache.commons.lang.StringUtils.isBlank;
 import org.netbeans.jcode.rest.applicationconfig.RestConfigData;
 import org.netbeans.jcode.rest.filter.FilterType;
 import org.netbeans.jcode.rest.returntype.ControllerReturnType;
@@ -54,7 +55,7 @@ public class RESTData extends LayerConfigData {
      * @return the suffixName
      */
     public String getSuffixName() {
-        if (StringUtils.isBlank(suffixName)) {
+        if (isBlank(suffixName)) {
             suffixName = "Controller";
         }
         return suffixName;
