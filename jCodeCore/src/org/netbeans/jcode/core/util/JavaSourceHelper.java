@@ -1133,7 +1133,7 @@ public class JavaSourceHelper {
     }
 
     public static boolean isValidPackageName(String packageName) {
-        return JavaIdentifiers.isValidPackageName(packageName);
+        return StringUtils.isNotBlank(packageName) && JavaIdentifiers.isValidPackageName(packageName);
     }
     
     public static ClassTree addBeanProperty(GenerationUtils genUtils, TreeMaker maker, TypeElement classElement, ClassTree classTree, String varName, String varType){
