@@ -25,18 +25,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import static java.util.Collections.EMPTY_LIST;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import javax.lang.model.element.Modifier;
-import static javax.lang.model.element.Modifier.PRIVATE;
-import static javax.lang.model.element.Modifier.PUBLIC;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
-import static javax.lang.model.type.TypeKind.VOID;
 
 import org.netbeans.api.java.source.CompilationController;
 import org.netbeans.api.java.source.JavaSource;
@@ -51,18 +47,12 @@ import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.BOLD;
 import static org.netbeans.jcode.console.Console.FG_RED;
 import static org.netbeans.jcode.console.Console.UNDERLINE;
-import static org.netbeans.jcode.console.Console.wrap;
 import org.netbeans.jcode.core.util.Constants;
 import static org.netbeans.jcode.core.util.Constants.JAVA_EXT;
 import static org.netbeans.jcode.core.util.Constants.LIST_TYPE;
 import org.netbeans.jcode.core.util.Constants.MimeType;
-import static org.netbeans.jcode.core.util.Constants.MimeType.JSON;
-import static org.netbeans.jcode.core.util.Constants.MimeType.TEXT;
-import static org.netbeans.jcode.core.util.Constants.MimeType.XML;
-import static org.netbeans.jcode.core.util.Constants.MimeType.find;
 import static org.netbeans.jcode.core.util.Constants.VOID;
 import org.netbeans.jcode.core.util.Inflector;
-import static org.netbeans.jcode.core.util.Inflector.getInstance;
 import org.netbeans.jcode.core.util.StringHelper;
 import org.netbeans.jcode.ejb.facade.SessionBeanData;
 import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
@@ -75,45 +65,19 @@ import org.netbeans.jcode.entity.info.EntityResourceBeanModel;
 import org.netbeans.modules.websvc.rest.model.api.RestConstants;
 import org.netbeans.jcode.rest.util.RestUtils;
 import org.netbeans.jcode.core.util.SourceGroupSupport;
-import static org.netbeans.jcode.core.util.SourceGroupSupport.getFolderForPackage;
-import static org.netbeans.jcode.core.util.SourceGroupSupport.getFolderForPackage;
-import static org.netbeans.jcode.core.util.SourceGroupSupport.getFolderForPackage;
-import static org.netbeans.jcode.core.util.SourceGroupSupport.getFolderForPackage;
-import static org.netbeans.jcode.core.util.StringHelper.firstLower;
 import org.netbeans.jcode.ejb.facade.EjbFacadeGenerator;
 import org.netbeans.jcode.generator.internal.util.Util;
 import org.netbeans.jcode.layer.ConfigData;
 import org.netbeans.jcode.layer.Generator;
 import org.netbeans.jcode.layer.Technology;
 import static org.netbeans.jcode.layer.Technology.Type.CONTROLLER;
-import static org.netbeans.jcode.rest.controller.Operation.COUNT;
-import static org.netbeans.jcode.rest.controller.Operation.CREATE;
-import static org.netbeans.jcode.rest.controller.Operation.EDIT;
-import static org.netbeans.jcode.rest.controller.Operation.FIND;
-import static org.netbeans.jcode.rest.controller.Operation.FIND_ALL;
-import static org.netbeans.jcode.rest.controller.Operation.FIND_RANGE;
-import static org.netbeans.jcode.rest.controller.Operation.REMOVE;
 import org.netbeans.jcode.rest.filter.RESTFilterGenerator;
 import org.netbeans.jcode.rest.returntype.ControllerReturnType;
-import static org.netbeans.jcode.rest.returntype.ControllerReturnType.JAXRS_RESPONSE;
-import static org.netbeans.jcode.rest.util.RestUtils.createApplicationConfigClass;
-import static org.netbeans.jcode.rest.util.RestUtils.disableRestServicesChangeListner;
-import static org.netbeans.jcode.rest.util.RestUtils.enableRestServicesChangeListner;
 import org.netbeans.jcode.task.progress.ProgressHandler;
-import static org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils.createClass;
-import static org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils.newInstance;
-import static org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers.unqualify;
-import static org.netbeans.modules.j2ee.core.api.support.java.SourceUtils.getPublicTopLevelElement;
 import static org.netbeans.modules.websvc.rest.model.api.RestConstants.EJB;
-import static org.netbeans.modules.websvc.rest.model.api.RestConstants.HTTP_RESPONSE;
-import static org.netbeans.modules.websvc.rest.model.api.RestConstants.PATH;
-import static org.netbeans.modules.websvc.rest.model.api.RestConstants.PATH_PARAM;
-import static org.netbeans.modules.websvc.rest.model.api.RestConstants.PATH_PARAM_ANNOTATION;
 import org.netbeans.modules.websvc.rest.spi.RestSupport;
-import static org.netbeans.modules.websvc.rest.spi.RestSupport.RestConfig.IDE;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
-import static org.openide.util.Exceptions.printStackTrace;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -140,7 +104,7 @@ public class RESTGenerator implements Generator {
 
     @Override
     public void execute(Project project, SourceGroup source, EntityResourceBeanModel model, ProgressHandler handler) throws IOException {
-        handler.progress(wrap(RESTGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
+        handler.progress(Console.wrap(RESTGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
         generateUtil(project, source, handler);
         for (EntityClassInfo classInfo : model.getEntityInfos()) {
             generate(project, source, classInfo.getType(), classInfo.getPrimaryKeyType(), false, false, true, handler);
@@ -153,9 +117,9 @@ public class RESTGenerator implements Generator {
             boolean overrideExisting, ProgressHandler handler) throws IOException {
 
         final Set<FileObject> createdFiles = new HashSet<>();
-        final String entitySimpleName = unqualify(entityFQN);
-        final String variableName = firstLower(entitySimpleName);
-        final String listVariableName = getInstance().pluralize(variableName);
+        final String entitySimpleName = JavaIdentifiers.unqualify(entityFQN);
+        final String variableName = StringHelper.firstLower(entitySimpleName);
+        final String listVariableName = Inflector.getInstance().pluralize(variableName);
 
         String facadeFileName = beanData.getPrefixName() + entitySimpleName + beanData.getSuffixName();
         String fqFacadeFileName = beanData.getPackage().isEmpty() ? facadeFileName : beanData.getPackage() + '.' + facadeFileName;
@@ -163,7 +127,7 @@ public class RESTGenerator implements Generator {
         String controllerFileName = restData.getPrefixName() + entitySimpleName + restData.getSuffixName();
         handler.progress(controllerFileName);
 
-        FileObject targetFolder = getFolderForPackage(sourceGroup, restData.getPackage(), true);
+        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(sourceGroup, restData.getPackage(), true);
 
         FileObject controllerFO = targetFolder.getFileObject(controllerFileName, JAVA_EXT);//skips here
 
@@ -175,7 +139,7 @@ public class RESTGenerator implements Generator {
             }
         }
 
-        final FileObject facade = createClass(targetFolder, controllerFileName, null);
+        final FileObject facade = GenerationUtils.createClass(targetFolder, controllerFileName, null);
         createdFiles.add(facade);
 
         if (model != null) {
@@ -187,21 +151,22 @@ public class RESTGenerator implements Generator {
             @Override
             public void run(WorkingCopy wc) throws Exception {
                 wc.toPhase(Phase.RESOLVED);
-                TypeElement classElement = getPublicTopLevelElement(wc);
+                TypeElement classElement = SourceUtils.getPublicTopLevelElement(wc);
                 ClassTree classTree = wc.getTrees().getTree(classElement);
                 assert classTree != null;
-                GenerationUtils genUtils = newInstance(wc);
+                GenerationUtils genUtils = GenerationUtils.newInstance(wc);
                 TreeMaker maker = wc.getTreeMaker();
 
                 List<Tree> members = new ArrayList<>(classTree.getMembers());
 
-                members.add(maker.Variable(maker.addModifiersAnnotation(genUtils.createModifiers(PRIVATE), genUtils.createAnnotation(EJB)),
+                members.add(maker.Variable(maker.addModifiersAnnotation(genUtils.createModifiers(Modifier.PRIVATE), genUtils.createAnnotation(EJB)),
                         SESSION_BEAN_VAR_DECLARATION, genUtils.createType(fqFacadeFileName, classElement), null));
 
                 List<RestGenerationOptions> restGenerationOptions
                         = getRestFacadeMethodOptions(entityFQN, idClass);
 
-                ModifiersTree publicModifiers = genUtils.createModifiers(PUBLIC);
+                ModifiersTree publicModifiers = genUtils.createModifiers(
+                        Modifier.PUBLIC);
                 ModifiersTree paramModifier = maker.Modifiers(Collections.<Modifier>emptySet());
                 for (RestGenerationOptions option : restGenerationOptions) {
 
@@ -216,7 +181,7 @@ public class RESTGenerator implements Generator {
                         ExpressionTree annArgument = maker.Literal(uriPath);
                         modifiersTree
                                 = maker.addModifiersAnnotation(modifiersTree,
-                                        genUtils.createAnnotation(PATH,
+                                        genUtils.createAnnotation(RestConstants.PATH,
                                                 Collections.<ExpressionTree>singletonList(
                                                         annArgument)));
 
@@ -267,21 +232,23 @@ public class RESTGenerator implements Generator {
                     }
                     
             Tree returnType = null;
-            if(restData.getReturnType() == JAXRS_RESPONSE){
-                returnType = genUtils.createType(HTTP_RESPONSE, classElement);
+            if(restData.getReturnType() == ControllerReturnType.JAXRS_RESPONSE){
+                returnType = genUtils.createType(RestConstants.HTTP_RESPONSE, classElement);
             } else { // GENERIC_ENTITY
                  returnType = (option.getReturnType() == null || option.getReturnType().equals(VOID))? 
-                                maker.PrimitiveType(VOID): genUtils.createType(option.getReturnType(), classElement);
+                                maker.PrimitiveType(TypeKind.VOID): genUtils.createType(option.getReturnType(), classElement);
             }
             
             
             String bodyContent = option.getBody().toString()
                     .replaceAll(ENTITY_NAME_EXP, variableName).replaceAll(ENTITIES_NAME_EXP, listVariableName);
-                    members.add(maker.Method(modifiersTree,
+                    members.add(maker.Method(
+                            modifiersTree,
                             option.getRestMethod().getMethodName() + entitySimpleName,
-                            returnType, EMPTY_LIST,
+                            returnType,
+                            Collections.EMPTY_LIST,
                             vars,
-                            (List<ExpressionTree>) EMPTY_LIST,
+                            (List<ExpressionTree>) Collections.EMPTY_LIST,
                             "{" + bodyContent + "}", 
                             null)
                     );
@@ -291,7 +258,7 @@ public class RESTGenerator implements Generator {
                 ModifiersTree modifiersTree = classTree.getModifiers();
 
                 modifiersTree = maker.addModifiersAnnotation(modifiersTree,
-                        genUtils.createAnnotation(PATH,
+                        genUtils.createAnnotation(RestConstants.PATH,
                                 Collections.<ExpressionTree>singletonList(maker.Literal(variableName))
                         ));
 
@@ -328,9 +295,9 @@ public class RESTGenerator implements Generator {
         if (mimes.length == 1) {
             annArguments = mimeTypeTree(maker, mimes[0]);
         } else {
-            List<ExpressionTree> mimeTypes = new ArrayList<>();
-            for (String mime : mimes) {
-                mimeTypes.add(mimeTypeTree(maker, mime));
+            List<ExpressionTree> mimeTypes = new ArrayList<ExpressionTree>();
+            for (int i = 0; i < mimes.length; i++) {
+                mimeTypes.add(mimeTypeTree(maker, mimes[i]));
             }
             annArguments = maker.NewArray(null,
                     Collections.<ExpressionTree>emptyList(),
@@ -344,7 +311,7 @@ public class RESTGenerator implements Generator {
     }
 
     private ExpressionTree mimeTypeTree(TreeMaker maker, String mimeType) {
-        Constants.MimeType type = find(mimeType);
+        Constants.MimeType type = Constants.MimeType.find(mimeType);
         ExpressionTree result;
         if (type == null) {
             result = maker.Literal(mimeType);
@@ -356,11 +323,11 @@ public class RESTGenerator implements Generator {
     
 
     public void generateUtil(final Project project, final SourceGroup sourceGroup, ProgressHandler handler) throws IOException {
-        FileObject targetFolder = getFolderForPackage(sourceGroup, restData.getPackage(), true);
+        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(sourceGroup, restData.getPackage(), true);
 
         generateApplicationConfig(project, sourceGroup, handler);
         if (!restData.getFilterTypes().isEmpty()) {
-            FileObject utilFolder = getFolderForPackage(targetFolder, UTIL_PACKAGE, true);
+            FileObject utilFolder = SourceGroupSupport.getFolderForPackage(targetFolder, UTIL_PACKAGE, true);
             LoggerProducerGenerator.generate(utilFolder, handler);
             RESTFilterGenerator.generate(project, sourceGroup, utilFolder, restData.getFilterTypes(), handler);
         }
@@ -373,33 +340,33 @@ public class RESTGenerator implements Generator {
             return;
         }
         final RestSupport restSupport = project.getLookup().lookup(RestSupport.class);
-        IDE.setAppClassName(restData.getRestConfigData().getPackage() + "." + restData.getRestConfigData().getApplicationClass()); 
+        RestSupport.RestConfig.IDE.setAppClassName(restData.getRestConfigData().getPackage() + "." + restData.getRestConfigData().getApplicationClass()); 
         if (restSupport != null) {
             try {
-                restSupport.ensureRestDevelopmentReady(IDE);
+                restSupport.ensureRestDevelopmentReady(RestSupport.RestConfig.IDE);
             } catch (IOException ex) {
-                printStackTrace(ex);
+                Exceptions.printStackTrace(ex);
             }
         }
 
         FileObject restAppPack = null;
         try {
-            restAppPack = getFolderForPackage(sourceGroup, restData.getRestConfigData().getPackage(), true);
+            restAppPack = SourceGroupSupport.getFolderForPackage(sourceGroup, restData.getRestConfigData().getPackage(), true);
         } catch (IOException ex) {
-            printStackTrace(ex);
+            Exceptions.printStackTrace(ex);
         }
 
         final String appClassName = restData.getRestConfigData().getApplicationClass();
         try {
             if (restAppPack != null && appClassName != null) {
-                createApplicationConfigClass(restSupport, restAppPack, appClassName, restData.getRestConfigData().getApplicationPath(), handler);
+                RestUtils.createApplicationConfigClass(restSupport, restAppPack, appClassName, restData.getRestConfigData().getApplicationPath(), handler);
             }
-            disableRestServicesChangeListner(project);
+            RestUtils.disableRestServicesChangeListner(project);
             restSupport.configure("JPA Modeler - REST support");
         } catch (Exception iox) {
-            printStackTrace(iox);
+            Exceptions.printStackTrace(iox);
         } finally {
-            enableRestServicesChangeListner(project);
+            RestUtils.enableRestServicesChangeListner(project);
         }
     }
 
@@ -420,34 +387,34 @@ public class RESTGenerator implements Generator {
         }        
         
         RestGenerationOptions createOptions = new RestGenerationOptions();
-        createOptions.setRestMethod(CREATE);
+        createOptions.setRestMethod(Operation.CREATE);
         createOptions.setReturnType(VOID); 
         createOptions.setParameterNames(new String[]{ENTITY_NAME_EXP}); 
         createOptions.setParameterTypes(new String[]{entityFQN});
-        createOptions.setConsumes(new String[]{XML.toString(), JSON.toString()}); 
+        createOptions.setConsumes(new String[]{MimeType.XML.toString(), MimeType.JSON.toString()}); 
         createOptions.setBody("facade.create(").append(ENTITY_NAME_EXP).append(");"); 
-        if(restData.getReturnType() == JAXRS_RESPONSE){
+        if(restData.getReturnType() == ControllerReturnType.JAXRS_RESPONSE){
             createOptions.appendBody('\n').append("return Response.status(Response.Status.CREATED).entity(").append(ENTITY_NAME_EXP).append(").build();");
         }
 
         RestGenerationOptions editOptions = new RestGenerationOptions();
-        editOptions.setRestMethod(EDIT);
+        editOptions.setRestMethod(Operation.EDIT);
         editOptions.setReturnType(VOID);
         editOptions.setParameterNames(new String[]{"id", ENTITY_NAME_EXP}); 
-        editOptions.setParameterAnnoations(new String[]{PATH_PARAM, null});
+        editOptions.setParameterAnnoations(new String[]{RestConstants.PATH_PARAM, null});
         editOptions.setParameterAnnoationValues(new String[]{"id", null}); 
         editOptions.setParameterTypes(new String[]{idType, entityFQN});
-        editOptions.setConsumes(new String[]{XML.toString(), JSON.toString()}); 
+        editOptions.setConsumes(new String[]{MimeType.XML.toString(), MimeType.JSON.toString()}); 
         editOptions.setBody("facade.edit(").append(ENTITY_NAME_EXP).append(");"); 
-        if(restData.getReturnType() == JAXRS_RESPONSE){
+        if(restData.getReturnType() == ControllerReturnType.JAXRS_RESPONSE){
             editOptions.appendBody('\n').append("return Response.ok().build();");
         }
 
         RestGenerationOptions destroyOptions = new RestGenerationOptions();
-        destroyOptions.setRestMethod(REMOVE);
+        destroyOptions.setRestMethod(Operation.REMOVE);
         destroyOptions.setReturnType(VOID);
         destroyOptions.setParameterNames(new String[]{"id"}); 
-        destroyOptions.setParameterAnnoations(new String[]{PATH_PARAM_ANNOTATION});
+        destroyOptions.setParameterAnnoations(new String[]{RestConstants.PATH_PARAM_ANNOTATION});
         destroyOptions.setParameterAnnoationValues(new String[]{"id"}); 
         StringBuilder builder = new StringBuilder();
         if (needPathSegment) {
@@ -461,18 +428,18 @@ public class RESTGenerator implements Generator {
         StringBuilder removeBody = new StringBuilder(builder);
         removeBody.append("facade.remove(facade.find(").append(paramArg).append("));");                                  
         destroyOptions.setBody(removeBody);
-        if(restData.getReturnType() == JAXRS_RESPONSE){
+        if(restData.getReturnType() == ControllerReturnType.JAXRS_RESPONSE){
             destroyOptions.appendBody('\n').append("return Response.ok().build();");
         } else {
             
         }
 
         RestGenerationOptions findOptions = new RestGenerationOptions();
-        findOptions.setRestMethod(FIND);
+        findOptions.setRestMethod(Operation.FIND);
         findOptions.setReturnType(entityFQN);
-        findOptions.setProduces(new String[]{XML.toString(), JSON.toString()}); 
+        findOptions.setProduces(new String[]{MimeType.XML.toString(), MimeType.JSON.toString()}); 
         findOptions.setParameterAnnoationValues(new String[]{"id"}); 
-        findOptions.setParameterAnnoations(new String[]{PATH_PARAM_ANNOTATION});
+        findOptions.setParameterAnnoations(new String[]{RestConstants.PATH_PARAM_ANNOTATION});
         findOptions.setParameterNames(new String[]{"id"}); 
         if (needPathSegment) {
             findOptions.setParameterTypes(new String[]{"javax.ws.rs.core.PathSegment"}); // NOI18N
@@ -480,7 +447,7 @@ public class RESTGenerator implements Generator {
             findOptions.setParameterTypes(new String[]{idType});
         }
         StringBuilder findBody = new StringBuilder(builder);
-        if (restData.getReturnType() == JAXRS_RESPONSE) {
+        if (restData.getReturnType() == ControllerReturnType.JAXRS_RESPONSE) {
             findBody.append(entityFQN).append(" ").append(ENTITY_NAME_EXP).append(" = facade.find(").append(paramArg).append(");");
             findBody.append('\n').append("return Response.ok(").append(ENTITY_NAME_EXP).append(").build();");
         } else {
@@ -491,11 +458,11 @@ public class RESTGenerator implements Generator {
 
         String entityListType = LIST_TYPE + '<' + entityFQN + '>';
         RestGenerationOptions findAllOptions = new RestGenerationOptions();
-        findAllOptions.setRestMethod(FIND_ALL);
+        findAllOptions.setRestMethod(Operation.FIND_ALL);
         findAllOptions.setReturnType(entityListType);
-        findAllOptions.setProduces(new String[]{XML.toString(), JSON.toString()});
+        findAllOptions.setProduces(new String[]{MimeType.XML.toString(), MimeType.JSON.toString()});
         StringBuilder findAllBody = new StringBuilder();
-        if (restData.getReturnType() == JAXRS_RESPONSE) {
+        if (restData.getReturnType() == ControllerReturnType.JAXRS_RESPONSE) {
             findAllBody.append(entityListType).append(" ").append(ENTITIES_NAME_EXP).append(" = facade.findAll();");
             findAllBody.append('\n').append("return Response.ok(").append(ENTITIES_NAME_EXP).append(").build();");
         } else {
@@ -505,15 +472,15 @@ public class RESTGenerator implements Generator {
 
         
         RestGenerationOptions findRangeOptions = new RestGenerationOptions();
-        findRangeOptions.setRestMethod(FIND_RANGE);
+        findRangeOptions.setRestMethod(Operation.FIND_RANGE);
         findRangeOptions.setReturnType(entityListType);
-        findRangeOptions.setProduces(new String[]{XML.toString(), JSON.toString()}); 
+        findRangeOptions.setProduces(new String[]{MimeType.XML.toString(), MimeType.JSON.toString()}); 
         findRangeOptions.setParameterAnnoationValues(new String[]{"from", "to"}); 
-        findRangeOptions.setParameterAnnoations(new String[]{PATH_PARAM_ANNOTATION, PATH_PARAM_ANNOTATION});
+        findRangeOptions.setParameterAnnoations(new String[]{RestConstants.PATH_PARAM_ANNOTATION,RestConstants.PATH_PARAM_ANNOTATION});
         findRangeOptions.setParameterNames(new String[]{"from", "to"}); 
         findRangeOptions.setParameterTypes(new String[]{Integer.class.getCanonicalName(), Integer.class.getCanonicalName()});
         StringBuilder findRangeBody = new StringBuilder(builder);
-        if (restData.getReturnType() == JAXRS_RESPONSE) {
+        if (restData.getReturnType() == ControllerReturnType.JAXRS_RESPONSE) {
             findRangeBody.append(entityListType).append(" ").append(ENTITIES_NAME_EXP).append(" = facade.findRange(new int[]{from, to}));");
             findRangeBody.append('\n').append("return Response.ok(").append(ENTITIES_NAME_EXP).append(").build();");
         } else {
@@ -524,10 +491,10 @@ public class RESTGenerator implements Generator {
         
 
         RestGenerationOptions countOptions = new RestGenerationOptions();
-        countOptions.setRestMethod(COUNT);
+        countOptions.setRestMethod(Operation.COUNT);
         countOptions.setReturnType(String.class.getCanonicalName());
-        countOptions.setProduces(new String[]{TEXT.toString()});
-        if (restData.getReturnType() == JAXRS_RESPONSE) {
+        countOptions.setProduces(new String[]{MimeType.TEXT.toString()});
+        if (restData.getReturnType() == ControllerReturnType.JAXRS_RESPONSE) {
             countOptions.setBody("return Response.ok(facade.count()).build();");
         } else {
             countOptions.setBody("return String.valueOf(facade.count());");

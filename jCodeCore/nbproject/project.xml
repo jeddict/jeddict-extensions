@@ -586,6 +586,7 @@
                 <package>org.netbeans.jcode.ui.browse</package>
                 <package>org.netbeans.jcode.ui.source</package>
                 <package>org.netbeans.jcode.util</package>
+                <package>org.netbeans.jcode.window</package>
             </public-packages>
         </data>
     </configuration>

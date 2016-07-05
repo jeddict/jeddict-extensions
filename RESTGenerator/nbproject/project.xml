@@ -5,7 +5,7 @@
         <data xmlns="http://www.netbeans.org/ns/nb-module-project/3">
             <code-name-base>org.netbeans.jcode.rest</code-name-base>
             <suite-component/>
-               <module-dependencies>
+            <module-dependencies>
                 <dependency>
                     <code-name-base>org.apache.commons.lang</code-name-base>
                     <build-prerequisite/>
@@ -89,14 +89,6 @@
                     <compile-dependency/>
                     <run-dependency>
                         <specification-version>0.5</specification-version>
-                    </run-dependency>
-                </dependency>
-                <dependency>
-                    <code-name-base>org.netbeans.modeler.properties</code-name-base>
-                    <build-prerequisite/>
-                    <compile-dependency/>
-                    <run-dependency>
-                        <specification-version>1.0</specification-version>
                     </run-dependency>
                 </dependency>
                 <dependency>
@@ -238,6 +230,14 @@
                     <compile-dependency/>
                     <run-dependency>
                         <specification-version>0.138</specification-version>
+                    </run-dependency>
+                </dependency>
+                <dependency>
+                    <code-name-base>org.netbeans.modules.java.source.base</code-name-base>
+                    <build-prerequisite/>
+                    <compile-dependency/>
+                    <run-dependency>
+                        <specification-version>2.9.1.2.2.25.8.1</specification-version>
                     </run-dependency>
                 </dependency>
                 <dependency>
@@ -566,7 +566,6 @@
                     </run-dependency>
                 </dependency>
             </module-dependencies>
-         
             <public-packages/>
         </data>
     </configuration>
