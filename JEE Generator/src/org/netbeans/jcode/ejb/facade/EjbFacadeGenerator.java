@@ -24,7 +24,6 @@ import com.sun.source.tree.ModifiersTree;
 import com.sun.source.tree.Tree;
 import com.sun.source.tree.TypeParameterTree;
 import com.sun.source.tree.VariableTree;
-import com.sun.source.util.TreePath;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -44,7 +43,6 @@ import static java.util.stream.Collectors.toList;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeKind;
 import org.netbeans.api.java.classpath.ClassPath;
 import org.netbeans.api.java.classpath.JavaClassPathConstants;
 import org.netbeans.api.java.project.JavaProjectConstants;
@@ -85,8 +83,6 @@ import org.netbeans.modules.j2ee.persistence.action.GenerationOptions;
 import org.netbeans.modules.j2ee.persistence.api.EntityClassScope;
 import org.netbeans.modules.j2ee.persistence.api.metadata.orm.Entity;
 import org.netbeans.modules.j2ee.persistence.api.metadata.orm.EntityMappingsMetadata;
-import org.netbeans.modules.j2ee.persistence.dd.PersistenceUtils;
-import org.netbeans.modules.j2ee.persistence.dd.common.Persistence;
 import org.netbeans.modules.j2ee.persistence.spi.entitymanagergenerator.ContainerManagedJTAInjectableInEJB;
 import org.netbeans.modules.j2ee.persistence.spi.entitymanagergenerator.EntityManagerGenerationStrategy;
 import org.openide.DialogDisplayer;
@@ -173,7 +169,7 @@ public final class EjbFacadeGenerator implements Generator{
         //create the abstract facade class
         String fileName = beanData.getPrefixName() + FACADE_ABSTRACT + beanData.getSuffixName();
         FileObject afFO = targetFolder.getFileObject(fileName, JAVA_EXT);//skips here
-
+        
         if (afFO != null) {
             if (overrideExisting) {
                 afFO.delete();
@@ -182,78 +178,8 @@ public final class EjbFacadeGenerator implements Generator{
             }
         }
         
-        afFO = GenerationUtils.createClass(targetFolder, fileName, null);
-        JavaSource source = JavaSource.forFileObject(afFO);
-        source.runModificationTask(new Task<WorkingCopy>() {
-            @Override
-            public void run(WorkingCopy workingCopy) throws Exception {
-                workingCopy.toPhase(Phase.RESOLVED);
-                ClassTree classTree = SourceUtils.getPublicTopLevelTree(workingCopy);
-                assert classTree != null;
-                TreeMaker maker = workingCopy.getTreeMaker();
-                GenerationUtils genUtils = GenerationUtils.newInstance(workingCopy);
-                TreePath classTreePath = workingCopy.getTrees().getPath(workingCopy.getCompilationUnit(), classTree);
-                TypeElement classElement = (TypeElement) workingCopy.getTrees().getElement(classTreePath);
-
-                String genericsTypeName = "T";      //NOI18N
-                List<GenerationOptions> methodOptions = getAbstractFacadeMethodOptions(genericsTypeName, "entity"); //NOI18N
-                List<Tree> members = new ArrayList<Tree>();
-                String entityClassVar = "entityClass";                                              //NOI18N
-                Tree classObjectTree = genUtils.createType("java.lang.Class<" + genericsTypeName + ">", classElement);     //NOI18N
-                members.add(maker.Variable(genUtils.createModifiers(Modifier.PRIVATE), entityClassVar, classObjectTree, null));
-                members.add(maker.Constructor(
-                        genUtils.createModifiers(Modifier.PUBLIC),
-                        Collections.<TypeParameterTree>emptyList(),
-                        Arrays.asList(new VariableTree[]{genUtils.createVariable(entityClassVar, classObjectTree)}),
-                        Collections.<ExpressionTree>emptyList(),
-                        "{this." + entityClassVar + " = " + entityClassVar + ";}"));    //NOI18N
-                for (GenerationOptions option : methodOptions) {
-                    Tree returnType = (option.getReturnType() == null || option.getReturnType().equals("void")) ? //NOI18N
-                            maker.PrimitiveType(TypeKind.VOID)
-                            : genUtils.createType(option.getReturnType(), classElement);
-                    List<VariableTree> vars = option.getParameterName() == null ? Collections.<VariableTree>emptyList()
-                            : Arrays.asList(new VariableTree[]{
-                                genUtils.createVariable(
-                                        option.getParameterName(),
-                                        genUtils.createType(option.getParameterType(), classElement)
-                                )
-                            });
-
-                    if (option.getOperation() == null) {
-                        members.add(maker.Method(
-                                maker.Modifiers(option.getModifiers()),
-                                option.getMethodName(),
-                                returnType,
-                                Collections.<TypeParameterTree>emptyList(),
-                                vars,
-                                Collections.<ExpressionTree>emptyList(),
-                                (BlockTree) null,
-                                null));
-                    } else {
-                        members.add(maker.Method(
-                                maker.Modifiers(option.getModifiers()),
-                                option.getMethodName(),
-                                returnType,
-                                Collections.<TypeParameterTree>emptyList(),
-                                vars,
-                                Collections.<ExpressionTree>emptyList(),
-                                "{" + option.getCallLines("getEntityManager()", entityClassVar, project != null ? PersistenceUtils.getJPAVersion(project) : Persistence.VERSION_1_0) + "}", //NOI18N
-                                null));
-                    }
-                }
-
-                ClassTree newClassTree = maker.Class(
-                        maker.Modifiers(EnumSet.of(Modifier.PUBLIC, Modifier.ABSTRACT)),
-                        classTree.getSimpleName(),
-                        Arrays.asList(maker.TypeParameter(genericsTypeName, Collections.<ExpressionTree>emptyList())),
-                        null,
-                        Collections.<Tree>emptyList(),
-                        members);
-
-                workingCopy.rewrite(classTree, newClassTree);
-            }
-        }).commit();
-        
+        afFO = org.netbeans.jcode.core.util.FileUtil.expandTemplate("org/netbeans/jcode/ejb/facade/resource/AbstractFacade.java.ftl", targetFolder, fileName+'.'+JAVA_EXT, Collections.singletonMap("package", beanData.getPackage()));
+       
         try {
             JavaSource.forFileObject(afFO).runWhenScanFinished((CompilationController cc) -> {
                 cc.toPhase(Phase.ELEMENTS_RESOLVED);
@@ -261,6 +187,7 @@ public final class EjbFacadeGenerator implements Generator{
         } catch (InterruptedException | ExecutionException ex) {
             Exceptions.printStackTrace(ex);
         }
+        
         return afFO;
     }
 
