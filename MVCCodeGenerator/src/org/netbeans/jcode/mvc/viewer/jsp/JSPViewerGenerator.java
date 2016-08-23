@@ -16,16 +16,12 @@
 package org.netbeans.jcode.mvc.viewer.jsp;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import static java.util.stream.Collectors.toSet;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 import org.apache.commons.lang.StringUtils;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectUtils;
@@ -48,11 +44,9 @@ import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
 import org.netbeans.jcode.mvc.controller.MVCData;
 import org.netbeans.jcode.mvc.viewer.dto.FromEntityBase;
 import org.netbeans.jcode.mvc.controller.Operation;
-import org.netbeans.jcode.mvc.controller.event.ControllerEventType;
 import org.netbeans.jcode.servlet.util.ServletUtil;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.modules.web.api.webmodule.WebProjectConstants;
-import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
@@ -65,7 +59,7 @@ import org.openide.util.lookup.ServiceProvider;
 @Technology(type=VIEWER, label="JSP", panel=JSPPanel.class, parents={MVCControllerGenerator.class})
 public class JSPViewerGenerator implements Generator{
 
-    private static final String TEMPLATE_PATH = "org/netbeans/jcode/mvc/viewer/resources/"; //NOI18N
+    private static final String TEMPLATE_PATH = "org/netbeans/jcode/mvc/viewer/template/"; //NOI18N
     private static final String CRUD_HOME_PATH = "views/"; //NOI18N
     private static final String COMMON_TEMPLATE_PATH = "views/common/";
     private static final String CRUD_PATH = "views/entity/"; //NOI18N
@@ -111,21 +105,33 @@ public class JSPViewerGenerator implements Generator{
     private JSPData jspData;
     @ConfigData
     private MVCData mvcData;
+    
+    @ConfigData
+    private Project project; 
+    
+    @ConfigData
+    private SourceGroup source; 
+    
+    @ConfigData
+    private EntityResourceBeanModel model;
+    
+    @ConfigData
+    private ProgressHandler handler;
         
-    private static final String WEB_XML_DD = "/org/netbeans/jcode/mvc/dd/welcomefile/web.xml";
+    private static final String WEB_XML_DD = "/org/netbeans/jcode/mvc/template/dd/welcomefile/_web.xml";
 
     @Override
-    public void execute(Project project,SourceGroup source, EntityResourceBeanModel model, ProgressHandler handler) throws IOException {
+    public void execute() throws IOException {
        Set<String> entities = model.getEntityInfos().stream().map(ei -> ei.getType()).collect(toSet());
-        generateCRUD(project, entities, true, handler);
-        generateHome(project, entities, handler);
-        generateWelcomeFileDD(project, handler);
+        generateCRUD(entities, true);
+        generateHome(entities);
+        generateWelcomeFileDD();
         generateStaticResources(project, handler);
     }
 
     
-    public void generateWelcomeFileDD(Project project, ProgressHandler handler) throws IOException {
-        String welcomeFile = null;
+    private void generateWelcomeFileDD() throws IOException {
+        String welcomeFile;
         if (mvcData.isAuthentication()) {
             welcomeFile = "/index.jsp";
         } else {
@@ -147,9 +153,9 @@ public class JSPViewerGenerator implements Generator{
         SourceGroup sourceGroups[] = sources.getSourceGroups(WebProjectConstants.TYPE_DOC_ROOT);
         FileObject webRoot = sourceGroups[0].getRootFolder();
         if (!jspData.isOnlineTheme()) {
-            copyStaticResource("lib-resources", webRoot, jspData.getResourceFolder(), handler);
+            FileUtil.copyStaticResource(TEMPLATE_PATH + "lib-resources.zip", webRoot, jspData.getResourceFolder(), handler);
         }
-        copyStaticResource("theme-resources", webRoot,  jspData.getResourceFolder(), handler);
+        FileUtil.copyStaticResource(TEMPLATE_PATH + "theme-resources.zip", webRoot,  jspData.getResourceFolder(), handler);
 
         Map<String, Object> params = new HashMap<>();
         params.put("webPath", jspData.getFolder());
@@ -171,32 +177,7 @@ public class JSPViewerGenerator implements Generator{
         }
     }
 
-    private void copyStaticResource(String inputRes, FileObject webRoot, String folder, ProgressHandler handler) throws IOException {
-        InputStream stream = JSPViewerGenerator.class.getClassLoader().getResourceAsStream(TEMPLATE_PATH + inputRes + ".zip");
-        try (ZipInputStream inputStream = new ZipInputStream(stream)) {
-            ZipEntry entry;
-            while ((entry = inputStream.getNextEntry()) != null) {
-                if (entry.getName().lastIndexOf('.') == -1) { //skip if not file
-                    continue;
-                }
-                String targetPath = folder + '/' +entry.getName();
-                handler.progress(targetPath);
-
-                FileObject target = org.openide.filesystems.FileUtil.createData(webRoot, targetPath);
-                FileLock lock = target.lock();
-                try (OutputStream outputStream = target.getOutputStream(lock)) {
-                    for (int c = inputStream.read(); c != -1; c = inputStream.read()) {
-                        outputStream.write(c);
-                    }
-                    inputStream.closeEntry();
-                } finally {
-                    lock.releaseLock();
-                }
-            }
-        }
-    }
-
-    public void generateCRUD(final Project project, Set<String> entities, boolean overrideExisting, ProgressHandler handler) throws IOException {
+    public void generateCRUD(Set<String> entities, boolean overrideExisting) throws IOException {
         
         handler.progress(Console.wrap(JSPViewerGenerator.class, "MSG_Generating_CRUD_Template", FG_RED, BOLD, UNDERLINE));
         for (String entityFQN : entities) {
@@ -227,8 +208,7 @@ public class JSPViewerGenerator implements Generator{
         }
     }
 
-    public void generateHome(final Project project,
-            final Set<String> entities, ProgressHandler handler) throws IOException {
+    public void generateHome(final Set<String> entities) throws IOException {
         Sources srcs = ProjectUtils.getSources(project);
         SourceGroup sgWeb[] = srcs.getSourceGroups(WebProjectConstants.TYPE_DOC_ROOT);
         FileObject webRoot = sgWeb[0].getRootFolder();
@@ -271,7 +251,6 @@ public class JSPViewerGenerator implements Generator{
     private static void expandSingleJSPTemplate(String inputTemplatePath, String outputFilePath,
             FileObject webRoot, Map<String, Object> params, ProgressHandler handler) throws IOException {
          handler.progress(outputFilePath);
-
         FileUtil.expandTemplate(inputTemplatePath, webRoot, outputFilePath, params);
     }
 

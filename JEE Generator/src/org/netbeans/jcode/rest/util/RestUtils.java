@@ -18,6 +18,7 @@ package org.netbeans.jcode.rest.util;
 import org.netbeans.jcode.core.util.Constants;
 import com.sun.source.tree.AnnotationTree;
 import com.sun.source.tree.ClassTree;
+import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.MethodTree;
 import com.sun.source.tree.ModifiersTree;
@@ -30,6 +31,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
@@ -48,9 +50,9 @@ import org.netbeans.api.java.source.WorkingCopy;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import static org.netbeans.jcode.core.util.Constants.JAVA_EXT;
-import static org.netbeans.jcode.core.util.Constants.JAVA_EXT_SUFFIX;
 import org.netbeans.jcode.core.util.JavaSourceHelper;
 import org.netbeans.jcode.core.util.SourceGroupSupport;
+import static org.netbeans.jcode.rest.RestConstants.SINGLETON_METHOD;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
 import org.netbeans.modules.j2ee.deployment.common.api.Datasource;
@@ -369,7 +371,7 @@ public class RestUtils {
     }
 
     public static FileObject createApplicationConfigClass(final RestSupport restSupport, FileObject packageFolder,
-            String className, final String applicationPath, ProgressHandler handler) throws IOException {
+            String className, final String applicationPath, List<String> singletonClasses, ProgressHandler handler) throws IOException {
 
         FileObject configFO = packageFolder.getFileObject(className, JAVA_EXT);
         if (configFO != null) {
@@ -396,9 +398,10 @@ public class RestUtils {
                 ClassTree newTree = maker.setExtends(tree,
                         maker.QualIdent(JAX_RS_APPLICATION_CLASS)); // NOI18N
 
-                newTree = createGetClasses(maker, newTree, restSupport);
+                newTree = createGetClasses(workingCopy, maker, newTree, restSupport);
+                newTree = createGetSingletons(workingCopy, maker, newTree, singletonClasses);
                 newTree = MiscUtilities.createAddResourceClasses(maker, newTree, workingCopy, "{}", true);
-               
+
                 workingCopy.rewrite(tree, newTree);
             }
 
@@ -406,13 +409,13 @@ public class RestUtils {
         return appClass;
     }
 
-    private static ClassTree createGetClasses(TreeMaker maker, ClassTree newTree, RestSupport restSupport) {
+    private static ClassTree createGetClasses(WorkingCopy workingCopy, TreeMaker maker, ClassTree newTree, RestSupport restSupport) {
 
         ModifiersTree modifiersTree = maker.Modifiers(
                 EnumSet.of(Modifier.PUBLIC), Collections.singletonList(
-                        maker.Annotation(maker.QualIdent(
-                                        Override.class.getCanonicalName()),
-                                Collections.<ExpressionTree>emptyList())));
+                maker.Annotation(maker.QualIdent(
+                        Override.class.getCanonicalName()),
+                        Collections.<ExpressionTree>emptyList())));
 
         WildcardTree wildCard = maker.Wildcard(Tree.Kind.UNBOUNDED_WILDCARD,
                 null);
@@ -429,6 +432,44 @@ public class RestUtils {
                 Collections.<VariableTree>emptyList(),
                 Collections.<ExpressionTree>emptyList(),
                 MiscUtilities.createBodyForGetClassesMethod(restSupport), null);
+        return maker.addClassMember(newTree, methodTree);
+    }
+
+    private static ClassTree createGetSingletons(WorkingCopy workingCopy, TreeMaker maker, ClassTree newTree, List<String> singletonClasses) {
+        if (singletonClasses == null || singletonClasses.isEmpty()) {
+            return newTree;
+        }
+
+        //add import
+        CompilationUnitTree cut = workingCopy.getCompilationUnit();
+        CompilationUnitTree newCut = maker.addCompUnitImport(cut, maker.Import(maker.Identifier(HashSet.class.getCanonicalName()), false));
+        newCut = maker.addCompUnitImport(newCut, maker.Import(maker.Identifier(Set.class.getCanonicalName()), false));
+
+        ModifiersTree modifiersTree = maker.Modifiers(
+                EnumSet.of(Modifier.PUBLIC), Collections.singletonList(
+                maker.Annotation(maker.QualIdent(Override.class.getCanonicalName()),
+                        Collections.<ExpressionTree>emptyList())));
+
+        ParameterizedTypeTree wildSet = maker.ParameterizedType(
+                maker.QualIdent(Set.class.getCanonicalName()),
+                Collections.singletonList(maker.QualIdent(Object.class.getCanonicalName())));
+
+        StringBuilder body = new StringBuilder();
+        body.append("{final Set<Object> instances = new HashSet<>();\n");
+        for (String singletonClass : singletonClasses) {
+            body.append("instances.add(new ").append(JavaSourceHelper.getSimpleClassName(singletonClass)).append("());\n");
+            newCut = maker.addCompUnitImport(newCut, maker.Import(maker.Identifier(singletonClass), false));
+        }
+        body.append("return instances;}");
+
+        MethodTree methodTree = maker.Method(modifiersTree,
+                SINGLETON_METHOD, wildSet,
+                Collections.<TypeParameterTree>emptyList(),
+                Collections.<VariableTree>emptyList(),
+                Collections.<ExpressionTree>emptyList(),
+                body.toString(), null);
+
+        workingCopy.rewrite(cut, newCut);
         return maker.addClassMember(newTree, methodTree);
     }
 

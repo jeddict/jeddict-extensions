@@ -33,6 +33,7 @@ import org.netbeans.api.project.SourceGroup;
 import org.netbeans.api.project.Sources;
 import org.netbeans.api.project.ui.OpenProjects;
 import org.netbeans.modules.web.api.webmodule.WebModule;
+import org.netbeans.modules.web.api.webmodule.WebProjectConstants;
 import org.netbeans.modules.websvc.rest.spi.MiscUtilities;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataFolder;
@@ -85,6 +86,57 @@ public class ProjectHelper {
         }
         return list;
     }
+    
+    public static FileObject getProjectWebRoot(Project project) {
+        Sources sources = ProjectUtils.getSources(project);
+        SourceGroup sourceGroups[] = sources.getSourceGroups(WebProjectConstants.TYPE_DOC_ROOT);
+        if (sourceGroups.length > 0) {
+            return sourceGroups[0].getRootFolder();
+        } else {
+            return null;
+        }
+    }
+    
+    
+    /**
+     * when ever there is need for non-java files creation or lookup,
+     * use this method to get the right location for all projects. 
+     * Eg. maven places resources not next to the java files.
+     * Please note that the method should not be used for 
+     * checking file existence. There can be multiple resource roots, the returned one
+     * is just the first in line. Use <code>getResource</code> instead in that case.
+     */ 
+    public static FileObject getResourceDirectory(Project prj) {
+        Sources srcs = ProjectUtils.getSources(prj);
+        SourceGroup[] grps = srcs.getSourceGroups(JavaProjectConstants.SOURCES_TYPE_RESOURCES);
+        if (grps != null && grps.length > 0) {
+            return grps[0].getRootFolder();
+        }
+        return null;
+    }
+    
+    /**
+     * check if resource of given path exists in the current project resources.
+     * 
+     * @param prj
+     * @param path as in <code>FileObject.getFileObject(path)</code>
+     * @return FileObject or null if not found.
+     * @since 1.57
+     */
+    public static FileObject getResource(Project prj, String path) {
+        Sources srcs = ProjectUtils.getSources(prj);
+        SourceGroup[] grps = srcs.getSourceGroups(JavaProjectConstants.SOURCES_TYPE_RESOURCES);
+        if (grps != null && grps.length > 0) {
+            for (SourceGroup sg : grps) {
+                FileObject fo = sg.getRootFolder().getFileObject(path);
+                if (fo != null) {
+                    return fo;
+                }
+            }
+        }
+        return null;
+    }
+
     
      public static boolean isJavaEE6AndHigher(Project project) {
         return MiscUtilities.isJavaEE6AndHigher(project);

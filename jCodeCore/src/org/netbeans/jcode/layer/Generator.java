@@ -30,7 +30,7 @@ import org.openide.util.Lookup;
  */
 public interface Generator {
 
-    void execute(Project project, SourceGroup source, EntityResourceBeanModel model, ProgressHandler handler) throws IOException;
+    void execute() throws IOException;
 
     static TechContext get(String className) {
         TechContext context = null;

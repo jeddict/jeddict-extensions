@@ -31,7 +31,8 @@ public class ApplicationConfigData implements Serializable {
 
     private Project project;
     private SourceGroup sourceGroup;
-    private Map<String, FileObject> entities;
+    private Map<String, EntityConfigData> entities;
+    private String persistenceUnitName;
 
     private LayerConfigData bussinesLayerConfig;
     private LayerConfigData controllerLayerConfig;
@@ -113,7 +114,7 @@ public class ApplicationConfigData implements Serializable {
     /**
      * @return the entities
      */
-    public Map<String, FileObject> getEntities() {
+    public Map<String, EntityConfigData> getEntities() {
         if (entities == null) {
             entities = new HashMap<>();
         }
@@ -123,15 +124,15 @@ public class ApplicationConfigData implements Serializable {
     /**
      * @param entities the entities to set
      */
-    public void setEntities(Map<String, FileObject> entities) {
+    public void setEntities(Map<String, EntityConfigData> entities) {
         this.entities = entities;
     }
 
-    public FileObject getEntity(String key) {
+    public EntityConfigData getEntity(String key) {
         return getEntities().get(key);
     }
 
-    public FileObject putEntity(String key, FileObject value) {
+    public EntityConfigData putEntity(String key, EntityConfigData value) {
         return getEntities().put(key, value);
     }
 
@@ -175,6 +176,20 @@ public class ApplicationConfigData implements Serializable {
      */
     public void setViewerLayerGenerator(Generator viewerLayerGenerator) {
         this.viewerLayerGenerator = viewerLayerGenerator;
+    }
+
+    /**
+     * @return the persistenceUnitName
+     */
+    public String getPersistenceUnitName() {
+        return persistenceUnitName;
+    }
+
+    /**
+     * @param persistenceUnitName the persistenceUnitName to set
+     */
+    public void setPersistenceUnitName(String persistenceUnitName) {
+        this.persistenceUnitName = persistenceUnitName;
     }
 
 }

@@ -18,15 +18,14 @@ package org.netbeans.jcode.ejb.facade;
 import java.util.prefs.Preferences;
 import javax.lang.model.SourceVersion;
 import javax.swing.ComboBoxModel;
-import javax.swing.event.ChangeEvent;
 import javax.swing.text.JTextComponent;
 import org.apache.commons.lang.StringUtils;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.SourceGroup;
+import static org.netbeans.jcode.core.util.JavaSourceHelper.isValidPackageName;
 import org.netbeans.jcode.stack.config.panel.LayerConfigPanel;
 import org.netbeans.jcode.util.PreferenceUtils;
-import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
 import org.netbeans.spi.java.project.support.ui.PackageView;
 import org.openide.util.NbBundle;
 
@@ -46,7 +45,7 @@ public class SessionBeanPanel extends LayerConfigPanel<SessionBeanData> {
     @Override
     public boolean hasError() {
         warningLabel.setText("");
-        if (!JavaIdentifiers.isValidPackageName(getPackage())) {
+        if (!isValidPackageName(getPackage())) {
             warningLabel.setText(NbBundle.getMessage(SessionBeanPanel.class, "SessionBeanPanel.invalidPackage.message"));
             return true;
         }
@@ -65,10 +64,7 @@ public class SessionBeanPanel extends LayerConfigPanel<SessionBeanData> {
     }
     
         
-    @Override
-    public void stateChanged(ChangeEvent e) {
-        hasError();
-    }
+    
     
     @Override
     public void read(){
@@ -155,6 +151,9 @@ public class SessionBeanPanel extends LayerConfigPanel<SessionBeanData> {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        warningPanel = new javax.swing.JPanel();
+        warningLabel = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
         suffixPanel = new javax.swing.JPanel();
         namePane = new javax.swing.JLayeredPane();
         prefixField = new javax.swing.JTextField();
@@ -164,8 +163,15 @@ public class SessionBeanPanel extends LayerConfigPanel<SessionBeanData> {
         packagePanel = new javax.swing.JPanel();
         packageLabel = new javax.swing.JLabel();
         packageCombo = new javax.swing.JComboBox();
-        warningPanel = new javax.swing.JPanel();
-        warningLabel = new javax.swing.JLabel();
+
+        warningPanel.setLayout(new java.awt.BorderLayout(10, 0));
+
+        warningLabel.setForeground(new java.awt.Color(200, 0, 0));
+        warningLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        org.openide.awt.Mnemonics.setLocalizedText(warningLabel, org.openide.util.NbBundle.getMessage(SessionBeanPanel.class, "SessionBeanPanel.warningLabel.text")); // NOI18N
+        warningPanel.add(warningLabel, java.awt.BorderLayout.CENTER);
+
+        jPanel1.setLayout(new java.awt.GridLayout(2, 0, 0, 15));
 
         suffixPanel.setLayout(new java.awt.BorderLayout(10, 0));
 
@@ -205,6 +211,8 @@ public class SessionBeanPanel extends LayerConfigPanel<SessionBeanData> {
         nameLabel.setPreferredSize(new java.awt.Dimension(100, 17));
         suffixPanel.add(nameLabel, java.awt.BorderLayout.WEST);
 
+        jPanel1.add(suffixPanel);
+
         packagePanel.setLayout(new java.awt.BorderLayout(10, 0));
 
         packageLabel.setLabelFor(packageCombo);
@@ -212,6 +220,7 @@ public class SessionBeanPanel extends LayerConfigPanel<SessionBeanData> {
         packageLabel.setPreferredSize(new java.awt.Dimension(100, 17));
         packagePanel.add(packageLabel, java.awt.BorderLayout.LINE_START);
 
+        packageCombo.setEditable(true);
         packageCombo.setEditable(true);
         packageCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { " " }));
         packageCombo.setMinimumSize(new java.awt.Dimension(60, 27));
@@ -224,48 +233,37 @@ public class SessionBeanPanel extends LayerConfigPanel<SessionBeanData> {
         });
         packagePanel.add(packageCombo, java.awt.BorderLayout.CENTER);
 
-        warningPanel.setLayout(new java.awt.BorderLayout(10, 0));
-
-        warningLabel.setForeground(new java.awt.Color(200, 0, 0));
-        warningLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        org.openide.awt.Mnemonics.setLocalizedText(warningLabel, org.openide.util.NbBundle.getMessage(SessionBeanPanel.class, "SessionBeanPanel.warningLabel.text")); // NOI18N
-        warningPanel.add(warningLabel, java.awt.BorderLayout.CENTER);
+        jPanel1.add(packagePanel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(packagePanel, javax.swing.GroupLayout.DEFAULT_SIZE, 659, Short.MAX_VALUE)
-                .addContainerGap())
+            .addGap(0, 615, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(suffixPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 659, Short.MAX_VALUE)
+                    .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 595, Short.MAX_VALUE)
                     .addContainerGap()))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 659, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 595, Short.MAX_VALUE)
                     .addContainerGap()))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(52, 52, 52)
-                .addComponent(packagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(51, Short.MAX_VALUE))
+            .addGap(0, 132, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addContainerGap(101, Short.MAX_VALUE)
+                    .addComponent(warningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap()))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(suffixPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(91, Short.MAX_VALUE)))
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                    .addContainerGap(98, Short.MAX_VALUE)
-                    .addComponent(warningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap()))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(61, Short.MAX_VALUE)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -284,6 +282,7 @@ public class SessionBeanPanel extends LayerConfigPanel<SessionBeanData> {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel entityLabel;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel nameLabel;
     private javax.swing.JLayeredPane namePane;
     private javax.swing.JComboBox packageCombo;

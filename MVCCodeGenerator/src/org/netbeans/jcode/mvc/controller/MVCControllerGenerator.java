@@ -67,6 +67,7 @@ import org.netbeans.jcode.core.util.Constants.MimeType;
 import static org.netbeans.jcode.core.util.Constants.PASSWORD;
 import static org.netbeans.jcode.core.util.Constants.VOID;
 import org.netbeans.jcode.core.util.Inflector;
+import org.netbeans.jcode.core.util.POMManager;
 import org.netbeans.jcode.core.util.StringHelper;
 import org.netbeans.jcode.ejb.facade.SessionBeanData;
 import org.netbeans.jcode.mvc.MVCConstants;
@@ -123,6 +124,8 @@ import org.openide.util.lookup.ServiceProvider;
 
 public class MVCControllerGenerator implements Generator {
 
+    private static final String TEMPLATE = "org/netbeans/jcode/mvc/template/";
+
     public final static String ENTITY_NAME_EXP = "<entity>";
     private final static String ENTITIES_NAME_EXP = "<entities>";
     public final static String FOLDER_NAME_EXP = "<folder>";
@@ -133,7 +136,6 @@ public class MVCControllerGenerator implements Generator {
     private final static String VALIDATION_FILTER = "       if (validationResult.isFailed()) {\n"
             + "            return ValidationUtil.getResponse(validationResult, error);\n"
             + "        }\n\n";
-    private EntityResourceBeanModel model;
 
     @ConfigData
     private SessionBeanData beanData;
@@ -142,24 +144,34 @@ public class MVCControllerGenerator implements Generator {
     @ConfigData
     private MVCData mvcData;
 
+    @ConfigData
+    private Project project; 
+    
+    @ConfigData
+    private SourceGroup source; 
+    
+    @ConfigData
+    private EntityResourceBeanModel model;
+    
+    @ConfigData
+    private ProgressHandler handler;
+
     @Override
-    public void execute(Project project, SourceGroup source, EntityResourceBeanModel model, ProgressHandler handler) throws IOException {
+    public void execute() throws IOException {
         handler.progress(Console.wrap(MVCControllerGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
-        generateUtil(project, source, mvcData, jspData, handler);
+        generateUtil();
         for (EntityClassInfo classInfo : model.getEntityInfos()) {
-            generate(project, source, classInfo.getType(), classInfo.getPrimaryKeyType(), beanData, mvcData, jspData, false, false, true, handler);
+            generate(classInfo.getType(), classInfo.getPrimaryKeyType(), false, false, true);
         }
 
         model.getEntityInfos().stream().forEach((info) -> {
-            Util.modifyEntity(info.getEntityFileObject());
+            Util.modifyEntity(info.getEntityConfigData().getEntityFile());
         });
+        addMavenDependencies();
     }
 
-    public Set<FileObject> generate(final Project project, final SourceGroup sourceGroup,
-            final String entityFQN, final String idClass,
-            final SessionBeanData beanData, final MVCData mvcData, final JSPData viewerData,
-            final boolean hasRemote, final boolean hasLocal,
-            boolean overrideExisting, ProgressHandler handler) throws IOException {
+    public Set<FileObject> generate(final String entityFQN, final String idClass,
+            final boolean hasRemote, final boolean hasLocal, boolean overrideExisting) throws IOException {
 
         final Set<FileObject> createdFiles = new HashSet<>();
         final String entitySimpleName = JavaIdentifiers.unqualify(entityFQN);
@@ -173,7 +185,7 @@ public class MVCControllerGenerator implements Generator {
         String controllerFileName = mvcData.getPrefixName() + entitySimpleName + mvcData.getSuffixName();
         handler.progress(controllerFileName);
 
-        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(sourceGroup, mvcData.getPackage(), true);
+        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, mvcData.getPackage(), true);
 
         FileObject controllerFO = targetFolder.getFileObject(controllerFileName, JAVA_EXT);//skips here
 
@@ -189,8 +201,8 @@ public class MVCControllerGenerator implements Generator {
         createdFiles.add(facade);
 
         String webPath;
-        if (viewerData != null) {
-            webPath = viewerData.getFolder();
+        if (jspData != null) {
+            webPath = jspData.getFolder();
         } else {
             webPath = JSPData.DEFAULT_FOLDER;
         }
@@ -412,15 +424,14 @@ public class MVCControllerGenerator implements Generator {
         return createdFiles;
     }
 
-    public void generateUtil(final Project project, final SourceGroup sourceGroup,
-            final MVCData mvcData, JSPData viewerData, ProgressHandler handler) throws IOException {
-        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(sourceGroup, mvcData.getPackage(), true);
+    public void generateUtil() throws IOException {
+        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, mvcData.getPackage(), true);
         FileObject utilFolder = SourceGroupSupport.getFolderForPackage(targetFolder, UTIL_PACKAGE, true);
         
         
         String resourcePath = null;
-        if (viewerData != null) {
-            resourcePath = viewerData.getResourceFolder();
+        if (jspData != null) {
+            resourcePath = jspData.getResourceFolder();
         }
         
         if (resourcePath!=null && mvcData.isBeanValidation()) {
@@ -433,15 +444,15 @@ public class MVCControllerGenerator implements Generator {
             ControllerEventGenerator.generate(mvcData.getEventType(), utilFolder, handler);
         }
 
-        ParamConvertorGenerator.generate(project, sourceGroup, utilFolder, handler);
+        ParamConvertorGenerator.generate(project, source, utilFolder, handler);
 
         CDIUtil.createDD(project);
 
-        generateApplicationConfig(project, sourceGroup, handler);
+        generateApplicationConfig(project, source, handler);
         
         if(mvcData.isAuthentication()){
-            LoginControllerGenerator.generate(project, sourceGroup, targetFolder, handler);
-            AuthMechanismGenerator.generate(project, sourceGroup, targetFolder, handler);
+            LoginControllerGenerator.generate(project, source, targetFolder, handler);
+            AuthMechanismGenerator.generate(project, source, targetFolder, handler);
         }
     }
 
@@ -471,7 +482,7 @@ public class MVCControllerGenerator implements Generator {
         try {
             if (restAppPack != null && appClassName != null) {
 
-                FileObject configFO = RestUtils.createApplicationConfigClass(restSupport, restAppPack, appClassName, mvcData.getRestConfigData().getApplicationPath(), handler);
+                FileObject configFO = RestUtils.createApplicationConfigClass(restSupport, restAppPack, appClassName, mvcData.getRestConfigData().getApplicationPath(), null, handler);
                 JavaSource javaSource = JavaSource.forFileObject(configFO);//add some cutom properties/method specific to MVC
                 if (javaSource != null) {
 
@@ -692,5 +703,12 @@ public class MVCControllerGenerator implements Generator {
                 findAllOptions
         );
     }
+    
+        private void addMavenDependencies() {
+            POMManager pomManager = new POMManager(TEMPLATE + "pom/_pom.xml", project);
+            pomManager.setSourceVersion("1.8");
+            pomManager.execute();
+            pomManager.commit();
+        }
 
 }

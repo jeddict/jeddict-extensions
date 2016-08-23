@@ -474,34 +474,50 @@ public class Util {
         if (bussinesLayerConfig == null) {
             return;
         }
-        inject(applicationConfigData.getBussinesLayerGenerator(), bussinesLayerConfig, controllerLayerConfig, viewerLayerConfig);
-        applicationConfigData.getBussinesLayerGenerator().execute(project, source, model, handler);
+        inject(applicationConfigData.getBussinesLayerGenerator(),applicationConfigData, model, handler);
+        applicationConfigData.getBussinesLayerGenerator().execute();
 
         if (controllerLayerConfig == null) {
             return;
         }
-        inject(applicationConfigData.getControllerLayerGenerator(), bussinesLayerConfig, controllerLayerConfig, viewerLayerConfig);
-        applicationConfigData.getControllerLayerGenerator().execute(project, source, model, handler);
+        inject(applicationConfigData.getControllerLayerGenerator(), applicationConfigData, model, handler);
+        applicationConfigData.getControllerLayerGenerator().execute();
 
         if (viewerLayerConfig == null) {
             return;
         }
-        inject(applicationConfigData.getViewerLayerGenerator(), bussinesLayerConfig, controllerLayerConfig, viewerLayerConfig);
-        applicationConfigData.getViewerLayerGenerator().execute(project, source, model, handler);
+        inject(applicationConfigData.getViewerLayerGenerator(), applicationConfigData, model, handler);
+        applicationConfigData.getViewerLayerGenerator().execute();
     }
 
-    private static void inject(Generator instance, LayerConfigData bussinesLayerConfig, LayerConfigData controllerLayerConfig, LayerConfigData viewerLayerConfig) {
+    private static void inject(Generator instance, ApplicationConfigData applicationConfigData,
+             EntityResourceBeanModel model, ProgressHandler handler) {
+            LayerConfigData bussinesLayerConfig = applicationConfigData.getBussinesLayerConfig();
+        LayerConfigData controllerLayerConfig = applicationConfigData.getControllerLayerConfig();
+        LayerConfigData viewerLayerConfig = applicationConfigData.getViewerLayerConfig();
         Field[] fields = instance.getClass().getDeclaredFields();
         for (Field field : fields) {
             if (field.isAnnotationPresent(ConfigData.class)) {
                 field.setAccessible(true);
                 try {
-                    if (bussinesLayerConfig!=null && field.getGenericType()== bussinesLayerConfig.getClass()) {
+                    if (field.getGenericType()== applicationConfigData.getClass()) {
+                        field.set(instance, applicationConfigData);
+                    } else if (bussinesLayerConfig!=null && field.getGenericType()== bussinesLayerConfig.getClass()) {
+                        field.set(instance, bussinesLayerConfig);
+                    } else if (bussinesLayerConfig!=null && field.getGenericType()== bussinesLayerConfig.getClass()) {
                         field.set(instance, bussinesLayerConfig);
                     } else if (controllerLayerConfig!=null && field.getGenericType() == controllerLayerConfig.getClass()) {
                         field.set(instance, controllerLayerConfig);
                     } else if (viewerLayerConfig!=null && field.getGenericType() == viewerLayerConfig.getClass()) {
                         field.set(instance, viewerLayerConfig);
+                    } else if (model!=null && field.getGenericType() == model.getClass()) {
+                        field.set(instance, model);
+                    } else if (field.getType().isAssignableFrom(handler.getClass())) {
+                        field.set(instance, handler);
+                    } else if (field.getType().isAssignableFrom(applicationConfigData.getProject().getClass())) {
+                        field.set(instance, applicationConfigData.getProject());
+                    } else if (field.getType().isAssignableFrom(applicationConfigData.getSourceGroup().getClass())) {
+                        field.set(instance, applicationConfigData.getSourceGroup());
                     }
                 } catch (IllegalArgumentException | IllegalAccessException e) {
                     e.printStackTrace();

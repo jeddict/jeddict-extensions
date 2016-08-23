@@ -58,11 +58,6 @@ public class JSPPanel extends LayerConfigPanel<JSPData> {
     }
 
     @Override
-    public void stateChanged(ChangeEvent e) {
-        hasError();
-    }
-
-    @Override
     public void read() {
         this.setConfigData(PreferenceUtils.get(pref, JSPData.class));
         JSPData data = this.getConfigData();

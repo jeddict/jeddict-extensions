@@ -17,12 +17,19 @@ package org.netbeans.jcode.core.util;
 
 import java.util.HashMap;
 import java.util.Map;
+import static org.netbeans.jcode.core.util.Constants.JAVA_EXT;
+import org.openide.filesystems.FileObject;
 
 /**
  *
  * @author Gaurav Gupta
  */
 public class JavaUtil {
+
+    
+    public static String getUniqueClassName(String candidateName, FileObject targetFolder) {
+        return org.openide.filesystems.FileUtil.findFreeFileName(targetFolder, candidateName, JAVA_EXT); //NOI18N
+    }
 
     public static Class<?> getPrimitiveType(String typeName) {
         return Lazy.primitiveTypes.get(typeName);

@@ -132,7 +132,7 @@ public final class StringHelper {
      */
     public static String camelCase(String content) {
         StringBuilder result = new StringBuilder();
-        content = content.replaceFirst("[^a-zA-Z0-9]+", EMPTY);
+//        content = content.replaceFirst("[^a-zA-Z0-9]+", EMPTY);//issue job-history => jobhistory
         int i = 0;
         for (String word : content.replaceAll("[^a-zA-Z0-9]", " ").split(NATURAL_TEXT_SPLITTER)) {
             word = word.toLowerCase();

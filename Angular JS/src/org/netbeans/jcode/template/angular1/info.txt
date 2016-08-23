@@ -1,0 +1,63 @@
+>>>> web-resources.zip
+File: _language.constants.js
+Neddle :
+.constant('LANGUAGES', [
+            <%_ for(var i=0; i<languages.length; i++) { _%> 
+                '<%= languages[i] %>'<%= ( languages.length > 0 && i < languages.length-1 ?  ', ' : '' ) %>          
+            <%_ } _%>
+        ]
+
+                        
+File: navbar.html
+Entity Neddle :
+			<%_ for(var i=0; i<entities.length; i++) { _%> 
+                            <li ui-sref-active="active" >
+                                <a ui-sref="<%= entities[i].entityStateName %>" ng-click="vm.collapseNavbar()">
+                                    <span class="glyphicon glyphicon-asterisk"></span>&nbsp;
+                                    <span <% if (enableTranslation) { %>translate="global.menu.entities.<%= entities[i].entityTranslationKeyMenu%>"<% } %>><%=entities[i].entityClassHumanized%></span>
+                                </a>
+                            </li>
+                        <%_ } _%>
+
+File: _navbar.controller.js 
+enableProfile filter added
+
+Folder : /user-management
+remove [resetDate: null, resetKey: null]
+
+
+>>>> entity-resources.zip, web-resources.zip
+Replace : api/ -> <%= applicationPath %>/api/
+
+>>>> web-resources-I18n.zip
+Replace : 
+"jhipster-needle-menu-add-entry" 
+=>
+<%_ for(var i=0; i<entities.length; i++) { _%>
+                    "<%= entities[i].entityTranslationKeyMenu%>" : "<%=entities[i].entityClassHumanized%>",
+                <%_ } _%>
+                "jhipster-needle-menu-add-entry"
+
+
+>>>> entity-resources.zip
+File : _entity-management.state.js
+Replace :
+url: '/new',
+url: '/create/new',
+
+
+>>>> web-resources.zip
+File : main.css
+Replace :
+.hipster
+.app-background
+Replace :
+app-background.png
+
+File: home.html 
+<Full-Edited>
+
+File : navbar.html
+Replace :
+hipster-logo.png
+app-logo.png

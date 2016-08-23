@@ -1147,14 +1147,6 @@ public class JavaSourceHelper {
                 return newClassTree;
     }
     
-//    private final static String LICENSE = "<#assign licenseFirst = \"/*\">\n"
-//            + "<#assign licensePrefix = \" * \">\n"
-//            + "<#assign licenseLast = \" */\">\n"
-//            + "<#include \"${project.licensePath}\">";
-//
-//    public static String getLicense() {
-//        return expandTemplate(LICENSE, null);
-//    }
     private static Map<String, ?> TEMPLATE_PROPERTIES;
 
     public static String getAuthor() {

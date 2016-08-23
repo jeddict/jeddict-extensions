@@ -7,6 +7,15 @@
             <suite-component/>
             <module-dependencies>
                 <dependency>
+                    <code-name-base>org.netbeans.modules.xml.multiview</code-name-base>
+                    <build-prerequisite/>
+                    <compile-dependency/>
+                    <run-dependency>
+                        <release-version>1</release-version>
+                        <implementation-version/>
+                    </run-dependency>
+                </dependency>
+                <dependency>
                     <code-name-base>org.apache.commons.lang</code-name-base>
                     <build-prerequisite/>
                     <compile-dependency/>
@@ -222,6 +231,15 @@
                     <run-dependency>
                         <release-version>1</release-version>
                         <specification-version>1.60</specification-version>
+                    </run-dependency>
+                </dependency>
+                <dependency>
+                    <code-name-base>org.netbeans.modules.java.project.ui</code-name-base>
+                    <build-prerequisite/>
+                    <compile-dependency/>
+                    <run-dependency>
+                        <release-version>1</release-version>
+                        <specification-version>1.66.1</specification-version>
                     </run-dependency>
                 </dependency>
                 <dependency>
@@ -566,7 +584,9 @@
                     </run-dependency>
                 </dependency>
             </module-dependencies>
-            <public-packages/>
+            <public-packages>
+                <package>org.netbeans.jcode.rest.controller</package>
+            </public-packages>
         </data>
     </configuration>
 </project>

@@ -16,7 +16,6 @@
 package org.netbeans.jcode.entity.info;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +28,7 @@ public class EntityResourceBeanModel {
 
     /**
      * Creates a new instance of ResourceBeanModel
+     * @param builder
      */
     public EntityResourceBeanModel(EntityResourceModelBuilder builder) {
         this.builder = builder;
@@ -39,11 +39,8 @@ public class EntityResourceBeanModel {
         return entityInfos.get(fqn);
     }
 
-    public Collection<EntityClassInfo> getEntityInfos() {
-        List<EntityClassInfo> infos = new ArrayList<>();
-
-        infos.addAll(entityInfos.values());
-        return infos;
+    public List<EntityClassInfo> getEntityInfos() {
+        return new ArrayList<>(entityInfos.values());
     }
 
     public boolean isValid() {

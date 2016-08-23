@@ -37,18 +37,14 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
-import org.netbeans.api.java.source.ClasspathInfo;
 import org.netbeans.api.java.source.CompilationController;
 import org.netbeans.api.java.source.JavaSource;
 import org.netbeans.api.java.source.JavaSource.Phase;
-import org.netbeans.api.project.Project;
-import org.netbeans.api.project.SourceGroup;
+import org.netbeans.jcode.core.util.JavaSourceHelper;
 import org.netbeans.jcode.core.util.JavaUtil;
 import org.netbeans.jcode.core.util.StringHelper;
-import org.netbeans.jcode.core.util.SourceGroupSupport;
-import org.netbeans.jcode.core.util.SourceGroups;
+import org.netbeans.jcode.stack.config.data.EntityConfigData;
 import org.netbeans.jcode.task.AbstractTask;
-import org.netbeans.modules.websvc.rest.spi.MiscUtilities;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
 
@@ -75,7 +71,7 @@ public class EntityClassInfo {
     
     private EntityResourceModelBuilder builder;
     private final String entityFqn;
-    private final FileObject entityFileObject;
+    private final EntityConfigData entityConfigData;
     private String name;
     private String type;
     private String packageName;
@@ -84,9 +80,10 @@ public class EntityClassInfo {
     private String primaryKeyType;
 
 
-    public EntityClassInfo(String entityFqn, FileObject entityFileObject,  EntityResourceModelBuilder builder) {
+    public EntityClassInfo(String entityFqn, EntityConfigData entityConfigData,  EntityResourceModelBuilder builder) {
         this.entityFqn = entityFqn;
-        this.entityFileObject=entityFileObject;
+        this.packageName = JavaSourceHelper.getPackageName(entityFqn);
+        this.entityConfigData=entityConfigData;
         this.fieldInfos = new ArrayList<>();
         this.builder = builder;
         extractFields();
@@ -110,7 +107,7 @@ public class EntityClassInfo {
 
     protected void extractFields() {
         try {
-            JavaSource source = JavaSource.forFileObject(getEntityFileObject());
+            JavaSource source = JavaSource.forFileObject(getEntityConfigData().getEntityFile());
             if (source != null) {
                 source.runUserActionTask(new AbstractTask<CompilationController>() {
 
@@ -218,7 +215,7 @@ public class EntityClassInfo {
 
     protected void extractPKFields() {
          try {
-                JavaSource pkSource = JavaSource.forFileObject(getEntityFileObject());
+                JavaSource pkSource = JavaSource.forFileObject(getEntityConfigData().getEntityFile());
                 if (pkSource == null) {
                     throw new IllegalArgumentException("No JavaSource object for " + idFieldInfo.getType());
                 }
@@ -409,8 +406,8 @@ public class EntityClassInfo {
     /**
      * @return the entityFileObject
      */
-    public FileObject getEntityFileObject() {
-        return entityFileObject;
+    public EntityConfigData getEntityConfigData() {
+        return entityConfigData;
     }
 
     /**

@@ -15,66 +15,53 @@
  */
 package org.netbeans.jcode.rest.controller;
 
-import com.sun.source.tree.AnnotationTree;
-import com.sun.source.tree.ClassTree;
-import com.sun.source.tree.ExpressionTree;
-import com.sun.source.tree.ModifiersTree;
-import com.sun.source.tree.Tree;
-import com.sun.source.tree.VariableTree;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeKind;
-
-import org.netbeans.api.java.source.CompilationController;
-import org.netbeans.api.java.source.JavaSource;
-import org.netbeans.api.java.source.JavaSource.Phase;
-import org.netbeans.api.java.source.Task;
-import org.netbeans.api.java.source.TreeMaker;
-import org.netbeans.api.java.source.WorkingCopy;
+import java.util.Map;
+import java.util.Optional;
+import org.apache.commons.lang.StringUtils;
+import static org.apache.commons.lang.StringUtils.EMPTY;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.cdi.logger.LoggerProducerGenerator;
+import org.netbeans.jcode.cdi.util.CDIUtil;
 import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.BOLD;
 import static org.netbeans.jcode.console.Console.FG_RED;
 import static org.netbeans.jcode.console.Console.UNDERLINE;
-import org.netbeans.jcode.core.util.Constants;
 import static org.netbeans.jcode.core.util.Constants.JAVA_EXT;
-import static org.netbeans.jcode.core.util.Constants.LIST_TYPE;
-import org.netbeans.jcode.core.util.Constants.MimeType;
-import static org.netbeans.jcode.core.util.Constants.VOID;
-import org.netbeans.jcode.core.util.Inflector;
-import org.netbeans.jcode.core.util.StringHelper;
+import org.netbeans.jcode.core.util.FileUtil;
+import org.netbeans.jcode.core.util.POMManager;
+import org.netbeans.jcode.core.util.PersistenceUtil;
+import static org.netbeans.jcode.core.util.PersistenceUtil.addProperty;
+import org.netbeans.jcode.core.util.ProjectHelper;
 import org.netbeans.jcode.ejb.facade.SessionBeanData;
-import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
 import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
-import org.netbeans.modules.j2ee.core.api.support.java.SourceUtils;
-import org.netbeans.jcode.rest.util.RestGenerationOptions;
 import org.netbeans.jcode.entity.info.EntityClassInfo;
-import org.netbeans.jcode.entity.info.EntityClassInfo.FieldInfo;
 import org.netbeans.jcode.entity.info.EntityResourceBeanModel;
-import org.netbeans.modules.websvc.rest.model.api.RestConstants;
 import org.netbeans.jcode.rest.util.RestUtils;
 import org.netbeans.jcode.core.util.SourceGroupSupport;
+import static org.netbeans.jcode.core.util.StringHelper.firstLower;
+import static org.netbeans.jcode.core.util.StringHelper.firstUpper;
+import static org.netbeans.jcode.core.util.StringHelper.kebabCase;
 import org.netbeans.jcode.ejb.facade.EjbFacadeGenerator;
-import org.netbeans.jcode.generator.internal.util.Util;
+import static org.netbeans.jcode.generator.internal.util.Util.pluralize;
 import org.netbeans.jcode.layer.ConfigData;
 import org.netbeans.jcode.layer.Generator;
 import org.netbeans.jcode.layer.Technology;
 import static org.netbeans.jcode.layer.Technology.Type.CONTROLLER;
 import org.netbeans.jcode.rest.filter.RESTFilterGenerator;
-import org.netbeans.jcode.rest.returntype.ControllerReturnType;
+import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
 import org.netbeans.jcode.task.progress.ProgressHandler;
-import static org.netbeans.modules.websvc.rest.model.api.RestConstants.EJB;
+import org.netbeans.modules.j2ee.persistence.dd.common.PersistenceUnit;
+import org.netbeans.modules.j2ee.persistence.dd.common.Property;
+import org.netbeans.modules.j2ee.persistence.provider.InvalidPersistenceXmlException;
+import org.netbeans.modules.j2ee.persistence.provider.ProviderUtil;
+import org.netbeans.modules.j2ee.persistence.unit.PUDataObject;
 import org.netbeans.modules.websvc.rest.spi.RestSupport;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
@@ -89,12 +76,10 @@ import org.openide.util.lookup.ServiceProvider;
 
 public class RESTGenerator implements Generator {
 
-    private final static String ENTITY_NAME_EXP = "<entity>";
-    private final static String ENTITIES_NAME_EXP = "<entities>";
-    
-    public final static String UTIL_PACKAGE = "util";
-    private final static String SESSION_BEAN_VAR_DECLARATION = "facade";
-    private EntityResourceBeanModel model;
+    private static final String TEMPLATE = "org/netbeans/jcode/template/";
+
+    @ConfigData
+    private ApplicationConfigData applicationConfigData;
 
     @ConfigData
     private SessionBeanData beanData;
@@ -102,24 +87,103 @@ public class RESTGenerator implements Generator {
     @ConfigData
     private RESTData restData;
 
-    @Override
-    public void execute(Project project, SourceGroup source, EntityResourceBeanModel model, ProgressHandler handler) throws IOException {
-        handler.progress(Console.wrap(RESTGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
-        generateUtil(project, source, handler);
-        for (EntityClassInfo classInfo : model.getEntityInfos()) {
-            generate(project, source, classInfo.getType(), classInfo.getPrimaryKeyType(), false, false, true, handler);
-        }
+    @ConfigData
+    private Project project;
+
+    @ConfigData
+    private SourceGroup source;
+
+    @ConfigData
+    private EntityResourceBeanModel entityResourceBeanModel;
+
+    @ConfigData
+    private ProgressHandler handler;
+    
+    private String entityPackage;
+    
+    private static final List<Template> CONFIG_TEMPLATES = new ArrayList<>();
+    private static final List<Template> ENTITY_TEMPLATES = new ArrayList<>();
+    private static final List<Template> ENTITY_LISTENER_TEMPLATES = new ArrayList<>();
+    private static final List<Template> FACADE_TEMPLATES = new ArrayList<>();
+    private static final List<Template> SERVICE_TEMPLATES = new ArrayList<>();
+    private static final List<Template> CONTROLLER_TEMPLATES = new ArrayList<>();
+    private static final List<Template> CONTROLLER_EXT_TEMPLATES = new ArrayList<>();
+
+    static {
+
+        ENTITY_TEMPLATES.add(new Template("entity/AbstractAuditingEntity.java.ftl", "AbstractAuditingEntity"));
+        ENTITY_TEMPLATES.add(new Template("entity/Authority.java.ftl", "Authority"));
+        ENTITY_TEMPLATES.add(new Template("entity/User.java.ftl", "User"));
+        
+        ENTITY_LISTENER_TEMPLATES.add(new Template("entity/AuditListner.java.ftl", "AuditListner"));
+
+        FACADE_TEMPLATES.add(new Template("facade/AuthorityFacade.java.ftl", "Authority"));
+        FACADE_TEMPLATES.add(new Template("facade/UserFacade.java.ftl", "User"));
+
+        CONFIG_TEMPLATES.add(new Template("config/ConfigResource.java.ftl", "ConfigResource", "config"));
+        CONFIG_TEMPLATES.add(new Template("config/Constants.java.ftl", "Constants", "config"));
+        CONFIG_TEMPLATES.add(new Template("config/MailConfig.java.ftl", "MailConfig", "config"));
+        CONFIG_TEMPLATES.add(new Template("config/MessageResource.java.ftl", "MessageResource", "config"));
+        CONFIG_TEMPLATES.add(new Template("config/SecurityConfig.java.ftl", "SecurityConfig", "config"));
+
+        CONTROLLER_EXT_TEMPLATES.add(new Template("rest/util/HeaderUtil.java.ftl", "HeaderUtil", "util"));
+        CONTROLLER_EXT_TEMPLATES.add(new Template("rest/util/Page.java.ftl", "Page", "util"));
+        CONTROLLER_EXT_TEMPLATES.add(new Template("rest/util/PaginationUtil.java.ftl", "PaginationUtil", "util"));
+
+        CONTROLLER_EXT_TEMPLATES.add(new Template("rest/dto/KeyAndPasswordDTO.java.ftl", "KeyAndPasswordDTO", "dto"));
+        CONTROLLER_EXT_TEMPLATES.add(new Template("rest/dto/LoginDTO.java.ftl", "LoginDTO", "dto"));
+        CONTROLLER_EXT_TEMPLATES.add(new Template("rest/dto/ManagedUserDTO.java.ftl", "ManagedUserDTO", "dto"));
+        CONTROLLER_EXT_TEMPLATES.add(new Template("rest/dto/UserDTO.java.ftl", "UserDTO", "dto"));
+
+        SERVICE_TEMPLATES.add(new Template("security/Authenticated.java.ftl", "Authenticated", "security"));
+        SERVICE_TEMPLATES.add(new Template("security/AuthenticationException.java.ftl", "AuthenticationException", "security"));
+        SERVICE_TEMPLATES.add(new Template("security/AuthoritiesConstants.java.ftl", "AuthoritiesConstants", "security"));
+        SERVICE_TEMPLATES.add(new Template("security/JWTAuthenticationFilter.java.ftl", "JWTAuthenticationFilter", "security"));
+        SERVICE_TEMPLATES.add(new Template("security/JWTToken.java.ftl", "JWTToken", "security"));
+        SERVICE_TEMPLATES.add(new Template("security/PasswordEncoder.java.ftl", "PasswordEncoder", "security"));
+        SERVICE_TEMPLATES.add(new Template("security/SecurityUtils.java.ftl", "SecurityUtils", "security"));
+        SERVICE_TEMPLATES.add(new Template("security/TokenProvider.java.ftl", "TokenProvider", "security"));
+        SERVICE_TEMPLATES.add(new Template("security/UserAuthenticationToken.java.ftl", "UserAuthenticationToken", "security"));
+
+        SERVICE_TEMPLATES.add(new Template("service/mail/TemplateEngineProvider.java.ftl", "TemplateEngineProvider", "service.mail"));
+        SERVICE_TEMPLATES.add(new Template("service/mail/MailService.java.ftl", "MailService", "service.mail"));
+        SERVICE_TEMPLATES.add(new Template("util/RandomUtil.java.ftl", "RandomUtil", "util"));
+        SERVICE_TEMPLATES.add(new Template("service/UserService.java.ftl", "UserService", "service"));
+
+        CONTROLLER_TEMPLATES.add(new Template("rest/AccountController.java.ftl", "Account"));
+        CONTROLLER_TEMPLATES.add(new Template("rest/UserController.java.ftl", "User"));
+        CONTROLLER_TEMPLATES.add(new Template("rest/UserJWTController.java.ftl", "UserJWT"));
+
     }
 
-    public Set<FileObject> generate(final Project project, final SourceGroup sourceGroup,
-            final String entityFQN, final String idClass,
-            final boolean hasRemote, final boolean hasLocal,
-            boolean overrideExisting, ProgressHandler handler) throws IOException {
+    @Override
+    public void execute() throws IOException {
+        handler.progress(Console.wrap(RESTGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
+        generateUtil();
+        setEntityPackage();
+        Map<String, Object> param = generateServerSideComponent();
+        for (EntityClassInfo classInfo : entityResourceBeanModel.getEntityInfos()) {
+            generateEntityController(classInfo, param);
+        }
+        CDIUtil.createDD(project);
+        addMavenDependencies();
+    }
 
-        final Set<FileObject> createdFiles = new HashSet<>();
+    
+    private void addMavenDependencies() {
+            POMManager pomManager = new POMManager(TEMPLATE + "pom/_pom.xml", project);
+            pomManager.setSourceVersion("1.8");
+            pomManager.execute();
+            pomManager.commit();
+    }
+    
+
+    
+    public FileObject generateEntityController(final EntityClassInfo classInfo, Map<String, Object> appParam) throws IOException {
+        String entityFQN = classInfo.getType();
+        String idClass = classInfo.getPrimaryKeyType();
+        boolean overrideExisting = true;
         final String entitySimpleName = JavaIdentifiers.unqualify(entityFQN);
-        final String variableName = StringHelper.firstLower(entitySimpleName);
-        final String listVariableName = Inflector.getInstance().pluralize(variableName);
 
         String facadeFileName = beanData.getPrefixName() + entitySimpleName + beanData.getSuffixName();
         String fqFacadeFileName = beanData.getPackage().isEmpty() ? facadeFileName : beanData.getPackage() + '.' + facadeFileName;
@@ -127,9 +191,9 @@ public class RESTGenerator implements Generator {
         String controllerFileName = restData.getPrefixName() + entitySimpleName + restData.getSuffixName();
         handler.progress(controllerFileName);
 
-        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(sourceGroup, restData.getPackage(), true);
+        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, restData.getPackage(), true);
 
-        FileObject controllerFO = targetFolder.getFileObject(controllerFileName, JAVA_EXT);//skips here
+        FileObject controllerFO = targetFolder.getFileObject(controllerFileName, JAVA_EXT);
 
         if (controllerFO != null) {
             if (overrideExisting) {
@@ -138,209 +202,162 @@ public class RESTGenerator implements Generator {
                 throw new IOException("File already exists exception: " + controllerFO.getPath());
             }
         }
+        boolean dto = false;
+        String entityClass = firstUpper(entitySimpleName);
+        String entityInstance = firstLower(entitySimpleName);
+        String entityNameSpinalCased = kebabCase(entityInstance);
 
-        final FileObject facade = GenerationUtils.createClass(targetFolder, controllerFileName, null);
-        createdFiles.add(facade);
+        Map<String, Object> param = new HashMap<>(appParam);
+        param.put("EntityClass", entityClass);
+        param.put("EntityClassPlural", pluralize(firstUpper(entitySimpleName)));
+        param.put("EntityClass_FQN", entityFQN);
+        param.put("entityInstance", entityInstance);
+        param.put("entityInstancePlural", pluralize(entityInstance));
 
-        if (model != null) {
-            Util.generatePrimaryKeyMethod(facade, entityFQN, model);
+        param.put("controllerClass", controllerFileName);
+        param.put("entityApiUrl", entityNameSpinalCased);
+
+        param.put("EntityFacade", facadeFileName);
+        param.put("entityFacade", firstLower(facadeFileName));
+        param.put("EntityFacade_FQN", fqFacadeFileName);
+
+        param.put("instanceType", dto ? entityClass + "DTO" : entityClass);
+        param.put("instanceName", dto ? entityInstance + "DTO" : entityInstance);
+
+        param.put("pkName", classInfo.getIdFieldInfo().getName());
+        param.put("pkType", classInfo.getIdFieldInfo().getType());
+        param.put("package", restData.getPackage());
+        param.put("applicationPath", restData.getRestConfigData().getApplicationPath());
+        
+
+        FileUtil.expandTemplate(TEMPLATE + "rest/entity/EntityController.java.ftl", targetFolder, controllerFileName + '.' + JAVA_EXT, param);
+
+        return controllerFO;
+    }
+
+    private void setEntityPackage() {
+        if (entityResourceBeanModel.getEntityInfos().size() >= 1) {
+            entityPackage = entityResourceBeanModel.getEntityInfos().get(0).getPackageName();
         }
+    }
 
-        // add implements and extends clauses to the facade
-        final Task<WorkingCopy> modificationTask = new Task<WorkingCopy>() {
-            @Override
-            public void run(WorkingCopy wc) throws Exception {
-                wc.toPhase(Phase.RESOLVED);
-                TypeElement classElement = SourceUtils.getPublicTopLevelElement(wc);
-                ClassTree classTree = wc.getTrees().getTree(classElement);
-                assert classTree != null;
-                GenerationUtils genUtils = GenerationUtils.newInstance(wc);
-                TreeMaker maker = wc.getTreeMaker();
+    private Map<String, Object> generateServerSideComponent() throws IOException {
+        Map<String, Object> param = new HashMap<>();
+        String appPackage = restData.getAppPackage();
 
-                List<Tree> members = new ArrayList<>(classTree.getMembers());
+        param.put("entityPackage", entityPackage);
+        param.put("PU", applicationConfigData.getPersistenceUnitName());
+        param.put("applicationPath", restData.getRestConfigData().getApplicationPath());
 
-                members.add(maker.Variable(maker.addModifiersAnnotation(genUtils.createModifiers(Modifier.PRIVATE), genUtils.createAnnotation(EJB)),
-                        SESSION_BEAN_VAR_DECLARATION, genUtils.createType(fqFacadeFileName, classElement), null));
+        param.put("servicePackage", appPackage);
+        param.put("facadePackage", beanData.getPackage());
+        param.put("restPackage", restData.getPackage());
 
-                List<RestGenerationOptions> restGenerationOptions
-                        = getRestFacadeMethodOptions(entityFQN, idClass);
+        param.put("beanPrefix", beanData.getPrefixName());
+        param.put("beanSuffix", beanData.getSuffixName());
 
-                ModifiersTree publicModifiers = genUtils.createModifiers(
-                        Modifier.PUBLIC);
-                ModifiersTree paramModifier = maker.Modifiers(Collections.<Modifier>emptySet());
-                for (RestGenerationOptions option : restGenerationOptions) {
+        param.put("restPrefix", restData.getPrefixName());
+        param.put("restSuffix", restData.getSuffixName());
 
-                    ModifiersTree modifiersTree
-                            = maker.addModifiersAnnotation(publicModifiers,
-                                    genUtils.createAnnotation(
-                                            option.getRestMethod().getMethod()));
+        //config
+        expandServerSideComponent(source, appPackage, EMPTY, EMPTY, CONFIG_TEMPLATES, param);
+        //entity
+        expandServerSideComponent(source, entityPackage, EMPTY, EMPTY, ENTITY_TEMPLATES, param);
+        //contoller ext
+        expandServerSideComponent(source, restData.getPackage(), EMPTY, EMPTY, CONTROLLER_EXT_TEMPLATES, param);
+        //facade
+        expandServerSideComponent(source, beanData.getPackage(), beanData.getPrefixName(), beanData.getSuffixName(), FACADE_TEMPLATES, param);
+        //service
+        expandServerSideComponent(source, appPackage, EMPTY, EMPTY, SERVICE_TEMPLATES, param);
+        //entity
+        expandServerSideComponent(source, entityPackage, EMPTY, EMPTY, ENTITY_LISTENER_TEMPLATES, param);
+        //controller
+        expandServerSideComponent(source, restData.getPackage(), restData.getPrefixName(), restData.getSuffixName(), CONTROLLER_TEMPLATES, param);
 
-                    // add @Path annotation
-                    String uriPath = option.getRestMethod().getUriPath();
-                    if (uriPath != null) {
-                        ExpressionTree annArgument = maker.Literal(uriPath);
-                        modifiersTree
-                                = maker.addModifiersAnnotation(modifiersTree,
-                                        genUtils.createAnnotation(RestConstants.PATH,
-                                                Collections.<ExpressionTree>singletonList(
-                                                        annArgument)));
+        FileObject configRoot = ProjectHelper.getResourceDirectory(project);
+        FileUtil.copyStaticResource(TEMPLATE + "config/config-resources.zip", configRoot, null, handler);
 
-                    }
-//                      // add @Produces annotation
-//        modifiersTree = addMimeHandlerAnnotation(genUtils, maker,
-//                modifiersTree, RestConstants.PRODUCE_MIME, option.getProduces());
-//        
-//        // add @Consumes annotation
-//        modifiersTree = addMimeHandlerAnnotation(genUtils, maker,
-//                modifiersTree, RestConstants.CONSUME_MIME, option.getConsumes());
+        updatePersistenceXml(Arrays.asList(entityPackage + ".User", entityPackage + ".Authority"));
 
-                    // create arguments list
-                    List<VariableTree> vars = new ArrayList<>();
-                    String[] paramNames = option.getParameterNames();
-                    int paramLength = paramNames == null ? 0
-                            : option.getParameterNames().length;
+        return param;
+    }
 
-                    if (paramLength > 0) {
-                        String[] paramTypes = option.getParameterTypes();
-                        String[] annotations = option.getParameterAnnoations();
-                        String[] annotationValues = option.getParameterAnnoationValues();
-
-                        for (int i = 0; i < paramLength; i++) {
-                            ModifiersTree pathParamTree = paramModifier;
-                            if (annotations != null && annotations[i] != null) {
-
-                                AnnotationTree annotationTree;
-                                if (annotationValues[i] != null) {
-                                    annotationTree = genUtils.createAnnotation(annotations[i],
-                                            Collections.<ExpressionTree>singletonList(
-                                                    maker.Literal(annotationValues[i])));
-                                } else {
-                                    annotationTree = genUtils.createAnnotation(annotations[i]);
-
-                                }
-                                pathParamTree = maker.addModifiersAnnotation(pathParamTree, annotationTree);
-
-                            }
-                            Tree paramTree = genUtils.createType(paramTypes[i],
-                                    classElement);
-                            VariableTree var = maker.Variable(pathParamTree,
-                                    paramNames[i].replaceAll(ENTITY_NAME_EXP, variableName)
-                                            .replaceAll(ENTITIES_NAME_EXP, listVariableName), paramTree, null); 
-                            vars.add(var);
-
-                        }
-                    }
-                    
-            Tree returnType = null;
-            if(restData.getReturnType() == ControllerReturnType.JAXRS_RESPONSE){
-                returnType = genUtils.createType(RestConstants.HTTP_RESPONSE, classElement);
-            } else { // GENERIC_ENTITY
-                 returnType = (option.getReturnType() == null || option.getReturnType().equals(VOID))? 
-                                maker.PrimitiveType(TypeKind.VOID): genUtils.createType(option.getReturnType(), classElement);
-            }
-            
-            
-            String bodyContent = option.getBody().toString()
-                    .replaceAll(ENTITY_NAME_EXP, variableName).replaceAll(ENTITIES_NAME_EXP, listVariableName);
-                    members.add(maker.Method(
-                            modifiersTree,
-                            option.getRestMethod().getMethodName() + entitySimpleName,
-                            returnType,
-                            Collections.EMPTY_LIST,
-                            vars,
-                            (List<ExpressionTree>) Collections.EMPTY_LIST,
-                            "{" + bodyContent + "}", 
-                            null)
-                    );
-
-                }
-
-                ModifiersTree modifiersTree = classTree.getModifiers();
-
-                modifiersTree = maker.addModifiersAnnotation(modifiersTree,
-                        genUtils.createAnnotation(RestConstants.PATH,
-                                Collections.<ExpressionTree>singletonList(maker.Literal(variableName))
-                        ));
-
-                ClassTree newClassTree = maker.Class(
-                        modifiersTree,
-                        classTree.getSimpleName(),
-                        classTree.getTypeParameters(),
-                        classTree.getExtendsClause(),
-                        classTree.getImplementsClause(),
-                        members);
-
-                wc.rewrite(classTree, newClassTree);
-            }
-        };
-
+    private void updatePersistenceXml(List<String> classNames) {
         try {
-            JavaSource.forFileObject(facade).runWhenScanFinished((CompilationController controller) -> {
-                controller.toPhase(Phase.ELEMENTS_RESOLVED);
-                JavaSource.forFileObject(facade).runModificationTask(modificationTask).commit();
-            }, true).get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
+            String puName = applicationConfigData.getPersistenceUnitName();
+            PUDataObject pud = ProviderUtil.getPUDataObject(project);
+            Optional<PersistenceUnit> punitOptional = PersistenceUtil.getPersistenceUnit(project, puName);
+            if (punitOptional.isPresent()) {
+                PersistenceUnit punit = punitOptional.get();
+                String SCHEMA_GEN_ACTION = "javax.persistence.schema-generation.database.action";
+                String DROP_CREATE = "drop-and-create";
+                String SQL_LOAD_SCRIPT = "javax.persistence.sql-load-script-source";
+                for(Property property : punit.getProperties().getProperty2()){
+                    if(property.getName() == null){
+                        punit.getProperties().removeProperty2(property);
+                    }
+                }
+                addProperty(punit, SCHEMA_GEN_ACTION, DROP_CREATE);
+                addProperty(punit, SQL_LOAD_SCRIPT, "META-INF/sql/insert.sql");
 
-        return createdFiles;
-    }
-
-    private ModifiersTree addMimeHandlerAnnotation(GenerationUtils genUtils,
-            TreeMaker maker, ModifiersTree modifiersTree, String handlerAnnotation, String[] mimes) {
-        if (mimes == null) {
-            return modifiersTree;
-        }
-        ExpressionTree annArguments;
-        if (mimes.length == 1) {
-            annArguments = mimeTypeTree(maker, mimes[0]);
-        } else {
-            List<ExpressionTree> mimeTypes = new ArrayList<ExpressionTree>();
-            for (int i = 0; i < mimes.length; i++) {
-                mimeTypes.add(mimeTypeTree(maker, mimes[i]));
+                classNames.stream().forEach((entityClass) -> {
+                    pud.addClass(punit, entityClass, false);
+                });
+                pud.save();
             }
-            annArguments = maker.NewArray(null,
-                    Collections.<ExpressionTree>emptyList(),
-                    mimeTypes);
+        } catch (InvalidPersistenceXmlException ex) {
+            Exceptions.printStackTrace(ex);
         }
-        return maker.addModifiersAnnotation(modifiersTree,
-                genUtils.createAnnotation(
-                        handlerAnnotation,
-                        Collections.<ExpressionTree>singletonList(
-                                annArguments)));
-    }
-
-    private ExpressionTree mimeTypeTree(TreeMaker maker, String mimeType) {
-        Constants.MimeType type = Constants.MimeType.find(mimeType);
-        ExpressionTree result;
-        if (type == null) {
-            result = maker.Literal(mimeType);
-        } else {
-            result = type.expressionTree(maker);
-        }
-        return result;
     }
     
 
-    public void generateUtil(final Project project, final SourceGroup sourceGroup, ProgressHandler handler) throws IOException {
-        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(sourceGroup, restData.getPackage(), true);
 
-        generateApplicationConfig(project, sourceGroup, handler);
+    private void expandServerSideComponent(SourceGroup targetSourceGroup, String _package, String prefixName, String suffixName, List<Template> templates, Map<String, Object> param) {
+        String fileName = null;
+        try {
+            for (Template template : templates) {
+                String templatePackage = _package;
+                fileName = prefixName + template.getFileName() + suffixName;
+                if (StringUtils.isNotBlank(template.getPackageSuffix())) {
+                    templatePackage = templatePackage + '.' + template.getPackageSuffix();
+                }
+                param.put("package", templatePackage);
+                String templateFile = template.getPath().substring(template.getPath().lastIndexOf('/') + 1, template.getPath().indexOf('.'));
+                param.put(templateFile, fileName);
+                if (prefixName != null || suffixName != null) {
+                    param.put(firstLower(templateFile), firstLower(fileName));
+                }
+                param.put(templateFile + "_FQN", templatePackage + '.' + fileName);
+                System.out.println(templateFile + " #-# " + templatePackage + "@" + fileName);
+                FileObject targetFolder = SourceGroupSupport.getFolderForPackage(targetSourceGroup, (String) param.get("package"), true);
+                FileUtil.expandTemplate(TEMPLATE + template.getPath(), targetFolder, fileName + '.' + JAVA_EXT, param);
+            }
+        } catch (Exception ex) {
+            Exceptions.printStackTrace(ex);
+            System.out.println("InputResource : " + _package + '.' + fileName);
+        }
+    }
+
+    public void generateUtil() throws IOException {
+        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, restData.getPackage(), true);
+
+        generateApplicationConfig();
         if (!restData.getFilterTypes().isEmpty()) {
+            String UTIL_PACKAGE = "util";
             FileObject utilFolder = SourceGroupSupport.getFolderForPackage(targetFolder, UTIL_PACKAGE, true);
             LoggerProducerGenerator.generate(utilFolder, handler);
-            RESTFilterGenerator.generate(project, sourceGroup, utilFolder, restData.getFilterTypes(), handler);
+            RESTFilterGenerator.generate(project, source, utilFolder, restData.getFilterTypes(), handler);
         }
 
     }
 
-    public void generateApplicationConfig(final Project project, final SourceGroup sourceGroup, ProgressHandler handler) throws IOException {
+    public void generateApplicationConfig() throws IOException {
 
         if (restData.getRestConfigData() == null) {
             return;
         }
         final RestSupport restSupport = project.getLookup().lookup(RestSupport.class);
-        RestSupport.RestConfig.IDE.setAppClassName(restData.getRestConfigData().getPackage() + "." + restData.getRestConfigData().getApplicationClass()); 
+        RestSupport.RestConfig.IDE.setAppClassName(restData.getRestConfigData().getPackage() + "." + restData.getRestConfigData().getApplicationClass());
         if (restSupport != null) {
             try {
                 restSupport.ensureRestDevelopmentReady(RestSupport.RestConfig.IDE);
@@ -351,7 +368,7 @@ public class RESTGenerator implements Generator {
 
         FileObject restAppPack = null;
         try {
-            restAppPack = SourceGroupSupport.getFolderForPackage(sourceGroup, restData.getRestConfigData().getPackage(), true);
+            restAppPack = SourceGroupSupport.getFolderForPackage(source, restData.getRestConfigData().getPackage(), true);
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
         }
@@ -359,7 +376,8 @@ public class RESTGenerator implements Generator {
         final String appClassName = restData.getRestConfigData().getApplicationClass();
         try {
             if (restAppPack != null && appClassName != null) {
-                RestUtils.createApplicationConfigClass(restSupport, restAppPack, appClassName, restData.getRestConfigData().getApplicationPath(), handler);
+                RestUtils.createApplicationConfigClass(restSupport, restAppPack, appClassName,
+                        restData.getRestConfigData().getApplicationPath(), Collections.singletonList("com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"), handler);
             }
             RestUtils.disableRestServicesChangeListner(project);
             restSupport.configure("JPA Modeler - REST support");
@@ -370,145 +388,5 @@ public class RESTGenerator implements Generator {
         }
     }
 
-    private List<RestGenerationOptions> getRestFacadeMethodOptions(
-            String entityFQN, String idClass) {
-        String paramArg = "java.lang.Character".equals(idClass)
-                ? "id.charAt(0)" : "id"; 
-        String idType = "id".equals(paramArg) ? idClass : "java.lang.String"; 
-
-        boolean needPathSegment = false;
-        if (model != null) {
-            EntityClassInfo entityInfo = model.getEntityInfo(entityFQN);
-            if (entityInfo != null) {
-                FieldInfo idFieldInfo = entityInfo.getIdFieldInfo();
-                needPathSegment = idFieldInfo != null && idFieldInfo.isEmbeddedId()
-                        && idFieldInfo.getType() != null;
-            }
-        }        
-        
-        RestGenerationOptions createOptions = new RestGenerationOptions();
-        createOptions.setRestMethod(Operation.CREATE);
-        createOptions.setReturnType(VOID); 
-        createOptions.setParameterNames(new String[]{ENTITY_NAME_EXP}); 
-        createOptions.setParameterTypes(new String[]{entityFQN});
-        createOptions.setConsumes(new String[]{MimeType.XML.toString(), MimeType.JSON.toString()}); 
-        createOptions.setBody("facade.create(").append(ENTITY_NAME_EXP).append(");"); 
-        if(restData.getReturnType() == ControllerReturnType.JAXRS_RESPONSE){
-            createOptions.appendBody('\n').append("return Response.status(Response.Status.CREATED).entity(").append(ENTITY_NAME_EXP).append(").build();");
-        }
-
-        RestGenerationOptions editOptions = new RestGenerationOptions();
-        editOptions.setRestMethod(Operation.EDIT);
-        editOptions.setReturnType(VOID);
-        editOptions.setParameterNames(new String[]{"id", ENTITY_NAME_EXP}); 
-        editOptions.setParameterAnnoations(new String[]{RestConstants.PATH_PARAM, null});
-        editOptions.setParameterAnnoationValues(new String[]{"id", null}); 
-        editOptions.setParameterTypes(new String[]{idType, entityFQN});
-        editOptions.setConsumes(new String[]{MimeType.XML.toString(), MimeType.JSON.toString()}); 
-        editOptions.setBody("facade.edit(").append(ENTITY_NAME_EXP).append(");"); 
-        if(restData.getReturnType() == ControllerReturnType.JAXRS_RESPONSE){
-            editOptions.appendBody('\n').append("return Response.ok().build();");
-        }
-
-        RestGenerationOptions destroyOptions = new RestGenerationOptions();
-        destroyOptions.setRestMethod(Operation.REMOVE);
-        destroyOptions.setReturnType(VOID);
-        destroyOptions.setParameterNames(new String[]{"id"}); 
-        destroyOptions.setParameterAnnoations(new String[]{RestConstants.PATH_PARAM_ANNOTATION});
-        destroyOptions.setParameterAnnoationValues(new String[]{"id"}); 
-        StringBuilder builder = new StringBuilder();
-        if (needPathSegment) {
-            destroyOptions.setParameterTypes(new String[]{"javax.ws.rs.core.PathSegment"}); // NOI18N
-            builder.append(idType);
-            builder.append(" key=getPrimaryKey(id);\n");
-            paramArg = "key";
-        } else {
-            destroyOptions.setParameterTypes(new String[]{idType});
-        }
-        StringBuilder removeBody = new StringBuilder(builder);
-        removeBody.append("facade.remove(facade.find(").append(paramArg).append("));");                                  
-        destroyOptions.setBody(removeBody);
-        if(restData.getReturnType() == ControllerReturnType.JAXRS_RESPONSE){
-            destroyOptions.appendBody('\n').append("return Response.ok().build();");
-        } else {
-            
-        }
-
-        RestGenerationOptions findOptions = new RestGenerationOptions();
-        findOptions.setRestMethod(Operation.FIND);
-        findOptions.setReturnType(entityFQN);
-        findOptions.setProduces(new String[]{MimeType.XML.toString(), MimeType.JSON.toString()}); 
-        findOptions.setParameterAnnoationValues(new String[]{"id"}); 
-        findOptions.setParameterAnnoations(new String[]{RestConstants.PATH_PARAM_ANNOTATION});
-        findOptions.setParameterNames(new String[]{"id"}); 
-        if (needPathSegment) {
-            findOptions.setParameterTypes(new String[]{"javax.ws.rs.core.PathSegment"}); // NOI18N
-        } else {
-            findOptions.setParameterTypes(new String[]{idType});
-        }
-        StringBuilder findBody = new StringBuilder(builder);
-        if (restData.getReturnType() == ControllerReturnType.JAXRS_RESPONSE) {
-            findBody.append(entityFQN).append(" ").append(ENTITY_NAME_EXP).append(" = facade.find(").append(paramArg).append(");");
-            findBody.append('\n').append("return Response.ok(").append(ENTITY_NAME_EXP).append(").build();");
-        } else {
-            findBody.append("return facade.find(").append(paramArg).append(");");
-        }
-        findOptions.setBody(findBody);
-                                
-
-        String entityListType = LIST_TYPE + '<' + entityFQN + '>';
-        RestGenerationOptions findAllOptions = new RestGenerationOptions();
-        findAllOptions.setRestMethod(Operation.FIND_ALL);
-        findAllOptions.setReturnType(entityListType);
-        findAllOptions.setProduces(new String[]{MimeType.XML.toString(), MimeType.JSON.toString()});
-        StringBuilder findAllBody = new StringBuilder();
-        if (restData.getReturnType() == ControllerReturnType.JAXRS_RESPONSE) {
-            findAllBody.append(entityListType).append(" ").append(ENTITIES_NAME_EXP).append(" = facade.findAll();");
-            findAllBody.append('\n').append("return Response.ok(").append(ENTITIES_NAME_EXP).append(").build();");
-        } else {
-            findAllBody.append("return facade.findAll();");
-        }
-        findAllOptions.setBody(findAllBody);
-
-        
-        RestGenerationOptions findRangeOptions = new RestGenerationOptions();
-        findRangeOptions.setRestMethod(Operation.FIND_RANGE);
-        findRangeOptions.setReturnType(entityListType);
-        findRangeOptions.setProduces(new String[]{MimeType.XML.toString(), MimeType.JSON.toString()}); 
-        findRangeOptions.setParameterAnnoationValues(new String[]{"from", "to"}); 
-        findRangeOptions.setParameterAnnoations(new String[]{RestConstants.PATH_PARAM_ANNOTATION,RestConstants.PATH_PARAM_ANNOTATION});
-        findRangeOptions.setParameterNames(new String[]{"from", "to"}); 
-        findRangeOptions.setParameterTypes(new String[]{Integer.class.getCanonicalName(), Integer.class.getCanonicalName()});
-        StringBuilder findRangeBody = new StringBuilder(builder);
-        if (restData.getReturnType() == ControllerReturnType.JAXRS_RESPONSE) {
-            findRangeBody.append(entityListType).append(" ").append(ENTITIES_NAME_EXP).append(" = facade.findRange(new int[]{from, to}));");
-            findRangeBody.append('\n').append("return Response.ok(").append(ENTITIES_NAME_EXP).append(").build();");
-        } else {
-            findRangeBody.append("return facade.findRange(new int[]{from, to}));");
-        }
-        findRangeOptions.setBody(findRangeBody);
-        
-        
-
-        RestGenerationOptions countOptions = new RestGenerationOptions();
-        countOptions.setRestMethod(Operation.COUNT);
-        countOptions.setReturnType(String.class.getCanonicalName());
-        countOptions.setProduces(new String[]{MimeType.TEXT.toString()});
-        if (restData.getReturnType() == ControllerReturnType.JAXRS_RESPONSE) {
-            countOptions.setBody("return Response.ok(facade.count()).build();");
-        } else {
-            countOptions.setBody("return String.valueOf(facade.count());");
-        }
-        
-        return Arrays.<RestGenerationOptions>asList(
-                createOptions,
-                editOptions,
-                destroyOptions,
-                findOptions,
-                findAllOptions,
-                findRangeOptions,
-                countOptions
-        );
-    }
 
 }

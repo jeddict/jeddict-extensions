@@ -18,9 +18,12 @@ package org.netbeans.jcode.core.util;
 import com.sun.org.apache.xml.internal.utils.PrefixResolver;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
@@ -29,14 +32,19 @@ import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import org.apache.commons.lang.StringUtils;
 import org.netbeans.api.queries.FileEncodingQuery;
 import static org.netbeans.jcode.core.util.JavaSourceHelper.reformat;
+import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
@@ -83,15 +91,11 @@ public class FileUtil {
         currentLoader = Thread.currentThread();
 
         if (loaderQuery == null) {
-            loaderQuery = Lookup.getDefault().lookup(new Lookup.Template<ClassLoader>(ClassLoader.class));
-            loaderQuery.addLookupListener(
-                    new LookupListener() {
-                        @Override
-                        public void resultChanged(LookupEvent ev) {
-                            ERR.fine("Loader cleared"); // NOI18N
-                            currentLoader = null;
-                        }
-                    });
+            loaderQuery = Lookup.getDefault().lookupResult(ClassLoader.class);
+            loaderQuery.addLookupListener((LookupEvent ev) -> {
+                ERR.fine("Loader cleared"); // NOI18N
+                currentLoader = null;
+            });
         }
 
         Iterator it = loaderQuery.allInstances().iterator();
@@ -100,23 +104,57 @@ public class FileUtil {
             if (currentLoader == Thread.currentThread()) {
                 currentLoader = toReturn;
             }
-            ERR.fine("Loader computed: " + currentLoader); // NOI18N
+            ERR.log(Level.FINE, "Loader computed: {0}", currentLoader); // NOI18N
             return toReturn;
         } else {
             if (!noLoaderWarned) {
                 noLoaderWarned = true;
-                ERR.warning(
-                        "No ClassLoader instance found in " + Lookup.getDefault() // NOI18N
+                ERR.log(Level.WARNING, "No ClassLoader instance found in {0}", Lookup.getDefault() // NOI18N
                 );
             }
             return null;
         }
     }
 
+        
+    public static FileObject getFileObject (InputStream in) throws IOException {
+        final File tempFile = File.createTempFile("pom", "xml");
+        tempFile.deleteOnExit();
+        try (FileOutputStream out = new FileOutputStream(tempFile)) {
+            org.openide.filesystems.FileUtil.copy(in, out);
+        }
+        return org.openide.filesystems.FileUtil.toFileObject(tempFile);
+    }
+    
+    public static void copyStaticResource(String inputTemplatePath, FileObject toDir, String targetFolder, ProgressHandler handler) throws IOException {
+        InputStream stream = loadResource(inputTemplatePath);
+        try (ZipInputStream inputStream = new ZipInputStream(stream)) {
+            ZipEntry entry;
+            while ((entry = inputStream.getNextEntry()) != null) {
+                if (entry.getName().lastIndexOf('.') == -1) { //skip if not file
+                    continue;
+                }
+                String targetPath = StringUtils.isBlank(targetFolder) ? entry.getName() : targetFolder + '/' + entry.getName();
+                if(handler!=null){
+                handler.progress(targetPath);
+                }
+                FileObject target = org.openide.filesystems.FileUtil.createData(toDir, targetPath);
+                FileLock lock = target.lock();
+                try (OutputStream outputStream = target.getOutputStream(lock)) {
+                    for (int c = inputStream.read(); c != -1; c = inputStream.read()) {
+                        outputStream.write(c);
+                    }
+                    inputStream.closeEntry();
+                } finally {
+                    lock.releaseLock();
+                }
+            }
+        }
+    }
     
     public static FileObject expandTemplate(String inputTemplatePath,  FileObject toDir, String toFile, Map<String, Object> params) throws IOException {
 
-        InputStream contentStream = org.netbeans.jcode.core.util.FileUtil.loadResource(inputTemplatePath);
+        InputStream contentStream = loadResource(inputTemplatePath);
 
         FileObject outputFile = toDir.getFileObject(toFile);
         if (outputFile == null) {
@@ -134,11 +172,9 @@ public class FileUtil {
     private static void expandTemplate(InputStream template, Map<String, Object> values, FileObject target) throws IOException {
         Charset targetEncoding = FileEncodingQuery.getEncoding(target);
         FileLock lock = target.lock();
-        Writer w = new OutputStreamWriter(target.getOutputStream(lock), targetEncoding);
-        try {
+        try (Writer w = new OutputStreamWriter(target.getOutputStream(lock), targetEncoding)) {
             expandTemplate(template, values, targetEncoding, w);
         } finally {
-            w.close();
             lock.releaseLock();
         }
         DataObject dob = DataObject.find(target);
@@ -176,9 +212,8 @@ public class FileUtil {
         bind.putAll(values);
         }
         bind.put(ENCODING_PROPERTY_NAME, Charset.defaultCharset().name());
-        Reader is = null;
-            eng.getContext().setWriter(writer);
-            is = new StringReader(template);
+        eng.getContext().setWriter(writer);
+        Reader is = new StringReader(template);
         try {
             eng.eval(is);
         } catch (ScriptException ex) {
@@ -287,5 +322,16 @@ public class FileUtil {
         }
     }
 
+    public static String getSimpleFileName(String path){
+        return path.substring(path.lastIndexOf('/')+1, path.lastIndexOf('.'));
+    }
+    
+    public static String getSimpleFileNameWithExt(String path){
+        return path.substring(path.lastIndexOf('/')+1);
+    }
+    
+    public static String getFileExt(String path){
+        return path.substring(path.lastIndexOf('.')+1);
+    }
   
 }

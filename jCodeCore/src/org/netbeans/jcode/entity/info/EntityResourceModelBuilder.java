@@ -15,16 +15,13 @@
  */
 package org.netbeans.jcode.entity.info;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import org.netbeans.api.project.Project;
-import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.entity.info.EntityClassInfo.FieldInfo;
-import org.openide.filesystems.FileObject;
+import org.netbeans.jcode.stack.config.data.EntityConfigData;
 import org.openide.util.Exceptions;
 
 public class EntityResourceModelBuilder {
@@ -36,7 +33,7 @@ public class EntityResourceModelBuilder {
     /**
      * Creates a new instance of ModelBuilder
      */
-  public EntityResourceModelBuilder(Map<String, FileObject> entities) {
+  public EntityResourceModelBuilder(Map<String, EntityConfigData> entities) {
         entitiesInRelationMap = new HashMap<>();
         allEntitiesClassInfoMap = new HashMap<>();
         

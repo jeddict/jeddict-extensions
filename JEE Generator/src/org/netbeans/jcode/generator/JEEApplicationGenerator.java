@@ -56,7 +56,7 @@ public class JEEApplicationGenerator {
         try {
             final Project project = applicationConfigData.getProject();
 
-            Map<String, FileObject> entities = applicationConfigData.getEntities();
+            Map<String, EntityConfigData> entities = applicationConfigData.getEntities();
             final PersistenceHelper.PersistenceUnit pu = (PersistenceHelper.PersistenceUnit) new PersistenceHelper(project).getPersistenceUnit();
 
             EntityResourceModelBuilder builder = new EntityResourceModelBuilder(entities);

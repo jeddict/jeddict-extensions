@@ -35,18 +35,16 @@ import org.netbeans.api.java.source.ui.ScanDialog;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.SourceGroup;
+import static org.netbeans.jcode.core.util.JavaSourceHelper.isValidPackageName;
 import org.netbeans.jcode.mvc.controller.returntype.ControllerReturnType;
 import org.netbeans.jcode.mvc.controller.event.ControllerEventType;
 import org.netbeans.jcode.rest.applicationconfig.RestConfigData;
 import org.netbeans.jcode.rest.applicationconfig.RestConfigDialog;
 import org.netbeans.jcode.stack.config.panel.*;
 import org.netbeans.jcode.util.PreferenceUtils;
-import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
 import org.netbeans.modules.websvc.rest.model.api.RestApplication;
 import org.netbeans.modules.websvc.rest.spi.RestSupport;
 import org.netbeans.spi.java.project.support.ui.PackageView;
-import org.openide.DialogDisplayer;
-import org.openide.NotifyDescriptor;
 import org.openide.util.NbBundle;
 import static org.openide.util.NbBundle.getMessage;
 
@@ -72,7 +70,7 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
     @Override
     public boolean hasError() {
         warningLabel.setText("");
-        if (!JavaIdentifiers.isValidPackageName(getPackage())) {
+        if (!isValidPackageName(getPackage())) {
             warningLabel.setText(NbBundle.getMessage(MVCPanel.class, "MVCPanel.invalidPackage.message"));
             return true;
         }
@@ -88,11 +86,6 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
             return true;
         }
         return false;
-    }
-
-    @Override
-    public void stateChanged(ChangeEvent e) {
-        hasError();
     }
 
     @Override
@@ -321,6 +314,7 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
         packagePanel.add(packageLabel, java.awt.BorderLayout.LINE_START);
 
         packageCombo.setEditable(true);
+        packageCombo.setEditable(true);
         packageCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { " " }));
         packageCombo.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
             public void propertyChange(java.beans.PropertyChangeEvent evt) {
@@ -408,7 +402,7 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
         });
         viewPanel.add(viewCombo, java.awt.BorderLayout.CENTER);
 
-        eventObserversPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, org.openide.util.NbBundle.getMessage(MVCPanel.class, "MVCPanel.eventObserversPanel.border.title"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 12), new java.awt.Color(100, 100, 100))); // NOI18N
+        eventObserversPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, org.openide.util.NbBundle.getMessage(MVCPanel.class, "MVCPanel.eventObserversPanel.border.title"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 11), new java.awt.Color(100, 100, 100))); // NOI18N
         eventObserversPanel.setLayout(new java.awt.GridLayout(2, 3));
 
         org.openide.awt.Mnemonics.setLocalizedText(jCheckBox4, org.openide.util.NbBundle.getMessage(MVCPanel.class, "MVCPanel.jCheckBox4.text")); // NOI18N
@@ -458,6 +452,9 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
         hybridClassCheckbox.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(hybridClassCheckbox, org.openide.util.NbBundle.getMessage(MVCPanel.class, "MVCPanel.hybridClassCheckbox.text")); // NOI18N
 
+        wrapper.setLayer(beanValidation, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        wrapper.setLayer(hybridClassCheckbox, javax.swing.JLayeredPane.DEFAULT_LAYER);
+
         javax.swing.GroupLayout wrapperLayout = new javax.swing.GroupLayout(wrapper);
         wrapper.setLayout(wrapperLayout);
         wrapperLayout.setHorizontalGroup(
@@ -467,7 +464,7 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
                 .addComponent(hybridClassCheckbox, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(beanValidation, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(272, Short.MAX_VALUE))
+                .addContainerGap(151, Short.MAX_VALUE))
         );
         wrapperLayout.setVerticalGroup(
             wrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -478,8 +475,6 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
                     .addComponent(hybridClassCheckbox, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addGap(10, 10, 10))
         );
-        wrapper.setLayer(beanValidation, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        wrapper.setLayer(hybridClassCheckbox, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         miscPanel.add(wrapper, java.awt.BorderLayout.CENTER);
 
@@ -494,31 +489,31 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
                     .addComponent(packagePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(suffixPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(viewPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(securityPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(securityPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(miscPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 853, Short.MAX_VALUE)
+                    .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 707, Short.MAX_VALUE)
                     .addContainerGap()))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(9, 9, 9)
-                .addComponent(suffixPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(packagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(suffixPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(15, 15, 15)
+                .addComponent(packagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(15, 15, 15)
                 .addComponent(miscPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(viewPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(15, 15, 15)
+                .addComponent(viewPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(15, 15, 15)
                 .addComponent(securityPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addComponent(eventObserversPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(46, Short.MAX_VALUE))
+                .addContainerGap(51, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                     .addContainerGap(279, Short.MAX_VALUE)

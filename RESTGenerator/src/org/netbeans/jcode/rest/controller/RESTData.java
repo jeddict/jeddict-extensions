@@ -17,7 +17,6 @@ package org.netbeans.jcode.rest.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.lang.StringUtils;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import org.netbeans.jcode.rest.applicationconfig.RestConfigData;
 import org.netbeans.jcode.rest.filter.FilterType;
@@ -33,6 +32,7 @@ public class RESTData extends LayerConfigData {
     private String prefixName;
     private String suffixName;
     private String _package;
+    private String appPackage;
     private RestConfigData restConfigData;
     private ControllerReturnType returnType;
     private List<FilterType> filterTypes;
@@ -127,6 +127,20 @@ public class RESTData extends LayerConfigData {
 
     public boolean removeFilterType(FilterType filterType) {
         return getFilterTypes().remove(filterType);
+    }
+
+    /**
+     * @return the appPackage
+     */
+    public String getAppPackage() {
+        return appPackage;
+    }
+
+    /**
+     * @param appPackage the appPackage to set
+     */
+    public void setAppPackage(String appPackage) {
+        this.appPackage = appPackage;
     }
 
 }

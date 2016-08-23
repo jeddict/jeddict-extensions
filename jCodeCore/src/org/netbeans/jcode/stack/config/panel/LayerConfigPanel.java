@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -105,5 +106,9 @@ public abstract class LayerConfigPanel<T extends LayerConfigData> extends Panel 
         changeSupport.fireChange();
     }
 
+    @Override
+    public void stateChanged(ChangeEvent e) {
+        hasError();
+    }
     
 }
