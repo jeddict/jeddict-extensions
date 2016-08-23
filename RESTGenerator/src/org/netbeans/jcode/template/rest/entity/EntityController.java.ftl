@@ -3,7 +3,7 @@ package ${package};
 import ${EntityClass_FQN};
 import ${EntityFacade_FQN};
 import ${HeaderUtil_FQN};
-import ${Authenticated_FQN};
+import ${Secured_FQN};
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +24,7 @@ import javax.ws.rs.core.Response;
  * REST controller for managing ${EntityClass}.
  */
 @Path("/api/${entityApiUrl}")
-@Authenticated
+@Secured
 public class ${controllerClass} {
 
     private final Logger log = LoggerFactory.getLogger(${controllerClass}.class);

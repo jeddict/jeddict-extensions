@@ -11,7 +11,8 @@ import ${UserDTO_FQN};
 import ${HeaderUtil_FQN};
 import ${Page_FQN};
 import ${PaginationUtil_FQN};
-import ${Authenticated_FQN};
+import ${Secured_FQN};
+import ${AuthoritiesConstants_FQN};
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
@@ -45,7 +46,6 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
  * authorities.</p>
  */
 @Path("/api")
-@Authenticated
 public class ${restPrefix}User${restSuffix} {
 
     private final Logger log = LoggerFactory.getLogger(${restPrefix}User${restSuffix}.class);
@@ -81,6 +81,7 @@ public class ${restPrefix}User${restSuffix} {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @Secured(AuthoritiesConstants.ADMIN)
     public Response createUser(ManagedUserDTO managedUserDTO, @Context HttpServletRequest request) throws URISyntaxException {
         log.debug("REST request to save User : {}", managedUserDTO);
 
@@ -123,6 +124,7 @@ public class ${restPrefix}User${restSuffix} {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @Secured(AuthoritiesConstants.ADMIN)
     public Response updateUser(ManagedUserDTO managedUserDTO) {
         log.debug("REST request to update User : {}", managedUserDTO);
         Optional<User> existingUser = ${userFacade}.findOneByEmail(managedUserDTO.getEmail());
@@ -167,6 +169,7 @@ public class ${restPrefix}User${restSuffix} {
     @Path(value = "/users")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Secured
     public Response getAllUsers(@QueryParam("page") int page, @QueryParam("size") int size) throws URISyntaxException {
         List<User> userList = ${userFacade}.findRange(page * size, size);
         List<ManagedUserDTO> managedUserDTOs = userList.stream()
@@ -188,6 +191,7 @@ public class ${restPrefix}User${restSuffix} {
     @Path(value = "/users/{login}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Secured
     public Response getUser(@PathParam("login") String login) {
         log.debug("REST request to get User : {}", login);
         return userService.getUserWithAuthoritiesByLogin(login)
@@ -205,6 +209,7 @@ public class ${restPrefix}User${restSuffix} {
     @Path(value = "/users/{login}")
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
+    @Secured(AuthoritiesConstants.ADMIN)
     public Response deleteUser(@PathParam("login") String login) {
         log.debug("REST request to delete User: {}", login);
         userService.deleteUserInformation(login);

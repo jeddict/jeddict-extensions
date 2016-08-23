@@ -16,10 +16,12 @@ import javax.ws.rs.ext.Provider;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import javax.ws.rs.container.ResourceInfo;
+import javax.ws.rs.core.Context;
 
 @Priority(Priorities.AUTHENTICATION)
 @Provider
-@Authenticated
+@Secured
 public class JWTAuthenticationFilter implements ContainerRequestFilter {
 
     private final Logger log = LoggerFactory.getLogger(JWTAuthenticationFilter.class);
@@ -29,6 +31,10 @@ public class JWTAuthenticationFilter implements ContainerRequestFilter {
 
     @Inject
     HttpServletRequest httpServletRequest;
+    
+    @Context
+    private ResourceInfo resourceInfo;
+    
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
@@ -36,12 +42,16 @@ public class JWTAuthenticationFilter implements ContainerRequestFilter {
         if (StringUtils.isNotBlank(jwt)) {
             try {
                 if (tokenProvider.validateToken(jwt)) {
-                    UserAuthenticationToken authentication = this.tokenProvider.getAuthentication(jwt);
+                    UserAuthenticationToken authenticationToken = this.tokenProvider.getAuthentication(jwt);
+                    if(!isAllowed(authenticationToken)){
+                        requestContext.setProperty("auth-failed", true);
+                        requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
+                    }
                     final SecurityContext securityContext = requestContext.getSecurityContext();
                     requestContext.setSecurityContext(new SecurityContext() {
                         @Override
                         public Principal getUserPrincipal() {
-                            return authentication::getPrincipal;
+                            return authenticationToken::getPrincipal;
                         }
 
                         @Override
@@ -82,5 +92,18 @@ public class JWTAuthenticationFilter implements ContainerRequestFilter {
         }
         return null;
     }
+    
 
+    private boolean isAllowed(UserAuthenticationToken authenticationToken) {
+        Secured secured = resourceInfo.getResourceMethod().getAnnotation(Secured.class);
+        if (secured == null) {
+            secured = resourceInfo.getResourceClass().getAnnotation(Secured.class);
+        }
+        for (String role : secured.value()) {
+            if (!authenticationToken.getAuthorities().contains(role)) {
+                return false;
+            } 
+        }
+        return true;
+    }
 }

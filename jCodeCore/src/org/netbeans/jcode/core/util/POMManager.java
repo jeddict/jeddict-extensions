@@ -48,7 +48,6 @@ public class POMManager {
     private Model model;
     private Project project;
     private FileObject pomFileObject;
-//    private POMModel pomModel;
     private List<ModelOperation<POMModel>> operations;
 
     public POMManager(String inputResource, Project project) {
@@ -67,6 +66,9 @@ public class POMManager {
 
     }
 
+    public static boolean isMavenProject(Project project){
+        return project.getLookup().lookup(NbMavenProjectImpl.class)!=null;
+    }
     public void execute() {
         registerDependency();
         registerRepository();

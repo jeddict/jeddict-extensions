@@ -1,17 +1,16 @@
 <#if package??>package ${package};</#if>
 
-import ${entityPackage}.Authority;
-import java.util.Collection;
+import java.util.Set;
 
 public class UserAuthenticationToken {
 
     private final String credentials;
     private final String principal;
 
-    private final Collection<Authority> authorities;
+    private final Set<String> authorities;
     private boolean authenticated = false;
 
-    public UserAuthenticationToken(String principal, String credentials, Collection<Authority> authorities) {
+    public UserAuthenticationToken(String principal, String credentials, Set<String> authorities) {
         this.principal = principal;
         this.credentials = credentials;
         this.authorities = authorities;
@@ -38,7 +37,7 @@ public class UserAuthenticationToken {
     /**
      * @return the authorities
      */
-    public Collection<Authority> getAuthorities() {
+    public Set<String> getAuthorities() {
         return authorities;
     }
 

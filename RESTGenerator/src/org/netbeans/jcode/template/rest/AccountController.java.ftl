@@ -10,7 +10,7 @@ import ${KeyAndPasswordDTO_FQN};
 import ${ManagedUserDTO_FQN};
 import ${UserDTO_FQN};
 import ${HeaderUtil_FQN};
-import ${Authenticated_FQN};
+import ${Secured_FQN};
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
@@ -131,7 +131,7 @@ public class ${restPrefix}Account${restSuffix} {
     @Path("/authenticate")
     @GET
     @Produces({MediaType.TEXT_PLAIN})
-    @Authenticated
+    @Secured
     public String isAuthenticated(@Context HttpServletRequest request) {
         log.debug("REST request to check if the current user is authenticated");
         return request.getRemoteUser();
@@ -147,7 +147,7 @@ public class ${restPrefix}Account${restSuffix} {
     @Path("/account")
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    @Authenticated
+    @Secured
     public Response getAccount() {
         return Optional.ofNullable(userService.getUserWithAuthorities())
                 .map(user -> Response.ok(new UserDTO(user)).build())
@@ -165,7 +165,7 @@ public class ${restPrefix}Account${restSuffix} {
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    @Authenticated
+    @Secured
     public Response saveAccount(@Valid UserDTO userDTO) {
         Optional<User> existingUser = ${userFacade}.findOneByEmail(userDTO.getEmail());
         if (existingUser.isPresent() && (!existingUser.get().getLogin().equalsIgnoreCase(userDTO.getLogin()))) {
@@ -190,9 +190,9 @@ public class ${restPrefix}Account${restSuffix} {
      */
     @Path("/account/change_password")
     @POST
-    @Consumes({MediaType.TEXT_PLAIN})
+    <#--@Consumes({MediaType.TEXT_PLAIN}) should be TEXT_HTML -->
     @Produces({MediaType.TEXT_PLAIN})
-    @Authenticated
+    @Secured
     public Response changePassword(String password) {
         if (!checkPasswordLength(password)) {
             return Response.status(BAD_REQUEST).entity("Incorrect password").build();

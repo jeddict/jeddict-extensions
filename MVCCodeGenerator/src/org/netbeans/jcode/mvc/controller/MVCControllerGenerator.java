@@ -704,11 +704,15 @@ public class MVCControllerGenerator implements Generator {
         );
     }
     
-        private void addMavenDependencies() {
+    private void addMavenDependencies() {
+        if (POMManager.isMavenProject(project)) {
             POMManager pomManager = new POMManager(TEMPLATE + "pom/_pom.xml", project);
             pomManager.setSourceVersion("1.8");
             pomManager.execute();
             pomManager.commit();
+        } else {
+            handler.append(Console.wrap(MVCControllerGenerator.class, "MSG_Maven_Project_Not_Found", FG_RED, BOLD, UNDERLINE));
         }
+    }
 
 }

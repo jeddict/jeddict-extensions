@@ -135,7 +135,7 @@ public class RESTGenerator implements Generator {
         CONTROLLER_EXT_TEMPLATES.add(new Template("rest/dto/ManagedUserDTO.java.ftl", "ManagedUserDTO", "dto"));
         CONTROLLER_EXT_TEMPLATES.add(new Template("rest/dto/UserDTO.java.ftl", "UserDTO", "dto"));
 
-        SERVICE_TEMPLATES.add(new Template("security/Authenticated.java.ftl", "Authenticated", "security"));
+        SERVICE_TEMPLATES.add(new Template("security/Secured.java.ftl", "Secured", "security"));
         SERVICE_TEMPLATES.add(new Template("security/AuthenticationException.java.ftl", "AuthenticationException", "security"));
         SERVICE_TEMPLATES.add(new Template("security/AuthoritiesConstants.java.ftl", "AuthoritiesConstants", "security"));
         SERVICE_TEMPLATES.add(new Template("security/JWTAuthenticationFilter.java.ftl", "JWTAuthenticationFilter", "security"));
@@ -171,17 +171,19 @@ public class RESTGenerator implements Generator {
 
     
     private void addMavenDependencies() {
+        if(POMManager.isMavenProject(project)){
             POMManager pomManager = new POMManager(TEMPLATE + "pom/_pom.xml", project);
             pomManager.setSourceVersion("1.8");
             pomManager.execute();
             pomManager.commit();
+        } else {
+            handler.append(Console.wrap(RESTGenerator.class, "MSG_Maven_Project_Not_Found", FG_RED, BOLD, UNDERLINE));
+        }
     }
-    
-
     
     public FileObject generateEntityController(final EntityClassInfo classInfo, Map<String, Object> appParam) throws IOException {
         String entityFQN = classInfo.getType();
-        String idClass = classInfo.getPrimaryKeyType();
+//        String idClass = classInfo.getPrimaryKeyType();
         boolean overrideExisting = true;
         final String entitySimpleName = JavaIdentifiers.unqualify(entityFQN);
 
@@ -275,6 +277,9 @@ public class RESTGenerator implements Generator {
         expandServerSideComponent(source, restData.getPackage(), restData.getPrefixName(), restData.getSuffixName(), CONTROLLER_TEMPLATES, param);
 
         FileObject configRoot = ProjectHelper.getResourceDirectory(project);
+        if(configRoot==null){//non-maven project
+            configRoot = source.getRootFolder();
+        }
         FileUtil.copyStaticResource(TEMPLATE + "config/config-resources.zip", configRoot, null, handler);
 
         updatePersistenceXml(Arrays.asList(entityPackage + ".User", entityPackage + ".Authority"));

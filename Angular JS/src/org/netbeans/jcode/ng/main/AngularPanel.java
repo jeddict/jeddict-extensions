@@ -18,6 +18,7 @@ package org.netbeans.jcode.ng.main;
 import java.util.prefs.Preferences;
 import javax.swing.event.ChangeEvent;
 import org.apache.commons.lang.StringUtils;
+import static org.apache.commons.lang.StringUtils.EMPTY;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.SourceGroup;
@@ -43,6 +44,7 @@ public class AngularPanel extends LayerConfigPanel<AngularData> {
     @Override
     public boolean hasError() {
         warningLabel.setText("");
+        setModule(getModule().replaceAll("[^a-zA-Z0-9]+", EMPTY));
         if (StringUtils.isBlank(getModule())) {
             warningLabel.setText(NbBundle.getMessage(AngularPanel.class, "AngularPanel.invalidModule.message"));
             return true;
