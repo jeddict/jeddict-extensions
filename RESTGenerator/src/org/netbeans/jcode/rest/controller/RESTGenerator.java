@@ -333,7 +333,6 @@ public class RESTGenerator implements Generator {
                     param.put(firstLower(templateFile), firstLower(fileName));
                 }
                 param.put(templateFile + "_FQN", templatePackage + '.' + fileName);
-                System.out.println(templateFile + " #-# " + templatePackage + "@" + fileName);
                 FileObject targetFolder = SourceGroupSupport.getFolderForPackage(targetSourceGroup, (String) param.get("package"), true);
                 FileUtil.expandTemplate(TEMPLATE + template.getPath(), targetFolder, fileName + '.' + JAVA_EXT, param);
             }

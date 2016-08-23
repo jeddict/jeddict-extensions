@@ -78,7 +78,6 @@ public final class EJSParser {
             context.keySet().stream().forEach((key) -> {
                 try {
                     bindings.put(key, context.get(key));
-//                    System.out.println("Key : "+ key + " - " + context.get(key));
                     if (context.get(key) instanceof Collection) {
                         engine.eval(String.format("%s = Java.from(%s);", key, key));
                     }
