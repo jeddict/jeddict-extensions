@@ -60,6 +60,7 @@ public class NGApplicationConfig {
     private Set<String> languages = new HashSet<>(Arrays.asList("en"));
 
     public boolean enableSocialSignIn;
+    
     public String authenticationType;
     
     public String jhiPrefix;

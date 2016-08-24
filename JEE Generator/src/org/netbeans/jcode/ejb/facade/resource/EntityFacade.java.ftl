@@ -1,4 +1,4 @@
-package service.facade;
+<#if package!="">package ${package};</#if>
 
 import ${EntityClass_FQN};
 import javax.ejb.Stateless;

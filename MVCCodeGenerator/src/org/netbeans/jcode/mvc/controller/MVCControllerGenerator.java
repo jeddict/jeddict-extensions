@@ -113,6 +113,7 @@ import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.modules.websvc.rest.spi.RestSupport;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
+import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -711,7 +712,8 @@ public class MVCControllerGenerator implements Generator {
             pomManager.execute();
             pomManager.commit();
         } else {
-            handler.append(Console.wrap(MVCControllerGenerator.class, "MSG_Maven_Project_Not_Found", FG_RED, BOLD, UNDERLINE));
+              handler.warning(NbBundle.getMessage(MVCControllerGenerator.class, "TITLE_Maven_Project_Not_Found"),
+                    NbBundle.getMessage(MVCControllerGenerator.class, "MSG_Maven_Project_Not_Found"));
         }
     }
 

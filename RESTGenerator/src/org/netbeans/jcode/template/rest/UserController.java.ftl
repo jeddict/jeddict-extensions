@@ -117,7 +117,7 @@ public class ${restPrefix}User${restSuffix} {
      * @param managedUserDTO the user to update
      * @return the ResponseEntity with status 200 (OK) and with body the updated
      * user, or with status 400 (Bad Request) if the login or email is already
-     * in use, or with status 500 (Internal Server Error) if the user couldnt be
+     * in use, or with status 500 (Internal Server Error) if the user couldn't be
      * updated
      */
     @Path(value = "/users")
@@ -164,7 +164,7 @@ public class ${restPrefix}User${restSuffix} {
      * @param page the pagination information
      * @param size the pagination size information
      * @return the ResponseEntity with status 200 (OK) and with body all users
-     * @throws URISyntaxException if the pagination headers couldnt be generated
+     * @throws URISyntaxException if the pagination headers couldn't be generated
      */
     @Path(value = "/users")
     @GET

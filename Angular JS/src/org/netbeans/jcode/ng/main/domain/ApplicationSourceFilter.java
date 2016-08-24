@@ -18,6 +18,7 @@ package org.netbeans.jcode.ng.main.domain;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
+import static org.netbeans.jcode.ng.main.domain.NGApplicationConfig.ELASTIC_SEARCH_ENGINE;
 import static org.netbeans.jcode.ng.main.domain.NGApplicationConfig.GATEWAY_APPLICATION_TYPE;
 import static org.netbeans.jcode.ng.main.domain.NGApplicationConfig.JWT_AUTHENTICATION_TYPE;
 import static org.netbeans.jcode.ng.main.domain.NGApplicationConfig.OAUTH2_AUTHENTICATION_TYPE;
@@ -131,7 +132,10 @@ public class ApplicationSourceFilter {
             //Profile
             dataFilter.put("_page-ribbon.directive.js", () -> config.isEnableProfile());
             dataFilter.put("_profile.service.js", () -> config.isEnableProfile());
-            
+        
+            //Profile
+            dataFilter.put("_entity-search.service.js", () -> ELASTIC_SEARCH_ENGINE.equals(config.getSearchEngine()));
+        
         }
         return dataFilter;
     }

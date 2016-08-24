@@ -30,6 +30,12 @@ public interface ProgressHandler {
     void progress(String message, int step);
 
     void append(String message);
+    
+    void error(String title, String message);
+    
+    void warning(String title, String message);
+    
+    void info(String title, String message);
 
     void finish();
 

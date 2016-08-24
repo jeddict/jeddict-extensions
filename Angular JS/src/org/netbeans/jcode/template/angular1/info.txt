@@ -61,3 +61,8 @@ File : navbar.html
 Replace :
 hipster-logo.png
 app-logo.png
+
+
+entity-resource.zip
+File : _entity-management.state.js
+add <%_ if (fields[idx].fieldName != 'id') %> for id : null

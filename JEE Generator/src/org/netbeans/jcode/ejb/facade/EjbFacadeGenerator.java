@@ -187,6 +187,7 @@ public final class EjbFacadeGenerator implements Generator{
         param.put("AbstractFacade", abstractFileName);
         param.put("EntityFacade", facadeName);
         param.put("PU", applicationConfigData.getPersistenceUnitName());
+        param.put("package", beanData.getPackage());
         
         existingFO = org.netbeans.jcode.core.util.FileUtil.expandTemplate("org/netbeans/jcode/ejb/facade/resource/EntityFacade.java.ftl", targetFolder, facadeName+'.'+JAVA_EXT, param);
        

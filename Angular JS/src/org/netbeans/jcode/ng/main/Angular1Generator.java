@@ -29,6 +29,7 @@ import org.netbeans.api.project.Project;
 import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.BOLD;
 import static org.netbeans.jcode.console.Console.FG_RED;
+import static org.netbeans.jcode.console.Console.FG_YELLOW;
 import static org.netbeans.jcode.console.Console.UNDERLINE;
 import org.netbeans.jcode.core.util.FileUtil;
 import static org.netbeans.jcode.core.util.FileUtil.getFileExt;
@@ -60,6 +61,7 @@ import org.netbeans.jcode.stack.config.data.EntityConfigData;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
+import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -132,9 +134,11 @@ public class Angular1Generator implements Generator {
             List<NGEntity> entities = new ArrayList<>();
             for (EntityClassInfo entityClassInfo : model.getEntityInfos()) {
                 NGEntity entity = getEntity(entityClassInfo);
-                entities.add(entity);
-                generateNgEntity(applicationConfig, fileFilter, getEntityConfig(), entity, templateLib);
-                generateNgEntityi18nResource(applicationConfig, fileFilter, entity);
+                if (entity != null) {
+                    entities.add(entity);
+                    generateNgEntity(applicationConfig, fileFilter, getEntityConfig(), entity, templateLib);
+                    generateNgEntityi18nResource(applicationConfig, fileFilter, entity);
+                }
             }
             applicationConfig.setEntities(entities);
             
@@ -151,6 +155,12 @@ public class Angular1Generator implements Generator {
    
 
     private NGEntity getEntity(EntityClassInfo entityClassInfo) {
+        if(!"id".equals(entityClassInfo.getIdFieldInfo().getName())){
+             handler.error(NbBundle.getMessage(Angular1Generator.class, "TITLE_PK_Field_Named_Id_Missing"),
+                NbBundle.getMessage(Angular1Generator.class, "MSG_PK_Field_Named_Id_Missing", entityClassInfo.getName()));
+             return null;
+        }
+        
         NGEntity entity = new NGEntity(entityClassInfo.getName(), "");
         for (EntityClassInfo.FieldInfo fieldInfo : entityClassInfo.getFieldInfos()) {
             if(fieldInfo.isGeneratedValue()){
@@ -167,7 +177,12 @@ public class Angular1Generator implements Generator {
                 relationship.setOtherEntityField(entityConfig.getLabelAttribute());
                 entity.addRelationship(relationship);
             } else {
-                Field field = new Field(fieldInfo.getName());
+                if(fieldInfo.isEnumerated()){
+                    handler.warning(NbBundle.getMessage(Angular1Generator.class, "TITLE_Enum_Type_Not_Supported"),
+                    NbBundle.getMessage(Angular1Generator.class, "MSG_Enum_Type_Not_Supported", fieldInfo.getName(), entityClassInfo.getName()));
+                    continue;
+                }
+                Field field = new Field(fieldInfo);
                 field.setFieldType(getSimpleClassName(fieldInfo.getType()));
                 entity.addField(field);
             }
@@ -236,7 +251,7 @@ public class Angular1Generator implements Generator {
         parser.addContext(config);
 
         Function<String, String> pathResolver = (templatePath) -> {
-            String simpleFileName = getSimpleFileName(templatePath);
+            String simpleFileName = getSimpleFileNameWithExt(templatePath);
             String ext = templatePath.substring(templatePath.lastIndexOf('.') + 1);
             if (!fileFilter.isEnable(simpleFileName)) {
                 return null;

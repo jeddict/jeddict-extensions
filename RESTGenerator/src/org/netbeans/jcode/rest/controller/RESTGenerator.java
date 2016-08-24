@@ -47,6 +47,7 @@ import org.netbeans.jcode.rest.util.RestUtils;
 import org.netbeans.jcode.core.util.SourceGroupSupport;
 import static org.netbeans.jcode.core.util.StringHelper.firstLower;
 import static org.netbeans.jcode.core.util.StringHelper.firstUpper;
+import static org.netbeans.jcode.core.util.StringHelper.getMethodName;
 import static org.netbeans.jcode.core.util.StringHelper.kebabCase;
 import org.netbeans.jcode.ejb.facade.EjbFacadeGenerator;
 import static org.netbeans.jcode.generator.internal.util.Util.pluralize;
@@ -65,6 +66,7 @@ import org.netbeans.modules.j2ee.persistence.unit.PUDataObject;
 import org.netbeans.modules.websvc.rest.spi.RestSupport;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
+import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -177,7 +179,8 @@ public class RESTGenerator implements Generator {
             pomManager.execute();
             pomManager.commit();
         } else {
-            handler.append(Console.wrap(RESTGenerator.class, "MSG_Maven_Project_Not_Found", FG_RED, BOLD, UNDERLINE));
+            handler.warning(NbBundle.getMessage(RESTGenerator.class, "TITLE_Maven_Project_Not_Found"),
+                    NbBundle.getMessage(RESTGenerator.class, "MSG_Maven_Project_Not_Found"));
         }
     }
     
@@ -227,6 +230,7 @@ public class RESTGenerator implements Generator {
         param.put("instanceName", dto ? entityInstance + "DTO" : entityInstance);
 
         param.put("pkName", classInfo.getIdFieldInfo().getName());
+        param.put("pkGetter", "get"+ getMethodName(classInfo.getIdFieldInfo().getName()));
         param.put("pkType", classInfo.getIdFieldInfo().getType());
         param.put("package", restData.getPackage());
         param.put("applicationPath", restData.getRestConfigData().getApplicationPath());

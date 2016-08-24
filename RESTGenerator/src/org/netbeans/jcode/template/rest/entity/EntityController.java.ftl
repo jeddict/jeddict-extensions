@@ -46,8 +46,8 @@ public class ${controllerClass} {
     public Response create${EntityClass}(${instanceType} ${instanceName}) throws URISyntaxException {
         log.debug("REST request to save ${EntityClass} : {}", ${instanceName});
         ${instanceName} = ${entityFacade}.edit(${instanceName});
-        return HeaderUtil.createEntityCreationAlert(Response.created(new URI("/${applicationPath}/api/${entityApiUrl}/" + ${instanceName}.getId())),
-                "${entityInstance}", ${instanceName}.getId().toString())
+        return HeaderUtil.createEntityCreationAlert(Response.created(new URI("/${applicationPath}/api/${entityApiUrl}/" + ${instanceName}.${pkGetter}())),
+                "${entityInstance}", ${instanceName}.${pkGetter}().toString())
                 .entity(${instanceName}).build();
     }
 
@@ -57,7 +57,7 @@ public class ${controllerClass} {
      * @param ${instanceName} the ${instanceName} to update
      * @return the Response with status 200 (OK) and with body the updated ${instanceName},
      * or with status 400 (Bad Request) if the ${instanceName} is not valid,
-     * or with status 500 (Internal Server Error) if the ${instanceName} couldnt be updated
+     * or with status 500 (Internal Server Error) if the ${instanceName} couldn't be updated
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     
@@ -65,7 +65,7 @@ public class ${controllerClass} {
     public Response update${EntityClass}(${instanceType} ${instanceName}) throws URISyntaxException {
         log.debug("REST request to update ${EntityClass} : {}", ${instanceName});
         ${entityFacade}.edit(${instanceName});
-        return HeaderUtil.createEntityUpdateAlert(Response.ok(), "${entityInstance}", ${instanceName}.getId().toString())
+        return HeaderUtil.createEntityUpdateAlert(Response.ok(), "${entityInstance}", ${instanceName}.${pkGetter}().toString())
                 .entity(${instanceName}).build();
     }
 

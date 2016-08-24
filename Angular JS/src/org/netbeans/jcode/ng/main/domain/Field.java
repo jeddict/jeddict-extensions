@@ -21,6 +21,7 @@ import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.netbeans.jcode.core.util.StringHelper.firstUpper;
 import static org.netbeans.jcode.core.util.StringHelper.snakeCase;
 import static org.netbeans.jcode.core.util.StringHelper.startCase;
+import org.netbeans.jcode.entity.info.EntityClassInfo;
 
 public class Field {
 
@@ -36,8 +37,10 @@ public class Field {
     private String fieldValues;
   
     
-    public Field(String fieldName) {
-        this.fieldName = fieldName;
+    public Field(EntityClassInfo.FieldInfo fieldInfo) {
+        this.fieldName = fieldInfo.getName();
+        this.fieldIsEnum= fieldInfo.isEnumerated();
+//        this.fieldTypeBlobContent= fieldInfo.isLob();
     }
 
     /**
@@ -72,15 +75,15 @@ public class Field {
         if ("DateTime".equals(fieldType) || "Date".equals(fieldType)) {
             fieldType = "ZonedDateTime";
         }
-        final String newDataType = fieldType;
-        boolean nonEnumType = Arrays.asList("String", "Integer", "Long", "Float", "Double", "BigDecimal", "LocalDate", "ZonedDateTime", "Boolean", "byte[]", "ByteBuffer")
-                .stream().filter(datatype -> datatype.equals(newDataType)).findAny().isPresent();
-
-        if (("sql".equals(databaseType) || "mongodb".equals(databaseType)) && !nonEnumType) {
-            fieldIsEnum = true;
-        } else {
-            fieldIsEnum = false;
-        }
+//        final String newDataType = fieldType;
+//        boolean nonEnumType = Arrays.asList("String", "Integer", "Long", "Float", "Double", "BigDecimal", "LocalDate", "ZonedDateTime", "Boolean", "byte[]", "ByteBuffer")
+//                .stream().filter(datatype -> datatype.equals(newDataType)).findAny().isPresent();
+//
+//        if (("sql".equals(databaseType) || "mongodb".equals(databaseType)) && !nonEnumType) {
+//            fieldIsEnum = true;
+//        } else {
+//            fieldIsEnum = false;
+//        }
       
         this.fieldType = fieldType;
     }

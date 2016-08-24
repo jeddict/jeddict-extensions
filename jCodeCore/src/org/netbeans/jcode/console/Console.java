@@ -73,5 +73,9 @@ public enum Console {
     public static String wrap(Class _class, String text, Console... consoles) {
         return wrap(NbBundle.getMessage(_class, text), consoles);
     }
+    
+    public static String wrap(Class _class, String text,String param, Console... consoles) {
+        return wrap(NbBundle.getMessage(_class, text, param), consoles);
+    }
 
 }

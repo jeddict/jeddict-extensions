@@ -426,6 +426,34 @@ public class EntityClassInfo {
 
     public static class FieldInfo {
 
+        /**
+         * @return the isEnumerated
+         */
+        public boolean isEnumerated() {
+            return isEnumerated;
+        }
+
+        /**
+         * @param isEnumerated the isEnumerated to set
+         */
+        public void setEnumerated(boolean isEnumerated) {
+            this.isEnumerated = isEnumerated;
+        }
+
+        /**
+         * @return the isLob
+         */
+        public boolean isLob() {
+            return isLob;
+        }
+
+        /**
+         * @param isLob the isLob to set
+         */
+        public void setLob(boolean isLob) {
+            this.isLob = isLob;
+        }
+
         private enum Relationship {
 
             OneToOne, OneToMany, ManyToOne, ManyToMany
@@ -452,6 +480,8 @@ public class EntityClassInfo {
         private boolean isId = false;
         private boolean isEmbeddedId = false;
         private boolean isGeneratedValue = false;
+        private boolean isEnumerated;
+        private boolean isLob;
         private String mappedBy = null;
         private Collection<FieldInfo> fieldInfos;
         private StringConverter stringConverter;
@@ -545,6 +575,10 @@ public class EntityClassInfo {
                     isPersistent = false;
                 } else if (annotationType.contains("GeneratedValue")) { //NOI18N
                     isGeneratedValue = true;
+                } else if (annotationType.contains("Enumerated")) { //NOI18N
+                    setEnumerated(true);
+                } else if (annotationType.contains("Lob")) { //NOI18N
+                    setLob(true);
                 }
             }
         }
