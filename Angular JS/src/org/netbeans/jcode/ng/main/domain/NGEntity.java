@@ -63,8 +63,8 @@ public class NGEntity {
     public boolean fieldsContainOwnerOneToOne;
     public boolean fieldsContainOneToMany;
     public boolean fieldsContainManyToOne;
-    public List<String> differentTypes = new ArrayList<>();//Arrays.asList("BankAccount", "User", "Operation")
-    public final List<Field> fields = new ArrayList<>();
+    public List<String> differentTypes = new ArrayList<>();
+    public final List<NGField> fields = new ArrayList<>();
     public final List<NGRelationship> relationships = new ArrayList<>();
 
     public NGEntity(String name, String entityAngularJSSuffix) {
@@ -135,7 +135,7 @@ public class NGEntity {
         getRelationships().remove(relationship);
     }
 
-    public void addField(Field field) {
+    public void addField(NGField field) {
         getFields().add(field);
         if (null != field.fieldType) {
             switch (field.fieldType) {
@@ -158,14 +158,14 @@ public class NGEntity {
         }
     }
 
-    public void removeField(Field field) {
+    public void removeField(NGField field) {
         getFields().remove(field);
     }
 
     /**
      * @return the fields
      */
-    public List<Field> getFields() {
+    public List<NGField> getFields() {
         return fields;
     }
 

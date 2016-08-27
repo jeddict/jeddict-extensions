@@ -15,6 +15,8 @@
  */
 package org.netbeans.jcode.stack.config.data;
 
+import java.util.Collections;
+import java.util.Set;
 import org.openide.filesystems.FileObject;
 
 /**
@@ -25,6 +27,9 @@ public class EntityConfigData {
     
     private FileObject entityFile;
     private String labelAttribute;
+    
+    //list of attribute, not to be included in UI
+    private Set<String> systemAttribute;
 
     public EntityConfigData(FileObject entityFile) {
         this.entityFile = entityFile;
@@ -58,6 +63,23 @@ public class EntityConfigData {
      */
     public void setLabelAttribute(String labelAttribute) {
         this.labelAttribute = labelAttribute;
+    }
+
+    /**
+     * @return the systemAttribute
+     */
+    public Set<String> getSystemAttribute() {
+        if(systemAttribute==null){
+            systemAttribute = Collections.EMPTY_SET;
+        }
+        return systemAttribute;
+    }
+
+    /**
+     * @param systemAttribute the systemAttribute to set
+     */
+    public void setSystemAttribute(Set<String> systemAttribute) {
+        this.systemAttribute = systemAttribute;
     }
 
 }

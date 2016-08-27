@@ -50,7 +50,7 @@ import org.netbeans.jcode.ng.main.domain.NGApplicationConfig;
 import org.netbeans.jcode.ng.main.domain.ApplicationSourceFilter;
 import org.netbeans.jcode.ng.main.domain.EntityConfig;
 import org.netbeans.jcode.ng.main.domain.NGEntity;
-import org.netbeans.jcode.ng.main.domain.Field;
+import org.netbeans.jcode.ng.main.domain.NGField;
 import org.netbeans.jcode.ng.main.domain.NGRelationship;
 import org.netbeans.jcode.parser.ejs.EJSParser;
 import org.netbeans.jcode.parser.ejs.FileTypeStream;
@@ -160,21 +160,25 @@ public class Angular1Generator implements Generator {
                 NbBundle.getMessage(Angular1Generator.class, "MSG_PK_Field_Named_Id_Missing", entityClassInfo.getName()));
              return null;
         }
-        
+        EntityConfigData entityConfig =  appConfig.getEntity(entityClassInfo.getEntityFqn());
         NGEntity entity = new NGEntity(entityClassInfo.getName(), "");
         for (EntityClassInfo.FieldInfo fieldInfo : entityClassInfo.getFieldInfos()) {
-            if(fieldInfo.isGeneratedValue()){
+            if(fieldInfo.isGeneratedValue() || entityConfig.getSystemAttribute().contains(fieldInfo.getName())){
                 continue;
             }
             if (fieldInfo.isRelationship()) {
                 NGRelationship relationship = new NGRelationship(entityClassInfo, fieldInfo);
-                EntityConfigData entityConfig ;
+                EntityConfigData mappedEntityConfig ;
                 if (fieldInfo.isManyToMany() || fieldInfo.isOneToMany()) {
-                    entityConfig = appConfig.getEntity(fieldInfo.getTypeArg());
+                    mappedEntityConfig = appConfig.getEntity(fieldInfo.getTypeArg());
                 } else {
-                    entityConfig = appConfig.getEntity(fieldInfo.getType());
+                    mappedEntityConfig = appConfig.getEntity(fieldInfo.getType());
                 }
-                relationship.setOtherEntityField(entityConfig.getLabelAttribute());
+                if(mappedEntityConfig.getLabelAttribute()==null || mappedEntityConfig.getLabelAttribute().equals("id")){
+                     handler.warning(NbBundle.getMessage(Angular1Generator.class, "TITLE_Entity_Label_Missing"),
+                                   NbBundle.getMessage(Angular1Generator.class, "MSG_Entity_Label_Missing", entityClassInfo.getName()));
+                }
+                relationship.setOtherEntityField(mappedEntityConfig.getLabelAttribute());
                 entity.addRelationship(relationship);
             } else {
                 if(fieldInfo.isEnumerated()){
@@ -182,7 +186,12 @@ public class Angular1Generator implements Generator {
                     NbBundle.getMessage(Angular1Generator.class, "MSG_Enum_Type_Not_Supported", fieldInfo.getName(), entityClassInfo.getName()));
                     continue;
                 }
-                Field field = new Field(fieldInfo);
+                if(fieldInfo.isEmbedded()){
+                    handler.warning(NbBundle.getMessage(Angular1Generator.class, "TITLE_Embedded_Type_Not_Supported"),
+                    NbBundle.getMessage(Angular1Generator.class, "MSG_Embedded_Type_Not_Supported", fieldInfo.getName(), entityClassInfo.getName()));
+                    continue;
+                }
+                NGField field = new NGField(fieldInfo);
                 field.setFieldType(getSimpleClassName(fieldInfo.getType()));
                 entity.addField(field);
             }

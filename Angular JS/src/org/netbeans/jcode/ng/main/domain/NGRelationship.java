@@ -27,7 +27,6 @@ import static org.netbeans.jcode.core.util.StringHelper.startCase;
 import static org.netbeans.jcode.core.util.StringHelper.trim;
 import org.netbeans.jcode.entity.info.EntityClassInfo;
 import org.netbeans.jcode.entity.info.EntityClassInfo.FieldInfo;
-import static org.netbeans.jcode.generator.internal.util.Util.pluralize;
 
 public class NGRelationship {
         
@@ -162,11 +161,19 @@ public class NGRelationship {
      */
     public String getRelationshipFieldNamePlural() {
         if (relationshipFieldNamePlural == null) {
-            relationshipFieldNamePlural = pluralize(firstLower(relationshipName));
+              relationshipFieldNamePlural = pluralize(firstLower(relationshipName));
+           
         }
         return relationshipFieldNamePlural;
     }
 
+    String pluralize(String data){
+         if( relationshipType.equals(ONE_TO_MANY) ||  relationshipType.equals(MANY_TO_MANY)){
+             return data;
+         } else {
+            return org.netbeans.jcode.generator.internal.util.Util.pluralize(data);
+         }
+    }
     /**
      * @return the relationshipNameHumanized
      */

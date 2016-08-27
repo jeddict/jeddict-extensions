@@ -23,7 +23,7 @@ import static org.netbeans.jcode.core.util.StringHelper.snakeCase;
 import static org.netbeans.jcode.core.util.StringHelper.startCase;
 import org.netbeans.jcode.entity.info.EntityClassInfo;
 
-public class Field {
+public class NGField {
 
     public String fieldName;
     public String fieldType;
@@ -37,7 +37,7 @@ public class Field {
     private String fieldValues;
   
     
-    public Field(EntityClassInfo.FieldInfo fieldInfo) {
+    public NGField(EntityClassInfo.FieldInfo fieldInfo) {
         this.fieldName = fieldInfo.getName();
         this.fieldIsEnum= fieldInfo.isEnumerated();
 //        this.fieldTypeBlobContent= fieldInfo.isLob();

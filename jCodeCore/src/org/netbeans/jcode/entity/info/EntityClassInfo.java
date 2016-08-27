@@ -454,6 +454,13 @@ public class EntityClassInfo {
             this.isLob = isLob;
         }
 
+        /**
+         * @return the isEmbedded
+         */
+        public boolean isEmbedded() {
+            return isEmbedded;
+        }
+
         private enum Relationship {
 
             OneToOne, OneToMany, ManyToOne, ManyToMany
@@ -479,6 +486,7 @@ public class EntityClassInfo {
         private boolean hasPersistenceAnnotation = false;
         private boolean isId = false;
         private boolean isEmbeddedId = false;
+        private boolean isEmbedded = false;
         private boolean isGeneratedValue = false;
         private boolean isEnumerated;
         private boolean isLob;
@@ -558,6 +566,8 @@ public class EntityClassInfo {
                 if (annotationType.contains("EmbeddedId")) { //NOI18N
                     isEmbeddedId = true;
                     isId = true;
+                } else if (annotationType.contains("Embedded")) { //NOI18N
+                    isEmbedded = true;
                 } else if (annotationType.contains("Id")) { //NOI18N
                     isId = true;
                 } else if (annotationType.contains("OneToOne")) { //NOI18N

@@ -15,8 +15,10 @@
  */
 package org.netbeans.jcode.task.progress;
 
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.BG_BLUE;
 import static org.netbeans.jcode.console.Console.BG_MAGENTA;
@@ -39,9 +41,9 @@ public class ProgressConsoleHandler implements ProgressHandler {
     private final static int LIMIT = 100;
     private int taskLimit, state = 0;//TODO taskLimit with %
     private final ITaskSupervisor taskSupervisor;
-    private final List<Message> errorMessage = new ArrayList<>();
-    private final List<Message> warningMessage = new ArrayList<>();
-    private final List<Message> infoMessage = new ArrayList<>();
+    private final Set<Message> errorMessage = new LinkedHashSet<>();
+    private final Set<Message> warningMessage = new LinkedHashSet<>();
+    private final Set<Message> infoMessage = new LinkedHashSet<>();
 
     public ProgressConsoleHandler(ITaskSupervisor taskSupervisor) {
         this.taskSupervisor = taskSupervisor;
@@ -103,13 +105,30 @@ public class ProgressConsoleHandler implements ProgressHandler {
         infoMessage.add(new Message(title, message));
     }
 
-    private void printMessage(MessageType messageType, Console bgColor, Console fgColor, List<Message> messageRepository) {
+    private void printMessage(MessageType messageType, Console bgColor, Console fgColor, Set<Message> messageRepository) {
         String type = Console.wrap(messageType.getHeading(), bgColor, FG_WHITE, BOLD, BLINK);
         if (!messageRepository.isEmpty()) {
             taskSupervisor.log(type, true);
+            String previousHelpMessage = null;
             for (Message message : messageRepository) {
+                String currentHelpMessage = null;
                 taskSupervisor.log(Console.wrap(message.getTitle() + " > \t", fgColor, BOLD, UNDERLINE), false);
-                taskSupervisor.log(message.getDescription(), true);
+                String parsedMessage[] = message.getDescription().split("#");
+                taskSupervisor.log(parsedMessage[0], true);
+                if(parsedMessage.length>1){
+                    currentHelpMessage = parsedMessage[1];
+                }
+                if (previousHelpMessage != null) { //currentHelpMessage **
+                    if (!previousHelpMessage.equals(currentHelpMessage)) {
+                        taskSupervisor.log(previousHelpMessage, true);
+                        previousHelpMessage = currentHelpMessage;
+                    }
+                } else if (currentHelpMessage != null) {//previousHelpMessage == null 
+                    previousHelpMessage = currentHelpMessage;
+                }
+            }
+            if(previousHelpMessage!=null){
+                taskSupervisor.log(previousHelpMessage, true);
             }
         }
     }
@@ -172,6 +191,37 @@ public class ProgressConsoleHandler implements ProgressHandler {
         public void setDescription(String description) {
             this.description = description;
         }
+
+        @Override
+        public int hashCode() {
+            int hash = 7;
+            hash = 17 * hash + Objects.hashCode(this.title);
+            hash = 17 * hash + Objects.hashCode(this.description);
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final Message other = (Message) obj;
+            if (!Objects.equals(this.title, other.title)) {
+                return false;
+            }
+            if (!Objects.equals(this.description, other.description)) {
+                return false;
+            }
+            return true;
+        }
+        
+        
     }
 
 }
