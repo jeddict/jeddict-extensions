@@ -36,6 +36,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;</#if>
+
 /**
  * REST controller for managing the current user's account.
  */

@@ -124,6 +124,8 @@ public class ApplicationSourceFilter {
             dataFilter.put("_docs.state.js", () -> config.isEnableDocs());
             dataFilter.put("swagger-ui/_index.html", () -> config.isEnableDocs());
             dataFilter.put("swagger-ui/images/throbber.gif", () -> config.isEnableDocs());
+            dataFilter.put("swagger-ui/config/resource.json", () -> config.isEnableDocs());
+            dataFilter.put("swagger-ui/config/ui.json", () -> config.isEnableDocs());
 
             //SCSS
             dataFilter.put("scss/main.scss", () -> config.isUseSass());
