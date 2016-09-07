@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.servlet.InstrumentedFilter;
 import com.codahale.metrics.servlets.MetricsServlet;</#if>
-<#if metrics>import com.wordnik.swagger.config.ConfigFactory;
+<#if docs>import com.wordnik.swagger.config.ConfigFactory;
 import com.wordnik.swagger.config.ScannerFactory;
 import com.wordnik.swagger.config.SwaggerConfig;
 import com.wordnik.swagger.jaxrs.config.DefaultJaxrsScanner;
