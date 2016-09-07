@@ -55,7 +55,7 @@ import static org.openide.util.NbBundle.getMessage;
 public class MVCPanel extends LayerConfigPanel<MVCData> {
 
     private static final String DEFAULT_PACKAGE = "controller";
-    private boolean useJersey;
+//    private boolean useJersey;
     private boolean configuredREST;
     private List<RestApplication> restApplications;
     private RestConfigDialog configDialog;
@@ -90,21 +90,21 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
 
     @Override
     public void read() {
-        this.setConfigData(PreferenceUtils.get(pref,MVCData.class));
+        this.setConfigData(PreferenceUtils.get(pref, MVCData.class));
         MVCData data = this.getConfigData();
-        if(StringUtils.isNotBlank(data.getPackage())){
+        if (StringUtils.isNotBlank(data.getPackage())) {
             setPackage(data.getPackage());
         }
-        
-        if(StringUtils.isNotBlank(data.getPrefixName())){
+
+        if (StringUtils.isNotBlank(data.getPrefixName())) {
             setPrefix(data.getPrefixName());
         }
-        
-        if(StringUtils.isNotBlank(data.getSuffixName())){
+
+        if (StringUtils.isNotBlank(data.getSuffixName())) {
             setSuffix(data.getSuffixName());
         }
-        
-        if(data.getReturnType() != null){
+
+        if (data.getReturnType() != null) {
             viewCombo.setSelectedItem(data.getReturnType());
             beanValidation.setSelected(data.isBeanValidation());
             csrfCheckbox.setSelected(data.isCSRF());
@@ -112,7 +112,7 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
             authenticationCheckbox.setSelected(data.isAuthentication());
             hybridClassCheckbox.setSelected(data.isHybridClass());
         }
-        
+
         setSelectedEventType(data.getEventType());
     }
 
@@ -134,7 +134,7 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
         data.setHybridClass(getHybridClass());
         data.setReturnType(getReturnType());
         data.setEventType(getSelectedEventType());
-        
+
         PreferenceUtils.set(pref, data);
     }
 
@@ -156,7 +156,7 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
             packageCombo.setModel(model);
             addChangeListener(packageCombo);
             if (StringUtils.isBlank(_package)) {
-            _package = DEFAULT_PACKAGE;
+                _package = DEFAULT_PACKAGE;
             } else {
                 _package = _package + '.' + DEFAULT_PACKAGE;
             }
@@ -175,25 +175,27 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
         }
 
         final RestSupport restSupport = project.getLookup().lookup(RestSupport.class);
+//        if (restSupport != null) {
+//            if (restSupport.isEE5() && restSupport.hasJersey1(true)
+//                    || restSupport.hasSpringSupport() && !restSupport.hasJersey2(true)) {
+//                useJersey = true;
+//            }
+//        }
         if (restSupport != null) {
-            if (restSupport.isEE5() && restSupport.hasJersey1(true)
-                    || restSupport.hasSpringSupport() && !restSupport.hasJersey2(true)) {
-                useJersey = true;
-            }
-        }
-        ScanDialog.runWhenScanFinished(() -> {
-            boolean configured;//restSupport.isRestSupportOn();
-            configured = restSupport.hasJerseyServlet();
-            restApplications = restSupport.getRestApplications();
-            if (!configured) {
-                configured = restApplications != null && !restApplications.isEmpty();
-            }
-            if (configDialog != null) {
-                configDialog.setRestApplicationClasses(restApplications);
-            }
-            configurREST(configured);
-        }, getMessage(MVCPanel.class, "MVCPanel.scanningExistingApp.text"));
+            ScanDialog.runWhenScanFinished(() -> {
+                boolean configured;//restSupport.isRestSupportOn();
+                configured = restSupport.hasJerseyServlet();
+                restApplications = restSupport.getRestApplications();
+                if (!configured) {
+                    configured = restApplications != null && !restApplications.isEmpty();
+                }
+                if (configDialog != null) {
+                    configDialog.setRestApplicationClasses(restApplications);
+                }
+                configurREST(configured);
+            }, getMessage(MVCPanel.class, "MVCPanel.scanningExistingApp.text"));
 
+        }
     }
 
     private void configurREST(boolean configured) {
@@ -207,19 +209,20 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
     public boolean getBeanValidation() {
         return beanValidation.isSelected();
     }
-    
-     public boolean getCSRF() {
+
+    public boolean getCSRF() {
         return csrfCheckbox.isSelected();
     }
-      public boolean getXSS() {
+
+    public boolean getXSS() {
         return xssCheckbox.isSelected();
     }
-      
-        public boolean getAuthentication() {
+
+    public boolean getAuthentication() {
         return authenticationCheckbox.isSelected();
     }
-      
-       public boolean getHybridClass() {
+
+    public boolean getHybridClass() {
         return hybridClassCheckbox.isSelected();
     }
 
@@ -245,9 +248,11 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
     public String getPrefix() {
         return prefixField.getText().trim();
     }
+
     private void setPrefix(String prefix) {
         prefixField.setText(prefix);
     }
+
     private void setSuffix(String suffix) {
         suffixField.setText(suffix);
     }
@@ -261,7 +266,7 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
         }
         return eventTypes;
     }
-    
+
     public void setSelectedEventType(List<ControllerEventType> controllerEventTypes) {
         for (Entry<JCheckBox, ControllerEventType> eventTypeBoxEntry : eventTypeBoxs.entrySet()) {
             eventTypeBoxEntry.getKey().setSelected(controllerEventTypes.contains(eventTypeBoxEntry.getValue()));
@@ -550,7 +555,7 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
 //                openApplicationConfig();
 //            }
 //        } else {
-            openApplicationConfig();
+        openApplicationConfig();
 //        }
     }//GEN-LAST:event_applicationConfigButtonActionPerformed
 

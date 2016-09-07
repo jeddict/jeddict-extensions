@@ -18,10 +18,14 @@ package org.netbeans.jcode.stack.config.data;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
+import org.apache.commons.lang.StringUtils;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.layer.Generator;
-import org.openide.filesystems.FileObject;
+import org.netbeans.jpa.modeler.spec.Entity;
+import org.netbeans.jpa.modeler.spec.EntityMappings;
 
 /**
  *
@@ -31,6 +35,7 @@ public class ApplicationConfigData implements Serializable {
 
     private Project project;
     private SourceGroup sourceGroup;
+    private EntityMappings entityMappings;
     private Map<String, EntityConfigData> entities;
     private String persistenceUnitName;
 
@@ -186,10 +191,25 @@ public class ApplicationConfigData implements Serializable {
     }
 
     /**
-     * @param persistenceUnitName the persistenceUnitName to set
+     * @return the entityMappings
      */
-    public void setPersistenceUnitName(String persistenceUnitName) {
-        this.persistenceUnitName = persistenceUnitName;
+    public EntityMappings getEntityMappings() {
+        return entityMappings;
+    }
+
+    /**
+     * @param entityMappings the entityMappings to set
+     */
+    public void setEntityMappings(EntityMappings entityMappings) {
+        this.entityMappings = entityMappings;
+        for (Entity entity : entityMappings.getEntity().stream().filter(e -> e.getGeneratesourceCode()).collect(toList())) {
+            String entiyFQN = StringUtils.isNotBlank(entityMappings.getPackage()) ? entityMappings.getPackage() + '.' + entity.getClazz() : entity.getClazz();
+            EntityConfigData entityConfigData = new EntityConfigData(entity.getFileObject());
+            entityConfigData.setLabelAttribute(entity.getLabelAttribute() != null ? entity.getLabelAttribute().getName() : null);
+            entityConfigData.setSystemAttribute(entity.getAttributes().getAllAttribute().stream().filter(attr -> !attr.getIncludeInUI()).map(attr -> attr.getName()).collect(toSet()));
+            this.putEntity(entiyFQN, entityConfigData);
+        }
+        this.persistenceUnitName = entityMappings.getPersistenceUnitName();
     }
 
 }

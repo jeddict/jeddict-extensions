@@ -483,7 +483,8 @@ public class MVCControllerGenerator implements Generator {
         try {
             if (restAppPack != null && appClassName != null) {
 
-                FileObject configFO = RestUtils.createApplicationConfigClass(restSupport, restAppPack, appClassName, mvcData.getRestConfigData().getApplicationPath(), null, handler);
+                FileObject configFO = RestUtils.createApplicationConfigClass(restSupport,mvcData.getRestConfigData(),
+                        restAppPack, null, null,  null, handler);
                 JavaSource javaSource = JavaSource.forFileObject(configFO);//add some cutom properties/method specific to MVC
                 if (javaSource != null) {
 

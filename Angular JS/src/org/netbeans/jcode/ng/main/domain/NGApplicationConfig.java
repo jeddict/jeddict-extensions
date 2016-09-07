@@ -83,19 +83,16 @@ public class NGApplicationConfig {
     public boolean useSass = false;
     
     public List<NGEntity> entities;
-//    uaaBaseName
+    private String restPackage;
     
-    private boolean enableMetrics = false;
+    private boolean enableMetrics;
     private boolean enableLogs = false;
     private boolean enableHealth = false;
     private boolean enableConfiguration = false;
     private boolean enableAudits = false;
     private boolean enableProfile = false;
     private boolean enableDocs = false;
-
-    /**
-     * @return the jhiPrefixCapitalized
-     */
+    
     /**
      * @return the jhiPrefixCapitalized
      */
@@ -467,6 +464,20 @@ public class NGApplicationConfig {
      */
     public void setEnableDocs(boolean enableDocs) {
         this.enableDocs = enableDocs;
+    }
+
+    /**
+     * @return the restPackage
+     */
+    public String getRestPackage() {
+        return restPackage;
+    }
+
+    /**
+     * @param restPackage the restPackage to set
+     */
+    public void setRestPackage(String restPackage) {
+        this.restPackage = restPackage;
     }
 
 }

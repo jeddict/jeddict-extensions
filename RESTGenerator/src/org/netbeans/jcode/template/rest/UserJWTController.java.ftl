@@ -18,9 +18,15 @@ import ${TokenProvider_FQN};
 import ${UserAuthenticationToken_FQN};
 import ${UserService_FQN};
 import javax.validation.Valid;
+<#if metrics>import com.codahale.metrics.annotation.Timed;</#if>
+<#if docs>import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;</#if>
 
+<#if docs>@Api(value = "/api/auth", description = "User JWT ${restSuffix}")</#if>
 @Path("/api")
-public class UserJWTController {
+public class ${restPrefix}UserJWT${restSuffix} {
 
     @Inject
     private TokenProvider tokenProvider;
@@ -28,6 +34,8 @@ public class UserJWTController {
     @Inject
     private UserService userService;
 
+    <#if metrics>@Timed</#if>
+    <#if docs>@ApiOperation(value = "authenticate the credential" )</#if>
     @Path("/authenticate")
     @POST
     @Consumes({MediaType.APPLICATION_JSON})

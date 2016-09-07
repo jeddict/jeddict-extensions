@@ -26,7 +26,6 @@ import javax.swing.ComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import static javax.swing.JOptionPane.OK_OPTION;
-import javax.swing.event.ChangeEvent;
 import javax.swing.text.JTextComponent;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
@@ -44,6 +43,13 @@ import static org.netbeans.jcode.util.PreferenceUtils.set;
 import org.netbeans.modules.websvc.rest.model.api.RestApplication;
 import org.netbeans.modules.websvc.rest.spi.RestSupport;
 import org.netbeans.spi.java.project.support.ui.PackageView;
+import static org.openide.util.NbBundle.getMessage;
+import static org.openide.util.NbBundle.getMessage;
+import static org.openide.util.NbBundle.getMessage;
+import static org.openide.util.NbBundle.getMessage;
+import static org.openide.util.NbBundle.getMessage;
+import static org.openide.util.NbBundle.getMessage;
+import static org.openide.util.NbBundle.getMessage;
 import static org.openide.util.NbBundle.getMessage;
 
 /**
@@ -109,6 +115,8 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
             setSuffix(data.getSuffixName());
         }
        
+        setMetrics(data.isMetrics());
+        setDocsEnable(data.isDocsEnable());
         
         setSelectedEventType(data.getFilterTypes());
     }
@@ -127,6 +135,8 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         }
 //        data.setReturnType(getReturnType());
         data.setFilterTypes(getSelectedEventType());
+        data.setMetrics(isMetrics());
+        data.setDocsEnable(isDocsEnable());
         
         set(pref, data);
     }
@@ -247,6 +257,22 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
     private void setSuffix(String suffix) {
         suffixField.setText(suffix);
     }
+    
+    private boolean isMetrics() {
+        return metricsCheckbox.isSelected();
+    }
+
+    private void setMetrics(boolean metrics) {
+        metricsCheckbox.setSelected(metrics);
+    }
+    
+    private boolean isDocsEnable() {
+        return docsCheckBox.isSelected();
+    }
+
+    private void setDocsEnable(boolean docsEnable) {
+        docsCheckBox.setSelected(docsEnable);
+    }
 
     public List<FilterType> getSelectedEventType() {
         List<FilterType> eventTypes = new ArrayList<>();
@@ -292,6 +318,8 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         miscPanel = new javax.swing.JPanel();
         applicationConfigButton = new javax.swing.JButton();
         wrapper = new javax.swing.JLayeredPane();
+        metricsCheckbox = new javax.swing.JCheckBox();
+        docsCheckBox = new javax.swing.JCheckBox();
 
         warningPanel.setLayout(new java.awt.BorderLayout(10, 0));
 
@@ -397,15 +425,38 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         });
         miscPanel.add(applicationConfigButton, java.awt.BorderLayout.EAST);
 
+        metricsCheckbox.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(metricsCheckbox, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.metricsCheckbox.text")); // NOI18N
+
+        docsCheckBox.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(docsCheckBox, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.docsCheckBox.text")); // NOI18N
+        docsCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                docsCheckBoxActionPerformed(evt);
+            }
+        });
+
+        wrapper.setLayer(metricsCheckbox, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        wrapper.setLayer(docsCheckBox, javax.swing.JLayeredPane.DEFAULT_LAYER);
+
         javax.swing.GroupLayout wrapperLayout = new javax.swing.GroupLayout(wrapper);
         wrapper.setLayout(wrapperLayout);
         wrapperLayout.setHorizontalGroup(
             wrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 617, Short.MAX_VALUE)
+            .addGroup(wrapperLayout.createSequentialGroup()
+                .addGap(110, 110, 110)
+                .addComponent(metricsCheckbox, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(docsCheckBox)
+                .addContainerGap(234, Short.MAX_VALUE))
         );
         wrapperLayout.setVerticalGroup(
             wrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 22, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, wrapperLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(wrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(metricsCheckbox)
+                    .addComponent(docsCheckBox)))
         );
 
         miscPanel.add(wrapper, java.awt.BorderLayout.CENTER);
@@ -472,6 +523,10 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
     private void appPackageComboPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_appPackageComboPropertyChange
         // TODO add your handling code here:
     }//GEN-LAST:event_appPackageComboPropertyChange
+
+    private void docsCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_docsCheckBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_docsCheckBoxActionPerformed
     private void openApplicationConfig() {
         if (configDialog == null) {
             configDialog = new RestConfigDialog();
@@ -490,9 +545,11 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
     private javax.swing.JLabel appPackageLabel;
     private javax.swing.JPanel appPackagePanel;
     private javax.swing.JButton applicationConfigButton;
+    private javax.swing.JCheckBox docsCheckBox;
     private javax.swing.JLabel entityLabel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JCheckBox metricsCheckbox;
     private javax.swing.JPanel miscPanel;
     private javax.swing.JLabel nameLabel;
     private javax.swing.JLayeredPane namePane;

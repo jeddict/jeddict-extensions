@@ -104,6 +104,7 @@ import static org.netbeans.jcode.jpa.JPAConstants.TABLE_FQN;
 import org.netbeans.jcode.layer.ConfigData;
 import org.netbeans.jcode.layer.Generator;
 import org.netbeans.jcode.stack.config.data.LayerConfigData;
+import org.netbeans.jpa.modeler.spec.EntityMappings;
 
 /**
  * Copy of j2ee/utilities Util class
@@ -500,10 +501,10 @@ public class Util {
             if (field.isAnnotationPresent(ConfigData.class)) {
                 field.setAccessible(true);
                 try {
-                    if (field.getGenericType()== applicationConfigData.getClass()) {
+                    if (field.getGenericType()== ApplicationConfigData.class) {
                         field.set(instance, applicationConfigData);
-                    } else if (bussinesLayerConfig!=null && field.getGenericType()== bussinesLayerConfig.getClass()) {
-                        field.set(instance, bussinesLayerConfig);
+                    } else if (field.getGenericType()== EntityMappings.class) {
+                        field.set(instance, applicationConfigData.getEntityMappings());
                     } else if (bussinesLayerConfig!=null && field.getGenericType()== bussinesLayerConfig.getClass()) {
                         field.set(instance, bussinesLayerConfig);
                     } else if (controllerLayerConfig!=null && field.getGenericType() == controllerLayerConfig.getClass()) {

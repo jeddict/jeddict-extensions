@@ -27,6 +27,12 @@ import static org.netbeans.jcode.core.util.StringHelper.startCase;
 import static org.netbeans.jcode.core.util.StringHelper.trim;
 import org.netbeans.jcode.entity.info.EntityClassInfo;
 import org.netbeans.jcode.entity.info.EntityClassInfo.FieldInfo;
+import org.netbeans.jpa.modeler.spec.Entity;
+import org.netbeans.jpa.modeler.spec.ManyToMany;
+import org.netbeans.jpa.modeler.spec.ManyToOne;
+import org.netbeans.jpa.modeler.spec.OneToMany;
+import org.netbeans.jpa.modeler.spec.OneToOne;
+import org.netbeans.jpa.modeler.spec.extend.RelationAttribute;
 
 public class NGRelationship {
         
@@ -75,6 +81,7 @@ public class NGRelationship {
         this.entityAngularJSSuffix = entityAngularJSSuffix;
     }
 
+    @Deprecated
     public NGRelationship(EntityClassInfo classInfo, FieldInfo fieldInfo) {
         this.relationshipName = fieldInfo.getName();
         this.ownerSide = fieldInfo.getMappedByField()==null;
@@ -92,6 +99,25 @@ public class NGRelationship {
             relationshipType = ONE_TO_ONE;
         } 
         this.name = classInfo.getName();
+    }
+    
+        public NGRelationship(Entity entity, RelationAttribute relation) {
+        this.relationshipName = relation.getName();
+        this.ownerSide = relation.isOwner();
+        if(relation instanceof ManyToMany){
+            this.otherEntityName = firstLower(relation.getConnectedEntity().getClazz());
+            relationshipType = MANY_TO_MANY;
+        } else if(relation instanceof OneToMany){
+            this.otherEntityName = firstLower(relation.getConnectedEntity().getClazz());
+            relationshipType = ONE_TO_MANY;
+        } else if(relation instanceof ManyToOne){
+            this.otherEntityName = firstLower(relation.getConnectedEntity().getClazz());
+            relationshipType = MANY_TO_ONE;
+        } else if(relation instanceof OneToOne){
+            this.otherEntityName = firstLower(relation.getConnectedEntity().getClazz());
+            relationshipType = ONE_TO_ONE;
+        } 
+        this.name = entity.getClazz();
     }
     
     

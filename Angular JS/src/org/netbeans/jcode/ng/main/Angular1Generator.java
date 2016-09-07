@@ -29,13 +29,13 @@ import org.netbeans.api.project.Project;
 import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.BOLD;
 import static org.netbeans.jcode.console.Console.FG_RED;
-import static org.netbeans.jcode.console.Console.FG_YELLOW;
 import static org.netbeans.jcode.console.Console.UNDERLINE;
 import org.netbeans.jcode.core.util.FileUtil;
 import static org.netbeans.jcode.core.util.FileUtil.getFileExt;
 import static org.netbeans.jcode.core.util.FileUtil.getSimpleFileName;
 import static org.netbeans.jcode.core.util.FileUtil.getSimpleFileNameWithExt;
 import static org.netbeans.jcode.core.util.JavaSourceHelper.getSimpleClassName;
+import org.netbeans.jcode.core.util.JavaUtil;
 import static org.netbeans.jcode.core.util.ProjectHelper.getProjectWebRoot;
 import org.netbeans.jcode.entity.info.EntityClassInfo;
 import org.netbeans.jcode.entity.info.EntityResourceBeanModel;
@@ -57,12 +57,19 @@ import org.netbeans.jcode.parser.ejs.FileTypeStream;
 import org.netbeans.jcode.rest.controller.RESTData;
 import org.netbeans.jcode.rest.controller.RESTGenerator;
 import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
-import org.netbeans.jcode.stack.config.data.EntityConfigData;
 import org.netbeans.jcode.task.progress.ProgressHandler;
+import org.netbeans.jpa.modeler.spec.Embedded;
+import org.netbeans.jpa.modeler.spec.Entity;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
+import org.netbeans.jpa.modeler.spec.EntityMappings;
+import org.netbeans.jpa.modeler.spec.Id;
+import org.netbeans.jpa.modeler.spec.extend.Attribute;
+import org.netbeans.jpa.modeler.spec.extend.BaseAttribute;
+import org.netbeans.jpa.modeler.spec.extend.EnumTypeHandler;
+import org.netbeans.jpa.modeler.spec.extend.RelationAttribute;
 
 /**
  *
@@ -73,6 +80,9 @@ import org.openide.util.lookup.ServiceProvider;
 public class Angular1Generator implements Generator {
 
     private static final String TEMPLATE = "org/netbeans/jcode/template/angular1/";
+    
+    @ConfigData
+    private EntityMappings entityMapping;
     
     @ConfigData
     private ApplicationConfigData appConfig;
@@ -152,53 +162,6 @@ public class Angular1Generator implements Generator {
         }
     }
 
-   
-
-    private NGEntity getEntity(EntityClassInfo entityClassInfo) {
-        if(!"id".equals(entityClassInfo.getIdFieldInfo().getName())){
-             handler.error(NbBundle.getMessage(Angular1Generator.class, "TITLE_PK_Field_Named_Id_Missing"),
-                NbBundle.getMessage(Angular1Generator.class, "MSG_PK_Field_Named_Id_Missing", entityClassInfo.getName()));
-             return null;
-        }
-        EntityConfigData entityConfig =  appConfig.getEntity(entityClassInfo.getEntityFqn());
-        NGEntity entity = new NGEntity(entityClassInfo.getName(), "");
-        for (EntityClassInfo.FieldInfo fieldInfo : entityClassInfo.getFieldInfos()) {
-            if(fieldInfo.isGeneratedValue() || entityConfig.getSystemAttribute().contains(fieldInfo.getName())){
-                continue;
-            }
-            if (fieldInfo.isRelationship()) {
-                NGRelationship relationship = new NGRelationship(entityClassInfo, fieldInfo);
-                EntityConfigData mappedEntityConfig ;
-                if (fieldInfo.isManyToMany() || fieldInfo.isOneToMany()) {
-                    mappedEntityConfig = appConfig.getEntity(fieldInfo.getTypeArg());
-                } else {
-                    mappedEntityConfig = appConfig.getEntity(fieldInfo.getType());
-                }
-                if(mappedEntityConfig.getLabelAttribute()==null || mappedEntityConfig.getLabelAttribute().equals("id")){
-                     handler.warning(NbBundle.getMessage(Angular1Generator.class, "TITLE_Entity_Label_Missing"),
-                                   NbBundle.getMessage(Angular1Generator.class, "MSG_Entity_Label_Missing", entityClassInfo.getName()));
-                }
-                relationship.setOtherEntityField(mappedEntityConfig.getLabelAttribute());
-                entity.addRelationship(relationship);
-            } else {
-                if(fieldInfo.isEnumerated()){
-                    handler.warning(NbBundle.getMessage(Angular1Generator.class, "TITLE_Enum_Type_Not_Supported"),
-                    NbBundle.getMessage(Angular1Generator.class, "MSG_Enum_Type_Not_Supported", fieldInfo.getName(), entityClassInfo.getName()));
-                    continue;
-                }
-                if(fieldInfo.isEmbedded()){
-                    handler.warning(NbBundle.getMessage(Angular1Generator.class, "TITLE_Embedded_Type_Not_Supported"),
-                    NbBundle.getMessage(Angular1Generator.class, "MSG_Embedded_Type_Not_Supported", fieldInfo.getName(), entityClassInfo.getName()));
-                    continue;
-                }
-                NGField field = new NGField(fieldInfo);
-                field.setFieldType(getSimpleClassName(fieldInfo.getType()));
-                entity.addField(field);
-            }
-        }
-        return entity;
-    }
-
     private void generateNgHome(NGApplicationConfig applicationConfig, ApplicationSourceFilter fileFilter) throws IOException {
         FileObject webRoot = getProjectWebRoot(project);
 
@@ -218,6 +181,7 @@ public class Angular1Generator implements Generator {
 
         copyDynamicFile(getParserManager(parser, null),TEMPLATE +  "_index.html", webRoot, pathResolver, handler);
         copyDynamicFile(getParserManager(parser, null), TEMPLATE + "_bower.json", project.getProjectDirectory(), pathResolver, handler);
+        handler.append(Console.wrap(Angular1Generator.class, "MSG_Copying_Bower_Lib_Files", FG_RED, BOLD));
         FileUtil.copyStaticResource(TEMPLATE + "bower_components.zip", webRoot, null, handler);
 
     }
@@ -362,9 +326,99 @@ public class Angular1Generator implements Generator {
         applicationConfig.setJhiPrefix("jhi");
         applicationConfig.setBaseName(ngData.getApplicationTitle());
         applicationConfig.setApplicationPath(restData.getRestConfigData().getApplicationPath());
+        applicationConfig.setEnableMetrics(restData.isMetrics());
+        applicationConfig.setRestPackage(restData.getPackage());
+        applicationConfig.setEnableDocs(restData.isDocsEnable());
         return applicationConfig;
     }
 
+    private NGEntity getEntity(EntityClassInfo entityClassInfo) {
+        Entity entitySpec = appConfig.getEntityMappings().findEntity(entityClassInfo.getName());
+        if(!"id".equals(entityClassInfo.getIdFieldInfo().getName())){
+             handler.error(NbBundle.getMessage(Angular1Generator.class, "TITLE_PK_Field_Named_Id_Missing"),
+                NbBundle.getMessage(Angular1Generator.class, "MSG_PK_Field_Named_Id_Missing", entitySpec.getName()));
+             return null;
+        }
+//        EntityConfigData entityConfig =  appConfig.getEntity(entityClassInfo.getEntityFqn());
+        NGEntity entity = new NGEntity(entitySpec.getClazz(), "");
+        for(Attribute attribute : entitySpec.getAttributes().getAllAttribute()){
+            if(attribute instanceof Id && ((Id)attribute).isGeneratedValue()){
+                continue;
+            }
+            if(!attribute.getIncludeInUI()){//system attribute
+                continue;
+            }
+            
+            if(attribute instanceof RelationAttribute){
+                RelationAttribute relationAttribute = (RelationAttribute)attribute;
+                NGRelationship relationship = new NGRelationship(entitySpec, relationAttribute);
+                Entity mappedEntity = relationAttribute.getConnectedEntity();
+                if(mappedEntity.getLabelAttribute()==null || mappedEntity.getLabelAttribute().getName().equals("id")){
+                    handler.warning(NbBundle.getMessage(Angular1Generator.class, "TITLE_Entity_Label_Missing"),
+                    NbBundle.getMessage(Angular1Generator.class, "MSG_Entity_Label_Missing", entityClassInfo.getName()));
+                } else {
+                    relationship.setOtherEntityField(mappedEntity.getLabelAttribute().getName());
+                }
+                entity.addRelationship(relationship);
+            } else if(attribute instanceof BaseAttribute){
+                if(attribute instanceof EnumTypeHandler && ((EnumTypeHandler)attribute).getEnumerated()!=null){
+                    handler.warning(NbBundle.getMessage(Angular1Generator.class, "TITLE_Enum_Type_Not_Supported"),
+                    NbBundle.getMessage(Angular1Generator.class, "MSG_Enum_Type_Not_Supported", attribute.getName(), entityClassInfo.getName()));
+                    continue;
+                }
+                if(attribute instanceof Embedded){
+                    handler.warning(NbBundle.getMessage(Angular1Generator.class, "TITLE_Embedded_Type_Not_Supported"),
+                    NbBundle.getMessage(Angular1Generator.class, "MSG_Embedded_Type_Not_Supported", attribute.getName(), entityClassInfo.getName()));
+                    continue;
+                }
+                NGField field = new NGField((BaseAttribute)attribute);
+                Class<?> primitiveType = JavaUtil.getPrimitiveType(attribute.getDataTypeLabel());
+                if(primitiveType!=null){
+                    field.setFieldType(primitiveType.getSimpleName());//todo short, byte, char not supported in ui template
+                } else {
+                    field.setFieldType(getSimpleClassName(attribute.getDataTypeLabel()));
+                }
+                
+                entity.addField(field);
+            }
+        }
+        
+//        for (EntityClassInfo.FieldInfo fieldInfo : entityClassInfo.getFieldInfos()) {
+//            if(fieldInfo.isGeneratedValue() || entityConfig.getSystemAttribute().contains(fieldInfo.getName())){
+//                continue;
+//            }
+//            if (fieldInfo.isRelationship()) {
+//                NGRelationship relationship = new NGRelationship(entityClassInfo, fieldInfo);
+//                EntityConfigData mappedEntityConfig ;
+//                if (fieldInfo.isManyToMany() || fieldInfo.isOneToMany()) {
+//                    mappedEntityConfig = appConfig.getEntity(fieldInfo.getTypeArg());
+//                } else {
+//                    mappedEntityConfig = appConfig.getEntity(fieldInfo.getType());
+//                }
+//                if(mappedEntityConfig.getLabelAttribute()==null || mappedEntityConfig.getLabelAttribute().equals("id")){
+//                     handler.warning(NbBundle.getMessage(Angular1Generator.class, "TITLE_Entity_Label_Missing"),
+//                                   NbBundle.getMessage(Angular1Generator.class, "MSG_Entity_Label_Missing", entityClassInfo.getName()));
+//                }
+//                relationship.setOtherEntityField(mappedEntityConfig.getLabelAttribute());
+//                entity.addRelationship(relationship);
+//            } else {
+//                if(fieldInfo.isEnumerated()){
+//                    handler.warning(NbBundle.getMessage(Angular1Generator.class, "TITLE_Enum_Type_Not_Supported"),
+//                    NbBundle.getMessage(Angular1Generator.class, "MSG_Enum_Type_Not_Supported", fieldInfo.getName(), entityClassInfo.getName()));
+//                    continue;
+//                }
+//                if(fieldInfo.isEmbedded()){
+//                    handler.warning(NbBundle.getMessage(Angular1Generator.class, "TITLE_Embedded_Type_Not_Supported"),
+//                    NbBundle.getMessage(Angular1Generator.class, "MSG_Embedded_Type_Not_Supported", fieldInfo.getName(), entityClassInfo.getName()));
+//                    continue;
+//                }
+//                NGField field = new NGField(fieldInfo);
+//                field.setFieldType(getSimpleClassName(fieldInfo.getType()));
+//                entity.addField(field);
+//            }
+//        }
+        return entity;
+    }
 
   
 }

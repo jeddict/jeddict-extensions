@@ -370,7 +370,7 @@ public class EntityClassInfo {
         if (relatedEntities != null) {
             return relatedEntities;
         }
-        relatedEntities = new HashSet<EntityClassInfo>();
+        relatedEntities = new HashSet<>();
         Set<String> allEntityNames = builder.getAllEntityNames();
         for (FieldInfo fi : fieldInfos) {
             String type = fi.getType();
@@ -425,56 +425,6 @@ public class EntityClassInfo {
     }
 
     public static class FieldInfo {
-
-        /**
-         * @return the isEnumerated
-         */
-        public boolean isEnumerated() {
-            return isEnumerated;
-        }
-
-        /**
-         * @param isEnumerated the isEnumerated to set
-         */
-        public void setEnumerated(boolean isEnumerated) {
-            this.isEnumerated = isEnumerated;
-        }
-
-        /**
-         * @return the isLob
-         */
-        public boolean isLob() {
-            return isLob;
-        }
-
-        /**
-         * @param isLob the isLob to set
-         */
-        public void setLob(boolean isLob) {
-            this.isLob = isLob;
-        }
-
-        /**
-         * @return the isEmbedded
-         */
-        public boolean isEmbedded() {
-            return isEmbedded;
-        }
-
-        private enum Relationship {
-
-            OneToOne, OneToMany, ManyToOne, ManyToMany
-        };
-
-        /**
-         * Define a way to convert String into 'field info' type instance.
-         */
-        private enum StringConverter {
-
-            CTOR, // Constructor with String as a single argument
-            VALUE_OF, // static valueOf method
-            FROM_STRING;// static fromString method
-        }
 
         private String name;
         private String type;
@@ -654,7 +604,7 @@ public class EntityClassInfo {
 
         public void addFieldInfo(FieldInfo info) {
             if (fieldInfos == null) {
-                fieldInfos = new ArrayList<FieldInfo>();
+                fieldInfos = new ArrayList<>();
             }
 
             fieldInfos.add(info);
@@ -784,6 +734,56 @@ public class EntityClassInfo {
         private void setTypeArg(String typeArg) {
             this.typeArg = typeArg;
             this.simpleTypeArgName = typeArg.substring(typeArg.lastIndexOf(".") + 1);
+        }
+
+            /**
+         * @return the isEnumerated
+         */
+        public boolean isEnumerated() {
+            return isEnumerated;
+        }
+
+        /**
+         * @param isEnumerated the isEnumerated to set
+         */
+        public void setEnumerated(boolean isEnumerated) {
+            this.isEnumerated = isEnumerated;
+        }
+
+        /**
+         * @return the isLob
+         */
+        public boolean isLob() {
+            return isLob;
+        }
+
+        /**
+         * @param isLob the isLob to set
+         */
+        public void setLob(boolean isLob) {
+            this.isLob = isLob;
+        }
+
+        /**
+         * @return the isEmbedded
+         */
+        public boolean isEmbedded() {
+            return isEmbedded;
+        }
+
+        private enum Relationship {
+
+            OneToOne, OneToMany, ManyToOne, ManyToMany
+        };
+
+        /**
+         * Define a way to convert String into 'field info' type instance.
+         */
+        private enum StringConverter {
+
+            CTOR, // Constructor with String as a single argument
+            VALUE_OF, // static valueOf method
+            FROM_STRING;// static fromString method
         }
 
     }

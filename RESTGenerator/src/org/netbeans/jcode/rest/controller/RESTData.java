@@ -36,7 +36,9 @@ public class RESTData extends LayerConfigData {
     private RestConfigData restConfigData;
     private ControllerReturnType returnType;
     private List<FilterType> filterTypes;
-
+    private boolean metrics = true;
+    private boolean docsEnable = true;
+    
     /**
      * @return the _package
      */
@@ -141,6 +143,34 @@ public class RESTData extends LayerConfigData {
      */
     public void setAppPackage(String appPackage) {
         this.appPackage = appPackage;
+    }
+
+    /**
+     * @return the metrics
+     */
+    public boolean isMetrics() {
+        return metrics;
+    }
+
+    /**
+     * @param metrics the metrics to set
+     */
+    public void setMetrics(boolean metrics) {
+        this.metrics = metrics;
+    }
+
+    /**
+     * @return the swagger
+     */
+    public boolean isDocsEnable() {
+        return docsEnable;
+    }
+
+    /**
+     * @param swagger the swagger to set
+     */
+    public void setDocsEnable(boolean swagger) {
+        this.docsEnable = swagger;
     }
 
 }

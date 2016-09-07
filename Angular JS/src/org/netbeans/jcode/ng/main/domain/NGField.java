@@ -15,13 +15,21 @@
  */
 package org.netbeans.jcode.ng.main.domain;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.netbeans.jcode.core.util.StringHelper.firstUpper;
 import static org.netbeans.jcode.core.util.StringHelper.snakeCase;
 import static org.netbeans.jcode.core.util.StringHelper.startCase;
 import org.netbeans.jcode.entity.info.EntityClassInfo;
+import org.netbeans.jpa.modeler.spec.extend.BaseAttribute;
+import org.netbeans.jpa.modeler.spec.validation.constraints.Constraint;
+import org.netbeans.jpa.modeler.spec.validation.constraints.Max;
+import org.netbeans.jpa.modeler.spec.validation.constraints.Min;
+import org.netbeans.jpa.modeler.spec.validation.constraints.NotNull;
+import org.netbeans.jpa.modeler.spec.validation.constraints.Pattern;
+import org.netbeans.jpa.modeler.spec.validation.constraints.Size;
 
 public class NGField {
 
@@ -33,14 +41,68 @@ public class NGField {
     public String fieldNameUnderscored;
     public String fieldNameHumanized;
     public String fieldInJavaBeanMethod;
+    public String fieldValues;
+
+    public List<String> fieldValidateRules;
     public boolean fieldValidate;
-    private String fieldValues;
-  
-    
+    public String fieldValidateRulesMax;
+    public String fieldValidateRulesMin;
+    public String fieldValidateRulesMaxlength;
+    public String fieldValidateRulesMinlength;
+    public String fieldValidateRulesMaxbytes;
+    public String fieldValidateRulesMinbytes;
+    public String fieldValidateRulesPattern;
+
+    @Deprecated
     public NGField(EntityClassInfo.FieldInfo fieldInfo) {
         this.fieldName = fieldInfo.getName();
-        this.fieldIsEnum= fieldInfo.isEnumerated();
+        this.fieldIsEnum = fieldInfo.isEnumerated();
 //        this.fieldTypeBlobContent= fieldInfo.isLob();
+    }
+
+    public NGField(String fieldName) {
+        this.fieldName = fieldName;
+    }
+
+    public NGField(BaseAttribute attribute) {
+        this.fieldName = attribute.getName();
+        loadValidation(attribute.getConstraintsMap());
+    }
+
+    //['required', 'max', 'min', 'maxlength', 'minlength', 'maxbytes', 'minbytes', 'pattern'];
+    private void loadValidation(Map<String, Constraint> constraints) {
+        List<String> validationRules = new ArrayList<>();
+        
+        NotNull notNull = (NotNull) constraints.get(NotNull.class.getSimpleName());
+        if (notNull != null && notNull.getSelected()) {
+            validationRules.add("required");
+        }
+        
+        Pattern pattern = (Pattern) constraints.get(Pattern.class.getSimpleName());
+        if (pattern != null && pattern.getSelected()) {
+            validationRules.add("pattern");
+            fieldValidateRulesMin = pattern.getRegexp();
+        }
+        
+        Min min = (Min) constraints.get(Min.class.getSimpleName());
+        if (min != null && min.getSelected()) {
+            validationRules.add("min");
+            fieldValidateRulesMin = String.valueOf(min.getValue());
+        }
+        
+        Max max = (Max) constraints.get(Max.class.getSimpleName());
+        if (max != null && max.getSelected()) {
+            validationRules.add("max");
+            fieldValidateRulesMax = String.valueOf(max.getValue());
+        }
+        if (constraints.get(Size.class.getSimpleName()) != null) {
+            validationRules.add("max");
+            Size size = (Size) constraints.get(Size.class.getSimpleName());
+            fieldValidateRulesMaxlength = String.valueOf(size.getMax());
+            fieldValidateRulesMinlength = String.valueOf(size.getMin());
+        }
+        setFieldValidate(validationRules);
+
     }
 
     /**
@@ -63,8 +125,8 @@ public class NGField {
     public String getFieldType() {
         return fieldType;
     }
-    
-    public void setFieldType(String fieldType){
+
+    public void setFieldType(String fieldType) {
         setFieldType(fieldType, "sql");
     }
 
@@ -84,7 +146,7 @@ public class NGField {
 //        } else {
 //            fieldIsEnum = false;
 //        }
-      
+
         this.fieldType = fieldType;
     }
 
@@ -107,8 +169,8 @@ public class NGField {
      */
     public String getFieldNameHumanized() {
         if (fieldNameHumanized == null) {
-                    fieldNameHumanized = startCase(fieldName);
-                }
+            fieldNameHumanized = startCase(fieldName);
+        }
         return fieldNameHumanized;
     }
 
@@ -133,7 +195,6 @@ public class NGField {
         this.fieldIsEnum = fieldIsEnum;
     }
 
-
     /**
      * @return the fieldIsEnum
      */
@@ -146,8 +207,8 @@ public class NGField {
      */
     public String getFieldNameCapitalized() {
         if (fieldNameCapitalized == null) {
-                    fieldNameCapitalized = firstUpper(fieldName);
-                }
+            fieldNameCapitalized = firstUpper(fieldName);
+        }
         return fieldNameCapitalized;
     }
 
@@ -163,8 +224,8 @@ public class NGField {
      */
     public String getFieldNameUnderscored() {
         if (fieldNameUnderscored == null) {
-                    fieldNameUnderscored = snakeCase(fieldName);
-                }
+            fieldNameUnderscored = snakeCase(fieldName);
+        }
         return fieldNameUnderscored;
     }
 
@@ -210,18 +271,20 @@ public class NGField {
     }
 
     public void setFieldValidate(List<String> fieldValidateRules) {
-        if (fieldValidateRules != null  && fieldValidateRules.size() >= 1) {
-                    fieldValidate = true;
-                } else {
-                    fieldValidate = false;
-                }
+
+        if (fieldValidateRules != null && fieldValidateRules.size() >= 1) {
+            fieldValidate = true;
+        } else {
+            fieldValidate = false;
+        }
+        this.fieldValidateRules = fieldValidateRules;
     }
 
     /**
      * @return the fieldValues
      */
     public String getFieldValues() {
-        if(fieldValues==null){
+        if (fieldValues == null) {
             return EMPTY;
         }
         return fieldValues;
@@ -233,6 +296,5 @@ public class NGField {
     public void setFieldValues(String fieldValues) {
         this.fieldValues = fieldValues;
     }
-
 
 }

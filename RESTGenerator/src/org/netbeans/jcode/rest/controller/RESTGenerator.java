@@ -18,7 +18,6 @@ package org.netbeans.jcode.rest.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +48,7 @@ import static org.netbeans.jcode.core.util.StringHelper.firstLower;
 import static org.netbeans.jcode.core.util.StringHelper.firstUpper;
 import static org.netbeans.jcode.core.util.StringHelper.getMethodName;
 import static org.netbeans.jcode.core.util.StringHelper.kebabCase;
+import static org.netbeans.jcode.core.util.StringHelper.startCase;
 import org.netbeans.jcode.ejb.facade.EjbFacadeGenerator;
 import static org.netbeans.jcode.generator.internal.util.Util.pluralize;
 import org.netbeans.jcode.layer.ConfigData;
@@ -56,6 +56,7 @@ import org.netbeans.jcode.layer.Generator;
 import org.netbeans.jcode.layer.Technology;
 import static org.netbeans.jcode.layer.Technology.Type.CONTROLLER;
 import org.netbeans.jcode.rest.filter.RESTFilterGenerator;
+import org.netbeans.jcode.rest.util.RestApp;
 import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.modules.j2ee.persistence.dd.common.PersistenceUnit;
@@ -103,15 +104,21 @@ public class RESTGenerator implements Generator {
     
     private String entityPackage;
     
-    private static final List<Template> CONFIG_TEMPLATES = new ArrayList<>();
-    private static final List<Template> ENTITY_TEMPLATES = new ArrayList<>();
-    private static final List<Template> ENTITY_LISTENER_TEMPLATES = new ArrayList<>();
-    private static final List<Template> FACADE_TEMPLATES = new ArrayList<>();
-    private static final List<Template> SERVICE_TEMPLATES = new ArrayList<>();
-    private static final List<Template> CONTROLLER_TEMPLATES = new ArrayList<>();
-    private static final List<Template> CONTROLLER_EXT_TEMPLATES = new ArrayList<>();
-
-    static {
+    private List<Template> CONFIG_TEMPLATES, ENTITY_TEMPLATES,
+            ENTITY_LISTENER_TEMPLATES, FACADE_TEMPLATES,
+            SERVICE_TEMPLATES, CONTROLLER_TEMPLATES,
+            CONTROLLER_EXT_TEMPLATES, METRICS_TEMPLATES;
+    
+    private void registerTemplates() {
+        
+        CONFIG_TEMPLATES = new ArrayList<>();
+        ENTITY_TEMPLATES = new ArrayList<>();
+        ENTITY_LISTENER_TEMPLATES = new ArrayList<>();
+        FACADE_TEMPLATES = new ArrayList<>();
+        SERVICE_TEMPLATES = new ArrayList<>();
+        CONTROLLER_TEMPLATES = new ArrayList<>();
+        CONTROLLER_EXT_TEMPLATES = new ArrayList<>();
+        METRICS_TEMPLATES = new ArrayList<>();
 
         ENTITY_TEMPLATES.add(new Template("entity/AbstractAuditingEntity.java.ftl", "AbstractAuditingEntity"));
         ENTITY_TEMPLATES.add(new Template("entity/Authority.java.ftl", "Authority"));
@@ -137,6 +144,12 @@ public class RESTGenerator implements Generator {
         CONTROLLER_EXT_TEMPLATES.add(new Template("rest/dto/ManagedUserDTO.java.ftl", "ManagedUserDTO", "dto"));
         CONTROLLER_EXT_TEMPLATES.add(new Template("rest/dto/UserDTO.java.ftl", "UserDTO", "dto"));
 
+        if(restData.isMetrics()){
+        METRICS_TEMPLATES.add(new Template("config/MetricsConfig.java.ftl", "MetricsConfig", "config"));
+        METRICS_TEMPLATES.add(new Template("metrics/DiagnosticFilter.java.ftl", "DiagnosticFilter", "metrics"));
+        METRICS_TEMPLATES.add(new Template("metrics/MetricsConfigurer.java.ftl", "MetricsConfigurer", "metrics"));//require  import MetricsConfig
+        }
+        
         SERVICE_TEMPLATES.add(new Template("security/Secured.java.ftl", "Secured", "security"));
         SERVICE_TEMPLATES.add(new Template("security/AuthenticationException.java.ftl", "AuthenticationException", "security"));
         SERVICE_TEMPLATES.add(new Template("security/AuthoritiesConstants.java.ftl", "AuthoritiesConstants", "security"));
@@ -151,12 +164,15 @@ public class RESTGenerator implements Generator {
         SERVICE_TEMPLATES.add(new Template("service/mail/MailService.java.ftl", "MailService", "service.mail"));
         SERVICE_TEMPLATES.add(new Template("util/RandomUtil.java.ftl", "RandomUtil", "util"));
         SERVICE_TEMPLATES.add(new Template("service/UserService.java.ftl", "UserService", "service"));
-
+        
+        if(restData.isMetrics() || restData.isDocsEnable()){
+            SERVICE_TEMPLATES.add(new Template("web/WebConfigurer.java.ftl", "WebConfigurer", "web"));
+        }
         CONTROLLER_TEMPLATES.add(new Template("rest/AccountController.java.ftl", "Account"));
         CONTROLLER_TEMPLATES.add(new Template("rest/UserController.java.ftl", "User"));
         CONTROLLER_TEMPLATES.add(new Template("rest/UserJWTController.java.ftl", "UserJWT"));
-
-    }
+        
+}
 
     @Override
     public void execute() throws IOException {
@@ -168,13 +184,19 @@ public class RESTGenerator implements Generator {
             generateEntityController(classInfo, param);
         }
         CDIUtil.createDD(project);
-        addMavenDependencies();
+        addMavenDependencies("pom/application/_pom.xml");
+        if(restData.isMetrics()){
+          addMavenDependencies("pom/metrics/_pom.xml"); 
+        }
+        if(restData.isDocsEnable()){
+          addMavenDependencies("pom/docs/_pom.xml"); 
+        }
     }
 
     
-    private void addMavenDependencies() {
+    private void addMavenDependencies(String pom) {
         if(POMManager.isMavenProject(project)){
-            POMManager pomManager = new POMManager(TEMPLATE + "pom/_pom.xml", project);
+            POMManager pomManager = new POMManager(TEMPLATE + pom, project);
             pomManager.setSourceVersion("1.8");
             pomManager.execute();
             pomManager.commit();
@@ -220,6 +242,7 @@ public class RESTGenerator implements Generator {
         param.put("entityInstancePlural", pluralize(entityInstance));
 
         param.put("controllerClass", controllerFileName);
+        param.put("controllerClassHumanized", startCase(controllerFileName));
         param.put("entityApiUrl", entityNameSpinalCased);
 
         param.put("EntityFacade", facadeFileName);
@@ -234,7 +257,8 @@ public class RESTGenerator implements Generator {
         param.put("pkType", classInfo.getIdFieldInfo().getType());
         param.put("package", restData.getPackage());
         param.put("applicationPath", restData.getRestConfigData().getApplicationPath());
-        
+        param.put("metrics", restData.isMetrics());
+        param.put("docs", restData.isDocsEnable());
 
         FileUtil.expandTemplate(TEMPLATE + "rest/entity/EntityController.java.ftl", targetFolder, controllerFileName + '.' + JAVA_EXT, param);
 
@@ -248,6 +272,8 @@ public class RESTGenerator implements Generator {
     }
 
     private Map<String, Object> generateServerSideComponent() throws IOException {
+        registerTemplates();
+        
         Map<String, Object> param = new HashMap<>();
         String appPackage = restData.getAppPackage();
 
@@ -264,6 +290,8 @@ public class RESTGenerator implements Generator {
 
         param.put("restPrefix", restData.getPrefixName());
         param.put("restSuffix", restData.getSuffixName());
+        param.put("metrics", restData.isMetrics());
+        param.put("docs", restData.isDocsEnable());
 
         //config
         expandServerSideComponent(source, appPackage, EMPTY, EMPTY, CONFIG_TEMPLATES, param);
@@ -273,13 +301,15 @@ public class RESTGenerator implements Generator {
         expandServerSideComponent(source, restData.getPackage(), EMPTY, EMPTY, CONTROLLER_EXT_TEMPLATES, param);
         //facade
         expandServerSideComponent(source, beanData.getPackage(), beanData.getPrefixName(), beanData.getSuffixName(), FACADE_TEMPLATES, param);
+        //metrics
+        expandServerSideComponent(source, appPackage, EMPTY, EMPTY, METRICS_TEMPLATES, param);
         //service
         expandServerSideComponent(source, appPackage, EMPTY, EMPTY, SERVICE_TEMPLATES, param);
         //entity
         expandServerSideComponent(source, entityPackage, EMPTY, EMPTY, ENTITY_LISTENER_TEMPLATES, param);
         //controller
         expandServerSideComponent(source, restData.getPackage(), restData.getPrefixName(), restData.getSuffixName(), CONTROLLER_TEMPLATES, param);
-
+        
         FileObject configRoot = ProjectHelper.getResourceDirectory(project);
         if(configRoot==null){//non-maven project
             configRoot = source.getRootFolder();
@@ -324,21 +354,23 @@ public class RESTGenerator implements Generator {
     private void expandServerSideComponent(SourceGroup targetSourceGroup, String _package, String prefixName, String suffixName, List<Template> templates, Map<String, Object> param) {
         String fileName = null;
         try {
-            for (Template template : templates) {
-                String templatePackage = _package;
-                fileName = prefixName + template.getFileName() + suffixName;
-                if (StringUtils.isNotBlank(template.getPackageSuffix())) {
-                    templatePackage = templatePackage + '.' + template.getPackageSuffix();
+            if(templates!=null){
+                for (Template template : templates) {
+                    String templatePackage = _package;
+                    fileName = prefixName + template.getFileName() + suffixName;
+                    if (StringUtils.isNotBlank(template.getPackageSuffix())) {
+                        templatePackage = templatePackage + '.' + template.getPackageSuffix();
+                    } 
+                    param.put("package", templatePackage);
+                    String templateFile = template.getPath().substring(template.getPath().lastIndexOf('/') + 1, template.getPath().indexOf('.'));
+                    param.put(templateFile, fileName);
+                    if (prefixName != null || suffixName != null) {
+                        param.put(firstLower(templateFile), firstLower(fileName));
+                    }
+                    param.put(templateFile + "_FQN", templatePackage + '.' + fileName);
+                    FileObject targetFolder = SourceGroupSupport.getFolderForPackage(targetSourceGroup, (String) param.get("package"), true);
+                    FileUtil.expandTemplate(TEMPLATE + template.getPath(), targetFolder, fileName + '.' + JAVA_EXT, param);
                 }
-                param.put("package", templatePackage);
-                String templateFile = template.getPath().substring(template.getPath().lastIndexOf('/') + 1, template.getPath().indexOf('.'));
-                param.put(templateFile, fileName);
-                if (prefixName != null || suffixName != null) {
-                    param.put(firstLower(templateFile), firstLower(fileName));
-                }
-                param.put(templateFile + "_FQN", templatePackage + '.' + fileName);
-                FileObject targetFolder = SourceGroupSupport.getFolderForPackage(targetSourceGroup, (String) param.get("package"), true);
-                FileUtil.expandTemplate(TEMPLATE + template.getPath(), targetFolder, fileName + '.' + JAVA_EXT, param);
             }
         } catch (Exception ex) {
             Exceptions.printStackTrace(ex);
@@ -348,8 +380,20 @@ public class RESTGenerator implements Generator {
 
     public void generateUtil() throws IOException {
         FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, restData.getPackage(), true);
-
-        generateApplicationConfig();
+        List<RestApp> singletonClasses = new ArrayList<>();
+        List<String> providerClasses = new ArrayList<>();
+        singletonClasses.add(RestApp.JACKSON);
+        if(restData.isMetrics()){
+            singletonClasses.add(RestApp.METRICS);    
+        }
+        if (restData.isDocsEnable()) {
+            providerClasses.add("com.wordnik.swagger.jaxrs.listing.ApiListingResource");//not req
+            providerClasses.add("com.wordnik.swagger.jaxrs.listing.ApiDeclarationProvider");
+            providerClasses.add("com.wordnik.swagger.jaxrs.listing.ApiListingResourceJSON");
+            providerClasses.add("com.wordnik.swagger.jaxrs.listing.ResourceListingProvider");
+        }
+        
+        generateApplicationConfig(singletonClasses, providerClasses);
         if (!restData.getFilterTypes().isEmpty()) {
             String UTIL_PACKAGE = "util";
             FileObject utilFolder = SourceGroupSupport.getFolderForPackage(targetFolder, UTIL_PACKAGE, true);
@@ -359,8 +403,7 @@ public class RESTGenerator implements Generator {
 
     }
 
-    public void generateApplicationConfig() throws IOException {
-
+    public void generateApplicationConfig(List<RestApp> singletonClasses, List<String> providerClasses) throws IOException {
         if (restData.getRestConfigData() == null) {
             return;
         }
@@ -381,11 +424,10 @@ public class RESTGenerator implements Generator {
             Exceptions.printStackTrace(ex);
         }
 
-        final String appClassName = restData.getRestConfigData().getApplicationClass();
         try {
-            if (restAppPack != null && appClassName != null) {
-                RestUtils.createApplicationConfigClass(restSupport, restAppPack, appClassName,
-                        restData.getRestConfigData().getApplicationPath(), Collections.singletonList("com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"), handler);
+            if (restAppPack != null && restData.getRestConfigData().getApplicationClass() != null) {
+                RestUtils.createApplicationConfigClass(restSupport, restData.getRestConfigData(), 
+                        restAppPack, restData.getAppPackage(), singletonClasses, providerClasses, handler);
             }
             RestUtils.disableRestServicesChangeListner(project);
             restSupport.configure("JPA Modeler - REST support");

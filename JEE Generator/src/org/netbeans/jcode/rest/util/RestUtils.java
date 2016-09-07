@@ -36,30 +36,35 @@ import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import org.apache.commons.lang.StringUtils;
 import org.netbeans.api.j2ee.core.Profile;
 import org.netbeans.api.java.classpath.ClassPath;
 import org.netbeans.api.java.source.JavaSource;
-import org.netbeans.api.java.source.Task;
 import org.netbeans.api.java.source.TreeMaker;
 import org.netbeans.api.java.source.WorkingCopy;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
+import static org.netbeans.jcode.cdi.CDIConstants.INJECT;
 import static org.netbeans.jcode.core.util.Constants.JAVA_EXT;
 import org.netbeans.jcode.core.util.JavaSourceHelper;
 import org.netbeans.jcode.core.util.SourceGroupSupport;
 import static org.netbeans.jcode.rest.RestConstants.SINGLETON_METHOD;
+import org.netbeans.jcode.rest.applicationconfig.RestConfigData;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
+import org.netbeans.modules.j2ee.core.api.support.java.SourceUtils;
 import org.netbeans.modules.j2ee.deployment.common.api.Datasource;
 import org.netbeans.modules.j2ee.deployment.devmodules.api.J2eeModule;
 import org.netbeans.modules.j2ee.deployment.devmodules.spi.J2eeModuleProvider;
 import org.netbeans.modules.web.api.webmodule.WebModule;
 import org.netbeans.modules.web.spi.webmodule.WebModuleProvider;
+import org.netbeans.modules.websvc.rest.MiscPrivateUtilities;
 import org.netbeans.modules.websvc.rest.model.api.RestConstants;
 import org.netbeans.modules.websvc.rest.model.api.RestServicesModel;
 import org.netbeans.modules.websvc.rest.spi.MiscUtilities;
@@ -370,9 +375,13 @@ public class RestUtils {
         return false;
     }
 
-    public static FileObject createApplicationConfigClass(final RestSupport restSupport, FileObject packageFolder,
-            String className, final String applicationPath, List<String> singletonClasses, ProgressHandler handler) throws IOException {
-
+    public static FileObject createApplicationConfigClass(final RestSupport restSupport, RestConfigData configData, 
+            FileObject packageFolder, String appPackage,
+            List<RestApp> singletonClasses, List<String> providerClasses, ProgressHandler handler) throws IOException {
+        
+         final String className = configData.getApplicationClass();
+       final String applicationPath = configData.getApplicationPath();
+       
         FileObject configFO = packageFolder.getFileObject(className, JAVA_EXT);
         if (configFO != null) {
             configFO.delete();
@@ -385,31 +394,40 @@ public class RestUtils {
         }
         handler.progress(className);
 
-        javaSource.runModificationTask(new Task<WorkingCopy>() {
-
-            @Override
-            public void run(WorkingCopy workingCopy) throws Exception {
-                workingCopy.toPhase(JavaSource.Phase.RESOLVED);
-                JavaSourceHelper.addClassAnnotation(workingCopy,
-                        new String[]{"javax.ws.rs.ApplicationPath"},
-                        new String[]{applicationPath});         // NOI18N
-                ClassTree tree = JavaSourceHelper.getTopLevelClassTree(workingCopy);//
-                TreeMaker maker = workingCopy.getTreeMaker();
-                ClassTree newTree = maker.setExtends(tree,
-                        maker.QualIdent(JAX_RS_APPLICATION_CLASS)); // NOI18N
-
-                newTree = createGetClasses(workingCopy, maker, newTree, restSupport);
-                newTree = createGetSingletons(workingCopy, maker, newTree, singletonClasses);
-                newTree = MiscUtilities.createAddResourceClasses(maker, newTree, workingCopy, "{}", true);
-
-                workingCopy.rewrite(tree, newTree);
+        javaSource.runModificationTask((WorkingCopy workingCopy) -> {
+            workingCopy.toPhase(JavaSource.Phase.RESOLVED);
+            JavaSourceHelper.addClassAnnotation(workingCopy,
+                    new String[]{"javax.ws.rs.ApplicationPath"},
+                    new String[]{applicationPath});         // NOI18N
+            ClassTree tree = JavaSourceHelper.getTopLevelClassTree(workingCopy);//
+            TreeMaker maker = workingCopy.getTreeMaker();
+            ClassTree newTree = maker.setExtends(tree,
+                    maker.QualIdent(JAX_RS_APPLICATION_CLASS)); // NOI18N
+            
+            
+            //Singletons imports
+            TypeElement classElement = SourceUtils.getPublicTopLevelElement(workingCopy);
+            GenerationUtils genUtils = GenerationUtils.newInstance(workingCopy);
+            for (RestApp app : singletonClasses) {
+                if (app == RestApp.METRICS) {
+                    String metricPackage = StringUtils.isBlank(appPackage)? "metrics" : appPackage + ".metrics" ;
+                    VariableTree variableTree = maker.Variable(maker.addModifiersAnnotation(genUtils.createModifiers(Modifier.PRIVATE), genUtils.createAnnotation(INJECT)),
+                            "metricsConfigurer", genUtils.createType(metricPackage + ".MetricsConfigurer" , classElement), null);
+                    newTree = maker.addClassMember(newTree, variableTree);
+                }
             }
-
+            
+            newTree = createGetClasses(workingCopy, maker, newTree, restSupport, providerClasses);
+            newTree = MiscUtilities.createAddResourceClasses(maker, newTree, workingCopy, "{}", true);
+            newTree = createGetSingletons(workingCopy, maker, newTree, singletonClasses);
+            
+            
+            workingCopy.rewrite(tree, newTree);
         }).commit();
         return appClass;
     }
 
-    private static ClassTree createGetClasses(WorkingCopy workingCopy, TreeMaker maker, ClassTree newTree, RestSupport restSupport) {
+    private static ClassTree createGetClasses(WorkingCopy workingCopy, TreeMaker maker, ClassTree newTree, RestSupport restSupport, List<String> providerClasses) {
 
         ModifiersTree modifiersTree = maker.Modifiers(
                 EnumSet.of(Modifier.PUBLIC), Collections.singletonList(
@@ -431,11 +449,29 @@ public class RestUtils {
                 Collections.<TypeParameterTree>emptyList(),
                 Collections.<VariableTree>emptyList(),
                 Collections.<ExpressionTree>emptyList(),
-                MiscUtilities.createBodyForGetClassesMethod(restSupport), null);
+                createBodyForGetClassesMethod(restSupport, providerClasses), null);
         return maker.addClassMember(newTree, methodTree);
     }
+    
+    
+    public static String createBodyForGetClassesMethod(RestSupport restSupport, List<String> provideClasses) {
+        StringBuilder builder = new StringBuilder();
+        builder.append('{');
+        builder.append("Set<Class<?>> resources = new java.util.HashSet<>();");// NOI18N
+        if (!restSupport.hasJersey2(true)) {
+            builder.append(MiscPrivateUtilities.getJacksonProviderSnippet(restSupport));
+        }
+        if(provideClasses!=null){
+        for(String _class : provideClasses){
+            builder.append("resources.add(").append(_class).append(".class);");
+        }
+        }
+        builder.append(RestConstants.GET_REST_RESOURCE_CLASSES2+"(resources);");
+        builder.append("return resources;}");
+        return builder.toString();
+    }
 
-    private static ClassTree createGetSingletons(WorkingCopy workingCopy, TreeMaker maker, ClassTree newTree, List<String> singletonClasses) {
+    private static ClassTree createGetSingletons(WorkingCopy workingCopy, TreeMaker maker, ClassTree newTree, List<RestApp> singletonClasses) {
         if (singletonClasses == null || singletonClasses.isEmpty()) {
             return newTree;
         }
@@ -456,10 +492,15 @@ public class RestUtils {
 
         StringBuilder body = new StringBuilder();
         body.append("{final Set<Object> instances = new HashSet<>();\n");
-        for (String singletonClass : singletonClasses) {
-            body.append("instances.add(new ").append(JavaSourceHelper.getSimpleClassName(singletonClass)).append("());\n");
-            newCut = maker.addCompUnitImport(newCut, maker.Import(maker.Identifier(singletonClass), false));
+        if(singletonClasses!=null){
+        for (RestApp app : singletonClasses) {
+            body.append("instances.add(").append(app.getBody()).append(");\n");
+            for(String _import : app.getImports()){
+                newCut = maker.addCompUnitImport(newCut, maker.Import(maker.Identifier(_import), false));
+            }
         }
+        }
+        
         body.append("return instances;}");
 
         MethodTree methodTree = maker.Method(modifiersTree,
@@ -469,7 +510,7 @@ public class RestUtils {
                 Collections.<ExpressionTree>emptyList(),
                 body.toString(), null);
 
-        workingCopy.rewrite(cut, newCut);
+        workingCopy.rewrite(cut, newCut);//update import
         return maker.addClassMember(newTree, methodTree);
     }
 

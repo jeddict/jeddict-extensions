@@ -66,3 +66,25 @@ app-logo.png
 entity-resource.zip
 File : _entity-management.state.js
 add <%_ if (fields[idx].fieldName != 'id') %> for id : null
+
+
+>>>> web-resources.zip
+File : _metrics.controller.js
+Replace :
+if (key.indexOf('web.rest') !== -1 || key.indexOf('service') !== -1) {
+
+
+File : _navbar.controller.js
+Add :
+<%_ if(enableDocs) { _%>
+        vm.swaggerEnabled = true;
+<%_ } _%>
+
+File : swagger-ui/index.html
+initializeSpringfox -> initializeSwagger
+springfox -> swaggerApp
+Complete file changed
+
+
+File : _metric.service.js
+management/jhipster/metrics -> management/metrics

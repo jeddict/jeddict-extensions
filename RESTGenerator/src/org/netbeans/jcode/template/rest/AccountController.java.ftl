@@ -31,10 +31,15 @@ import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.CREATED;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import org.apache.commons.lang3.StringUtils;
-
+<#if metrics>import com.codahale.metrics.annotation.Timed;</#if>
+<#if docs>import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;</#if>
 /**
  * REST controller for managing the current user's account.
  */
+<#if docs>@Api(value = "/api/account", description = "Account ${restSuffix}")</#if>
 @Path("/api")
 public class ${restPrefix}Account${restSuffix} {
 
@@ -66,6 +71,8 @@ public class ${restPrefix}Account${restSuffix} {
     @Context
     HttpServletRequest request;
 
+    <#if metrics>@Timed</#if>
+    <#if docs>@ApiOperation(value = "register the user" )</#if>
     @Path("/register")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -112,6 +119,8 @@ public class ${restPrefix}Account${restSuffix} {
      * body, or status 500 (Internal Server Error) if the user couldn't be
      * activated
      */
+    <#if metrics>@Timed</#if>
+    <#if docs>@ApiOperation(value = "activate the registered user" )</#if>
     @Path("/activate")
     @GET
     @Produces({MediaType.APPLICATION_JSON})
@@ -128,6 +137,8 @@ public class ${restPrefix}Account${restSuffix} {
      * @param request the HTTP request
      * @return the login if the user is authenticated
      */
+    <#if metrics>@Timed</#if>
+    <#if docs>@ApiOperation(value = "check if the user is authenticated" )</#if>
     @Path("/authenticate")
     @GET
     @Produces({MediaType.TEXT_PLAIN})
@@ -144,6 +155,8 @@ public class ${restPrefix}Account${restSuffix} {
      * body, or status 500 (Internal Server Error) if the user couldn't be
      * returned
      */
+    <#if metrics>@Timed</#if>
+    <#if docs>@ApiOperation(value = "get the current user" )</#if>
     @Path("/account")
     @GET
     @Produces({MediaType.APPLICATION_JSON})
@@ -161,6 +174,8 @@ public class ${restPrefix}Account${restSuffix} {
      * @return the ResponseEntity with status 200 (OK), or status 400 (Bad
      * Request) or 500 (Internal Server Error) if the user couldn't be updated
      */
+    <#if metrics>@Timed</#if>
+    <#if docs>@ApiOperation(value = "update the current user information" )</#if>
     @Path("/account")
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
@@ -188,6 +203,8 @@ public class ${restPrefix}Account${restSuffix} {
      * @return the ResponseEntity with status 200 (OK), or status 400 (Bad
      * Request) if the new password is not strong enough
      */
+    <#if metrics>@Timed</#if>
+    <#if docs>@ApiOperation(value = "changes the current user's password" )</#if>
     @Path("/account/change_password")
     @POST
     <#--@Consumes({MediaType.TEXT_PLAIN}) should be TEXT_HTML -->
@@ -210,6 +227,8 @@ public class ${restPrefix}Account${restSuffix} {
      * @return the ResponseEntity with status 200 (OK) if the e-mail was sent,
      * or status 400 (Bad Request) if the e-mail address is not registred
      */
+    <#if metrics>@Timed</#if>
+    <#if docs>@ApiOperation(value = "Send an e-mail to reset the password" )</#if>
     @Path("/account/reset_password/init")
     @POST
     @Consumes({MediaType.TEXT_PLAIN})
@@ -237,6 +256,8 @@ public class ${restPrefix}Account${restSuffix} {
      * reset, or status 400 (Bad Request) or 500 (Internal Server Error) if the
      * password could not be reset
      */
+    <#if metrics>@Timed</#if>
+    <#if docs>@ApiOperation(value = "reset the password" )</#if>
     @Path("/account/reset_password/finish")
     @POST
     @Consumes({MediaType.APPLICATION_JSON})

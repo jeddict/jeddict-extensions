@@ -37,6 +37,11 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+<#if metrics>import com.codahale.metrics.annotation.Timed;</#if>
+<#if docs>import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;</#if>
 
 /**
  * REST controller for managing users.
@@ -45,6 +50,7 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
  * This class accesses the User entity, and needs to fetch its collection of
  * authorities.</p>
  */
+<#if docs>@Api(value = "/api/user", description = "User ${restSuffix}")</#if>
 @Path("/api")
 public class ${restPrefix}User${restSuffix} {
 
@@ -77,6 +83,11 @@ public class ${restPrefix}User${restSuffix} {
      * already in use
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
+    <#if metrics>@Timed</#if>
+    <#if docs>@ApiOperation(value = "create a new user")
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = "Created"),
+        @ApiResponse(code = 400, message = "Bad Request")})</#if>
     @Path(value = "/users")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -120,6 +131,12 @@ public class ${restPrefix}User${restSuffix} {
      * in use, or with status 500 (Internal Server Error) if the user couldn't be
      * updated
      */
+    <#if metrics>@Timed</#if>
+    <#if docs>@ApiOperation(value = "update user")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 500, message = "Internal Server Error")})</#if>
     @Path(value = "/users")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
@@ -166,6 +183,10 @@ public class ${restPrefix}User${restSuffix} {
      * @return the ResponseEntity with status 200 (OK) and with body all users
      * @throws URISyntaxException if the pagination headers couldn't be generated
      */
+    <#if metrics>@Timed</#if>
+    <#if docs>@ApiOperation(value = "get all the users")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK")})</#if>
     @Path(value = "/users")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -188,6 +209,11 @@ public class ${restPrefix}User${restSuffix} {
      * @return the ResponseEntity with status 200 (OK) and with body the "login"
      * user, or with status 404 (Not Found)
      */
+    <#if metrics>@Timed</#if>
+    <#if docs>@ApiOperation(value = "get the user")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "Not Found")})</#if>
     @Path(value = "/users/{login}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -206,6 +232,11 @@ public class ${restPrefix}User${restSuffix} {
      * @param login the login of the user to remove
      * @return the ResponseEntity with status 200 (OK)
      */
+    <#if metrics>@Timed</#if>
+    <#if docs>@ApiOperation(value = "remove the user" )
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "Not Found")})</#if>
     @Path(value = "/users/{login}")
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)

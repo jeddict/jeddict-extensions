@@ -358,7 +358,7 @@ public class SimpleRESTGenerator implements Generator {
         final String appClassName = restData.getRestConfigData().getApplicationClass();
         try {
             if (restAppPack != null && appClassName != null) {
-                RestUtils.createApplicationConfigClass(restSupport, restAppPack, appClassName, restData.getRestConfigData().getApplicationPath(), null, handler);
+//                RestUtils.createApplicationConfigClass(restSupport, restAppPack, appClassName, restData.getRestConfigData().getApplicationPath(), null, handler);
             }
             RestUtils.disableRestServicesChangeListner(project);
             restSupport.configure("JPA Modeler - REST support");

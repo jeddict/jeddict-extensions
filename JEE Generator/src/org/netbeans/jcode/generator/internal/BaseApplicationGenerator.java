@@ -39,6 +39,9 @@ public abstract class BaseApplicationGenerator extends AbstractGenerator {
 
     /**
      * Creates a new instance of EntityRESTServicesCodeGenerator
+     * @param model
+     * @param project
+     * @param persistenceUnit
      */
     public void initialize(EntityResourceBeanModel model, Project project,PersistenceUnit persistenceUnit) {
         this.model = model;
