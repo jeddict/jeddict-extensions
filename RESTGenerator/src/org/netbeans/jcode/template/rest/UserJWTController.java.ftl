@@ -34,8 +34,21 @@ public class ${restPrefix}UserJWT${restSuffix} {
     @Inject
     private UserService userService;
 
+    /**
+     * POST /authenticate : authenticate the credential.
+     * <p>
+     * Atuhenticate the user login and password.
+     * </p>
+     *
+     * @param loginDTO the login details to authenticate
+     * @return the Response with status 200 (OK) and with body the
+     * new jwt token, or with status 401 (Unauthorized) if the authentication fails
+     */
     <#if metrics>@Timed</#if>
-    <#if docs>@ApiOperation(value = "authenticate the credential" )</#if>
+    <#if docs>@ApiOperation(value = "authenticate the credential" )
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 401, message = "Unauthorized")})</#if>
     @Path("/authenticate")
     @POST
     @Consumes({MediaType.APPLICATION_JSON})

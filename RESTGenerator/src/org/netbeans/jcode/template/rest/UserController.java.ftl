@@ -78,7 +78,7 @@ public class ${restPrefix}User${restSuffix} {
      *
      * @param managedUserDTO the user to create
      * @param request the HTTP request
-     * @return the ResponseEntity with status 201 (Created) and with body the
+     * @return the Response with status 201 (Created) and with body the
      * new user, or with status 400 (Bad Request) if the login or email is
      * already in use
      * @throws URISyntaxException if the Location URI syntax is incorrect
@@ -126,7 +126,7 @@ public class ${restPrefix}User${restSuffix} {
      * PUT /users : Updates an existing User.
      *
      * @param managedUserDTO the user to update
-     * @return the ResponseEntity with status 200 (OK) and with body the updated
+     * @return the Response with status 200 (OK) and with body the updated
      * user, or with status 400 (Bad Request) if the login or email is already
      * in use, or with status 500 (Internal Server Error) if the user couldn't be
      * updated
@@ -180,7 +180,7 @@ public class ${restPrefix}User${restSuffix} {
      *
      * @param page the pagination information
      * @param size the pagination size information
-     * @return the ResponseEntity with status 200 (OK) and with body all users
+     * @return the Response with status 200 (OK) and with body all users
      * @throws URISyntaxException if the pagination headers couldn't be generated
      */
     <#if metrics>@Timed</#if>
@@ -206,7 +206,7 @@ public class ${restPrefix}User${restSuffix} {
      * GET /users/:login : get the "login" user.
      *
      * @param login the login of the user to find
-     * @return the ResponseEntity with status 200 (OK) and with body the "login"
+     * @return the Response with status 200 (OK) and with body the "login"
      * user, or with status 404 (Not Found)
      */
     <#if metrics>@Timed</#if>
@@ -230,7 +230,7 @@ public class ${restPrefix}User${restSuffix} {
      * DELETE USER :login : remove the "login" User.
      *
      * @param login the login of the user to remove
-     * @return the ResponseEntity with status 200 (OK)
+     * @return the Response with status 200 (OK) or with status 404 (Not Found)
      */
     <#if metrics>@Timed</#if>
     <#if docs>@ApiOperation(value = "remove the user" )

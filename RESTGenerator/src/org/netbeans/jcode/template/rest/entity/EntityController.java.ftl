@@ -41,7 +41,7 @@ public class ${controllerClass} {
      * POST : Create a new ${entityInstance}.
      *
      * @param ${instanceName} the ${instanceName} to create
-     * @return the ResponseEntity with status 201 (Created) and with body the
+     * @return the Response with status 201 (Created) and with body the
      * new ${instanceName}, or with status 400 (Bad Request) if the ${entityInstance} has already
      * an ID
      * @throws URISyntaxException if the Location URI syntax is incorrect
@@ -88,7 +88,7 @@ public class ${controllerClass} {
      *<% if (pagination != 'no') {}
      * @param pageable the pagination information<% } if (fieldsContainNoOwnerOneToOne) {}
      * @param filter the filter of the request<% }}
-     * @return the ResponseEntity with status 200 (OK) and the list of ${entityInstancePlural} in body<% if (pagination != 'no') {}
+     * @return the Response with status 200 (OK) and the list of ${entityInstancePlural} in body<% if (pagination != 'no') {}
      * @throws URISyntaxException if there is an error to generate the pagination HTTP headers<% }}
      */
     <#if metrics>@Timed</#if>
@@ -106,7 +106,7 @@ public class ${controllerClass} {
      * GET /:${pkName} : get the "${pkName}" ${entityInstance}.
      *
      * @param ${pkName} the ${pkName} of the ${instanceName} to retrieve
-     * @return the ResponseEntity with status 200 (OK) and with body the ${instanceName}, or with status 404 (Not Found)
+     * @return the Response with status 200 (OK) and with body the ${instanceName}, or with status 404 (Not Found)
      */
     <#if metrics>@Timed</#if>
     <#if docs>@ApiOperation(value = "get the ${entityInstance}")
@@ -127,7 +127,7 @@ public class ${controllerClass} {
      * DELETE /:${pkName} : remove the "${pkName}" ${entityInstance}.
      *     *
      * @param id the id of the ${instanceName} to delete
-     * @return the ResponseEntity with status 200 (OK)
+     * @return the Response with status 200 (OK)
      */
     <#if metrics>@Timed</#if>
     <#if docs>@ApiOperation(value = "remove the ${entityInstance}" )

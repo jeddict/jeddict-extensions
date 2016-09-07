@@ -65,14 +65,17 @@ public class ${restPrefix}Account${restSuffix} {
      *
      * @param managedUserDTO the managed user DTO
      * @param request the HTTP request
-     * @return the ResponseEntity with status 201 (Created) if the user is
+     * @return the Response with status 201 (Created) if the user is
      * registered or 400 (Bad Request) if the login or e-mail is already in use
      */
     @Context
     HttpServletRequest request;
 
     <#if metrics>@Timed</#if>
-    <#if docs>@ApiOperation(value = "register the user" )</#if>
+    <#if docs>@ApiOperation(value = "register the user" )
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = "Created"),
+        @ApiResponse(code = 400, message = "Bad Request")})</#if>
     @Path("/register")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -115,12 +118,15 @@ public class ${restPrefix}Account${restSuffix} {
      * GET /activate : activate the registered user.
      *
      * @param key the activation key
-     * @return the ResponseEntity with status 200 (OK) and the activated user in
+     * @return the Response with status 200 (OK) and the activated user in
      * body, or status 500 (Internal Server Error) if the user couldn't be
      * activated
      */
     <#if metrics>@Timed</#if>
-    <#if docs>@ApiOperation(value = "activate the registered user" )</#if>
+    <#if docs>@ApiOperation(value = "activate the registered user" )
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 500, message = "Internal Server Error")})</#if>
     @Path("/activate")
     @GET
     @Produces({MediaType.APPLICATION_JSON})
@@ -151,12 +157,15 @@ public class ${restPrefix}Account${restSuffix} {
     /**
      * GET /account : get the current user.
      *
-     * @return the ResponseEntity with status 200 (OK) and the current user in
+     * @return the Response with status 200 (OK) and the current user in
      * body, or status 500 (Internal Server Error) if the user couldn't be
      * returned
      */
     <#if metrics>@Timed</#if>
-    <#if docs>@ApiOperation(value = "get the current user" )</#if>
+    <#if docs>@ApiOperation(value = "get the current user" )
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 500, message = "Internal Server Error")})</#if>
     @Path("/account")
     @GET
     @Produces({MediaType.APPLICATION_JSON})
@@ -171,11 +180,15 @@ public class ${restPrefix}Account${restSuffix} {
      * POST /account : update the current user information.
      *
      * @param userDTO the current user information
-     * @return the ResponseEntity with status 200 (OK), or status 400 (Bad
+     * @return the Response with status 200 (OK), or status 400 (Bad
      * Request) or 500 (Internal Server Error) if the user couldn't be updated
      */
     <#if metrics>@Timed</#if>
-    <#if docs>@ApiOperation(value = "update the current user information" )</#if>
+    <#if docs>@ApiOperation(value = "update the current user information" )
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 500, message = "Internal Server Error")})</#if>
     @Path("/account")
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
@@ -200,11 +213,14 @@ public class ${restPrefix}Account${restSuffix} {
      * POST /account/change_password : changes the current user's password
      *
      * @param password the new password
-     * @return the ResponseEntity with status 200 (OK), or status 400 (Bad
+     * @return the Response with status 200 (OK), or status 400 (Bad
      * Request) if the new password is not strong enough
      */
     <#if metrics>@Timed</#if>
-    <#if docs>@ApiOperation(value = "changes the current user's password" )</#if>
+    <#if docs>@ApiOperation(value = "changes the current user's password" )
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 400, message = "Bad Request")})</#if>
     @Path("/account/change_password")
     @POST
     <#--@Consumes({MediaType.TEXT_PLAIN}) should be TEXT_HTML -->
@@ -224,11 +240,14 @@ public class ${restPrefix}Account${restSuffix} {
      *
      * @param mail the mail of the user
      * @param request the HTTP request
-     * @return the ResponseEntity with status 200 (OK) if the e-mail was sent,
+     * @return the Response with status 200 (OK) if the e-mail was sent,
      * or status 400 (Bad Request) if the e-mail address is not registred
      */
     <#if metrics>@Timed</#if>
-    <#if docs>@ApiOperation(value = "Send an e-mail to reset the password" )</#if>
+    <#if docs>@ApiOperation(value = "Send an e-mail to reset the password" )
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 400, message = "Bad Request")})</#if>
     @Path("/account/reset_password/init")
     @POST
     @Consumes({MediaType.TEXT_PLAIN})
@@ -252,12 +271,16 @@ public class ${restPrefix}Account${restSuffix} {
      * user
      *
      * @param keyAndPassword the generated key and the new password
-     * @return the ResponseEntity with status 200 (OK) if the password has been
+     * @return the Response with status 200 (OK) if the password has been
      * reset, or status 400 (Bad Request) or 500 (Internal Server Error) if the
      * password could not be reset
      */
     <#if metrics>@Timed</#if>
-    <#if docs>@ApiOperation(value = "reset the password" )</#if>
+    <#if docs>@ApiOperation(value = "reset the password" )
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 500, message = "Internal Server Error")})</#if>
     @Path("/account/reset_password/finish")
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
