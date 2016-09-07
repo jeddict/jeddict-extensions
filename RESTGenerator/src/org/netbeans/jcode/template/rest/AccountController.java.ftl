@@ -40,7 +40,7 @@ import com.wordnik.swagger.annotations.ApiResponses;</#if>
 /**
  * REST controller for managing the current user's account.
  */
-<#if docs>@Api(value = "/api/account", description = "Account ${restSuffix}")</#if>
+<#if docs>@Api(value = "/api")</#if>
 @Path("/api")
 public class ${restPrefix}Account${restSuffix} {
 

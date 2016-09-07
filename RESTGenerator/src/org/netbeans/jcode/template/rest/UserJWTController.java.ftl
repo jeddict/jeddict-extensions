@@ -24,7 +24,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;</#if>
 
-<#if docs>@Api(value = "/api/auth", description = "User JWT ${restSuffix}")</#if>
+<#if docs>@Api(value = "/api")</#if>
 @Path("/api")
 public class ${restPrefix}UserJWT${restSuffix} {
 

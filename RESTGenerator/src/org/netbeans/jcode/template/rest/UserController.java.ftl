@@ -50,7 +50,7 @@ import com.wordnik.swagger.annotations.ApiResponses;</#if>
  * This class accesses the User entity, and needs to fetch its collection of
  * authorities.</p>
  */
-<#if docs>@Api(value = "/api/user", description = "User ${restSuffix}")</#if>
+<#if docs>@Api(value = "/api")</#if>
 @Path("/api")
 public class ${restPrefix}User${restSuffix} {
 
