@@ -89,7 +89,7 @@ public class OneToOne extends SingleRelationAttribute {
     private Boolean owner;//default true/null
     @XmlTransient//(name = "mapped-by")
     protected String mappedBy;
-    @XmlAttribute(name = "orphan-removal")
+    @XmlAttribute(name = "orp")
     protected Boolean orphanRemoval;
 
     public OneToOne load(EntityMappings entityMappings, Element element, VariableElement variableElement, AnnotationMirror annotationMirror) {
@@ -188,7 +188,7 @@ public class OneToOne extends SingleRelationAttribute {
      * @return possible object is {@link Boolean }
      *
      */
-    public Boolean isOrphanRemoval() {
+    public Boolean getOrphanRemoval() {
         return orphanRemoval;
     }
 

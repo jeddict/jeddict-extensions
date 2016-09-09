@@ -100,7 +100,7 @@ public class OneToMany extends MultiRelationAttribute implements JoinColumnHandl
     protected List<JoinColumn> joinColumn;
     @XmlElement(name = "fk")
     protected ForeignKey foreignKey;//joinColumns foreignKey
-    @XmlAttribute(name = "orphan-removal")
+    @XmlAttribute(name = "orp")
     protected Boolean orphanRemoval;
 
     @Override
@@ -208,7 +208,7 @@ public class OneToMany extends MultiRelationAttribute implements JoinColumnHandl
      * @return possible object is {@link Boolean }
      *
      */
-    public Boolean isOrphanRemoval() {
+    public Boolean getOrphanRemoval() {
         return orphanRemoval;
     }
 
