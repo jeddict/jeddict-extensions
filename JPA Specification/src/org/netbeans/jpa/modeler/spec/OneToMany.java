@@ -209,6 +209,9 @@ public class OneToMany extends MultiRelationAttribute implements JoinColumnHandl
      *
      */
     public Boolean getOrphanRemoval() {
+        if(orphanRemoval == null){
+            orphanRemoval = false;
+        }
         return orphanRemoval;
     }
 
