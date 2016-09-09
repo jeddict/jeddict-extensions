@@ -18,12 +18,24 @@ package org.netbeans.jpa.modeler.spec.extend;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.VariableElement;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.StringUtils;
 import org.netbeans.jpa.modeler.spec.AccessType;
 import org.netbeans.jpa.modeler.spec.Column;
 import org.netbeans.jpa.modeler.spec.TemporalType;
 import static org.netbeans.jcode.core.util.AttributeType.BIGDECIMAL;
+import static org.netbeans.jcode.core.util.AttributeType.BIGINTEGER;
+import static org.netbeans.jcode.core.util.AttributeType.BYTE;
+import static org.netbeans.jcode.core.util.AttributeType.BYTE_WRAPPER;
+import static org.netbeans.jcode.core.util.AttributeType.DOUBLE;
+import static org.netbeans.jcode.core.util.AttributeType.DOUBLE_WRAPPER;
+import static org.netbeans.jcode.core.util.AttributeType.FLOAT;
+import static org.netbeans.jcode.core.util.AttributeType.FLOAT_WRAPPER;
+import static org.netbeans.jcode.core.util.AttributeType.INT;
+import static org.netbeans.jcode.core.util.AttributeType.INT_WRAPPER;
+import static org.netbeans.jcode.core.util.AttributeType.LONG;
+import static org.netbeans.jcode.core.util.AttributeType.LONG_WRAPPER;
+import static org.netbeans.jcode.core.util.AttributeType.SHORT;
+import static org.netbeans.jcode.core.util.AttributeType.SHORT_WRAPPER;
 import static org.netbeans.jcode.core.util.AttributeType.STRING;
 import static org.netbeans.jcode.core.util.AttributeType.STRING_FQN;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
@@ -74,56 +86,6 @@ public abstract class PersistenceBaseAttribute extends BaseAttribute implements 
         }
     }
     
-    public boolean isTextAttributeType() {
-        if (STRING.equals(attributeType) || STRING_FQN.equals(attributeType)) {
-            return true;
-        }
-        return false;
-    }
-    public boolean isPrecisionAttributeType() {
-//        if (attributeType.equals("byte") || attributeType.equals("Byte")) {
-//            return true;
-//        } else if (attributeType.equals("short") || attributeType.equals("Short")) {
-//            return true;
-//        } else if (attributeType.equals("int") || attributeType.equals("Integer")) {
-//            return true;
-//        } else if (attributeType.equals("long") || attributeType.equals("Long")) {
-//            return true;
-//        } else if (attributeType.equals("float") || attributeType.equals("Float")) {
-//            return true;
-//        } else if (attributeType.equals("double") || attributeType.equals("Double")) {
-//            return true;
-//        } else if (attributeType.equals("java.math.BigInteger") || attributeType.equals("java.math.BigDecimal")) {
-//            return true;
-//        }
-
-        if (BIGDECIMAL.equals(attributeType)) {
-            return true;
-        }
-        return false;
-    }
-
-    public boolean isScaleAttributeType() {
-//        if (attributeType.equals("float") || attributeType.equals("Float")) {
-//            return true;
-//        } else if (attributeType.equals("double") || attributeType.equals("Double")) {
-//            return true;
-//        } else if (attributeType.equals("java.math.BigDecimal")) {
-//            return true;
-//        }
-        if (BIGDECIMAL.equals(attributeType)) {
-            return true;
-        }
-        return false;
-    }
-
- 
-
-//    void beforeMarshal(Marshaller marshaller) {
-//        if (NBModelerUtil.isEmptyObject(getColumn())) {
-//            setColumn(null);
-//        }
-//    }
     public String getDefaultColumnName() {
         return this.getName().toUpperCase();
     }

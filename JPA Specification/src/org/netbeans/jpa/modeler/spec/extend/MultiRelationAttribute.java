@@ -679,24 +679,15 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
     }
     
     public boolean isTextMapKeyAttributeType() {
-        if (STRING.equals(getMapKeyAttributeType()) || STRING_FQN.equals(getMapKeyAttributeType())) {
-            return true;
-        }
-        return false;
+        return isTextAttributeType(getMapKeyAttributeType());
     }
-    
+
     public boolean isPrecisionpMapKeyAttributeType() {
-        if (BIGDECIMAL.equals(getMapKeyAttributeType())) {
-            return true;
-        }
-        return false;
+        return isPrecisionAttributeType(getMapKeyAttributeType());
     }
 
     public boolean isScaleMapKeyAttributeType() {
-        if (BIGDECIMAL.equals(getMapKeyAttributeType())) {
-            return true;
-        }
-        return false;
+        return isScaleAttributeType(getMapKeyAttributeType());
     }
 
 

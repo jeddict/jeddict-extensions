@@ -17,7 +17,6 @@ package org.netbeans.jpa.modeler.spec.extend;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -109,21 +108,21 @@ public abstract class BaseAttribute extends Attribute {
 
     @XmlTransient
     Map<String, Constraint> constraintsMap;
-    
+
     public Map<String, Constraint> getConstraintsMap() {
         if (constraintsMap == null) {
             constraintsMap = new HashMap<>();
             getConstraints().stream().forEach((constraint) -> {
                 constraintsMap.put(constraint.getClass().getSimpleName(), constraint);
             });
-        }        
+        }
 
         return constraintsMap;
-        
+
     }
 
     public Set<Constraint> getNewConstraints() {
-      Set<Constraint> newConstraints = new LinkedHashSet<>();
+        Set<Constraint> newConstraints = new LinkedHashSet<>();
         List<Class<? extends Constraint>> classes = getConstraintsClass();
         Map<String, Constraint> constraintsMapTmp = getConstraintsMap();
         for (Class<? extends Constraint> constraintClass : classes) {
@@ -200,10 +199,21 @@ public abstract class BaseAttribute extends Attribute {
     public boolean remove(Constraint constraints) {
         return getConstraints().remove(constraints);
     }
-    
+
     @Override
     public String getDataTypeLabel() {
         return getAttributeType();
     }
+
+    public boolean isTextAttributeType() {
+        return isTextAttributeType(getAttributeType());
+    }
+    public boolean isPrecisionAttributeType() {
+        return isPrecisionAttributeType(getAttributeType());
+    }
+    public boolean isScaleAttributeType() {
+        return isScaleAttributeType(getAttributeType());
+    }
+    
 
 }

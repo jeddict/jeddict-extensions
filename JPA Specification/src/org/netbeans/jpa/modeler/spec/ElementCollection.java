@@ -16,6 +16,8 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
+import javax.persistence.MapKeyColumn;
+import javax.persistence.MapKeyJoinColumn;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -923,48 +925,17 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
     public String getAttributeType() {
         return this.getConnectedClass() != null ? super.getAttributeType() : targetClass;
     }
-
-     public boolean isTextAttributeType() {
-        if (STRING.equals(getAttributeType()) || STRING_FQN.equals(getAttributeType())) {
-            return true;
-        }
-        return false;
-    }
-     
-    public boolean isPrecisionAttributeType() {
-        if (BIGDECIMAL.equals(getAttributeType())) {
-            return true;
-        }
-        return false;
+    
+    public boolean isTextMapKeyAttributeType() {
+        return isTextAttributeType(getMapKeyAttributeType());
     }
 
-    public boolean isScaleAttributeType() {
-        if (BIGDECIMAL.equals(getAttributeType())) {
-            return true;
-        }
-        return false;
-    }
-    
-    
-     public boolean isTextMapKeyAttributeType() {
-        if (STRING.equals(getMapKeyAttributeType()) || STRING_FQN.equals(getMapKeyAttributeType())) {
-            return true;
-        }
-        return false;
-    }
-     
-        public boolean isPrecisionpMapKeyAttributeType() {
-        if (BIGDECIMAL.equals(getMapKeyAttributeType())) {
-            return true;
-        }
-        return false;
+    public boolean isPrecisionpMapKeyAttributeType() {
+        return isPrecisionAttributeType(getMapKeyAttributeType());
     }
 
     public boolean isScaleMapKeyAttributeType() {
-        if (BIGDECIMAL.equals(getMapKeyAttributeType())) {
-            return true;
-        }
-        return false;
+        return isScaleAttributeType(getMapKeyAttributeType());
     }
 
     public String getDefaultColumnName() {

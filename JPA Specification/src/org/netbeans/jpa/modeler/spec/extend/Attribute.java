@@ -24,6 +24,22 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
+import static org.netbeans.jcode.core.util.AttributeType.BIGDECIMAL;
+import static org.netbeans.jcode.core.util.AttributeType.BIGINTEGER;
+import static org.netbeans.jcode.core.util.AttributeType.BYTE;
+import static org.netbeans.jcode.core.util.AttributeType.BYTE_WRAPPER;
+import static org.netbeans.jcode.core.util.AttributeType.DOUBLE;
+import static org.netbeans.jcode.core.util.AttributeType.DOUBLE_WRAPPER;
+import static org.netbeans.jcode.core.util.AttributeType.FLOAT;
+import static org.netbeans.jcode.core.util.AttributeType.FLOAT_WRAPPER;
+import static org.netbeans.jcode.core.util.AttributeType.INT;
+import static org.netbeans.jcode.core.util.AttributeType.INT_WRAPPER;
+import static org.netbeans.jcode.core.util.AttributeType.LONG;
+import static org.netbeans.jcode.core.util.AttributeType.LONG_WRAPPER;
+import static org.netbeans.jcode.core.util.AttributeType.SHORT;
+import static org.netbeans.jcode.core.util.AttributeType.SHORT_WRAPPER;
+import static org.netbeans.jcode.core.util.AttributeType.STRING;
+import static org.netbeans.jcode.core.util.AttributeType.STRING_FQN;
 import org.netbeans.jpa.modeler.spec.extend.annotation.Annotation;
 import org.netbeans.jpa.modeler.spec.jaxb.JaxbVariableType;
 import org.netbeans.jpa.modeler.spec.jaxb.JaxbVariableTypeHandler;
@@ -286,5 +302,42 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
         this.includeInUI = includeInUI;
     }
     
-    
+
+    public boolean isTextAttributeType(String attributeType) {
+        if (STRING.equals(attributeType) || STRING_FQN.equals(attributeType)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isPrecisionAttributeType(String attributeType) {
+        if (attributeType.equals(BYTE) || attributeType.equals(BYTE_WRAPPER)) {
+            return true;
+        } else if (attributeType.equals(SHORT) || attributeType.equals(SHORT_WRAPPER)) {
+            return true;
+        } else if (attributeType.equals(INT) || attributeType.equals(INT_WRAPPER)) {
+            return true;
+        } else if (attributeType.equals(LONG) || attributeType.equals(LONG_WRAPPER)) {
+            return true;
+        } else if (attributeType.equals(FLOAT) || attributeType.equals(FLOAT_WRAPPER)) {
+            return true;
+        } else if (attributeType.equals(DOUBLE) || attributeType.equals(DOUBLE_WRAPPER)) {
+            return true;
+        } else if (attributeType.equals(BIGINTEGER) || attributeType.equals(BIGDECIMAL)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean isScaleAttributeType(String attributeType) {
+        if (attributeType.equals(FLOAT) || attributeType.equals(FLOAT_WRAPPER)) {
+            return true;
+        } else if (attributeType.equals(DOUBLE) || attributeType.equals(DOUBLE_WRAPPER)) {
+            return true;
+        } else if (attributeType.equals(BIGDECIMAL)) {
+            return true;
+        }
+        return false;
+    }    
 }
