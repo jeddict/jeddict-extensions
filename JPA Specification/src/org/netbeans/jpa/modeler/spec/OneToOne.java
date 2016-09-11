@@ -92,6 +92,7 @@ public class OneToOne extends SingleRelationAttribute {
     @XmlAttribute(name = "orp")
     protected Boolean orphanRemoval;
 
+    @Override
     public OneToOne load(EntityMappings entityMappings, Element element, VariableElement variableElement, AnnotationMirror annotationMirror) {
         if(annotationMirror==null){
           annotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.OneToOne");

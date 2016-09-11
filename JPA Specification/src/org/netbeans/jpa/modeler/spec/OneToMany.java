@@ -169,6 +169,7 @@ public class OneToMany extends MultiRelationAttribute implements JoinColumnHandl
      * @return possible object is {@link ForeignKey }
      *
      */
+    @Override
     public ForeignKey getForeignKey() {
         if (foreignKey == null) {
             foreignKey = new ForeignKey();
@@ -182,6 +183,7 @@ public class OneToMany extends MultiRelationAttribute implements JoinColumnHandl
      * @param value allowed object is {@link ForeignKey }
      *
      */
+    @Override
     public void setForeignKey(ForeignKey value) {
         this.foreignKey = value;
     }
@@ -189,7 +191,7 @@ public class OneToMany extends MultiRelationAttribute implements JoinColumnHandl
     @Override
     public void addJoinColumn(JoinColumn joinColumn_In) {
         if (joinColumn == null) {
-            joinColumn = new ArrayList<JoinColumn>();
+            joinColumn = new ArrayList<>();
         }
         joinColumn.add(joinColumn_In);
     }
@@ -197,7 +199,7 @@ public class OneToMany extends MultiRelationAttribute implements JoinColumnHandl
     @Override
     public void removeJoinColumn(JoinColumn joinColumn_In) {
         if (joinColumn == null) {
-            joinColumn = new ArrayList<JoinColumn>();
+            joinColumn = new ArrayList<>();
         }
         joinColumn.remove(joinColumn_In);
     }

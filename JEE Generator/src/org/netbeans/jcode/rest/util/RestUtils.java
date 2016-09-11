@@ -408,12 +408,14 @@ public class RestUtils {
             //Singletons imports
             TypeElement classElement = SourceUtils.getPublicTopLevelElement(workingCopy);
             GenerationUtils genUtils = GenerationUtils.newInstance(workingCopy);
-            for (RestApp app : singletonClasses) {
-                if (app == RestApp.METRICS) {
-                    String metricPackage = StringUtils.isBlank(appPackage)? "metrics" : appPackage + ".metrics" ;
-                    VariableTree variableTree = maker.Variable(maker.addModifiersAnnotation(genUtils.createModifiers(Modifier.PRIVATE), genUtils.createAnnotation(INJECT)),
-                            "metricsConfigurer", genUtils.createType(metricPackage + ".MetricsConfigurer" , classElement), null);
-                    newTree = maker.addClassMember(newTree, variableTree);
+            if(singletonClasses!=null){
+                for (RestApp app : singletonClasses) {
+                    if (app == RestApp.METRICS) {
+                        String metricPackage = StringUtils.isBlank(appPackage)? "metrics" : appPackage + ".metrics" ;
+                        VariableTree variableTree = maker.Variable(maker.addModifiersAnnotation(genUtils.createModifiers(Modifier.PRIVATE), genUtils.createAnnotation(INJECT)),
+                                "metricsConfigurer", genUtils.createType(metricPackage + ".MetricsConfigurer" , classElement), null);
+                        newTree = maker.addClassMember(newTree, variableTree);
+                    }
                 }
             }
             
