@@ -311,19 +311,19 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
     }
 
     public boolean isPrecisionAttributeType(String attributeType) {
-        if (attributeType.equals(BYTE) || attributeType.equals(BYTE_WRAPPER)) {
+        if (BYTE.equals(attributeType) || BYTE_WRAPPER.equals(attributeType)) {
             return true;
-        } else if (attributeType.equals(SHORT) || attributeType.equals(SHORT_WRAPPER)) {
+        } else if (SHORT.equals(attributeType) || SHORT_WRAPPER.equals(attributeType)) {
             return true;
-        } else if (attributeType.equals(INT) || attributeType.equals(INT_WRAPPER)) {
+        } else if (INT.equals(attributeType) || INT_WRAPPER.equals(attributeType)) {
             return true;
-        } else if (attributeType.equals(LONG) || attributeType.equals(LONG_WRAPPER)) {
+        } else if (LONG.equals(attributeType) || LONG_WRAPPER.equals(attributeType)) {
             return true;
-        } else if (attributeType.equals(FLOAT) || attributeType.equals(FLOAT_WRAPPER)) {
+        } else if (FLOAT.equals(attributeType) || FLOAT_WRAPPER.equals(attributeType)) {
             return true;
-        } else if (attributeType.equals(DOUBLE) || attributeType.equals(DOUBLE_WRAPPER)) {
+        } else if (DOUBLE.equals(attributeType) || DOUBLE_WRAPPER.equals(attributeType)) {
             return true;
-        } else if (attributeType.equals(BIGINTEGER) || attributeType.equals(BIGDECIMAL)) {
+        } else if (BIGINTEGER.equals(attributeType) || BIGDECIMAL.equals(attributeType)) {
             return true;
         }
 
@@ -331,13 +331,27 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
     }
 
     public boolean isScaleAttributeType(String attributeType) {
-        if (attributeType.equals(FLOAT) || attributeType.equals(FLOAT_WRAPPER)) {
+        if (FLOAT.equals(attributeType) || FLOAT_WRAPPER.equals(attributeType)) {
             return true;
-        } else if (attributeType.equals(DOUBLE) || attributeType.equals(DOUBLE_WRAPPER)) {
+        } else if (DOUBLE.equals(attributeType) || DOUBLE_WRAPPER.equals(attributeType)) {
             return true;
-        } else if (attributeType.equals(BIGDECIMAL)) {
+        } else if (BIGDECIMAL.equals(attributeType)) {
             return true;
         }
         return false;
     }    
+    
+    public static boolean isMapType(String collectionType) {
+        boolean valid = false;
+        try {
+            if (collectionType != null && !collectionType.trim().isEmpty()) {
+                if (java.util.Map.class.isAssignableFrom(Class.forName(collectionType.trim()))) {
+                    valid = true;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            //skip allow = false;
+        }
+        return valid;
+    }
 }

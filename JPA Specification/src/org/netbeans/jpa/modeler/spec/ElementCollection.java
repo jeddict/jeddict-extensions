@@ -180,24 +180,22 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
 
     @XmlAttribute(name = "collection-type")
     private String collectionType;
-    
+
     @XmlElement(name = "map-key-convert")
     protected List<Convert> mapKeyConvert;//REVENG PENDING
 
     @XmlAttribute(name = "mkt")
     private MapKeyType mapKeyType;
-    
+
     //Existing MapKeyType
     @XmlAttribute(name = "mkat-ref")//attribute-ref
     @XmlIDREF
     private Attribute mapKeyAttribute;
     @XmlTransient//@XmlElement(name = "map-key")//Not required
     protected MapKey mapKey;//only required in rev-eng and stored to mapKeyAttribute
-    
-    
-    
+
     //New MapKeyType - Basic
-    @XmlAttribute(name="mkat")
+    @XmlAttribute(name = "mkat")
     private String mapKeyAttributeType; //e.g String, int, Enum, Date    applicable for basic,enumerated,temporal
     @XmlElement(name = "mkc")
     protected Column mapKeyColumn;
@@ -205,9 +203,9 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
     protected TemporalType mapKeyTemporal;
     @XmlElement(name = "mkenum")
     protected EnumType mapKeyEnumerated;
-     //@XmlElement(name = "map-key-class")//Not required
-     //protected MapKeyClass mapKeyClass; //rev-eng done and stored to mapKeyAttributeType
-    
+    //@XmlElement(name = "map-key-class")//Not required
+    //protected MapKeyClass mapKeyClass; //rev-eng done and stored to mapKeyAttributeType
+
     //New MapKeyType - Entity
     @XmlAttribute(name = "mken-ref")//entity-ref
     @XmlIDREF
@@ -216,14 +214,14 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
     protected List<JoinColumn> mapKeyJoinColumn;
     @XmlElement(name = "mkfk")
     protected ForeignKey mapKeyForeignKey;
-            
+
     //New MapKeyType - Embeddable
     @XmlAttribute(name = "mkem-ref")
     @XmlIDREF
     private Embeddable mapKeyEmbeddable;
     @XmlElement(name = "mkao")
-    protected Set<AttributeOverride> mapKeyAttributeOverride; 
-    
+    protected Set<AttributeOverride> mapKeyAttributeOverride;
+
     public static ElementCollection load(EntityMappings entityMappings, Element element, VariableElement variableElement) {
         AnnotationMirror annotationMirror = JavaSourceParserUtil.getAnnotation(element, "javax.persistence.ElementCollection");
         ElementCollection elementCollection = new ElementCollection();
@@ -254,12 +252,11 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
             collectionTypeClass = Class.forName(elementCollection.collectionType);
         } catch (ClassNotFoundException ex) {
         }
-        boolean mapKeyExist = collectionTypeClass!=null && Map.class.isAssignableFrom(collectionTypeClass);
-
+        boolean mapKeyExist = collectionTypeClass != null && Map.class.isAssignableFrom(collectionTypeClass);
 
         DeclaredType declaredType = (DeclaredType) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "targetClass");
         if (declaredType == null) {
-            declaredType = (DeclaredType) ((DeclaredType) variableElement.asType()).getTypeArguments().get(mapKeyExist?1:0);
+            declaredType = (DeclaredType) ((DeclaredType) variableElement.asType()).getTypeArguments().get(mapKeyExist ? 1 : 0);
         }
         if (declaredType != null) {
             if (isEmbeddableClass(declaredType.asElement())) {
@@ -272,12 +269,12 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
             elementCollection.setTargetClass(STRING);
         }
         elementCollection.setAnnotation(JavaSourceParserUtil.getNonEEAnnotation(element));
-        JavaSourceParserUtil.getBeanValidation(elementCollection,element);
-        
+        JavaSourceParserUtil.getBeanValidation(elementCollection, element);
+
         if (mapKeyExist) {
             elementCollection.mapKey = new MapKey().load(element, null);
-            elementCollection.mapKeyType = elementCollection.mapKey!=null?MapKeyType.EXT:MapKeyType.NEW;
-            
+            elementCollection.mapKeyType = elementCollection.mapKey != null ? MapKeyType.EXT : MapKeyType.NEW;
+
             DeclaredType keyDeclaredType = MapKeyClass.getDeclaredType(element);
             if (keyDeclaredType == null) {
                 keyDeclaredType = (DeclaredType) ((DeclaredType) variableElement.asType()).getTypeArguments().get(0);
@@ -289,13 +286,13 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
                 loadEntityClass(entityMappings, element, variableElement, keyDeclaredType);
                 elementCollection.mapKeyAttributeType = JavaSourceHelper.getSimpleClassName(keyDeclaredType.toString());
             } else {
-                 elementCollection.mapKeyAttributeType = keyDeclaredType.toString();
+                elementCollection.mapKeyAttributeType = keyDeclaredType.toString();
             }
-            
+
             elementCollection.mapKeyColumn = new Column().load(element, JavaSourceParserUtil.findAnnotation(element, MAP_KEY_COLUMN_FQN));
             elementCollection.mapKeyTemporal = TemporalType.load(element, JavaSourceParserUtil.findAnnotation(element, MAP_KEY_TEMPORAL_FQN));
             elementCollection.mapKeyEnumerated = EnumType.load(element, JavaSourceParserUtil.findAnnotation(element, MAP_KEY_ENUMERATED_FQN));
-            
+
             AnnotationMirror joinColumnsAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.MapKeyJoinColumns");
             if (joinColumnsAnnotationMirror != null) {
                 List joinColumnsAnnot = (List) JavaSourceParserUtil.findAnnotationValue(joinColumnsAnnotationMirror, "value");
@@ -310,7 +307,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
                     elementCollection.getMapKeyJoinColumn().add(new JoinColumn().load(element, joinColumnAnnotationMirror));
                 }
             }
-            
+
             elementCollection.mapKeyForeignKey = ForeignKey.load(element, null);
             elementCollection.getMapKeyAttributeOverride().addAll(AttributeOverride.load(element));
             // TODO if both side are Embeddable then how to diffrentiat MapKeyAttributeOverride and AttributeOverride 
@@ -404,7 +401,6 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
 //    public void setMapKeyClass(MapKeyClass value) {
 //        this.mapKeyClass = value;
 //    }
-
     /**
      * Gets the value of the mapKeyTemporal property.
      *
@@ -510,7 +506,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
      *
      */
     public Column getMapKeyColumn() {
-        if(mapKeyColumn==null){
+        if (mapKeyColumn == null) {
             mapKeyColumn = new Column();
         }
         return mapKeyColumn;
@@ -925,23 +921,38 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
     public String getAttributeType() {
         return this.getConnectedClass() != null ? super.getAttributeType() : targetClass;
     }
-    
-    public boolean isTextMapKeyAttributeType() {
-        return isTextAttributeType(getMapKeyAttributeType());
+
+    @Override
+    public boolean isTextAttributeType() {
+        if (isMapType(getCollectionType())) {
+            return isTextAttributeType(getMapKeyAttributeType());
+        } else {
+            return isTextAttributeType(getAttributeType());
+        }
     }
 
-    public boolean isPrecisionpMapKeyAttributeType() {
-        return isPrecisionAttributeType(getMapKeyAttributeType());
+    @Override
+    public boolean isPrecisionAttributeType() {
+        if (isMapType(getCollectionType())) {
+            return isPrecisionAttributeType(getMapKeyAttributeType());
+        } else {
+            return isPrecisionAttributeType(getAttributeType());
+        }
     }
 
-    public boolean isScaleMapKeyAttributeType() {
-        return isScaleAttributeType(getMapKeyAttributeType());
+    @Override
+    public boolean isScaleAttributeType() {
+        if (isMapType(getCollectionType())) {
+            return isScaleAttributeType(getMapKeyAttributeType());
+        } else {
+            return isScaleAttributeType(getAttributeType());
+        }
     }
 
     public String getDefaultColumnName() {
         return this.getName().toUpperCase();
     }
-    
+
 //    public String getDefaultMapKeyColumnName() {
 //        if(getValidatedMapKeyType()==MapKeyType.NEW){
 //            if(mapKeyAttributeType != null){
@@ -954,7 +965,6 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
 //        }
 //        return this.getName().toUpperCase();
 //    }
-
     public String getColumnName() {
         if (this.getColumn() != null && StringUtils.isNotBlank(this.getColumn().getName())) {
             return getColumn().getName();
@@ -962,7 +972,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
             return getDefaultColumnName();
         }
     }
-    
+
     @Override
     public String getDataTypeLabel() {
         if (getValidatedMapKeyType() == null) {
@@ -971,8 +981,8 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
             return String.format("%s<%s, %s>", getCollectionType(), getMapKeyDataTypeLabel(), getAttributeType());
         }
     }
-    
-        /**
+
+    /**
      * @return the mapKeyAttribute
      */
     public Attribute getMapKeyAttribute() {
@@ -986,21 +996,21 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
         resetMapAttributeExceptExisting();
         this.mapKeyAttribute = mapKeyAttribute;
     }
-    
+
     public MapKeyType getValidatedMapKeyType() {
-        if(mapKeyAttribute != null){
+        if (mapKeyAttribute != null) {
             return MapKeyType.EXT;
-        } else if(mapKeyAttributeType != null || mapKeyEmbeddable != null || mapKeyEntity != null){
+        } else if (mapKeyAttributeType != null || mapKeyEmbeddable != null || mapKeyEntity != null) {
             return MapKeyType.NEW;
         }
         return null;
     }
-    
+
     /**
      * @return the mapKeyType
      */
     public MapKeyType getMapKeyType() {
-        if(mapKeyType==null){
+        if (mapKeyType == null) {
             return MapKeyType.EXT;
         }
         return mapKeyType;
@@ -1008,9 +1018,9 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
 
     @Override
     public void setMapKeyType(MapKeyType mapKeyType) {
-        this.mapKeyType=mapKeyType;
+        this.mapKeyType = mapKeyType;
     }
-    
+
     /**
      * @return the mapKeyAttributeType
      */
@@ -1054,80 +1064,78 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
         resetMapAttributeExceptEmbeddable();
         this.mapKeyEmbeddable = mapKeyEmbeddable;
     }
-    
+
     @Override
-    public void resetMapAttribute(){
-        this.mapKeyAttribute=null;
-        
-        this.mapKeyEntity=null;
-        this.mapKeyEmbeddable=null;
-        this.mapKeyEnumerated=null;
-        this.mapKeyTemporal=null;
-        this.mapKeyAttributeType=null;
-        
-        this.mapKeyColumn=null;
-        this.mapKeyJoinColumn=null;
-        this.mapKeyForeignKey=null;
-        this.mapKeyAttributeOverride=null;
+    public void resetMapAttribute() {
+        this.mapKeyAttribute = null;
+
+        this.mapKeyEntity = null;
+        this.mapKeyEmbeddable = null;
+        this.mapKeyEnumerated = null;
+        this.mapKeyTemporal = null;
+        this.mapKeyAttributeType = null;
+
+        this.mapKeyColumn = null;
+        this.mapKeyJoinColumn = null;
+        this.mapKeyForeignKey = null;
+        this.mapKeyAttributeOverride = null;
     }
-    
-    public void resetMapAttributeExceptExisting(){
-        this.mapKeyEntity=null;
-        this.mapKeyEmbeddable=null;
-        this.mapKeyEnumerated=null;
-        this.mapKeyTemporal=null;
-        this.mapKeyAttributeType=null;
-        
-        this.mapKeyColumn=null;
-        this.mapKeyJoinColumn=null;
-        this.mapKeyForeignKey=null;
-        this.mapKeyAttributeOverride=null;
+
+    public void resetMapAttributeExceptExisting() {
+        this.mapKeyEntity = null;
+        this.mapKeyEmbeddable = null;
+        this.mapKeyEnumerated = null;
+        this.mapKeyTemporal = null;
+        this.mapKeyAttributeType = null;
+
+        this.mapKeyColumn = null;
+        this.mapKeyJoinColumn = null;
+        this.mapKeyForeignKey = null;
+        this.mapKeyAttributeOverride = null;
     }
-    
-    public void resetMapAttributeExceptBasic(){
-        this.mapKeyEnumerated=null;
-        this.mapKeyTemporal=null;
-        this.mapKeyAttributeType=null;
-        this.mapKeyColumn=null;
+
+    public void resetMapAttributeExceptBasic() {
+        this.mapKeyEnumerated = null;
+        this.mapKeyTemporal = null;
+        this.mapKeyAttributeType = null;
+        this.mapKeyColumn = null;
     }
-    
-    public void resetMapAttributeExceptEmbeddable(){
-        this.mapKeyAttribute=null;
-        
-        this.mapKeyEntity=null;
-        this.mapKeyEnumerated=null;
-        this.mapKeyTemporal=null;
-        this.mapKeyAttributeType=null;
-        
-        this.mapKeyColumn=null;
-        this.mapKeyJoinColumn=null;
-        this.mapKeyForeignKey=null;
+
+    public void resetMapAttributeExceptEmbeddable() {
+        this.mapKeyAttribute = null;
+
+        this.mapKeyEntity = null;
+        this.mapKeyEnumerated = null;
+        this.mapKeyTemporal = null;
+        this.mapKeyAttributeType = null;
+
+        this.mapKeyColumn = null;
+        this.mapKeyJoinColumn = null;
+        this.mapKeyForeignKey = null;
     }
-    
-    public void resetMapAttributeExceptEntity(){
-        this.mapKeyAttribute=null;
-        
-        this.mapKeyEmbeddable=null;
-        this.mapKeyEnumerated=null;
-        this.mapKeyTemporal=null;
-        this.mapKeyAttributeType=null;
-        
-        this.mapKeyColumn=null;
-        this.mapKeyAttributeOverride=null;
+
+    public void resetMapAttributeExceptEntity() {
+        this.mapKeyAttribute = null;
+
+        this.mapKeyEmbeddable = null;
+        this.mapKeyEnumerated = null;
+        this.mapKeyTemporal = null;
+        this.mapKeyAttributeType = null;
+
+        this.mapKeyColumn = null;
+        this.mapKeyAttributeOverride = null;
     }
-    
-        @Override
-    public String getMapKeyDataTypeLabel(){
-        if(mapKeyType == MapKeyType.EXT && mapKeyAttribute!=null){
+
+    @Override
+    public String getMapKeyDataTypeLabel() {
+        if (mapKeyType == MapKeyType.EXT && mapKeyAttribute != null) {
             return mapKeyAttribute.getDataTypeLabel();
-        } else {
-            if(mapKeyEntity!=null){
-                return mapKeyEntity.getClazz();
-            } else if(mapKeyEmbeddable!=null){
-                return mapKeyEmbeddable.getClazz();
-            } else if(mapKeyAttributeType!=null){
-                return mapKeyAttributeType;
-            }
+        } else if (mapKeyEntity != null) {
+            return mapKeyEntity.getClazz();
+        } else if (mapKeyEmbeddable != null) {
+            return mapKeyEmbeddable.getClazz();
+        } else if (mapKeyAttributeType != null) {
+            return mapKeyAttributeType;
         }
         return null;
     }

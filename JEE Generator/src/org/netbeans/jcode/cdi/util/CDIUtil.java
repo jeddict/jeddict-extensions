@@ -44,21 +44,23 @@ public class CDIUtil {
     public static Set<DataObject> createDD(Project project) throws IOException {
         Sources sources = ProjectUtils.getSources(project);
         SourceGroup sourceGroups[] = sources.getSourceGroups(WebProjectConstants.TYPE_DOC_ROOT);
-        FileObject webRoot = sourceGroups[0].getRootFolder();
-        FileObject targetDir = FileUtil.createFolder(webRoot, WEB_INF);
-        boolean useCDI = true;
-        if (project != null) {
-            J2eeProjectCapabilities cap = J2eeProjectCapabilities.forProject(project);
-            if (cap != null && !cap.isCdi11Supported()) {
-                useCDI = false;
+        if (sourceGroups.length >= 1) {
+            FileObject webRoot = sourceGroups[0].getRootFolder();
+            FileObject targetDir = FileUtil.createFolder(webRoot, WEB_INF);
+            boolean useCDI = true;
+            if (project != null) {
+                J2eeProjectCapabilities cap = J2eeProjectCapabilities.forProject(project);
+                if (cap != null && !cap.isCdi11Supported()) {
+                    useCDI = false;
+                }
+            }
+            FileObject fo = createBeansXml(useCDI ? Profile.JAVA_EE_7_FULL : Profile.JAVA_EE_6_FULL, targetDir, defaultName);
+
+            if (fo != null) {
+                return Collections.singleton(DataObject.find(fo));
             }
         }
-        FileObject fo = createBeansXml(useCDI ? Profile.JAVA_EE_7_FULL : Profile.JAVA_EE_6_FULL, targetDir, defaultName);
-        if (fo != null) {
-            return Collections.singleton(DataObject.find(fo));
-        } else {
-            return Collections.EMPTY_SET;
-        }
+        return Collections.EMPTY_SET;
     }
     
     /**

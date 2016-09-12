@@ -193,20 +193,14 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
                     || restSupport.hasSpringSupport() && !restSupport.hasJersey2(true)) {
                 useJersey = true;
             }
-        }
-        runWhenScanFinished(() -> {
-            boolean configured;//restSupport.isRestSupportOn();
-            configured = restSupport.hasJerseyServlet();
-            restApplications = restSupport.getRestApplications();
-            if (!configured) {
-                configured = restApplications != null && !restApplications.isEmpty();
-            }
-            if (configDialog != null) {
-                configDialog.setRestApplicationClasses(restApplications);
-            }
-//            configurREST(configured);
-        }, getMessage(RESTPanel.class, "RESTPanel.scanningExistingApp.text"));
 
+            runWhenScanFinished(() -> {
+                restApplications = restSupport.getRestApplications();
+                if (configDialog != null) {
+                    configDialog.setRestApplicationClasses(restApplications);
+                }
+            }, getMessage(RESTPanel.class, "RESTPanel.scanningExistingApp.text"));
+        }
     }
 
     public String getPackage() {

@@ -26,10 +26,10 @@ public class ApplicationGeneratorFactory {
 
     public static BaseApplicationGenerator newInstance(Project project) {
 
-//        if (MiscUtilities.isJavaEE6AndHigher(project)) {//removed to provide support for Gradle project
+        if (MiscUtilities.isJavaEE6AndHigher(project)) {//removed to provide support for Gradle project
             return new ApplicationGenerator();
-//        } else {
-//            throw new IllegalStateException("JEE6+ supported");
-//        }
+        } else {
+            throw new IllegalStateException("JEE6+ supported");
+        }
     }
 }

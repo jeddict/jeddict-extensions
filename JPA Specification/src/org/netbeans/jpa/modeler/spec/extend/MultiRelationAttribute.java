@@ -678,17 +678,17 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
         return null;
     }
     
-    public boolean isTextMapKeyAttributeType() {
-        return isTextAttributeType(getMapKeyAttributeType());
-    }
-
-    public boolean isPrecisionpMapKeyAttributeType() {
-        return isPrecisionAttributeType(getMapKeyAttributeType());
-    }
-
-    public boolean isScaleMapKeyAttributeType() {
-        return isScaleAttributeType(getMapKeyAttributeType());
-    }
-
-
+//    public boolean isTextMapKeyAttributeType() {
+//        return isTextAttributeType(getMapKeyAttributeType());
+//    }
+//
+//    public boolean isPrecisionpMapKeyAttributeType() {
+//        return isPrecisionAttributeType(getMapKeyAttributeType());
+//    }
+//
+//    public boolean isScaleMapKeyAttributeType() {
+//        return isScaleAttributeType(getMapKeyAttributeType());
+//    }
+    
+    
 }
