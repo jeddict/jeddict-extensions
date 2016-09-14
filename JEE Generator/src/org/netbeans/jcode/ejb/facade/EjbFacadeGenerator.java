@@ -35,6 +35,7 @@ import static org.netbeans.jcode.console.Console.BOLD;
 import static org.netbeans.jcode.console.Console.FG_RED;
 import static org.netbeans.jcode.console.Console.UNDERLINE;
 import static org.netbeans.jcode.core.util.Constants.JAVA_EXT;
+import org.netbeans.jcode.core.util.POMManager;
 import org.netbeans.jcode.core.util.StringHelper;
 import org.netbeans.jcode.core.util.SourceGroupSupport;
 import static org.netbeans.jcode.core.util.StringHelper.firstLower;
@@ -50,6 +51,7 @@ import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
+import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -61,24 +63,11 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service=Generator.class)
 @Technology(type=BUSINESS, label="Session Bean Facade", panel=SessionBeanPanel.class)
 public final class EjbFacadeGenerator implements Generator{
-
-    private static final Logger LOGGER = Logger.getLogger(EjbFacadeGenerator.class.getName());
-
+    
+    private static final String TEMPLATE = "org/netbeans/jcode/template/";
     private static final String FACADE_ABSTRACT = "Abstract"; //NOI18N
-    private static final String FACADE_REMOTE_SUFFIX = "Remote"; //NOI18N
-    private static final String FACADE_LOCAL_SUFFIX = "Local"; //NOI18N
-    private static final String EJB_LOCAL = "javax.ejb.Local"; //NOI18N
-    private static final String EJB_REMOTE = "javax.ejb.Remote"; //NOI18N
     protected static final String EJB_STATELESS = "javax.ejb.Stateless"; //NOI18N
     
-
-    
-    /**
-     * Contains the names of the entities. Key the FQN class name, value the
-     * name of the entity.
-     */
-    private final Map<String, String> entityNames = new HashMap<>();
-
     @ConfigData
     private SessionBeanData beanData;
     
@@ -101,6 +90,19 @@ public final class EjbFacadeGenerator implements Generator{
     public void execute() throws IOException {
         handler.progress(Console.wrap(EjbFacadeGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
         generate(model.getEntityInfos().stream().map(ei -> ei.getType()).collect(toList()));
+        addMavenDependencies("pom/facade/_pom.xml");
+    }
+    
+    private void addMavenDependencies(String pom) {
+        if(POMManager.isMavenProject(project)){
+            POMManager pomManager = new POMManager(TEMPLATE + pom, project);
+            pomManager.setSourceVersion("1.8");
+            pomManager.execute();
+            pomManager.commit();
+        } else {
+            handler.warning(NbBundle.getMessage(EjbFacadeGenerator.class, "TITLE_Maven_Project_Not_Found"),
+                    NbBundle.getMessage(EjbFacadeGenerator.class, "MSG_Maven_Project_Not_Found"));
+        }
     }
     
     public Set<FileObject> generate(List<String> entities) throws IOException {

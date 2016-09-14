@@ -184,7 +184,7 @@ public class RESTGenerator implements Generator {
             generateEntityController(classInfo, param);
         }
         CDIUtil.createDD(project);
-        addMavenDependencies("pom/application/_pom.xml");
+        addMavenDependencies("pom/rest/_pom.xml");
         if(restData.isMetrics()){
           addMavenDependencies("pom/metrics/_pom.xml"); 
         }

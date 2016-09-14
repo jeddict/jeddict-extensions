@@ -126,13 +126,13 @@ public class Angular1Generator implements Generator {
     private List<String> scriptFiles;
     private final static String MODULE_JS = "app/app.module.js";
     
-        @Override
+    @Override
     public void execute() throws IOException {
         entityScriptFiles = new ArrayList<>();
         scriptFiles = new ArrayList<>();
         generateClientSideComponent();
     }
-
+    
     private void generateClientSideComponent() {
         try {
             

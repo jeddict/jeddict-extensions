@@ -45,7 +45,7 @@ public abstract class AbstractNBTask extends Thread
     protected boolean success = true;
     private InputOutput inputOutput;
     private PrintWriter out;
-    private HashMap<String, Object> taskSettings = new HashMap<String, Object>();
+    private HashMap<String, Object> taskSettings = new HashMap<>();
     private String timeMsg;
     private int contribCount = -1;
     private int counter = 0;
@@ -397,8 +397,6 @@ public abstract class AbstractNBTask extends Thread
         listeners.removeElement(listener);
     }
 
-    // private methods
-    //////////////////
     private void initialize() {
         if (taskSettings == null) {
             initDefaultSettings();

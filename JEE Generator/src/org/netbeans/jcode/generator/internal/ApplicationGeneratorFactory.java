@@ -16,7 +16,8 @@
 package org.netbeans.jcode.generator.internal;
 
 import org.netbeans.api.project.Project;
-import org.netbeans.modules.websvc.rest.spi.MiscUtilities;
+import org.netbeans.jcode.core.util.ProjectHelper;
+import org.netbeans.jcode.core.util.ProjectType;
 
 /**
  *
@@ -26,7 +27,8 @@ public class ApplicationGeneratorFactory {
 
     public static BaseApplicationGenerator newInstance(Project project) {
 
-        if (MiscUtilities.isJavaEE6AndHigher(project)) {//removed to provide support for Gradle project
+        if(ProjectHelper.getProjectType(project) != ProjectType.JAR ) {
+//        if (MiscUtilities.isJavaEE6AndHigher(project)) {//removed to provide support for Gradle project
             return new ApplicationGenerator();
         } else {
             throw new IllegalStateException("JEE6+ supported");

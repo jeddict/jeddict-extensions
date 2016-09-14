@@ -32,6 +32,7 @@ import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.api.project.Sources;
 import org.netbeans.api.project.ui.OpenProjects;
+import org.netbeans.modules.j2ee.common.J2eeProjectCapabilities;
 import org.netbeans.modules.web.api.webmodule.WebModule;
 import org.netbeans.modules.web.api.webmodule.WebProjectConstants;
 import org.netbeans.modules.websvc.rest.spi.MiscUtilities;
@@ -173,4 +174,16 @@ public class ProjectHelper {
         return ret;
     }
 
+    public static ProjectType getProjectType(Project project){
+        ProjectType projectType = ProjectType.JAR;
+        if (!ProjectHelper.isJavaEE6AndHigher(project)) { //removed for gradle project type support
+        J2eeProjectCapabilities capabilities = J2eeProjectCapabilities.forProject(project);
+            if (capabilities != null && capabilities.isEjb31Supported()) {
+                projectType = ProjectType.EJB;
+            }
+        } else {
+            projectType = ProjectType.WEB;
+        }
+        return projectType;
+    }
 }
