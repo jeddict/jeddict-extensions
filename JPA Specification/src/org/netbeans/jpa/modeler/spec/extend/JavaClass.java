@@ -17,10 +17,9 @@ package org.netbeans.jpa.modeler.spec.extend;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -31,6 +30,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
+import org.netbeans.jpa.modeler.spec.IdentifiableClass;
 import org.netbeans.jpa.modeler.spec.extend.annotation.Annotation;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 import org.netbeans.modeler.core.NBModelerUtil;
@@ -158,6 +158,15 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
     public JavaClass getSuperclass() {
         return superclass;
     }
+    
+    public List<Attribute> getSuperclassAttributes() {
+         List<Attribute> attributes = Collections.EMPTY_LIST;
+        if(superclass !=null && superclass instanceof IdentifiableClass){
+            attributes = ((IdentifiableClass)superclass).getAttributes().getAllAttribute();
+            attributes.addAll(superclass.getSuperclassAttributes());
+        }
+        return attributes;
+    }
 
     /**
      * @param superclassRef the superclassRef to set
@@ -193,6 +202,9 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
      * @return the subclassList
      */
     public Set<JavaClass> getSubclassList() {
+        if (this.subclassList == null) {
+            this.subclassList = new HashSet<>();
+        }
         return subclassList;
     }
 

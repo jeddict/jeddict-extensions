@@ -54,7 +54,7 @@ public class ${controllerClass} {
     @POST
     public Response create${EntityClass}(${instanceType} ${instanceName}) throws URISyntaxException {
         log.debug("REST request to save ${EntityClass} : {}", ${instanceName});
-        ${instanceName} = ${entityFacade}.edit(${instanceName});
+        ${entityFacade}.create(${instanceName});
         return HeaderUtil.createEntityCreationAlert(Response.created(new URI("/${applicationPath}/api/${entityApiUrl}/" + ${instanceName}.${pkGetter}())),
                 "${entityInstance}", ${instanceName}.${pkGetter}().toString())
                 .entity(${instanceName}).build();

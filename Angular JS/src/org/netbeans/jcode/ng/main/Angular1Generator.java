@@ -58,6 +58,7 @@ import org.netbeans.jcode.rest.controller.RESTData;
 import org.netbeans.jcode.rest.controller.RESTGenerator;
 import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
 import org.netbeans.jcode.task.progress.ProgressHandler;
+import org.netbeans.jpa.modeler.spec.ElementCollection;
 import org.netbeans.jpa.modeler.spec.Embedded;
 import org.netbeans.jpa.modeler.spec.Entity;
 import org.openide.filesystems.FileObject;
@@ -66,6 +67,8 @@ import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
 import org.netbeans.jpa.modeler.spec.Id;
+import org.netbeans.jpa.modeler.spec.Transient;
+import org.netbeans.jpa.modeler.spec.Version;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import org.netbeans.jpa.modeler.spec.extend.BaseAttribute;
 import org.netbeans.jpa.modeler.spec.extend.EnumTypeHandler;
@@ -339,9 +342,14 @@ public class Angular1Generator implements Generator {
                 NbBundle.getMessage(Angular1Generator.class, "MSG_PK_Field_Named_Id_Missing", entitySpec.getName()));
              return null;
         }
-//        EntityConfigData entityConfig =  appConfig.getEntity(entityClassInfo.getEntityFqn());
         NGEntity entity = new NGEntity(entitySpec.getClazz(), "");
-        for(Attribute attribute : entitySpec.getAttributes().getAllAttribute()){
+                List<Attribute> attributes = entitySpec.getAttributes().getAllAttribute();
+//Uncomment for inheritence support
+//        if(entitySpec.getSubclassList().size() > 1){
+//            return null;
+//        }
+//        attributes.addAll(entitySpec.getSuperclassAttributes());
+        for(Attribute attribute : attributes){
             if(attribute instanceof Id && ((Id)attribute).isGeneratedValue()){
                 continue;
             }
@@ -359,6 +367,11 @@ public class Angular1Generator implements Generator {
                 } else {
                     relationship.setOtherEntityField(mappedEntity.getLabelAttribute().getName());
                 }
+                if(entitySpec == mappedEntity){
+                    handler.warning(NbBundle.getMessage(Angular1Generator.class, "TITLE_Self_Relation_Not_Supported"),
+                    NbBundle.getMessage(Angular1Generator.class, "MSG_Self_Relation_Not_Supported", attribute.getName(), entityClassInfo.getName()));
+                    continue;
+                }
                 entity.addRelationship(relationship);
             } else if(attribute instanceof BaseAttribute){
                 if(attribute instanceof EnumTypeHandler && ((EnumTypeHandler)attribute).getEnumerated()!=null){
@@ -369,6 +382,14 @@ public class Angular1Generator implements Generator {
                 if(attribute instanceof Embedded){
                     handler.warning(NbBundle.getMessage(Angular1Generator.class, "TITLE_Embedded_Type_Not_Supported"),
                     NbBundle.getMessage(Angular1Generator.class, "MSG_Embedded_Type_Not_Supported", attribute.getName(), entityClassInfo.getName()));
+                    continue;
+                }
+                if(attribute instanceof ElementCollection){
+                    handler.warning(NbBundle.getMessage(Angular1Generator.class, "TITLE_ElementCollection_Type_Not_Supported"),
+                    NbBundle.getMessage(Angular1Generator.class, "MSG_ElementCollection_Type_Not_Supported", attribute.getName(), entityClassInfo.getName()));
+                    continue;
+                }
+                if(attribute instanceof Version || attribute instanceof Transient){
                     continue;
                 }
                 NGField field = new NGField((BaseAttribute)attribute);

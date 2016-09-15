@@ -71,15 +71,12 @@ public abstract class FromEntityBase {
     public static Map<String, Object> createFieldParameters(FileObject targetJspFO, final String entityClass,
             final String managedBean, final String managedBeanProperty, final boolean collectionComponent,
             final boolean initValueGetters) throws IOException {
-        final Map<String, Object> params = new HashMap<String, Object>();
+        final Map<String, Object> params = new HashMap<>();
         JavaSource javaSource = JavaSource.create(EntityClass.createClasspathInfo(targetJspFO));
-        javaSource.runUserActionTask(new Task<CompilationController>() {
-            @Override
-            public void run(CompilationController controller) throws IOException {
-                controller.toPhase(JavaSource.Phase.ELEMENTS_RESOLVED);
-                TypeElement typeElement = controller.getElements().getTypeElement(entityClass);
-                enumerateEntityFields(params, controller, typeElement, managedBeanProperty, collectionComponent, initValueGetters);
-            }
+        javaSource.runUserActionTask((CompilationController controller) -> {
+            controller.toPhase(JavaSource.Phase.ELEMENTS_RESOLVED);
+            TypeElement typeElement = controller.getElements().getTypeElement(entityClass);
+            enumerateEntityFields(params, controller, typeElement, managedBeanProperty, collectionComponent, initValueGetters);
         }, true);
         params.put("managedBean", managedBean); // NOI18N
         params.put("managedBeanProperty", managedBeanProperty); // NOI18N
@@ -92,18 +89,22 @@ public abstract class FromEntityBase {
 
     private static void enumerateEntityFields(Map<String, Object> params, CompilationController controller,
             TypeElement bean, String managedBeanProperty, boolean collectionComponent, boolean initValueGetters) {
-        List<TemplateData> templateData = new ArrayList<TemplateData>();
-        List<FieldDesc> fields = new ArrayList<FieldDesc>();
+        List<TemplateData> templateData = new ArrayList<>();
+        List<FieldDesc> fields = new ArrayList<>();
         String idFieldName = "";
         if (bean != null) {
             ExecutableElement[] methods = CustomJpaControllerUtil.getEntityMethodsBySuperClass(bean);
             CustomJpaControllerUtil.CustomEmbeddedPkSupport embeddedPkSupport = null;
             for (ExecutableElement method : methods) {
                 // filter out @Transient methods
-                if (CustomJpaControllerUtil.findAnnotation(method, "javax.persistence.Transient") != null) { //NOI18N
+                FieldDesc fd = new FieldDesc(controller, method, bean, initValueGetters);
+                Element element = method;
+                if(fd.isFieldAccess()){
+                    element = fd.getFieldElement();
+                }
+                if (CustomJpaControllerUtil.findAnnotation(element, "javax.persistence.Transient") != null) { //NOI18N
                     continue;
                 }
-                FieldDesc fd = new FieldDesc(controller, method, bean, initValueGetters);
                 if (fd.isValid()) {
                     int relationship = fd.getRelationship();
 
@@ -474,8 +475,8 @@ public abstract class FromEntityBase {
         }
 
         public Integer getMaxSize() {
-            if (fieldElement != null) {
-                AnnotationMirror sizeAnnotation = CustomJpaControllerUtil.findAnnotation(fieldElement, "javax.validation.constraints.Size");
+            if (getFieldElement() != null) {
+                AnnotationMirror sizeAnnotation = CustomJpaControllerUtil.findAnnotation(getFieldElement(), "javax.validation.constraints.Size");
                 if (sizeAnnotation != null) {
                     String stringMemberValue = CustomJpaControllerUtil.findAnnotationValueAsString(sizeAnnotation, "max");
                     if (stringMemberValue != null) {
@@ -531,8 +532,8 @@ public abstract class FromEntityBase {
 
         public boolean isVersionField() {
             versionField = false;
-            if (fieldElement != null) {
-                versionField = CustomJpaControllerUtil.isAnnotatedWith(fieldElement, "javax.persistence.Version");
+            if (getFieldElement() != null) {
+                versionField = CustomJpaControllerUtil.isAnnotatedWith(getFieldElement(), "javax.persistence.Version");
             }
             return versionField;
         }
@@ -731,6 +732,13 @@ public abstract class FromEntityBase {
                 fieldElement = method;
             }
             return CustomJpaControllerUtil.isAnnotatedWith(fieldElement, "javax.persistence.JoinTable"); // NOI18N
+        }
+
+        /**
+         * @return the fieldElement
+         */
+        public Element getFieldElement() {
+            return fieldElement;
         }
     }
 

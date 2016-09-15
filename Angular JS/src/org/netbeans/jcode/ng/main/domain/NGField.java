@@ -134,19 +134,12 @@ public class NGField {
      * @param fieldType the fieldType to set
      */
     public void setFieldType(String fieldType, String databaseType) {
-        if ("DateTime".equals(fieldType) || "Date".equals(fieldType)) {
+        if ("DateTime".equals(fieldType)) {
             fieldType = "ZonedDateTime";
         }
-//        final String newDataType = fieldType;
-//        boolean nonEnumType = Arrays.asList("String", "Integer", "Long", "Float", "Double", "BigDecimal", "LocalDate", "ZonedDateTime", "Boolean", "byte[]", "ByteBuffer")
-//                .stream().filter(datatype -> datatype.equals(newDataType)).findAny().isPresent();
-//
-//        if (("sql".equals(databaseType) || "mongodb".equals(databaseType)) && !nonEnumType) {
-//            fieldIsEnum = true;
-//        } else {
-//            fieldIsEnum = false;
-//        }
-
+        if ("Date".equals(fieldType)) {
+            fieldType = "ZonedDateTime";
+        }
         this.fieldType = fieldType;
     }
 
