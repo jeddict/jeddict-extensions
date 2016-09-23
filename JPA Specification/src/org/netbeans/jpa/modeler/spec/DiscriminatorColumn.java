@@ -158,7 +158,7 @@ public class DiscriminatorColumn {
         accessor.setColumnDefinition(columnDefinition);
         accessor.setLength(length);
         accessor.setName(name);
-        if (discriminatorType != null) {
+        if (discriminatorType != null && discriminatorType != DiscriminatorType.INTEGER ) { //Issue : 51 # filter for integer not supported in dynamic eclipselink
             accessor.setDiscriminatorType(discriminatorType.value());
         }
         return accessor;
