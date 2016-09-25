@@ -26,7 +26,6 @@ import org.netbeans.jpa.modeler.db.accessor.DefaultAttributeSpecAccessor;
 import org.netbeans.jpa.modeler.db.accessor.DefaultEmbeddedAttributeSpecAccessor;
 import org.netbeans.jpa.modeler.spec.extend.JavaClass;
 
-//created by gaurav gupta
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "class", propOrder = {
     "embeddable",

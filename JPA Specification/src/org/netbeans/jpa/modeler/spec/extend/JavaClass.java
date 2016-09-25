@@ -29,6 +29,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.apache.commons.lang.StringUtils;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
 import org.netbeans.jpa.modeler.spec.IdentifiableClass;
 import org.netbeans.jpa.modeler.spec.extend.annotation.Annotation;
@@ -89,6 +90,9 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
     
     @XmlAttribute(name = "gen")
     private Boolean generatesourceCode;
+    
+    @XmlAttribute(name = "pkg")
+    private String _package;
 
     @Override
     public void load(EntityMappings entityMappings, TypeElement element, boolean fieldAccess) {
@@ -428,5 +432,31 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
 
     public boolean removeSnippet(Snippet snippet) {
         return getSnippets().remove(snippet);
+    }
+
+    /**
+     * @return the _package
+     */
+    public String getPackage() {
+        return _package;
+    }
+    
+    /**
+     * @param rootPackage
+     * @return the complete _package
+     */
+    public String getPackage(String rootPackage) {
+        return StringUtils.isBlank(_package) ? rootPackage : rootPackage + '.' + _package;
+    }
+    
+    public String getFQN(String rootPackage) {
+        return getPackage(rootPackage) + '.' + getClazz();
+    }
+
+    /**
+     * @param _package the _package to set
+     */
+    public void setPackage(String _package) {
+        this._package = _package;
     }
 }

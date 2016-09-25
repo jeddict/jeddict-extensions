@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Logger;
+import org.netbeans.jpa.modeler.spec.Entity;
 import static java.util.stream.Collectors.toList;
 import org.netbeans.api.java.source.CompilationController;
 import org.netbeans.api.java.source.JavaSource;
@@ -48,6 +48,7 @@ import org.netbeans.jcode.layer.Technology;
 import static org.netbeans.jcode.layer.Technology.Type.BUSINESS;
 import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
 import org.netbeans.jcode.task.progress.ProgressHandler;
+import org.netbeans.jpa.modeler.spec.EntityMappings;
 import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
@@ -78,10 +79,10 @@ public final class EjbFacadeGenerator implements Generator{
     private ApplicationConfigData applicationConfigData;
     
     @ConfigData
-    private SourceGroup source; 
+    private EntityMappings entityMapping;
     
     @ConfigData
-    private EntityResourceBeanModel model;
+    private SourceGroup source; 
     
     @ConfigData
     private ProgressHandler handler;
@@ -89,7 +90,7 @@ public final class EjbFacadeGenerator implements Generator{
     @Override
     public void execute() throws IOException {
         handler.progress(Console.wrap(EjbFacadeGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
-        generate(model.getEntityInfos().stream().map(ei -> ei.getType()).collect(toList()));
+        generateFacade();
         addMavenDependencies("pom/facade/_pom.xml");
     }
     
@@ -105,15 +106,15 @@ public final class EjbFacadeGenerator implements Generator{
         }
     }
     
-    public Set<FileObject> generate(List<String> entities) throws IOException {
+    public Set<FileObject> generateFacade() throws IOException {
         final Set<FileObject> createdFiles = new HashSet<>();
 
         FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, beanData.getPackage(), true);
-
         generateAbstract(targetFolder, true);
-        for (String entity : entities) {
-            handler.progress(beanData.getPrefixName() + JavaIdentifiers.unqualify(entity) + beanData.getSuffixName());
-            createdFiles.add(generate(targetFolder, entity, true));
+        
+        for (Entity entity : entityMapping.getEntity()) {
+            handler.progress(beanData.getPrefixName() + entity.getClazz() + beanData.getSuffixName());
+            createdFiles.add(generate(entity, true));
         }
 
         return createdFiles;
@@ -162,8 +163,10 @@ public final class EjbFacadeGenerator implements Generator{
      *
      * @return a set containing the generated files.
      */
-    private FileObject generate(FileObject targetFolder, final String entityFQN, boolean overrideExisting) throws IOException {
-        final String entitySimpleName = JavaIdentifiers.unqualify(entityFQN);
+    private FileObject generate(final Entity entity, boolean overrideExisting) throws IOException {
+        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, entity.getPackage(beanData.getPackage()), true);
+        String entityFQN = entity.getPackage(entityMapping.getPackage()) + '.' + entity.getClazz();
+        final String entitySimpleName = entity.getClazz();
         String abstractFileName = beanData.getPrefixName() + FACADE_ABSTRACT + beanData.getSuffixName();
         String facadeName = beanData.getPrefixName() + entitySimpleName + beanData.getSuffixName();
         // create the facade
@@ -187,9 +190,10 @@ public final class EjbFacadeGenerator implements Generator{
         param.put("entityInstancePlural", pluralize(firstLower(entitySimpleName)));
         
         param.put("AbstractFacade", abstractFileName);
+        param.put("AbstractFacade_FQN", beanData.getPackage() + "." + abstractFileName);
         param.put("EntityFacade", facadeName);
         param.put("PU", applicationConfigData.getPersistenceUnitName());
-        param.put("package", beanData.getPackage());
+        param.put("package", entity.getPackage(beanData.getPackage()));
         
         existingFO = org.netbeans.jcode.core.util.FileUtil.expandTemplate("org/netbeans/jcode/ejb/facade/resource/EntityFacade.java.ftl", targetFolder, facadeName+'.'+JAVA_EXT, param);
        

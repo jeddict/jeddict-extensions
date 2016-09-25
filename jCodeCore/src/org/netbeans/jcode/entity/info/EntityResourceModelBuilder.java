@@ -24,6 +24,7 @@ import org.netbeans.jcode.entity.info.EntityClassInfo.FieldInfo;
 import org.netbeans.jcode.stack.config.data.EntityConfigData;
 import org.openide.util.Exceptions;
 
+@Deprecated
 public class EntityResourceModelBuilder {
 
     private Map<String, EntityClassInfo> entitiesInRelationMap;

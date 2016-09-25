@@ -468,4 +468,24 @@ public class Attributes extends BaseAttributes implements IPersistenceAttributes
         this.getOneToOne().stream().filter(attr -> attr.isPrimaryKey()).count() +
         this.getManyToOne().stream().filter(attr -> attr.isPrimaryKey()).count() > 1;
     }
+    
+    public Attribute getIdField(){
+         if(this.getId().size()>1){
+             if(this.getEmbeddedId()!=null){
+                 return this.getEmbeddedId();
+             } else {
+                 IdClass idClass = ((IdentifiableClass)this.getJavaClass()).getIdClass();
+                 Id attribute = new Id();
+                 attribute.setName(idClass.getClazz());
+                 attribute.setAttributeType(idClass.getClazz());
+                 return attribute;
+             }
+         } else if(this.getId().size() == 1){
+             return this.getId().get(0);
+         } else {
+             return null;
+         }
+    }
+    
+    
 }

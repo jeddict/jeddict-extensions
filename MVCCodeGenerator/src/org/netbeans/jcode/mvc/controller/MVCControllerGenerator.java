@@ -110,6 +110,8 @@ import static org.netbeans.jcode.security.SecurityConstants.CREDENTIALS;
 import static org.netbeans.jcode.security.SecurityConstants.DEFAULT_CREDENTIALS;
 import static org.netbeans.jcode.security.SecurityConstants.EMBEDDED_IDENTITY_STORE_DEFINITION;
 import org.netbeans.jcode.task.progress.ProgressHandler;
+import org.netbeans.jpa.modeler.spec.Entity;
+import org.netbeans.jpa.modeler.spec.EntityMappings;
 import org.netbeans.modules.websvc.rest.spi.RestSupport;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
@@ -152,7 +154,10 @@ public class MVCControllerGenerator implements Generator {
     private SourceGroup source; 
     
     @ConfigData
-    private EntityResourceBeanModel model;
+     private EntityResourceBeanModel model;
+    
+    @ConfigData
+    private EntityMappings entityMapping;
     
     @ConfigData
     private ProgressHandler handler;
@@ -161,32 +166,32 @@ public class MVCControllerGenerator implements Generator {
     public void execute() throws IOException {
         handler.progress(Console.wrap(MVCControllerGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
         generateUtil();
-        for (EntityClassInfo classInfo : model.getEntityInfos()) {
-            generate(classInfo.getType(), classInfo.getPrimaryKeyType(), false, false, true);
+        for (Entity entity : entityMapping.getEntity()) {
+            generate(entity, false, false, true);
         }
 
-        model.getEntityInfos().stream().forEach((info) -> {
-            Util.modifyEntity(info.getEntityConfigData().getEntityFile());
+        entityMapping.getEntity().stream().forEach((entity) -> {
+            Util.modifyEntity(entity.getFileObject());
         });
         addMavenDependencies();
     }
 
-    public Set<FileObject> generate(final String entityFQN, final String idClass,
-            final boolean hasRemote, final boolean hasLocal, boolean overrideExisting) throws IOException {
-
+    public Set<FileObject> generate(Entity entity, final boolean hasRemote, final boolean hasLocal, boolean overrideExisting) throws IOException {
+        final String entityFQN = entity.getFQN(entityMapping.getPackage());
+        final String idClass = entity.getAttributes().getIdField().getDataTypeLabel();
         final Set<FileObject> createdFiles = new HashSet<>();
-        final String entitySimpleName = JavaIdentifiers.unqualify(entityFQN);
+        final String entitySimpleName = entity.getClazz();
         final String variableName = StringHelper.firstLower(entitySimpleName);
         final String listVariableName = Inflector.getInstance().pluralize(variableName);
-        final String constantName = StringHelper.toConstant(entitySimpleName);
+//        final String constantName = StringHelper.toConstant(entitySimpleName);
 
         String facadeFileName = beanData.getPrefixName() + entitySimpleName + beanData.getSuffixName();
-        String fqFacadeFileName = beanData.getPackage().isEmpty() ? facadeFileName : beanData.getPackage() + '.' + facadeFileName;
+        String fqFacadeFileName = entity.getPackage(beanData.getPackage()) + '.' + facadeFileName;
 
         String controllerFileName = mvcData.getPrefixName() + entitySimpleName + mvcData.getSuffixName();
         handler.progress(controllerFileName);
 
-        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, mvcData.getPackage(), true);
+        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, entity.getPackage(mvcData.getPackage()), true);
 
         FileObject controllerFO = targetFolder.getFileObject(controllerFileName, JAVA_EXT);//skips here
 
@@ -198,8 +203,8 @@ public class MVCControllerGenerator implements Generator {
             }
         }
 
-        final FileObject facade = GenerationUtils.createClass(targetFolder, controllerFileName, null);
-        createdFiles.add(facade);
+        final FileObject controllerFile = GenerationUtils.createClass(targetFolder, controllerFileName, null);
+        createdFiles.add(controllerFile);
 
         String webPath;
         if (jspData != null) {
@@ -209,7 +214,7 @@ public class MVCControllerGenerator implements Generator {
         }
 
         if (model != null) {
-            Util.generatePrimaryKeyMethod(facade, entityFQN, model);
+            Util.generatePrimaryKeyMethod(controllerFile, entityFQN, model);
         }
 
         // add implements and extends clauses to the facade
@@ -414,9 +419,9 @@ public class MVCControllerGenerator implements Generator {
         };
 
         try {
-            JavaSource.forFileObject(facade).runWhenScanFinished((CompilationController controller) -> {
+            JavaSource.forFileObject(controllerFile).runWhenScanFinished((CompilationController controller) -> {
                 controller.toPhase(Phase.ELEMENTS_RESOLVED);
-                JavaSource.forFileObject(facade).runModificationTask(modificationTask).commit();
+                JavaSource.forFileObject(controllerFile).runModificationTask(modificationTask).commit();
             }, true).get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();

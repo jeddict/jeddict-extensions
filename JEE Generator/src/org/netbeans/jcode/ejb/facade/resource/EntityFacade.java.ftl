@@ -1,10 +1,11 @@
 <#if package!="">package ${package};</#if>
 
-import ${EntityClass_FQN};
 import javax.ejb.Stateless;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import ${EntityClass_FQN};
+import ${AbstractFacade_FQN};
 
 @Stateless
 @Named("${entityInstance}")

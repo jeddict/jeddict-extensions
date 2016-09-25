@@ -45,9 +45,9 @@ import org.netbeans.jcode.core.util.JavaUtil;
 import org.netbeans.jcode.core.util.StringHelper;
 import org.netbeans.jcode.stack.config.data.EntityConfigData;
 import org.netbeans.jcode.task.AbstractTask;
-import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
 
+@Deprecated
 public class EntityClassInfo {
 
     private static final String JAVAX_PERSISTENCE = "javax.persistence.";//NOI18N

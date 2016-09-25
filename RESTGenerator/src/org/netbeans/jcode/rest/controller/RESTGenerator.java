@@ -69,6 +69,8 @@ import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
+import org.netbeans.jpa.modeler.spec.*;
+import org.netbeans.jpa.modeler.spec.extend.Attribute;
 
 /**
  *
@@ -97,8 +99,8 @@ public class RESTGenerator implements Generator {
     private SourceGroup source;
 
     @ConfigData
-    private EntityResourceBeanModel entityResourceBeanModel;
-
+    private EntityMappings entityMapping;
+    
     @ConfigData
     private ProgressHandler handler;
     
@@ -178,10 +180,10 @@ public class RESTGenerator implements Generator {
     public void execute() throws IOException {
         handler.progress(Console.wrap(RESTGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
         generateUtil();
-        setEntityPackage();
+        entityPackage = entityMapping.getPackage();
         Map<String, Object> param = generateServerSideComponent();
-        for (EntityClassInfo classInfo : entityResourceBeanModel.getEntityInfos()) {
-            generateEntityController(classInfo, param);
+        for (Entity entity : entityMapping.getEntity()) {
+            generateEntityController(entity, param);
         }
         CDIUtil.createDD(project);
         addMavenDependencies("pom/rest/_pom.xml");
@@ -206,19 +208,18 @@ public class RESTGenerator implements Generator {
         }
     }
     
-    public FileObject generateEntityController(final EntityClassInfo classInfo, Map<String, Object> appParam) throws IOException {
-        String entityFQN = classInfo.getType();
-//        String idClass = classInfo.getPrimaryKeyType();
-        boolean overrideExisting = true;
-        final String entitySimpleName = JavaIdentifiers.unqualify(entityFQN);
+    public FileObject generateEntityController(final Entity entity, Map<String, Object> appParam) throws IOException {
+        String entityFQN = entity.getFQN(entityMapping.getPackage());
+        boolean overrideExisting = true, dto = false;
+        final String entitySimpleName = entity.getClazz();
 
         String facadeFileName = beanData.getPrefixName() + entitySimpleName + beanData.getSuffixName();
-        String fqFacadeFileName = beanData.getPackage().isEmpty() ? facadeFileName : beanData.getPackage() + '.' + facadeFileName;
+        String fqFacadeFileName = entity.getPackage(beanData.getPackage()) + '.' + facadeFileName;
 
         String controllerFileName = restData.getPrefixName() + entitySimpleName + restData.getSuffixName();
         handler.progress(controllerFileName);
 
-        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, restData.getPackage(), true);
+        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, entity.getPackage(restData.getPackage()), true);
 
         FileObject controllerFO = targetFolder.getFileObject(controllerFileName, JAVA_EXT);
 
@@ -229,7 +230,6 @@ public class RESTGenerator implements Generator {
                 throw new IOException("File already exists exception: " + controllerFO.getPath());
             }
         }
-        boolean dto = false;
         String entityClass = firstUpper(entitySimpleName);
         String entityInstance = firstLower(entitySimpleName);
         String entityNameSpinalCased = kebabCase(entityInstance);
@@ -252,10 +252,11 @@ public class RESTGenerator implements Generator {
         param.put("instanceType", dto ? entityClass + "DTO" : entityClass);
         param.put("instanceName", dto ? entityInstance + "DTO" : entityInstance);
 
-        param.put("pkName", classInfo.getIdFieldInfo().getName());
-        param.put("pkGetter", "get"+ getMethodName(classInfo.getIdFieldInfo().getName()));
-        param.put("pkType", classInfo.getIdFieldInfo().getType());
-        param.put("package", restData.getPackage());
+        Attribute idAttribute = entity.getAttributes().getIdField();
+        param.put("pkName", idAttribute.getName());
+        param.put("pkGetter", "get"+ getMethodName(idAttribute.getName()));
+        param.put("pkType", idAttribute.getDataTypeLabel());
+        param.put("package", entity.getPackage(restData.getPackage()));
         param.put("applicationPath", restData.getRestConfigData().getApplicationPath());
         param.put("metrics", restData.isMetrics());
         param.put("docs", restData.isDocsEnable());
@@ -263,12 +264,6 @@ public class RESTGenerator implements Generator {
         FileUtil.expandTemplate(TEMPLATE + "rest/entity/EntityController.java.ftl", targetFolder, controllerFileName + '.' + JAVA_EXT, param);
 
         return controllerFO;
-    }
-
-    private void setEntityPackage() {
-        if (entityResourceBeanModel.getEntityInfos().size() >= 1) {
-            entityPackage = entityResourceBeanModel.getEntityInfos().get(0).getPackageName();
-        }
     }
 
     private Map<String, Object> generateServerSideComponent() throws IOException {

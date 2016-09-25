@@ -125,8 +125,8 @@ public class ${controllerClass} {
 
     /**
      * DELETE /:${pkName} : remove the "${pkName}" ${entityInstance}.
-     *     *
-     * @param id the id of the ${instanceName} to delete
+     * 
+     * @param ${pkName} the ${pkName} of the ${instanceName} to delete
      * @return the Response with status 200 (OK)
      */
     <#if metrics>@Timed</#if>

@@ -36,7 +36,6 @@ public abstract class IdentifiableClass extends ManagedClass implements PrimaryK
     @XmlAttribute(name = "xre")//(name = "jaxb-root-element")//
     private Boolean xmlRootElement = false;
 
-//    @XmlElement(name = "id-class")
     @XmlTransient
     protected IdClass idClass;
     protected Attributes attributes;
@@ -440,7 +439,7 @@ public abstract class IdentifiableClass extends ManagedClass implements PrimaryK
      */
     public List<NamedQuery> getNamedQuery() {
         if (namedQuery == null) {
-            namedQuery = new ArrayList<NamedQuery>();
+            namedQuery = new ArrayList<>();
         }
         return this.namedQuery;
     }
@@ -485,7 +484,7 @@ public abstract class IdentifiableClass extends ManagedClass implements PrimaryK
      */
     public List<NamedNativeQuery> getNamedNativeQuery() {
         if (namedNativeQuery == null) {
-            namedNativeQuery = new ArrayList<NamedNativeQuery>();
+            namedNativeQuery = new ArrayList<>();
         }
         return this.namedNativeQuery;
     }
