@@ -101,7 +101,7 @@ public class Attributes extends BaseAttributes implements IPersistenceAttributes
         for (ExecutableElement method : JavaSourceParserUtil.getMethods(typeElement)) {
             try {
             String methodName = method.getSimpleName().toString();
-            if (methodName.startsWith("get")) {
+            if (methodName.startsWith("get") || methodName.startsWith("is")) {
                 Element element;
                 VariableElement variableElement = JavaSourceParserUtil.guessField(method);
                  // Issue Fix #5976 Start

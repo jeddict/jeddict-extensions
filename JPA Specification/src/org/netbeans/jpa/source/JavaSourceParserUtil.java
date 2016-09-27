@@ -50,6 +50,7 @@ import javax.lang.model.util.Types;
 import org.netbeans.api.java.source.CompilationController;
 import org.netbeans.api.java.source.WorkingCopy;
 import static org.netbeans.jcode.core.util.JavaSourceHelper.getSimpleClassName;
+import org.netbeans.jcode.core.util.StringHelper;
 import org.netbeans.jpa.modeler.spec.Embeddable;
 import org.netbeans.jpa.modeler.spec.Entity;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
@@ -584,7 +585,7 @@ public class JavaSourceParserUtil {
         List<ExecutableElement> methods = JavaSourceParserUtil.getMethods(typeElement);
         for (ExecutableElement method : methods) {
             String methodName = method.getSimpleName().toString();
-            if (methodName.startsWith("get")) {
+            if (methodName.startsWith("get")) { //only getter (for auto-gen pk)
                 Element element = isFieldAccess ? JavaSourceParserUtil.guessField(method) : method;
                 if (element != null) {
                     if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.Id") || JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.EmbeddedId")) {
@@ -710,8 +711,16 @@ public class JavaSourceParserUtil {
     // Issue Fix #5977 End
 
     public static VariableElement guessField(ExecutableElement getter) {
-        String name = getter.getSimpleName().toString().substring(3);
-        String guessFieldName = name.substring(0, 1).toLowerCase() + name.substring(1);
+        String name = null;
+        String methodName = getter.getSimpleName().toString();
+        if (methodName.startsWith("get")) {
+            name = getter.getSimpleName().toString().substring(3);
+        } else if (methodName.startsWith("is")) {
+            name = getter.getSimpleName().toString().substring(2);
+        } else {
+            return null;
+        }
+        String guessFieldName = StringHelper.firstLower(name);
         TypeElement typeElement = (TypeElement) getter.getEnclosingElement();
         for (VariableElement variableElement : ElementFilter.fieldsIn(typeElement.getEnclosedElements())) {
             //BUG : handling of field name for reserved sql keyword e.g : _size
