@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -458,5 +459,5 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
      */
     public void setPackage(String _package) {
         this._package = _package;
-    }
+    }    
 }
