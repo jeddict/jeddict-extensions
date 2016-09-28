@@ -130,7 +130,7 @@ public abstract class SingleRelationAttribute extends RelationAttribute implemen
     @Override
     public List<JoinColumn> getJoinColumn() {
         if (joinColumn == null) {
-            joinColumn = new ArrayList<JoinColumn>();
+            joinColumn = new ArrayList<>();
         }
         return this.joinColumn;
     }
@@ -138,7 +138,7 @@ public abstract class SingleRelationAttribute extends RelationAttribute implemen
     @Override
     public void addJoinColumn(JoinColumn joinColumn_In) {
         if (joinColumn == null) {
-            joinColumn = new ArrayList<JoinColumn>();
+            joinColumn = new ArrayList<>();
         }
         joinColumn.add(joinColumn_In);
     }
@@ -146,7 +146,7 @@ public abstract class SingleRelationAttribute extends RelationAttribute implemen
     @Override
     public void removeJoinColumn(JoinColumn joinColumn_In) {
         if (joinColumn == null) {
-            joinColumn = new ArrayList<JoinColumn>();
+            joinColumn = new ArrayList<>();
         }
         joinColumn.remove(joinColumn_In);
     }

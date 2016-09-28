@@ -80,9 +80,9 @@ import org.netbeans.jpa.source.JavaSourceParserUtil;
 })
 public class OneToOne extends SingleRelationAttribute {
 
-    @XmlElement(name = "primary-key-join-column")
+    @XmlElement(name = "pk-jc")
     protected List<PrimaryKeyJoinColumn> primaryKeyJoinColumn;//REVENG PENDING
-    @XmlElement(name = "primary-key-foreign-key")
+    @XmlElement(name = "pk-fk")
     protected ForeignKey primaryKeyForeignKey;//REVENG PENDING
 
     @XmlAttribute(name = "own")

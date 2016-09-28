@@ -66,6 +66,7 @@ public class ManyToOneSpecAccessor extends ManyToOneAccessor {
         } catch (ValidationException ex) {
             DBValidationException exception = new DBValidationException(ex);
             exception.setAttribute(manyToOne);
+            throw exception;
         }
     }
 

@@ -16,6 +16,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
+import org.netbeans.jpa.modeler.spec.extend.IJoinColumn;
 import org.netbeans.jpa.modeler.spec.validator.column.ForeignKeyValidator;
 import org.netbeans.jpa.modeler.spec.validator.column.JoinColumnValidator;
 import org.netbeans.jpa.source.JAREAnnotationLoader;
@@ -62,7 +63,7 @@ import org.netbeans.jpa.source.JavaSourceParserUtil;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "join-column")
 @XmlJavaTypeAdapter(value = JoinColumnValidator.class)
-public class JoinColumn implements JAREAnnotationLoader {
+public class JoinColumn implements JAREAnnotationLoader, IJoinColumn {
 
     @XmlAttribute(name = "name")
     protected String name;
@@ -117,6 +118,7 @@ public class JoinColumn implements JAREAnnotationLoader {
      * @return possible object is {@link String }
      *
      */
+    @Override
     public String getName() {
         return name;
     }
@@ -127,6 +129,7 @@ public class JoinColumn implements JAREAnnotationLoader {
      * @param value allowed object is {@link String }
      *
      */
+    @Override
     public void setName(String value) {
         if (value != null) {
             value = value.toUpperCase();
@@ -140,10 +143,8 @@ public class JoinColumn implements JAREAnnotationLoader {
      * @return possible object is {@link String }
      *
      */
+    @Override
     public String getReferencedColumnName() {
-//        if (referencedColumn != null) {
-//            return referencedColumn.getReferenceColumnName();
-//        }
         return referencedColumnName;
     }
 
@@ -153,6 +154,7 @@ public class JoinColumn implements JAREAnnotationLoader {
      * @param value allowed object is {@link String }
      *
      */
+    @Override
     public void setReferencedColumnName(String value) {
         if (value != null) {
             value = value.toUpperCase();
@@ -246,6 +248,7 @@ public class JoinColumn implements JAREAnnotationLoader {
      * @return possible object is {@link String }
      *
      */
+    @Override
     public String getColumnDefinition() {
         return columnDefinition;
     }
@@ -256,6 +259,7 @@ public class JoinColumn implements JAREAnnotationLoader {
      * @param value allowed object is {@link String }
      *
      */
+    @Override
     public void setColumnDefinition(String value) {
         this.columnDefinition = value;
     }
@@ -296,22 +300,10 @@ public class JoinColumn implements JAREAnnotationLoader {
         return accessor;
     }
 
-//    /**
-//     * @return the referencedColumn
-//     */
-//    public Id getReferencedColumn() {
-//        return referencedColumn;
-//    }
-//
-//    /**
-//     * @param referencedColumn the referencedColumn to set
-//     */
-//    public void setReferencedColumn(Id referencedColumn) {
-//        this.referencedColumn = referencedColumn;
-//    }
     /**
      * @return the foreignKey
      */
+    @Override
     public ForeignKey getForeignKey() {
         if (foreignKey == null) {
             foreignKey = new ForeignKey();
@@ -322,6 +314,7 @@ public class JoinColumn implements JAREAnnotationLoader {
     /**
      * @param foreignKey the foreignKey to set
      */
+    @Override
     public void setForeignKey(ForeignKey foreignKey) {
         this.foreignKey = foreignKey;
     }
@@ -329,6 +322,7 @@ public class JoinColumn implements JAREAnnotationLoader {
     /**
      * @return the implicitName
      */
+    @Override
     public String getImplicitName() {
         return implicitName;
     }
@@ -336,6 +330,7 @@ public class JoinColumn implements JAREAnnotationLoader {
     /**
      * @param implicitName the implicitName to set
      */
+    @Override
     public void setImplicitName(String implicitName) {
         this.implicitName = implicitName;
     }

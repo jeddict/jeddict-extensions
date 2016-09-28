@@ -57,6 +57,7 @@ public class ManyToManySpecAccessor extends ManyToManyAccessor implements MapKey
         } catch (ValidationException ex) {
             DBValidationException exception = new DBValidationException(ex);
             exception.setAttribute(manyToMany);
+            throw exception;
         }
     }
 

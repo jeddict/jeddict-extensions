@@ -66,9 +66,9 @@ import org.netbeans.jpa.source.JavaSourceParserUtil;
 })
 public class SecondaryTable extends Table {
 
-    @XmlElement(name = "primary-key-join-column")
+    @XmlElement(name = "pk-jc")
     protected List<PrimaryKeyJoinColumn> primaryKeyJoinColumn;
-    @XmlElement(name = "primary-key-foreign-key")
+    @XmlElement(name = "pk-fk")
     protected ForeignKey primaryKeyForeignKey;//REVENG PENDING
     @XmlElement(name = "fk")
     protected ForeignKey foreignKey;//REVENG PENDING

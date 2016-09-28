@@ -711,7 +711,7 @@ public class JavaSourceParserUtil {
     // Issue Fix #5977 End
 
     public static VariableElement guessField(ExecutableElement getter) {
-        String name = null;
+        String name;
         String methodName = getter.getSimpleName().toString();
         if (methodName.startsWith("get")) {
             name = getter.getSimpleName().toString().substring(3);

@@ -63,6 +63,7 @@ public class OneToManySpecAccessor extends OneToManyAccessor implements MapKeyAc
         } catch (ValidationException ex) {
             DBValidationException exception = new DBValidationException(ex);
             exception.setAttribute(oneToMany);
+            throw exception;
         }
     }
 

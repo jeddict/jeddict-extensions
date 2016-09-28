@@ -77,6 +77,7 @@ public class OneToOneSpecAccessor extends OneToOneAccessor {
         } catch (ValidationException ex) {
             DBValidationException exception = new DBValidationException(ex);
             exception.setAttribute(oneToOne);
+            throw exception;
         }
     }
 

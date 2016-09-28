@@ -18,14 +18,20 @@ package org.netbeans.jpa.modeler.db.accessor;
 import java.util.ArrayList;
 import java.util.List;
 import static java.util.stream.Collectors.toList;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.SecondaryTableMetadata;
 import org.netbeans.jpa.modeler.spec.Entity;
 import org.netbeans.jpa.modeler.spec.MappedSuperclass;
+import org.netbeans.jpa.modeler.spec.PrimaryKeyJoinColumn;
 import org.netbeans.jpa.modeler.spec.SecondaryTable;
 import org.netbeans.jpa.modeler.spec.extend.JavaClass;
 import org.netbeans.jpa.modeler.spec.validator.override.AssociationValidator;
 import org.netbeans.jpa.modeler.spec.validator.override.AttributeValidator;
+import org.netbeans.jpa.modeler.spec.validator.column.PrimaryKeyJoinColumnValidator;
+import org.netbeans.db.modeler.exception.DBValidationException;
 
 /**
  *
@@ -74,6 +80,9 @@ public class EntitySpecAccessor extends EntityAccessor {
         AssociationValidator.filter(entity);
         accessor.setAssociationOverrides(entity.getAssociationOverride().stream().map(AssociationOverrideSpecMetadata::getInstance).collect(toList()));
 
+        PrimaryKeyJoinColumnValidator.filter(entity.getPrimaryKeyJoinColumn());
+        accessor.setPrimaryKeyJoinColumns(entity.getPrimaryKeyJoinColumn().stream().map(PrimaryKeyJoinColumn::getAccessor).collect(toList()));
+
         return accessor;
 
     }
@@ -95,6 +104,17 @@ public class EntitySpecAccessor extends EntityAccessor {
      */
     public Entity getEntity() {
         return entity;
+    }
+    
+    @Override
+     protected void addMultipleTableKeyFields(List<PrimaryKeyJoinColumnMetadata> primaryKeyJoinColumns, DatabaseTable targetTable, String PK_CTX, String FK_CTX) {
+        try {
+            super.addMultipleTableKeyFields(primaryKeyJoinColumns, targetTable, PK_CTX, FK_CTX);
+        } catch (ValidationException ex) {// to handle @PrimaryKeyJoinColumn exception
+            DBValidationException exception = new DBValidationException(ex);
+            exception.setJavaClass(entity);
+            throw exception;
+        }
     }
 
 }

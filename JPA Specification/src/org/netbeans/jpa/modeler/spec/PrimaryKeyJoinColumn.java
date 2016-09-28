@@ -6,11 +6,22 @@
 //
 package org.netbeans.jpa.modeler.spec;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
-
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
+import org.netbeans.jpa.modeler.spec.extend.IJoinColumn;
+import org.netbeans.jpa.modeler.spec.validator.column.ForeignKeyValidator;
+import org.netbeans.jpa.source.JavaSourceParserUtil;
+import org.netbeans.jpa.modeler.spec.validator.column.PrimaryKeyJoinColumnValidator;
 /**
  *
  *
@@ -42,16 +53,60 @@ import javax.xml.bind.annotation.XmlType;
  *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "primary-key-join-column")
-public class PrimaryKeyJoinColumn {
+@XmlType(name = "pk-jc")
+@XmlJavaTypeAdapter(value = PrimaryKeyJoinColumnValidator.class)
+public class PrimaryKeyJoinColumn implements IJoinColumn {
 
-    @XmlAttribute
+    @XmlAttribute(name = "name")
     protected String name;
-    @XmlAttribute(name = "referenced-column-name")
+    @XmlTransient
+    private String implicitName;//automatically assigned by persistence provider
+    @XmlAttribute(name = "rc")
     protected String referencedColumnName;
-    @XmlAttribute(name = "column-definition")
+    @XmlAttribute(name = "cd")
     protected String columnDefinition;
+    @XmlElement(name = "fk")
+    private ForeignKey foreignKey;
+    
+    private static PrimaryKeyJoinColumn loadAttribute(Element element, AnnotationMirror annotationMirror) {
+        PrimaryKeyJoinColumn primaryKeyJoinColumn = null;
+        if (annotationMirror != null) {
+            primaryKeyJoinColumn = new PrimaryKeyJoinColumn();
+             primaryKeyJoinColumn.name = (String) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "name");
+            primaryKeyJoinColumn.referencedColumnName = (String) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "referencedColumnName");
+            primaryKeyJoinColumn.columnDefinition = (String) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "columnDefinition");
 
+            AnnotationMirror foreignKeyValue = (AnnotationMirror) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "foreignKey");
+            if (foreignKeyValue != null) {
+                primaryKeyJoinColumn.foreignKey = ForeignKey.load(element, foreignKeyValue);
+            }
+        }
+        return primaryKeyJoinColumn;
+    }
+    
+    public static List<PrimaryKeyJoinColumn> load(Element element) {
+        List<PrimaryKeyJoinColumn> primaryKeyJoinColumns = new ArrayList<>();
+
+        AnnotationMirror attributeOverridesMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.PrimaryKeyJoinColumns");
+        if (attributeOverridesMirror != null) {
+            List attributeOverridesMirrorList = (List) JavaSourceParserUtil.findAnnotationValue(attributeOverridesMirror, "value");
+            if (attributeOverridesMirrorList != null) {
+                for (Object attributeOverrideObj : attributeOverridesMirrorList) {
+                    primaryKeyJoinColumns.add(PrimaryKeyJoinColumn.loadAttribute(element, (AnnotationMirror) attributeOverrideObj));
+                }
+            }
+        } else {
+            attributeOverridesMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.PrimaryKeyJoinColumn");
+            if (attributeOverridesMirror != null) {
+                primaryKeyJoinColumns.add(PrimaryKeyJoinColumn.loadAttribute(element, attributeOverridesMirror));
+            }
+        }
+
+        return primaryKeyJoinColumns;
+    }
+
+    
+    
     /**
      * Gets the value of the name property.
      *
@@ -69,6 +124,9 @@ public class PrimaryKeyJoinColumn {
      *
      */
     public void setName(String value) {
+        if (value != null) {
+            value = value.toUpperCase();
+        }
         this.name = value;
     }
 
@@ -89,6 +147,9 @@ public class PrimaryKeyJoinColumn {
      *
      */
     public void setReferencedColumnName(String value) {
+        if (value != null) {
+            value = value.toUpperCase();
+        }
         this.referencedColumnName = value;
     }
 
@@ -112,4 +173,45 @@ public class PrimaryKeyJoinColumn {
         this.columnDefinition = value;
     }
 
+    /**
+     * @return the foreignKey
+     */
+    public ForeignKey getForeignKey() {
+        if (foreignKey == null) {
+            foreignKey = new ForeignKey();
+        }
+        return foreignKey;
+    }
+
+    /**
+     * @param foreignKey the foreignKey to set
+     */
+    public void setForeignKey(ForeignKey foreignKey) {
+        this.foreignKey = foreignKey;
+    }
+
+    /**
+     * @return the implicitName
+     */
+    public String getImplicitName() {
+        return implicitName;
+    }
+
+    /**
+     * @param implicitName the implicitName to set
+     */
+    public void setImplicitName(String implicitName) {
+        this.implicitName = implicitName;
+    }
+
+    public PrimaryKeyJoinColumnMetadata getAccessor() {
+        PrimaryKeyJoinColumnMetadata accessor = new PrimaryKeyJoinColumnMetadata();
+        accessor.setColumnDefinition(columnDefinition);
+        accessor.setName(name);
+        accessor.setReferencedColumnName(getReferencedColumnName());
+        if (ForeignKeyValidator.isNotEmpty(foreignKey)) {
+            accessor.setForeignKey(foreignKey.getAccessor());
+        }
+        return accessor;
+    }
 }

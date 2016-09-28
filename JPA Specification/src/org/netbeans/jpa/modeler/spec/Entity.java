@@ -140,11 +140,11 @@ import org.netbeans.jpa.source.JavaSourceParserUtil;
 public class Entity extends IdentifiableClass implements AccessTypeHandler, InheritenceHandler, AttributeOverrideHandler, AssociationOverrideHandler {
 
     protected Table table;
-    @XmlElement(name = "secondary-table")
+    @XmlElement(name = "st")
     protected List<SecondaryTable> secondaryTable;//REVENG PENDING
-    @XmlElement(name = "primary-key-join-column")
-    protected List<PrimaryKeyJoinColumn> primaryKeyJoinColumn;//REVENG PENDING
-    @XmlElement(name = "primary-key-foreign-key")
+    @XmlElement(name = "pk-jc")
+    protected List<PrimaryKeyJoinColumn> primaryKeyJoinColumn;
+    @XmlElement(name = "pk-fk")
     protected ForeignKey primaryKeyForeignKey;//REVENG PENDING JPA 2.1
 
     protected Inheritance inheritance;
@@ -230,6 +230,7 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
             }
         }
         
+        this.getPrimaryKeyJoinColumn().addAll(PrimaryKeyJoinColumn.load(element));
         this.getAttributeOverride().addAll(AttributeOverride.load(element));
         this.getAssociationOverride().addAll(AssociationOverride.load(element));
         this.getNamedEntityGraph().addAll(NamedEntityGraph.load(element));
