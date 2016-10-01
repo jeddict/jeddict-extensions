@@ -18,10 +18,6 @@ package org.netbeans.jcode.layer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.netbeans.api.project.Project;
-import org.netbeans.api.project.SourceGroup;
-import org.netbeans.jcode.entity.info.EntityResourceBeanModel;
-import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.openide.util.Lookup;
 
 /**
@@ -48,10 +44,10 @@ public interface Generator {
         Lookup.getDefault().lookupAll(Generator.class).stream().forEach((Generator codeGenerator) -> {
             Technology technology = codeGenerator.getClass().getAnnotation(Technology.class);
             if (technology.type() == Technology.Type.BUSINESS) {
-                if (technology.panel()== org.netbeans.jcode.stack.config.panel.LayerConfigPanel.class) {
-               codeGenerators.add(new TechContext(codeGenerator));
+                if (technology.panel() == org.netbeans.jcode.stack.config.panel.LayerConfigPanel.class) {
+                    codeGenerators.add(new TechContext(codeGenerator));
                 } else {
-                customCodeGenerators.add(new TechContext(codeGenerator));
+                    customCodeGenerators.add(new TechContext(codeGenerator));
                 }
             }
         });
@@ -60,12 +56,21 @@ public interface Generator {
     }
 
     static List<TechContext> getController(TechContext parentCodeGenerator) {
+         return getTechContexts(parentCodeGenerator, Technology.Type.CONTROLLER);
+    }
+
+    static List<TechContext> getViewer(TechContext parentCodeGenerator) {
+        return getTechContexts(parentCodeGenerator, Technology.Type.VIEWER);
+    }
+        
+    
+    static List<TechContext> getTechContexts(TechContext parentCodeGenerator, Technology.Type type) {
         List<TechContext> codeGenerators = new ArrayList<>();
         List<TechContext> customCodeGenerators = new ArrayList<>();
-        
+       
         Lookup.getDefault().lookupAll(Generator.class).stream().forEach((Generator codeGenerator) -> {
             Technology technology = codeGenerator.getClass().getAnnotation(Technology.class);
-            if (technology.type() == Technology.Type.CONTROLLER) {
+            if (technology.type() == type) {
                 if (technology.panel() == org.netbeans.jcode.stack.config.panel.LayerConfigPanel.class) {
                     codeGenerators.add(new TechContext(codeGenerator));
                 } else {
@@ -75,30 +80,16 @@ public interface Generator {
                             break;
                         }
                     }
-                }
-            }
-        });
-        codeGenerators.addAll(customCodeGenerators);
-        return codeGenerators;
-    }
-
-    static List<TechContext> getViewer(TechContext parentCodeGenerator) {
-        List<TechContext> codeGenerators = new ArrayList<>();
-        Lookup.getDefault().lookupAll(Generator.class).stream().forEach((Generator codeGenerator) -> {
-            Technology technology = codeGenerator.getClass().getAnnotation(Technology.class);
-            if (technology.type() == Technology.Type.VIEWER) {
-                if (technology.panel() == org.netbeans.jcode.stack.config.panel.LayerConfigPanel.class) {
-                    codeGenerators.add(new TechContext(codeGenerator));
-                } else {
-                    for (Class<? extends Generator> genClass : technology.parents()) {
-                        if (genClass == parentCodeGenerator.getGenerator().getClass()) {
-                            codeGenerators.add(new TechContext(codeGenerator));
+                    for (Class<? extends Generator> genClass : parentCodeGenerator.getTechnology().children()) {
+                        if (genClass == codeGenerator.getClass()) {
+                            customCodeGenerators.add(new TechContext(codeGenerator));
                             break;
                         }
                     }
                 }
             }
         });
+        codeGenerators.addAll(customCodeGenerators);
         return codeGenerators;
     }
 }

@@ -20,8 +20,11 @@ package org.netbeans.jcode.jpa;
  * @author Gaurav Gupta
  */
 public class JPAConstants {
-
+    
+//Misc
     public static final String PERSISTENCE_PACKAGE = "javax.persistence.";
+    public static final String PERSISTENCE_METAMODEL_PACKAGE = PERSISTENCE_PACKAGE + "metamodel.";
+    
     public static final String QUERY_TYPE = "Query";
     public static final String ENTITY_MANAGER_TYPE = "EntityManager";
     public static final String ENTITY_MANAGER_FACTORY = "EntityManagerFactory";
@@ -29,31 +32,84 @@ public class JPAConstants {
     public static final String PERSISTENCE = "Persistence";
     public static final String PERSISTENCE_CONTEXT_ANNOTATION = "PersistenceContext";
     public static final String PERSISTENCE_CONTEXT = PERSISTENCE_PACKAGE + PERSISTENCE_CONTEXT_ANNOTATION;
+    
+    public static final String EXCLUDE_DEFAULT_LISTENERS = "ExcludeDefaultListeners";
+    public static final String EXCLUDE_DEFAULT_LISTENERS_FQN = PERSISTENCE_PACKAGE + EXCLUDE_DEFAULT_LISTENERS;
+    public static final String EXCLUDE_SUPERCLASS_LISTENERS = "ExcludeSuperclassListeners";
+    public static final String EXCLUDE_SUPERCLASS_LISTENERS_FQN = PERSISTENCE_PACKAGE + EXCLUDE_SUPERCLASS_LISTENERS;
+    public static final String ENTITY_LISTENERS = "EntityListeners";
+    public static final String ENTITY_LISTENERS_FQN = PERSISTENCE_PACKAGE + ENTITY_LISTENERS;
+    
     public static final String NO_RESULT_EXCEPTION = "NoResultException";
-
+    
+//Class 
     public static final String ENTITY = "Entity";
     public static final String ENTITY_FQN = PERSISTENCE_PACKAGE + ENTITY;
 
-    public static final String EMBEDDED = "Embedded";
-    public static final String EMBEDDED_FQN = PERSISTENCE_PACKAGE + EMBEDDED;
+    public static final String EMBEDDABLE = "Embeddable";
+    public static final String EMBEDDABLE_FQN = PERSISTENCE_PACKAGE + EMBEDDABLE;
+
+    public static final String MAPPED_SUPERCLASS = "MappedSuperclass";
+    public static final String MAPPED_SUPERCLASS_FQN = PERSISTENCE_PACKAGE + MAPPED_SUPERCLASS;
 
     public static final String TABLE = "Table";
     public static final String TABLE_FQN = PERSISTENCE_PACKAGE + TABLE;
+    
+    public static final String ID_CLASS = "IdClass";
+    public static final String ID_CLASS_FQN = PERSISTENCE_PACKAGE + ID_CLASS;
+    
+    public static final String CACHEABLE = "Cacheable";
+    public static final String CACHEABLE_FQN = PERSISTENCE_PACKAGE + CACHEABLE;
+    
+    public static final String UNIQUE_CONSTRAINT = "UniqueConstraint";
+    public static final String UNIQUE_CONSTRAINT_FQN = PERSISTENCE_PACKAGE + UNIQUE_CONSTRAINT;
+    
+    public static final String SECONDARY_TABLE = "SecondaryTable";
+    public static final String SECONDARY_TABLE_FQN = PERSISTENCE_PACKAGE + SECONDARY_TABLE;
+    public static final String SECONDARY_TABLES = "SecondaryTables";
+    public static final String SECONDARY_TABLES_FQN = PERSISTENCE_PACKAGE + SECONDARY_TABLES;
+    
+    public static final String DISCRIMINATOR_COLUMN = "DiscriminatorColumn";
+    public static final String DISCRIMINATOR_COLUMN_FQN = PERSISTENCE_PACKAGE + DISCRIMINATOR_COLUMN;
+    public static final String DISCRIMINATOR_TYPE = "DiscriminatorType";
+    public static final String DISCRIMINATOR_TYPE_FQN = PERSISTENCE_PACKAGE + DISCRIMINATOR_TYPE;
+    public static final String DISCRIMINATOR_VALUE = "DiscriminatorValue";
+    public static final String DISCRIMINATOR_VALUE_FQN = PERSISTENCE_PACKAGE + DISCRIMINATOR_VALUE;
 
+    public static final String INHERITANCE = "Inheritance";
+    public static final String INHERITANCE_FQN = PERSISTENCE_PACKAGE + INHERITANCE;
+    public static final String INHERITANCE_TYPE = "InheritanceType";
+    public static final String INHERITANCE_TYPE_FQN = PERSISTENCE_PACKAGE + INHERITANCE_TYPE;
+
+    
+//Primary Key
     public static final String ID = "Id";
     public static final String ID_FQN = PERSISTENCE_PACKAGE + ID;
-
-    public static final String BASIC = "Basic";
-    public static final String BASIC_FQN = PERSISTENCE_PACKAGE + BASIC;
 
     public static final String EMBEDDED_ID = "EmbeddedId";
     public static final String EMBEDDED_ID_FQN = PERSISTENCE_PACKAGE + EMBEDDED_ID;
 
     public static final String GENERATED_VALUE = "GeneratedValue";
     public static final String GENERATED_VALUE_FQN = PERSISTENCE_PACKAGE + GENERATED_VALUE;
+    public static final String GENERATION_TYPE = "GenerationType";
+    public static final String GENERATION_TYPE_FQN = PERSISTENCE_PACKAGE + GENERATION_TYPE;
+    
+    
+    public static final String TABLE_GENERATOR = "TableGenerator";
+    public static final String TABLE_GENERATOR_FQN = PERSISTENCE_PACKAGE + TABLE_GENERATOR;
+    public static final String SEQUENCE_GENERATOR = "SequenceGenerator";
+    public static final String SEQUENCE_GENERATOR_FQN = PERSISTENCE_PACKAGE + SEQUENCE_GENERATOR;
+    
+    
+    public static final String PRIMARY_KEY_JOIN_COLUMNS = "PrimaryKeyJoinColumns";
+    public static final String PRIMARY_KEY_JOIN_COLUMNS_FQN = PERSISTENCE_PACKAGE + PRIMARY_KEY_JOIN_COLUMNS;
+    public static final String PRIMARY_KEY_JOIN_COLUMN = "PrimaryKeyJoinColumn";
+    public static final String PRIMARY_KEY_JOIN_COLUMN_FQN = PERSISTENCE_PACKAGE + PRIMARY_KEY_JOIN_COLUMN;
 
-    public static final String ORDER_BY = "OrderBy";
-    public static final String ORDER_COLUMN = "OrderColumn";
+//Map
+    public static final String MAPS_ID = "MapsId";
+    public static final String MAPS_ID_FQN = PERSISTENCE_PACKAGE + MAPS_ID;
+    
     public static final String MAP_KEY = "MapKey";
     public static final String MAP_KEY_FQN = PERSISTENCE_PACKAGE + MAP_KEY;
     public static final String MAP_KEY_CLASS = "MapKeyClass";
@@ -72,11 +128,20 @@ public class JPAConstants {
     public static final String MAP_KEY_JOIN_COLUMN = "MapKeyJoinColumn";
     public static final String MAP_KEY_JOIN_COLUMN_FQN = PERSISTENCE_PACKAGE + MAP_KEY_JOIN_COLUMN;
 
-    public static final String JOIN_COLUMNS = "JoinColumns";
-    public static final String JOIN_COLUMNS_FQN = PERSISTENCE_PACKAGE + JOIN_COLUMNS;
-    public static final String JOIN_COLUMN = "JoinColumn";
-    public static final String JOIN_COLUMN_FQN = PERSISTENCE_PACKAGE + JOIN_COLUMN;
-
+//Attribute
+    public static final String BASIC = "Basic";
+    public static final String BASIC_FQN = PERSISTENCE_PACKAGE + BASIC;
+    
+    public static final String COLLECTION_TABLE = "CollectionTable";
+    public static final String COLLECTION_TABLE_FQN = PERSISTENCE_PACKAGE + COLLECTION_TABLE;
+    
+    public static final String ORDER_BY = "OrderBy";
+    public static final String ORDER_BY_FQN = PERSISTENCE_PACKAGE + ORDER_BY;
+    public static final String ORDER_COLUMN = "OrderColumn";
+    
+    public static final String ELEMENT_COLLECTION = "ElementCollection";
+    public static final String ELEMENT_COLLECTION_FQN = PERSISTENCE_PACKAGE + ELEMENT_COLLECTION;
+    
     public static final String COLUMN = "Column";
     public static final String COLUMN_FQN = PERSISTENCE_PACKAGE + COLUMN;
     public static final String ENUMERATED = "Enumerated";
@@ -86,9 +151,11 @@ public class JPAConstants {
     public static final String ENUM_TYPE_ORDINAL = "EnumType.ORDINAL";
     public static final String ENUM_TYPE_STRING = "EnumType.STRING";
 
-    public static final String FETCH_TYPE = "javax.persistence.FetchType";
-    public static final String CASCADE_TYPE = "javax.persistence.CascadeType";
-
+    public static final String FETCH_TYPE = "FetchType";
+    public static final String FETCH_TYPE_FQN = PERSISTENCE_PACKAGE + FETCH_TYPE;
+    public static final String CASCADE_TYPE = "CascadeType";
+    public static final String CASCADE_TYPE_FQN = PERSISTENCE_PACKAGE + CASCADE_TYPE;
+    
     public static final String TEMPORAL = "Temporal";
     public static final String TEMPORAL_FQN = PERSISTENCE_PACKAGE + TEMPORAL;
     public static final String TEMPORAL_TYPE = "TemporalType";
@@ -98,9 +165,98 @@ public class JPAConstants {
     public static final String TEMPORAL_TIMESTAMP = "TemporalType.TIMESTAMP";
 
     public static final String LOB = "Lob";
+    public static final String LOB_FQN = PERSISTENCE_PACKAGE + LOB;
+    public static final String TRANSIENT = "Transient";
+    public static final String TRANSIENT_FQN = PERSISTENCE_PACKAGE + TRANSIENT;
+    public static final String VERSION = "Version";
+    public static final String VERSION_FQN = PERSISTENCE_PACKAGE + VERSION;
+
+//Ref Attribute
+    public static final String JOIN_TABLE = "JoinTable";
+    public static final String JOIN_TABLE_FQN = PERSISTENCE_PACKAGE + JOIN_TABLE;
+    
+    public static final String MANY_TO_ONE = "ManyToOne";
+    public static final String MANY_TO_ONE_FQN = PERSISTENCE_PACKAGE + MANY_TO_ONE;
+    
+    public static final String ONE_TO_ONE = "OneToOne";
+    public static final String ONE_TO_ONE_FQN = PERSISTENCE_PACKAGE + ONE_TO_ONE;
+    
+    public static final String JOIN_COLUMNS = "JoinColumns";
+    public static final String JOIN_COLUMNS_FQN = PERSISTENCE_PACKAGE + JOIN_COLUMNS;
+    public static final String JOIN_COLUMN = "JoinColumn";
+    public static final String JOIN_COLUMN_FQN = PERSISTENCE_PACKAGE + JOIN_COLUMN;
+    
+     public static final String INDEX = "Index";
+    public static final String INDEX_FQN = PERSISTENCE_PACKAGE + INDEX;
+    public static final String FOREIGN_KEY = "ForeignKey";
+    public static final String FOREIGN_KEY_FQN = PERSISTENCE_PACKAGE + FOREIGN_KEY;
+    public static final String CONSTRAINT_MODE = "ConstraintMode";
+    public static final String CONSTRAINT_MODE_FQN = PERSISTENCE_PACKAGE + CONSTRAINT_MODE;
+    
+
+    public static final String EMBEDDED = "Embedded";
+    public static final String EMBEDDED_FQN = PERSISTENCE_PACKAGE + EMBEDDED;
+
     public static final String ATTRIBUTE_OVERRIDE = "AttributeOverride";
+    public static final String ATTRIBUTE_OVERRIDE_FQN = PERSISTENCE_PACKAGE + ATTRIBUTE_OVERRIDE;
+    public static final String ATTRIBUTE_OVERRIDES = "AttributeOverrides";
+    public static final String ATTRIBUTE_OVERRIDES_FQN = PERSISTENCE_PACKAGE + ATTRIBUTE_OVERRIDES;
+    
     public static final String ASSOCIATION_OVERRIDE = "AssociationOverride";
-    public static final String COLLECTION_TABLE = "CollectionTable";
-    public static final String COLLECTION_TABLE_FQN = PERSISTENCE_PACKAGE + COLLECTION_TABLE;
+    public static final String ASSOCIATION_OVERRIDE_FQN = PERSISTENCE_PACKAGE + ASSOCIATION_OVERRIDE;
+    public static final String ASSOCIATION_OVERRIDES = "AssociationOverrides";
+    public static final String ASSOCIATION_OVERRIDES_FQN = PERSISTENCE_PACKAGE + ASSOCIATION_OVERRIDES;
+    
+//Query
+    public static final String NAMED_ENTITY_GRAPH = "NamedEntityGraph";
+    public static final String NAMED_ENTITY_GRAPH_FQN = PERSISTENCE_PACKAGE + NAMED_ENTITY_GRAPH;
+    public static final String NAMED_ENTITY_GRAPHS = "NamedEntityGraphs";
+    public static final String NAMED_ENTITY_GRAPHS_FQN = PERSISTENCE_PACKAGE + NAMED_ENTITY_GRAPHS;
+    public static final String NAMED_SUBGRAPH = "NamedSubgraph";
+    public static final String NAMED_SUBGRAPH_FQN = PERSISTENCE_PACKAGE + NAMED_SUBGRAPH;
+    public static final String NAMED_ATTRIBUTE_NODE = "NamedAttributeNode";
+    public static final String NAMED_ATTRIBUTE_NODE_FQN = PERSISTENCE_PACKAGE + NAMED_ATTRIBUTE_NODE;
+
+    public static final String NAMED_NATIVE_QUERY = "NamedNativeQuery";
+    public static final String NAMED_NATIVE_QUERY_FQN = PERSISTENCE_PACKAGE + NAMED_NATIVE_QUERY;
+    public static final String NAMED_NATIVE_QUERIES = "NamedNativeQueries";
+    public static final String NAMED_NATIVE_QUERIES_FQN = PERSISTENCE_PACKAGE + NAMED_NATIVE_QUERIES;
+    
+    public static final String NAMED_QUERY = "NamedQuery";
+    public static final String NAMED_QUERY_FQN = PERSISTENCE_PACKAGE + NAMED_QUERY;
+    public static final String NAMED_QUERIES = "NamedQueries";
+    public static final String NAMED_QUERIES_FQN = PERSISTENCE_PACKAGE + NAMED_QUERIES;
+
+    public static final String QUERY_HINT = "QueryHint";
+    public static final String QUERY_HINT_FQN = PERSISTENCE_PACKAGE + QUERY_HINT;
+
+    public static final String SQL_RESULTSET_MAPPING = "SqlResultSetMapping";
+    public static final String SQL_RESULTSET_MAPPING_FQN = PERSISTENCE_PACKAGE + SQL_RESULTSET_MAPPING;
+    public static final String SQL_RESULTSET_MAPPINGS = "SqlResultSetMappings";
+    public static final String SQL_RESULTSET_MAPPINGS_FQN = PERSISTENCE_PACKAGE + SQL_RESULTSET_MAPPINGS;
+
+    public static final String NAMED_STORED_PROCEDURE_QUERY = "NamedStoredProcedureQuery";
+    public static final String NAMED_STORED_PROCEDURE_QUERY_FQN = PERSISTENCE_PACKAGE + NAMED_STORED_PROCEDURE_QUERY;
+    public static final String NAMED_STORED_PROCEDURE_QUERIES = "NamedStoredProcedureQueries";
+    public static final String NAMED_STORED_PROCEDURE_QUERIES_FQN = PERSISTENCE_PACKAGE + NAMED_STORED_PROCEDURE_QUERIES;
+    public static final String STORED_PROCEDURE_PARAMETER = "StoredProcedureParameter";
+    public static final String STORED_PROCEDURE_PARAMETER_FQN = PERSISTENCE_PACKAGE + STORED_PROCEDURE_PARAMETER;
+    public static final String PARAMETER_MODE = "ParameterMode";
+    public static final String PARAMETER_MODE_FQN = PERSISTENCE_PACKAGE + PARAMETER_MODE;
+    
+    public static final String FIELD_RESULT = "FieldResult";
+    public static final String FIELD_RESULT_FQN = PERSISTENCE_PACKAGE + FIELD_RESULT;
+    public static final String ENTITY_RESULT = "EntityResult";
+    public static final String ENTITY_RESULT_FQN = PERSISTENCE_PACKAGE + ENTITY_RESULT;
+    public static final String COLUMN_RESULT = "ColumnResult";
+    public static final String COLUMN_RESULT_FQN = PERSISTENCE_PACKAGE + COLUMN_RESULT;
+    public static final String CONSTRUCTOR_RESULT = "ConstructorResult";
+    public static final String CONSTRUCTOR_RESULT_FQN = PERSISTENCE_PACKAGE + CONSTRUCTOR_RESULT;
+
+    public static final String LOCK_MODE_TYPE = "LockModeType";
+    public static final String LOCK_MODE_TYPE_FQN = PERSISTENCE_PACKAGE + LOCK_MODE_TYPE;
+    
+    
+    
 
 }

@@ -215,7 +215,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     private EntityMappings() {
     }
 
-    public void initJavaInheritenceMapping() {
+    public void initJavaInheritanceMapping() {
         List<JavaClass> javaClassList = this.getJavaClass();
         javaClassList.stream().filter((javaClass) -> (javaClass.getSuperclassId() != null)).forEach((javaClass) -> {
             JavaClass javaSuperclass = getJavaClass(javaClass.getSuperclassId());

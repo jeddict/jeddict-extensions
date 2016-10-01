@@ -178,7 +178,9 @@
                     </run-dependency>
                 </dependency>
             </module-dependencies>
-            <public-packages/>
+            <public-packages>
+                <package>org.netbeans.jcode.ng.main</package>
+            </public-packages>
             <class-path-extension>
                 <runtime-relative-path>ext/jackson-annotations-2.7.5.jar</runtime-relative-path>
                 <binary-origin>release/modules/ext/jackson-annotations-2.7.5.jar</binary-origin>

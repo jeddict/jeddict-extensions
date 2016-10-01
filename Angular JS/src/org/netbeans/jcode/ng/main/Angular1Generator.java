@@ -344,7 +344,7 @@ public class Angular1Generator implements Generator {
         }
         NGEntity entity = new NGEntity(entitySpec.getClazz(), "");
                 List<Attribute> attributes = entitySpec.getAttributes().getAllAttribute();
-//Uncomment for inheritence support
+//Uncomment for inheritance support
 //        if(entitySpec.getSubclassList().size() > 1){
 //            return null;
 //        }

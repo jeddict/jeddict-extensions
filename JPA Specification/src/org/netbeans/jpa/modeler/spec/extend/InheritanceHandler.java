@@ -22,7 +22,7 @@ import org.netbeans.jpa.modeler.spec.Inheritance;
  *
  * @author Gaurav Gupta
  */
-public interface InheritenceHandler {
+public interface InheritanceHandler {
 
     /**
      * Gets the value of the inheritance property.

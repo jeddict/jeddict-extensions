@@ -36,13 +36,13 @@ public @interface Technology {
     public Class<? extends LayerConfigPanel> panel() default LayerConfigPanel.class;
     
     public Class<? extends Generator>[] parents() default {};
+    
+    public Class<? extends Generator>[] children() default {};
 
     public String label() default NONE_LABEL;
     
     enum Type {
         BUSINESS,CONTROLLER,VIEWER;
     }
-    
-    
     
 }

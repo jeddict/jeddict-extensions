@@ -33,7 +33,7 @@ public class TechContext {
     }
 
     public TechContext(Generator generator) {
-                this.generator = generator;
+       this.generator = generator;
        this.technology = generator.getClass().getAnnotation(Technology.class);
     }
 

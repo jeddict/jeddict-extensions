@@ -26,10 +26,10 @@ import org.netbeans.jpa.modeler.spec.extend.AssociationOverrideHandler;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import org.netbeans.jpa.modeler.spec.extend.AttributeOverrideHandler;
 import org.netbeans.jpa.modeler.spec.extend.IAttributes;
-import org.netbeans.jpa.modeler.spec.extend.InheritenceHandler;
 import org.netbeans.jpa.modeler.spec.validator.override.AssociationValidator;
 import org.netbeans.jpa.modeler.spec.validator.override.AttributeValidator;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
+import org.netbeans.jpa.modeler.spec.extend.InheritanceHandler;
 
 /**
  *
@@ -137,7 +137,7 @@ import org.netbeans.jpa.source.JavaSourceParserUtil;
 //    "attributes",
 //    "interfaces"
 })
-public class Entity extends IdentifiableClass implements AccessTypeHandler, InheritenceHandler, AttributeOverrideHandler, AssociationOverrideHandler {
+public class Entity extends IdentifiableClass implements AccessTypeHandler, InheritanceHandler, AttributeOverrideHandler, AssociationOverrideHandler {
 
     protected Table table;
     @XmlElement(name = "st")
@@ -351,6 +351,9 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
      *
      */
     public ForeignKey getPrimaryKeyForeignKey() {
+        if(primaryKeyForeignKey==null){
+            primaryKeyForeignKey = new ForeignKey();
+        }
         return primaryKeyForeignKey;
     }
 
@@ -745,10 +748,10 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
         return this.namedEntityGraph;
     }
 
-    public Inheritance getRootInheritence() {
+    public Inheritance getRootInheritance() {
         if (this.getInheritance() == null) {
             if (this.getSuperclass() != null && this.getSuperclass() instanceof Entity) {
-                return ((Entity) this.getSuperclass()).getRootInheritence();
+                return ((Entity) this.getSuperclass()).getRootInheritance();
             } else {
                 return null;
             }
