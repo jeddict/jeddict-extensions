@@ -32,6 +32,7 @@ import org.netbeans.jpa.modeler.db.accessor.VersionSpecAccessor;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import org.netbeans.jpa.modeler.spec.extend.BaseAttributes;
 import org.netbeans.jpa.modeler.spec.extend.IPersistenceAttributes;
+import org.netbeans.jpa.modeler.spec.extend.JavaClass;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
@@ -302,7 +303,7 @@ public class Attributes extends BaseAttributes implements IPersistenceAttributes
     @Override
     public List<Id> getId() {
         if (id == null) {
-            id = new ArrayList<Id>();
+            id = new ArrayList<>();
         }
         return this.id;
     }
@@ -470,9 +471,11 @@ public class Attributes extends BaseAttributes implements IPersistenceAttributes
     }
     
     public Attribute getIdField(){
-         if(this.getId().size()>1){
-             if(this.getEmbeddedId()!=null){
-                 return this.getEmbeddedId();
+        List<Id> superIds = this.getSuperId();
+         if(superIds.size()>1){
+             EmbeddedId superEmbeddedId = this.getSuperEmbeddedId();
+             if(superEmbeddedId!=null){
+                 return superEmbeddedId;
              } else {
                  IdClass idClass = ((IdentifiableClass)this.getJavaClass()).getIdClass();
                  Id attribute = new Id();
@@ -480,12 +483,40 @@ public class Attributes extends BaseAttributes implements IPersistenceAttributes
                  attribute.setAttributeType(idClass.getClazz());
                  return attribute;
              }
-         } else if(this.getId().size() == 1){
-             return this.getId().get(0);
+         } else if(superIds.size() == 1){
+             return superIds.get(0);
          } else {
              return null;
          }
     }
     
+    public List<Id> getSuperId(){
+        List<Id> superIds = new ArrayList();
+        JavaClass currentManagedClass = getJavaClass();
+        do {
+            if(currentManagedClass instanceof IdentifiableClass){
+               IdentifiableClass identifiableClass = (IdentifiableClass)currentManagedClass;
+               superIds.addAll(identifiableClass.getAttributes().getId());
+            }
+            currentManagedClass = currentManagedClass.getSuperclass();
+        } while(currentManagedClass != null);
+        return superIds;
+    }
+    
+    public EmbeddedId getSuperEmbeddedId(){
+        JavaClass currentManagedClass = getJavaClass();
+        do {
+            if(currentManagedClass instanceof IdentifiableClass){
+               IdentifiableClass identifiableClass = (IdentifiableClass)currentManagedClass;
+               if(identifiableClass.getAttributes().getEmbeddedId() != null){
+                   return identifiableClass.getAttributes().getEmbeddedId();
+               }
+            }
+            currentManagedClass = currentManagedClass.getSuperclass();
+        } while(currentManagedClass != null);
+        return null;
+    }
+    
     
 }
+  

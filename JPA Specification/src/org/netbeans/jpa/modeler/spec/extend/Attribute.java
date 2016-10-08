@@ -76,6 +76,9 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
     
     @XmlAttribute(name="ui")
     private Boolean includeInUI;
+    
+    @XmlAttribute(name = "ft")
+    private Boolean functionalType;
     /**
      * Gets the value of the name property.
      *
@@ -279,10 +282,7 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
             return false;
         }
         final Attribute other = (Attribute) obj;
-        if (!Objects.equals(this.id, other.id)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.id, other.id);
     }
 
     /**
@@ -304,27 +304,34 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
     
 
     public boolean isTextAttributeType(String attributeType) {
-        if (STRING.equals(attributeType) || STRING_FQN.equals(attributeType)) {
-            return true;
-        }
-        return false;
+        return STRING.equals(attributeType) || STRING_FQN.equals(attributeType);
     }
 
     public boolean isPrecisionAttributeType(String attributeType) {
-        if (BYTE.equals(attributeType) || BYTE_WRAPPER.equals(attributeType)) {
-            return true;
-        } else if (SHORT.equals(attributeType) || SHORT_WRAPPER.equals(attributeType)) {
-            return true;
-        } else if (INT.equals(attributeType) || INT_WRAPPER.equals(attributeType)) {
-            return true;
-        } else if (LONG.equals(attributeType) || LONG_WRAPPER.equals(attributeType)) {
-            return true;
-        } else if (FLOAT.equals(attributeType) || FLOAT_WRAPPER.equals(attributeType)) {
-            return true;
-        } else if (DOUBLE.equals(attributeType) || DOUBLE_WRAPPER.equals(attributeType)) {
-            return true;
-        } else if (BIGINTEGER.equals(attributeType) || BIGDECIMAL.equals(attributeType)) {
-            return true;
+        if (null != attributeType) switch (attributeType) {
+            case BYTE:
+            case BYTE_WRAPPER:
+                return true;
+            case SHORT:
+            case SHORT_WRAPPER:
+                return true;
+            case INT:
+            case INT_WRAPPER:
+                return true;
+            case LONG:
+            case LONG_WRAPPER:
+                return true;
+            case FLOAT:
+            case FLOAT_WRAPPER:
+                return true;
+            case DOUBLE:
+            case DOUBLE_WRAPPER:
+                return true;
+            case BIGINTEGER:
+            case BIGDECIMAL:
+                return true;
+            default:
+                break;
         }
 
         return false;
@@ -354,4 +361,18 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
         }
         return valid;
     }
+    /**
+     * @return the functionalType
+     */
+    public Boolean getFunctionalType() {
+        return functionalType;
+    }
+
+    /**
+     * @param functionalType the functionalType to set
+     */
+    public void setFunctionalType(Boolean functionalType) {
+        this.functionalType = functionalType;
+    }    
+
 }

@@ -88,4 +88,10 @@ public class Inheritance {
         accessor.setStrategy(strategy.value());
         return accessor;
     }
+    
+    public static InheritanceMetadata getDefaultAccessor() {
+        InheritanceMetadata accessor = new InheritanceSpecMetadata();
+        accessor.setStrategy(InheritanceType.SINGLE_TABLE.value());
+        return accessor;
+    }
 }

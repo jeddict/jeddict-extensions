@@ -143,7 +143,7 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
     @XmlElement(name = "st")
     protected List<SecondaryTable> secondaryTable;//REVENG PENDING
     @XmlElement(name = "pk-jc")
-    protected List<PrimaryKeyJoinColumn> primaryKeyJoinColumn;
+    private List<PrimaryKeyJoinColumn> primaryKeyJoinColumn;
     @XmlElement(name = "pk-fk")
     protected ForeignKey primaryKeyForeignKey;//REVENG PENDING JPA 2.1
 
@@ -275,7 +275,11 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
      *
      */
     public void setTable(Table value) {
-        this.table = value;
+        if(this.table !=null && value == null){
+            this.table.clear();
+        } else {
+            this.table = value;
+        }
     }
 
     /**
@@ -339,7 +343,7 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
      */
     public List<PrimaryKeyJoinColumn> getPrimaryKeyJoinColumn() {
         if (primaryKeyJoinColumn == null) {
-            primaryKeyJoinColumn = new ArrayList<PrimaryKeyJoinColumn>();
+            setPrimaryKeyJoinColumn(new ArrayList<PrimaryKeyJoinColumn>());
         }
         return this.primaryKeyJoinColumn;
     }
@@ -823,6 +827,13 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
      */
     public void setLabelAttribute(Attribute labelAttribute) {
         this.labelAttribute = labelAttribute;
+    }
+
+    /**
+     * @param primaryKeyJoinColumn the primaryKeyJoinColumn to set
+     */
+    public void setPrimaryKeyJoinColumn(List<PrimaryKeyJoinColumn> primaryKeyJoinColumn) {
+        this.primaryKeyJoinColumn = primaryKeyJoinColumn;
     }
 
 }

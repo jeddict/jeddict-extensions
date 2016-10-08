@@ -188,6 +188,9 @@ public class Basic extends PersistenceBaseAttribute implements AccessTypeHandler
      *
      */
     public Boolean getOptional() {//isOptional
+        if(optional == null){
+            return true;
+        }
         return optional;
     }
 

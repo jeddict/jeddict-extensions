@@ -253,9 +253,11 @@ public class RESTGenerator implements Generator {
         param.put("instanceName", dto ? entityInstance + "DTO" : entityInstance);
 
         Attribute idAttribute = entity.getAttributes().getIdField();
-        param.put("pkName", idAttribute.getName());
-        param.put("pkGetter", "get"+ getMethodName(idAttribute.getName()));
-        param.put("pkType", idAttribute.getDataTypeLabel());
+        if(idAttribute!=null){
+            param.put("pkName", idAttribute.getName());
+            param.put("pkGetter", "get"+ getMethodName(idAttribute.getName()));
+            param.put("pkType", idAttribute.getDataTypeLabel());
+        }
         param.put("package", entity.getPackage(restData.getPackage()));
         param.put("applicationPath", restData.getRestConfigData().getApplicationPath());
         param.put("metrics", restData.isMetrics());

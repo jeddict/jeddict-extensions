@@ -32,6 +32,7 @@ import org.netbeans.jpa.modeler.spec.validator.override.AssociationValidator;
 import org.netbeans.jpa.modeler.spec.validator.override.AttributeValidator;
 import org.netbeans.jpa.modeler.spec.validator.column.PrimaryKeyJoinColumnValidator;
 import org.netbeans.db.modeler.exception.DBValidationException;
+import org.netbeans.jpa.modeler.spec.Inheritance;
 
 /**
  *
@@ -64,6 +65,8 @@ public class EntitySpecAccessor extends EntityAccessor {
         processSuperClass(entity, accessor);
         if (entity.getInheritance() != null) {
             accessor.setInheritance(entity.getInheritance().getAccessor());
+        } else if(!entity.getSubclassList().isEmpty()) { //if Inheritance null and ROOT/BRANCH then set default
+            accessor.setInheritance(Inheritance.getDefaultAccessor());
         }
         
         if (entity.getIdClass() != null) {

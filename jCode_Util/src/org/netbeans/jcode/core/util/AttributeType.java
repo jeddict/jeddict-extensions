@@ -61,31 +61,41 @@ public class AttributeType {
     public static final String CHAR_ARRAY = "char[]";
     public static final String CHAR_WRAPPER_ARRAY = "Character[]";
 
-    private static final Map<String, String> wrapperDataTypes = new HashMap<>();
+    private static final Map<String, String> WRAPPER_DATA_TYPES = new HashMap<>();
 
     static {
-        wrapperDataTypes.put(BYTE_WRAPPER, BYTE);
-        wrapperDataTypes.put(SHORT_WRAPPER, SHORT);
-        wrapperDataTypes.put(INT_WRAPPER, INT);
-        wrapperDataTypes.put(LONG_WRAPPER, LONG);
-        wrapperDataTypes.put(FLOAT_WRAPPER, FLOAT);
-        wrapperDataTypes.put(DOUBLE_WRAPPER, DOUBLE);
-        wrapperDataTypes.put(BOOLEAN_WRAPPER, BOOLEAN);
-        wrapperDataTypes.put(CHAR_WRAPPER, CHAR);
+        WRAPPER_DATA_TYPES.put(BYTE_WRAPPER, BYTE);
+        WRAPPER_DATA_TYPES.put(SHORT_WRAPPER, SHORT);
+        WRAPPER_DATA_TYPES.put(INT_WRAPPER, INT);
+        WRAPPER_DATA_TYPES.put(LONG_WRAPPER, LONG);
+        WRAPPER_DATA_TYPES.put(FLOAT_WRAPPER, FLOAT);
+        WRAPPER_DATA_TYPES.put(DOUBLE_WRAPPER, DOUBLE);
+        WRAPPER_DATA_TYPES.put(BOOLEAN_WRAPPER, BOOLEAN);
+        WRAPPER_DATA_TYPES.put(CHAR_WRAPPER, CHAR);
     }
 
     public static String getPrimitiveType(String wrapperType) {
-        return wrapperDataTypes.get(wrapperType);
+        String primitiveType = WRAPPER_DATA_TYPES.get(wrapperType);
+        if(primitiveType!=null){
+            return primitiveType;
+        } else {
+            return wrapperType;
+        }
     }
 
-    private static final Map<String, String> primitiveDataTypes = new HashMap<>();
+    private static final Map<String, String> PRIMITIVE_DATA_TYPES = new HashMap<>();
 
     static {
-        wrapperDataTypes.entrySet().stream().forEach(e -> primitiveDataTypes.put(e.getValue(), e.getKey()));
+        WRAPPER_DATA_TYPES.entrySet().stream().forEach(e -> PRIMITIVE_DATA_TYPES.put(e.getValue(), e.getKey()));
     }
 
     public static String getWrapperType(String primitiveType) {
-        return primitiveDataTypes.get(primitiveType);
+        String wrapperType = PRIMITIVE_DATA_TYPES.get(primitiveType);
+        if(wrapperType!=null){
+            return wrapperType;
+        } else {
+            return primitiveType;
+        }
     }
 
     public static enum Type {
@@ -94,9 +104,9 @@ public class AttributeType {
     }
 
     public static Type getType(String type) {
-        if (wrapperDataTypes.containsKey(type)) {
+        if (WRAPPER_DATA_TYPES.containsKey(type)) {
             return WRAPPER;
-        } else if (primitiveDataTypes.containsKey(type)) {
+        } else if (PRIMITIVE_DATA_TYPES.containsKey(type)) {
             return PRIMITIVE;
         } else if (isArray(type)) {
             if (isPrimitiveArray(type)) {
@@ -114,7 +124,7 @@ public class AttributeType {
 
     private static boolean isPrimitiveArray(String type) {
         String primitiveType = type.substring(0, type.length() - 2);
-        return primitiveDataTypes.containsKey(primitiveType) && type.charAt(type.length() - 2) == '[' && type.charAt(type.length() - 1) == ']';
+        return PRIMITIVE_DATA_TYPES.containsKey(primitiveType) && type.charAt(type.length() - 2) == '[' && type.charAt(type.length() - 1) == ']';
     }
 
     private static boolean isArray(String type) {

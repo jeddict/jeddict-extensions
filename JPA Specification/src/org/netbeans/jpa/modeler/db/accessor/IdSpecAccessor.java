@@ -44,8 +44,9 @@ public class IdSpecAccessor extends IdAccessor {
         return accessor;
     }
 
+    @Override
     public void process() {
-        super.process();
+        super.process(); 
         getMapping().setProperty(Attribute.class, id);
         getMapping().setProperty(Inheritance.class, inherit);//Remove inherit functionality , once eclipse support dynamic mapped super class
     }

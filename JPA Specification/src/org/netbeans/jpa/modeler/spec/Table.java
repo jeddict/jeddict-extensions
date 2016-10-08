@@ -229,4 +229,11 @@ public class Table {
         return accessor;
     }
 
+    public void clear(){
+        this.name = null;
+        this.schema = null;
+        this.catalog = null;
+        this.uniqueConstraint = null;
+        this.index = null;
+    }
 }
