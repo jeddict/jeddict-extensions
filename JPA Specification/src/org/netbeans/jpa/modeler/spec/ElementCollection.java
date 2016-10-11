@@ -153,7 +153,7 @@ import org.netbeans.modeler.core.NBModelerUtil;
  * For Basic ElementCollection -> TargetClass<String>
  * For Embeddable ElementCollection -> ConnectedClass<Embeddable>
  */
-public class ElementCollection extends CompositionAttribute<Embeddable> implements FetchTypeHandler, ColumnHandler, AttributeOverrideHandler, AssociationOverrideHandler, CollectionTypeHandler, MapKeyHandler, TemporalTypeHandler, EnumTypeHandler { //CompositionAttribute/BaseAttributes
+public class ElementCollection extends CompositionAttribute<Embeddable> implements FetchTypeHandler, ColumnHandler, AssociationOverrideHandler, CollectionTypeHandler, MapKeyHandler, TemporalTypeHandler, EnumTypeHandler { //CompositionAttribute/BaseAttributes
 
     @XmlElement(name = "order-by")
     protected String orderBy;

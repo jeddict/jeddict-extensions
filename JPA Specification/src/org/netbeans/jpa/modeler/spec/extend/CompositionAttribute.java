@@ -25,7 +25,7 @@ import org.netbeans.jpa.modeler.spec.jaxb.JaxbVariableType;
  *
  * @author Gaurav Gupta
  */
-public abstract class CompositionAttribute<T extends JavaClass> extends BaseAttribute implements AccessTypeHandler {
+public abstract class CompositionAttribute<T extends JavaClass> extends BaseAttribute implements AccessTypeHandler, AttributeOverrideHandler {
 
     @XmlAttribute(name = "connected-class-id", required = true)
     @XmlIDREF

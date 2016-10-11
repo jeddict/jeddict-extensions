@@ -60,7 +60,7 @@ import org.netbeans.modeler.core.NBModelerUtil;
 @XmlType(name = "embedded-id", propOrder = {
     "attributeOverride"
 })
-public class EmbeddedId extends CompositionAttribute<DefaultClass> implements AttributeOverrideHandler {
+public class EmbeddedId extends CompositionAttribute<DefaultClass> {
 
     @XmlElement(name = "attribute-override")
     protected Set<AttributeOverride> attributeOverride;
