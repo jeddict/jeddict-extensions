@@ -85,7 +85,6 @@ public class POMManager {
 
     private void registerRepository() {
         if (model.getRepositories().size() > 0) {
-
             operations.add((POMModel pomModel) -> {
                 Set<String> existingRepositories = pomModel.getProject().getRepositories()!=null ? pomModel.getProject().getRepositories().stream().map(r -> r.getId()).collect(toSet()) : Collections.EMPTY_SET;
                 for (org.apache.maven.model.Repository repository : model.getRepositories()) {
@@ -93,10 +92,13 @@ public class POMManager {
                         Repository repo = pomModel.getFactory().createRepository();
                         repo.setId(repository.getId());//isSnapshot ? MavenNbModuleImpl.NETBEANS_SNAPSHOT_REPO_ID : MavenNbModuleImpl.NETBEANS_REPO_ID);
                         repo.setName(repository.getName());
+                        repo.setLayout(repository.getLayout());
                         repo.setUrl(repository.getUrl());
-                        RepositoryPolicy policy = pomModel.getFactory().createReleaseRepositoryPolicy();
-                        policy.setEnabled(Boolean.valueOf(repository.getSnapshots().getEnabled()));
-                        repo.setReleases(policy);
+                        if(repository.getSnapshots() != null){
+                            RepositoryPolicy policy = pomModel.getFactory().createReleaseRepositoryPolicy();
+                            policy.setEnabled(Boolean.valueOf(repository.getSnapshots().getEnabled()));
+                            repo.setReleases(policy);
+                        }
                         pomModel.getProject().addRepository(repo);
                     }
                 }
