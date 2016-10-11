@@ -15,6 +15,7 @@
  */
 package org.netbeans.jcode.core.util;
 
+import java.util.function.Predicate;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 
 public final class StringHelper {
@@ -240,6 +241,30 @@ public final class StringHelper {
 
         }
         return constant;
+    }
+    
+    public static String getNext(String name, Predicate<String> checkExist){
+        return getNext(name, checkExist, true);
+    }
+    
+    public static String getNext(String name, Predicate<String> checkExist, boolean increment){
+        int index = 0;
+        String nextName;
+        if(increment){
+            nextName = name + ++index;
+        } else {
+            nextName = name;
+        }
+        boolean isExist = true;
+        while (isExist) {
+            if (checkExist.test(nextName)) {
+                isExist = true;
+                nextName = name + ++index;
+            } else {
+                return nextName;
+            }
+        }
+        return nextName;
     }
 
 }
