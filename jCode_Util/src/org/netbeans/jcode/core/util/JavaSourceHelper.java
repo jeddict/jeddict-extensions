@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.lang.model.element.AnnotationMirror;
@@ -65,6 +66,7 @@ import org.netbeans.api.java.source.Comment.Style;
 import org.netbeans.api.java.source.CompilationController;
 import org.netbeans.api.java.source.JavaSource;
 import org.netbeans.api.java.source.JavaSource.Phase;
+import org.netbeans.api.java.source.ModificationResult;
 import org.netbeans.api.java.source.TreeMaker;
 import org.netbeans.api.java.source.TreeUtilities;
 import org.netbeans.api.java.source.WorkingCopy;
@@ -1091,30 +1093,31 @@ public class JavaSourceHelper {
 
     /**
      * Returns the simple class for the passed fully-qualified class name.
+     *
      * @param fqClassName full qualified class name
      * @return uqfClassName
      */
     public static String getSimpleClassName(String fqClassName) {
-        if(fqClassName==null){
+        if (fqClassName == null) {
             return EMPTY;
         }
-        if(fqClassName.indexOf('.')==-1){
+        if (fqClassName.indexOf('.') == -1) {
             return fqClassName;
         }
         int genericComp = fqClassName.indexOf('<');
-        if(genericComp!=-1){
+        if (genericComp != -1) {
             StringBuilder sb = new StringBuilder(JavaIdentifiers.unqualify(fqClassName.substring(0, genericComp).trim()));
             sb.append('<');
-            String[] genericElements = fqClassName.substring(genericComp+1, fqClassName.length()-1).split(",");
+            String[] genericElements = fqClassName.substring(genericComp + 1, fqClassName.length() - 1).split(",");
             for (String genericElement : genericElements) {
                 genericElement = genericElement.trim();
-                if(genericElement.indexOf('.')!=-1){
+                if (genericElement.indexOf('.') != -1) {
                     genericElement = JavaIdentifiers.unqualify(genericElement);
-                } 
+                }
                 sb.append(genericElement).append(',');
             }
-            sb.setCharAt(sb.length()-1, '>');
-            return  sb.toString();
+            sb.setCharAt(sb.length() - 1, '>');
+            return sb.toString();
         } else {
             return JavaIdentifiers.unqualify(fqClassName);
         }
@@ -1135,28 +1138,63 @@ public class JavaSourceHelper {
     public static boolean isValidPackageName(String packageName) {
         return StringUtils.isNotBlank(packageName) && JavaIdentifiers.isValidPackageName(packageName);
     }
-    
-    public static ClassTree addBeanProperty(GenerationUtils genUtils, TreeMaker maker, TypeElement classElement, ClassTree classTree, String varName, String varType){
+
+    public static ClassTree addBeanProperty(GenerationUtils genUtils, TreeMaker maker, TypeElement classElement, ClassTree classTree, String varName, String varType) {
         VariableTree field = genUtils.createField(classElement, genUtils.createModifiers(Modifier.PRIVATE), varName, varType, null);
-                MethodTree getter = genUtils.createPropertyGetterMethod(classElement, genUtils.createModifiers(Modifier.PUBLIC), varName, varType);
-                MethodTree setter = genUtils.createPropertySetterMethod(classElement, genUtils.createModifiers(Modifier.PUBLIC), varName, varType);
-                ClassTree newClassTree = classTree;
-                newClassTree = maker.insertClassMember(newClassTree, 0, field);
-                newClassTree = maker.addClassMember(newClassTree, getter);
-                newClassTree = maker.addClassMember(newClassTree, setter);
-                return newClassTree;
+        MethodTree getter = genUtils.createPropertyGetterMethod(classElement, genUtils.createModifiers(Modifier.PUBLIC), varName, varType);
+        MethodTree setter = genUtils.createPropertySetterMethod(classElement, genUtils.createModifiers(Modifier.PUBLIC), varName, varType);
+        ClassTree newClassTree = classTree;
+        newClassTree = maker.insertClassMember(newClassTree, 0, field);
+        newClassTree = maker.addClassMember(newClassTree, getter);
+        newClassTree = maker.addClassMember(newClassTree, setter);
+        return newClassTree;
     }
-    
+
     private static Map<String, ?> TEMPLATE_PROPERTIES;
 
     public static String getAuthor() {
-        if(TEMPLATE_PROPERTIES==null){
+        if (TEMPLATE_PROPERTIES == null) {
             TEMPLATE_PROPERTIES = getTemplateProperties();
         }
-      String author = (String)TEMPLATE_PROPERTIES.get("user");
-      if(StringUtils.isBlank(author)){
-          author = System.getProperty("user.name");
-      }
-      return author;
+        String author = (String) TEMPLATE_PROPERTIES.get("user");
+        if (StringUtils.isBlank(author)) {
+            author = System.getProperty("user.name");
+        }
+        return author;
+    }
+
+    public static void addAnnotation(WorkingCopy working, List<String> siblingsAnnotation, String annotationType, BiFunction<WorkingCopy, VariableElement, List<? extends ExpressionTree>> arguments) {
+        Set<String> siblingsAnnotationSet = new HashSet<>(siblingsAnnotation);
+        TreeMaker maker = working.getTreeMaker();
+        TypeElement entityElement = working.getTopLevelElements().get(0);
+        List<VariableElement> variableElements = ElementFilter.fieldsIn(working.getElements().getAllMembers(entityElement));
+        GenerationUtils genUtils = GenerationUtils.newInstance(working);
+        for (VariableElement variableElement : variableElements) {
+            List<? extends AnnotationMirror> annotationMirrors = working.getElements().getAllAnnotationMirrors(variableElement);
+            boolean hasCustomAnnotation = false, isFormVariable = false;
+            for (AnnotationMirror annotationMirror : annotationMirrors) {
+                DeclaredType type = annotationMirror.getAnnotationType();
+                Element annotationElement = type.asElement();
+                if (annotationElement instanceof TypeElement) {
+                    Name annotationName = ((TypeElement) annotationElement).getQualifiedName();
+                    if (annotationName.contentEquals(annotationType)) {
+                        hasCustomAnnotation = true;
+                    }
+                    if (siblingsAnnotationSet.contains(annotationName.toString())) {
+                        isFormVariable = true;
+                    }
+                }
+            }
+            if (!hasCustomAnnotation && isFormVariable) {
+                VariableTree varTree = (VariableTree) working.getTrees().getTree(variableElement);
+
+                AnnotationTree annotationTree = genUtils.createAnnotation(annotationType,
+                        arguments.apply(working, variableElement));
+                working.rewrite(varTree.getModifiers(), maker.addModifiersAnnotation(varTree.getModifiers(), annotationTree));
+                VariableTree newVarTree = (VariableTree) varTree;
+                newVarTree = genUtils.addAnnotation(newVarTree, annotationTree);
+                working.rewrite(varTree, newVarTree);
+            }
+        }
     }
 }

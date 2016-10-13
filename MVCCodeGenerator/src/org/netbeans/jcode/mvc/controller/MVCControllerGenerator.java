@@ -171,7 +171,7 @@ public class MVCControllerGenerator implements Generator {
         }
 
         entityMapping.getEntity().stream().forEach((entity) -> {
-            Util.modifyEntity(entity.getFileObject());
+            Util.modifyEntity(entity);
         });
         addMavenDependencies();
     }

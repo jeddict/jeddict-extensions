@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang.StringUtils;
+import org.netbeans.api.java.source.JavaSource;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
 import org.netbeans.jpa.modeler.spec.IdentifiableClass;
 import org.netbeans.jpa.modeler.spec.extend.annotation.Annotation;
@@ -310,6 +311,17 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
      */
     public FileObject getFileObject() {
         return fileObject;
+    }
+    
+    public JavaSource getJavaSource() {
+        if (fileObject == null || !fileObject.canWrite()) {
+            return null;
+        }
+        JavaSource javaSource = JavaSource.forFileObject(fileObject);
+        if (javaSource == null) {
+            return null;
+        }
+        return javaSource;
     }
 
     /**

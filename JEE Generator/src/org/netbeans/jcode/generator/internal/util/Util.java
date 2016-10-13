@@ -87,6 +87,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import javax.lang.model.element.AnnotationValue;
 import org.netbeans.api.project.Project;
 import org.netbeans.jcode.task.progress.ProgressHandler;
@@ -96,8 +97,8 @@ import org.netbeans.jcode.core.util.Constants;
 import org.netbeans.jcode.core.util.Inflector;
 import org.netbeans.jcode.core.util.JavaSourceHelper;
 import org.netbeans.jcode.core.util.StringHelper;
-import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
 import static org.netbeans.jcode.jpa.JPAConstants.BASIC_FQN;
+import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
 import static org.netbeans.jcode.jpa.JPAConstants.ENTITY_FQN;
 import static org.netbeans.jcode.jpa.JPAConstants.ID_FQN;
 import static org.netbeans.jcode.jpa.JPAConstants.TABLE_FQN;
@@ -115,11 +116,8 @@ import org.netbeans.jpa.modeler.spec.EntityMappings;
  */
 public class Util {
 
-    public static final String XMLROOT_ANNOTATION
-            = "javax.xml.bind.annotation.XmlRootElement";         // NOI18N
-
-    public static final String XML_TRANSIENT
-            = "javax.xml.bind.annotation.XmlTransient";       // NOI18N
+    public static final String XMLROOT_ANNOTATION = "javax.xml.bind.annotation.XmlRootElement";         // NOI18N
+    public static final String XML_TRANSIENT = "javax.xml.bind.annotation.XmlTransient";       // NOI18N
     public static final String FORM_PARAM = "javax.ws.rs.FormParam";
 
     /*
@@ -595,93 +593,42 @@ public class Util {
         return entityNames;
     }
 
-    public static void modifyEntity(final FileObject entityFileObject) {
-        if(!entityFileObject.canWrite()){
-                    return;
-            }
-//        try {
-            JavaSource javaSource = JavaSource.forFileObject(entityFileObject);
+    public static void modifyEntity(final Entity entity) {
+            JavaSource javaSource = entity.getJavaSource();
              if (javaSource == null) {
                 return;
             }
-            
-           
-            
-//            FileLock lock = entityFileObject.lock();
-//            try {
-//                addXmlRootAnnotation(javaSource);
-                addFormParamAnnotation(javaSource);
-//            } finally {
-//                lock.releaseLock();
-//            }
+//            FileLock lock = entityFileObject.lock();//                lock.releaseLock();
+            addFormParamAnnotation(javaSource);
 
     }
 
     private static void addFormParamAnnotation(JavaSource javaSource) {
         try {
-            ModificationResult result = javaSource.runModificationTask(new Task<WorkingCopy>() {
-
-                        @Override
-                        public void run(final WorkingCopy working)
-                        throws IOException {
-                            working.toPhase(Phase.RESOLVED);
-                            TreeMaker maker = working.getTreeMaker();
-                            addFormParamAnnotation(working, maker);
-                        }
-                    });
+            ModificationResult result = javaSource.runModificationTask((final WorkingCopy working) -> {
+                working.toPhase(Phase.RESOLVED);
+                TreeMaker maker = working.getTreeMaker();
+                   JavaSourceHelper.addAnnotation(working, Arrays.asList(ID_FQN, BASIC_FQN), FORM_PARAM,
+                   (wc, variableElement) -> Collections.<ExpressionTree>singletonList(wc.getTreeMaker().Literal(variableElement.getSimpleName().toString())));
+                    
+            });
             result.commit();
         } catch (IOException e) {
-            Logger.getLogger(Util.class.getName()).
-                    log(Level.SEVERE, null, e);
+            Logger.getLogger(Util.class.getName()).log(Level.SEVERE, null, e);
         }
     }
 
-    private static void addFormParamAnnotation(WorkingCopy working, TreeMaker maker) {
-        TypeElement entityElement = working.getTopLevelElements().get(0);
-        List<VariableElement> variableElements = ElementFilter.fieldsIn(working.getElements().getAllMembers(entityElement));
-        GenerationUtils genUtils = GenerationUtils.newInstance(working);
-        for (VariableElement variableElement : variableElements) {
-            List<? extends AnnotationMirror> annotationMirrors = working.getElements().getAllAnnotationMirrors(variableElement);
-            boolean hasCustomAnnotation = false, isFormVariable = false;
-            for (AnnotationMirror annotationMirror : annotationMirrors) {
-                DeclaredType type = annotationMirror.getAnnotationType();
-                Element annotationElement = type.asElement();
-                if (annotationElement instanceof TypeElement) {
-                    Name annotationName = ((TypeElement) annotationElement).getQualifiedName();
-                    if (annotationName.contentEquals(FORM_PARAM)) {
-                        hasCustomAnnotation = true;
-                    }
-                    if (annotationName.contentEquals(ID_FQN) || annotationName.contentEquals(BASIC_FQN)) {
-                        isFormVariable = true;
-                    }
-                }
-            }
-            if (!hasCustomAnnotation && isFormVariable) {
-                VariableTree varTree = (VariableTree) working.getTrees().getTree(variableElement);
-                AnnotationTree annotationTree = genUtils.createAnnotation(FORM_PARAM,
-                        Collections.<ExpressionTree>singletonList(maker.Literal(variableElement.getSimpleName().toString())));
-                working.rewrite(varTree.getModifiers(), maker.addModifiersAnnotation(varTree.getModifiers(), annotationTree));
-                VariableTree newVarTree = (VariableTree) varTree;
-                newVarTree = genUtils.addAnnotation(newVarTree, annotationTree);
-                working.rewrite(varTree, newVarTree);
-
-            }           
-        }
-    }
-
+ 
     private static void addXmlRootAnnotation(JavaSource javaSource) {
         try {
             final boolean isIncomplete[] = new boolean[1];
 
-            final Task<CompilationController> task = new Task<CompilationController>() {
-                @Override
-                public void run(CompilationController controller) throws Exception {
-                    controller.toPhase(Phase.RESOLVED);
-
-                    isIncomplete[0] = controller.getElements().getTypeElement(
-                            XMLROOT_ANNOTATION) == null || controller.getElements().
-                            getTypeElement(XML_TRANSIENT) == null;
-                }
+            final Task<CompilationController> task = (CompilationController controller) -> {
+                controller.toPhase(Phase.RESOLVED);
+                
+                isIncomplete[0] = controller.getElements().getTypeElement(
+                        XMLROOT_ANNOTATION) == null || controller.getElements().
+                                getTypeElement(XML_TRANSIENT) == null;
             };
 
             javaSource.runUserActionTask(task, true);
