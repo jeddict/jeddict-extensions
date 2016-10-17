@@ -339,11 +339,11 @@ public class Angular1Generator implements Generator {
         Entity entitySpec = appConfig.getEntityMappings().findEntity(entityClassInfo.getName());
         if(!"id".equals(entityClassInfo.getIdFieldInfo().getName())){
              handler.error(NbBundle.getMessage(Angular1Generator.class, "TITLE_PK_Field_Named_Id_Missing"),
-                NbBundle.getMessage(Angular1Generator.class, "MSG_PK_Field_Named_Id_Missing", entitySpec.getName()));
+                NbBundle.getMessage(Angular1Generator.class, "MSG_PK_Field_Named_Id_Missing", entitySpec.getClazz()));
              return null;
         }
         NGEntity entity = new NGEntity(entitySpec.getClazz(), "");
-                List<Attribute> attributes = entitySpec.getAttributes().getAllAttribute();
+        List<Attribute> attributes = entitySpec.getAttributes().getAllAttribute();
 //Uncomment for inheritance support
 //        if(entitySpec.getSubclassList().size() > 1){
 //            return null;

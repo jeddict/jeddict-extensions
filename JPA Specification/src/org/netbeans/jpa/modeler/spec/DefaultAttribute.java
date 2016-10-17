@@ -26,6 +26,9 @@ public class DefaultAttribute extends Attribute {
     
     private Column column;
 
+    public DefaultAttribute() {//to represent IdClass
+    }
+
     public DefaultAttribute(Attribute connectedAttribute) {
         this.connectedAttribute = connectedAttribute;
         if(connectedAttribute instanceof ColumnHandler){ // to load embeddable attribute @Column

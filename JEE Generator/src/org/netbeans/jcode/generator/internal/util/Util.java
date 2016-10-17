@@ -579,21 +579,16 @@ public class Util {
                 getEntityClassScope(project.getProjectDirectory());
         MetadataModel<EntityMappingsMetadata> entityMappingsModel
                 = entityClassScope.getEntityMappingsModel(true);
-        entityMappingsModel.runReadAction(
-                new MetadataModelAction<EntityMappingsMetadata, Void>() {
-
-                    @Override
-                    public Void run(EntityMappingsMetadata metadata) throws Exception {
-                        for (Entity entity : metadata.getRoot().getEntity()) {
-                            entityNames.put(entity.getClass2(), entity.getName());
-                        }
-                        return null;
-                    }
-                });
+        entityMappingsModel.runReadAction((EntityMappingsMetadata metadata) -> {
+            for (Entity entity : metadata.getRoot().getEntity()) {
+                entityNames.put(entity.getClass2(), entity.getName());
+            }
+            return null;
+        });
         return entityNames;
     }
 
-    public static void modifyEntity(final Entity entity) {
+    public static void modifyEntity(final org.netbeans.jpa.modeler.spec.Entity entity) {
             JavaSource javaSource = entity.getJavaSource();
              if (javaSource == null) {
                 return;

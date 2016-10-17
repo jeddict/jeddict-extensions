@@ -472,21 +472,19 @@ public class Attributes extends BaseAttributes implements IPersistenceAttributes
     
     public Attribute getIdField(){
         List<Id> superIds = this.getSuperId();
-         if(superIds.size()>1){
+         if(superIds.size() == 1){
+             return superIds.get(0);
+         } else { // more than 1 or no pk (in case of pk relationshp)
              EmbeddedId superEmbeddedId = this.getSuperEmbeddedId();
              if(superEmbeddedId!=null){
                  return superEmbeddedId;
              } else {
-                 IdClass idClass = ((IdentifiableClass)this.getJavaClass()).getIdClass();
-                 Id attribute = new Id();
-                 attribute.setName(idClass.getClazz());
-                 attribute.setAttributeType(idClass.getClazz());
-                 return attribute;
+                 IdClass idClass = this.getSuperIdClass();//((IdentifiableClass)this.getJavaClass()).getIdClass();
+                 DefaultAttribute pkFindEntity = new DefaultAttribute();
+                 pkFindEntity.setName(idClass.getClazz());
+                 pkFindEntity.setAttributeType(idClass.getClazz());
+                 return pkFindEntity;
              }
-         } else if(superIds.size() == 1){
-             return superIds.get(0);
-         } else {
-             return null;
          }
     }
     
@@ -510,6 +508,20 @@ public class Attributes extends BaseAttributes implements IPersistenceAttributes
                IdentifiableClass identifiableClass = (IdentifiableClass)currentManagedClass;
                if(identifiableClass.getAttributes().getEmbeddedId() != null){
                    return identifiableClass.getAttributes().getEmbeddedId();
+               }
+            }
+            currentManagedClass = currentManagedClass.getSuperclass();
+        } while(currentManagedClass != null);
+        return null;
+    }
+    
+    public IdClass getSuperIdClass(){
+        JavaClass currentManagedClass = getJavaClass();
+        do {
+            if(currentManagedClass instanceof IdentifiableClass){
+               IdentifiableClass identifiableClass = (IdentifiableClass)currentManagedClass;
+               if(identifiableClass.getIdClass() != null){
+                   return identifiableClass.getIdClass();
                }
             }
             currentManagedClass = currentManagedClass.getSuperclass();

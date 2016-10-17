@@ -19,12 +19,11 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import static org.apache.commons.lang.StringUtils.EMPTY;
 import org.netbeans.jpa.modeler.spec.Entity;
-import static java.util.stream.Collectors.toList;
 import org.netbeans.api.java.source.CompilationController;
 import org.netbeans.api.java.source.JavaSource;
 import org.netbeans.api.java.source.JavaSource.Phase;
@@ -34,13 +33,14 @@ import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.BOLD;
 import static org.netbeans.jcode.console.Console.FG_RED;
 import static org.netbeans.jcode.console.Console.UNDERLINE;
+import static org.netbeans.jcode.core.util.AttributeType.getWrapperType;
+import static org.netbeans.jcode.core.util.AttributeType.isPrimitive;
 import static org.netbeans.jcode.core.util.Constants.JAVA_EXT;
+import org.netbeans.jcode.core.util.JavaIdentifiers;
 import org.netbeans.jcode.core.util.POMManager;
-import org.netbeans.jcode.core.util.StringHelper;
 import org.netbeans.jcode.core.util.SourceGroupSupport;
 import static org.netbeans.jcode.core.util.StringHelper.firstLower;
 import static org.netbeans.jcode.core.util.StringHelper.firstUpper;
-import org.netbeans.jcode.entity.info.EntityResourceBeanModel;
 import static org.netbeans.jcode.generator.internal.util.Util.pluralize;
 import org.netbeans.jcode.layer.ConfigData;
 import org.netbeans.jcode.layer.Generator;
@@ -49,12 +49,15 @@ import static org.netbeans.jcode.layer.Technology.Type.BUSINESS;
 import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
-import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
-
+import org.netbeans.jcode.layer.Generator;
+import org.netbeans.jpa.modeler.spec.DefaultAttribute;
+import org.netbeans.jpa.modeler.spec.EmbeddedId;
+import org.netbeans.jpa.modeler.spec.Id;
+import org.netbeans.jpa.modeler.spec.extend.Attribute;
 /**
  * Generates EJB facades for entity classes.
  *
@@ -138,9 +141,7 @@ public final class EjbFacadeGenerator implements Generator{
         afFO = org.netbeans.jcode.core.util.FileUtil.expandTemplate("org/netbeans/jcode/ejb/facade/resource/AbstractFacade.java.ftl", targetFolder, fileName+'.'+JAVA_EXT, Collections.singletonMap("package", beanData.getPackage()));
        
         try {//subclass created using java.source api so class resolution is required
-            JavaSource.forFileObject(afFO).runWhenScanFinished((CompilationController cc) -> {
-                cc.toPhase(Phase.ELEMENTS_RESOLVED);
-            }, true).get();
+            JavaSource.forFileObject(afFO).runWhenScanFinished( cc -> cc.toPhase(Phase.ELEMENTS_RESOLVED), true).get();
         } catch (InterruptedException | ExecutionException ex) {
             Exceptions.printStackTrace(ex);
         }
@@ -190,10 +191,35 @@ public final class EjbFacadeGenerator implements Generator{
         param.put("entityInstancePlural", pluralize(firstLower(entitySimpleName)));
         
         param.put("AbstractFacade", abstractFileName);
-        param.put("AbstractFacade_FQN", beanData.getPackage() + "." + abstractFileName);
+        if(!entity.getPackage(beanData.getPackage()).equals(beanData.getPackage())) { //if both EntityFacade and AbstractFacade are not in same package
+            param.put("AbstractFacade_FQN", beanData.getPackage() + "." + abstractFileName);
+        } else {
+            param.put("AbstractFacade_FQN", EMPTY);
+        }
         param.put("EntityFacade", facadeName);
         param.put("PU", applicationConfigData.getPersistenceUnitName());
         param.put("package", entity.getPackage(beanData.getPackage()));
+        
+        Attribute idAttribute = entity.getAttributes().getIdField();
+        if (idAttribute != null) {
+            if (idAttribute instanceof Id) {
+                String dataType_FQN = idAttribute.getDataTypeLabel();
+                param.put("EntityPKClass_FQN",EMPTY);
+                if (isPrimitive(dataType_FQN)) {
+                    param.put("EntityPKClass", getWrapperType(dataType_FQN));
+                } else {
+                    String dataType = JavaIdentifiers.unqualify(dataType_FQN);
+                    param.put("EntityPKClass", dataType);
+                    if (dataType.length() != dataType_FQN.length()) {
+                        param.put("EntityPKClass_FQN", dataType_FQN);
+                    }
+                }
+            } else if (idAttribute instanceof EmbeddedId || idAttribute instanceof DefaultAttribute) {
+                param.put("EntityPKClass", idAttribute.getDataTypeLabel());
+                param.put("EntityPKClass_FQN", entity.getPackage(entityMapping.getPackage()) + '.' + idAttribute.getDataTypeLabel());
+            }
+        }
+        
         
         existingFO = org.netbeans.jcode.core.util.FileUtil.expandTemplate("org/netbeans/jcode/ejb/facade/resource/EntityFacade.java.ftl", targetFolder, facadeName+'.'+JAVA_EXT, param);
        

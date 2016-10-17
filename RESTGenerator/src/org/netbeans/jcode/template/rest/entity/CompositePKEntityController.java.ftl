@@ -1,6 +1,7 @@
 package ${package};
 
 import ${EntityClass_FQN};
+import ${EntityPKClass_FQN};
 import ${EntityFacade_FQN};
 import ${HeaderUtil_FQN};
 import ${Secured_FQN};
@@ -16,8 +17,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.MatrixParam;
 <#if metrics>import com.codahale.metrics.annotation.Timed;</#if>
 <#if docs>import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -55,8 +56,8 @@ public class ${controllerClass} {
     public Response create${EntityClass}(${instanceType} ${instanceName}) throws URISyntaxException {
         log.debug("REST request to save ${EntityClass} : {}", ${instanceName});
         ${entityFacade}.create(${instanceName});
-        return HeaderUtil.createEntityCreationAlert(Response.created(new URI("/${applicationPath}/api/${entityApiUrl}/" + ${instanceName}.${pkGetter}())),
-                "${entityInstance}", <#if isPKPrimitive>String.valueOf(${instanceName}.${pkGetter}())<#else>${instanceName}.${pkGetter}().toString()</#if>)
+        return HeaderUtil.createEntityCreationAlert(Response.created(new URI("/${applicationPath}/api/${entityApiUrl}")),
+                "${entityInstance}", ${entityFacade}.getIdentifier(${instanceName}).toString())
                 .entity(${instanceName}).build();
     }
 
@@ -79,7 +80,7 @@ public class ${controllerClass} {
     public Response update${EntityClass}(${instanceType} ${instanceName}) throws URISyntaxException {
         log.debug("REST request to update ${EntityClass} : {}", ${instanceName});
         ${entityFacade}.edit(${instanceName});
-        return HeaderUtil.createEntityUpdateAlert(Response.ok(), "${entityInstance}", <#if isPKPrimitive>String.valueOf(${instanceName}.${pkGetter}())<#else>${instanceName}.${pkGetter}().toString()</#if>)
+        return HeaderUtil.createEntityUpdateAlert(Response.ok(), "${entityInstance}", ${entityFacade}.getIdentifier(${instanceName}).toString())
                 .entity(${instanceName}).build();
     }
 
@@ -104,7 +105,7 @@ public class ${controllerClass} {
     /**
      * GET /:${pkName} : get the "${pkName}" ${entityInstance}.
      *
-     * @param ${pkName} the ${pkName} of the ${instanceName} to retrieve
+     * ${restDocList}
      * @return the Response with status 200 (OK) and with body the ${instanceName}, or with status 404 (Not Found)
      */
     <#if metrics>@Timed</#if>
@@ -114,7 +115,8 @@ public class ${controllerClass} {
         @ApiResponse(code = 404, message = "Not Found")})</#if>
     @Path("/{${pkName}}")
     @GET
-    public Response get${EntityClass}(@PathParam("${pkName}") ${pkType} ${pkName}) {
+    public Response get${EntityClass}(${restParamList}) {
+        ${pkType} ${pkName} = new ${pkType}(${restParamNameList});
         log.debug("REST request to get ${EntityClass} : {}", ${pkName});
         ${instanceType} ${instanceName} = ${entityFacade}.find(${pkName});
         return Optional.ofNullable(${instanceName})
@@ -125,7 +127,7 @@ public class ${controllerClass} {
     /**
      * DELETE /:${pkName} : remove the "${pkName}" ${entityInstance}.
      * 
-     * @param ${pkName} the ${pkName} of the ${instanceName} to delete
+     * ${restDocList}
      * @return the Response with status 200 (OK)
      */
     <#if metrics>@Timed</#if>
@@ -135,10 +137,11 @@ public class ${controllerClass} {
         @ApiResponse(code = 404, message = "Not Found")})</#if>
     @Path("/{${pkName}}")
     @DELETE
-    public Response remove${EntityClass}(@PathParam("${pkName}") ${pkType} ${pkName}) {
+    public Response remove${EntityClass}(${restParamList}) {
+        ${pkType} ${pkName} = new ${pkType}(${restParamNameList});
         log.debug("REST request to delete ${EntityClass} : {}", ${pkName});
         ${entityFacade}.remove(${entityFacade}.find(${pkName}));
-        return HeaderUtil.createEntityDeletionAlert(Response.ok(), "${entityInstance}", <#if isPKPrimitive>String.valueOf(${pkName})<#else>${pkName}.toString()</#if>).build();
+        return HeaderUtil.createEntityDeletionAlert(Response.ok(), "${entityInstance}", ${pkName}.toString()).build();
     }
 
 }

@@ -12,39 +12,43 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-public abstract class AbstractFacade<T> {
+public abstract class AbstractFacade<E,P> {
 
-    private final Class<T> entityClass;
+    private final Class<E> entityClass;
 
-    public AbstractFacade(Class<T> entityClass) {
+    public AbstractFacade(Class<E> entityClass) {
         this.entityClass = entityClass;
     }
 
     protected abstract EntityManager getEntityManager();
 
-    public void create(T entity) {
+    public void create(E entity) {
         getEntityManager().persist(entity);
     }
 
-    public T edit(T entity) {
+    public E edit(E entity) {
         return getEntityManager().merge(entity);
     }
 
-    public void remove(T entity) {
+    public void remove(E entity) {
         getEntityManager().remove(getEntityManager().merge(entity));
     }
 
-    public T find(Object id) {
+    public P getIdentifier(E entity) {
+        return (P)getEntityManager().getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity);
+    }
+
+    public E find(P id) {
         return getEntityManager().find(entityClass, id);
     }
 
-    public List<T> findAll() {
+    public List<E> findAll() {
         CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
         cq.select(cq.from(entityClass));
         return getEntityManager().createQuery(cq).getResultList();
     }
 
-    public List<T> findRange(int startPosition, int size) {
+    public List<E> findRange(int startPosition, int size) {
         CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
         cq.select(cq.from(entityClass));
         Query q = getEntityManager().createQuery(cq);
@@ -55,39 +59,39 @@ public abstract class AbstractFacade<T> {
 
     public int count() {
         CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
-        Root<T> rt = cq.from(entityClass);
+        Root<E> rt = cq.from(entityClass);
         cq.select(getEntityManager().getCriteriaBuilder().count(rt));
         Query q = getEntityManager().createQuery(cq);
         return ((Long) q.getSingleResult()).intValue();
     }
 
-    public Optional<T> findSingleByNamedQuery(String namedQueryName, Class<T> classT) {
+    public Optional<E> findSingleByNamedQuery(String namedQueryName, Class<E> classT) {
         return findOrEmpty(() -> getEntityManager().createNamedQuery(namedQueryName, classT).getSingleResult());
     }
 
-    public Optional<T> findSingleByNamedQuery(String namedQueryName, Map<String, Object> parameters, Class<T> classT) {
+    public Optional<E> findSingleByNamedQuery(String namedQueryName, Map<String, Object> parameters, Class<E> classT) {
         Set<Entry<String, Object>> rawParameters = parameters.entrySet();
-        TypedQuery<T> query = getEntityManager().createNamedQuery(namedQueryName, classT);
+        TypedQuery<E> query = getEntityManager().createNamedQuery(namedQueryName, classT);
         rawParameters.stream().forEach((entry) -> {
             query.setParameter(entry.getKey(), entry.getValue());
         });
         return findOrEmpty(() -> query.getSingleResult());
     }
 
-    public List<T> findByNamedQuery(String namedQueryName) {
+    public List<E> findByNamedQuery(String namedQueryName) {
         return getEntityManager().createNamedQuery(namedQueryName).getResultList();
     }
 
-    public List<T> findByNamedQuery(String namedQueryName, Map<String, Object> parameters) {
+    public List<E> findByNamedQuery(String namedQueryName, Map<String, Object> parameters) {
         return findByNamedQuery(namedQueryName, parameters, 0);
     }
 
-    public List<T> findByNamedQuery(String queryName, int resultLimit) {
+    public List<E> findByNamedQuery(String queryName, int resultLimit) {
         return getEntityManager().createNamedQuery(queryName).
                 setMaxResults(resultLimit).getResultList();
     }
 
-    public List<T> findByNamedQuery(String namedQueryName, Map<String, Object> parameters, int resultLimit) {
+    public List<E> findByNamedQuery(String namedQueryName, Map<String, Object> parameters, int resultLimit) {
         Set<Entry<String, Object>> rawParameters = parameters.entrySet();
         Query query = getEntityManager().createNamedQuery(namedQueryName);
         if (resultLimit > 0) {
@@ -99,7 +103,7 @@ public abstract class AbstractFacade<T> {
         return query.getResultList();
     }
 
-    public static <T> Optional<T> findOrEmpty(final DaoRetriever<T> retriever) {
+    public static <E> Optional<E> findOrEmpty(final DaoRetriever<E> retriever) {
         try {
             return Optional.of(retriever.retrieve());
         } catch (NoResultException ex) {
@@ -109,9 +113,9 @@ public abstract class AbstractFacade<T> {
     }
 
     @FunctionalInterface
-    public interface DaoRetriever<T> {
+    public interface DaoRetriever<E> {
 
-        T retrieve() throws NoResultException;
+        E retrieve() throws NoResultException;
     }
 
 }

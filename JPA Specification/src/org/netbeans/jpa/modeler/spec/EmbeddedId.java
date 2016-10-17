@@ -68,7 +68,7 @@ public class EmbeddedId extends CompositionAttribute<DefaultClass> {
     protected AccessType access;
     @XmlTransient
     private Attribute connectedAttribute;// To connect with relation attribute in case of derived entity Ex.5.b
-//No need to set connectedClassId cause is mapped to virtual(hidden) Embaddable not Visual Embaddable
+//No need to set connectedClassId cause is mapped to virtual(hidden) Embeddable not Visual Embaddable
 
     public static EmbeddedId load(EntityMappings entityMappings, Element element, VariableElement variableElement) {
         EmbeddedId embeddedId = new EmbeddedId();

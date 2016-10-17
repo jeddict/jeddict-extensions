@@ -122,6 +122,14 @@ public class AttributeType {
 
     }
 
+    public static boolean isPrimitive(String type) {
+        return PRIMITIVE_DATA_TYPES.containsKey(type);
+    }
+    
+    public static boolean isWrapper(String type) {
+        return WRAPPER_DATA_TYPES.containsKey(type);
+    }
+    
     private static boolean isPrimitiveArray(String type) {
         String primitiveType = type.substring(0, type.length() - 2);
         return PRIMITIVE_DATA_TYPES.containsKey(primitiveType) && type.charAt(type.length() - 2) == '[' && type.charAt(type.length() - 1) == ']';

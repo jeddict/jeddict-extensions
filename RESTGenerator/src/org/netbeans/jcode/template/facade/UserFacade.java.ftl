@@ -10,7 +10,7 @@ import javax.persistence.PersistenceContext;
 
 @Stateless
 @Named("user")
-public class ${UserFacade} extends AbstractFacade<User> {
+public class ${UserFacade} extends AbstractFacade<User, Long> {
 
     @PersistenceContext(unitName = "${PU}")
     private EntityManager em;

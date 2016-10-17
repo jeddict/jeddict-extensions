@@ -8,7 +8,7 @@ import javax.persistence.PersistenceContext;
 
 @Stateless
 @Named("authority")
-public class ${AuthorityFacade} extends AbstractFacade<Authority> {
+public class ${AuthorityFacade} extends AbstractFacade<Authority, String> {
 
     @PersistenceContext(unitName = "${PU}")
     private EntityManager em;
