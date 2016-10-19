@@ -319,6 +319,7 @@ public class Angular1Generator implements Generator {
 
     private EntityConfig getEntityConfig() {
         EntityConfig entityConfig = new EntityConfig();
+        entityConfig.setPagination(ngData.getPagination().getKeyword());
         return entityConfig;
     }
 

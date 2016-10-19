@@ -38,6 +38,7 @@ public class RESTData extends LayerConfigData {
     private List<FilterType> filterTypes;
     private boolean metrics = true;
     private boolean docsEnable = true;
+    private boolean pagination;
     
     /**
      * @return the _package
@@ -171,6 +172,20 @@ public class RESTData extends LayerConfigData {
      */
     public void setDocsEnable(boolean swagger) {
         this.docsEnable = swagger;
+    }
+    
+    /**
+     * @return the pagination
+     */
+    public boolean isPagination() {
+        return pagination;
+    }
+
+    /**
+     * @param pagination the pagination to set
+     */
+    public void setPagination(boolean pagination) {
+        this.pagination = pagination;
     }
 
 }

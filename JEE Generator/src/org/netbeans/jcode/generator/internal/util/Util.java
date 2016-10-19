@@ -468,7 +468,13 @@ public class Util {
      
         LayerConfigData bussinesLayerConfig = applicationConfigData.getBussinesLayerConfig();
         LayerConfigData controllerLayerConfig = applicationConfigData.getControllerLayerConfig();
+        if (controllerLayerConfig != null) {
+            controllerLayerConfig.setParentLayerConfigData(bussinesLayerConfig);
+        }
         LayerConfigData viewerLayerConfig = applicationConfigData.getViewerLayerConfig();
+        if (viewerLayerConfig != null) {
+            viewerLayerConfig.setParentLayerConfigData(controllerLayerConfig);
+        }
 
         if (bussinesLayerConfig == null) {
             return;
@@ -487,6 +493,8 @@ public class Util {
         }
         inject(applicationConfigData.getViewerLayerGenerator(), applicationConfigData, model, handler);
         applicationConfigData.getViewerLayerGenerator().execute();
+        
+        
     }
 
     private static void inject(Generator instance, ApplicationConfigData applicationConfigData,

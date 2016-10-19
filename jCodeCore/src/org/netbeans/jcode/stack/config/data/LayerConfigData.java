@@ -21,5 +21,26 @@ import java.io.Serializable;
  *
  * @author Gaurav Gupta
  */
-public class LayerConfigData implements Serializable {
+public class LayerConfigData<T extends LayerConfigData> implements Serializable {
+
+    private T parentLayerConfigData;
+
+    /**
+     * @return the parentLayerConfigData
+     */
+    public T getParentLayerConfigData() {
+        return parentLayerConfigData;
+    }
+
+    /**
+     * @param parentLayerConfigData the parentLayerConfigData to set
+     */
+    public void setParentLayerConfigData(T parentLayerConfigData) {
+        this.parentLayerConfigData = parentLayerConfigData;
+        onLayerConnection();
+    }
+    
+    protected void onLayerConnection(){
+        
+    }
 }

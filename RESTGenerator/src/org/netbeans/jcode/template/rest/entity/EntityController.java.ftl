@@ -18,6 +18,12 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
+<#if pagination != "no">
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response.ResponseBuilder;
+import ${Page_FQN};
+import ${PaginationUtil_FQN};
+</#if>
 <#if metrics>import com.codahale.metrics.annotation.Timed;</#if>
 <#if docs>import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -85,7 +91,8 @@ public class ${controllerClass} {
 
     /**
      * GET : get all the ${entityInstancePlural}.
-     <#if pagination!= "no">* @param pageable the pagination information
+     <#if pagination!= "no">* @param page the pagination information
+     * @param size the pagination size information
      <#elseif fieldsContainNoOwnerOneToOne>* @param filter the filter of the request</#if>
      * @return the Response with status 200 (OK) and the list of ${entityInstancePlural} in body
      <#if pagination!= "no">* @throws URISyntaxException if there is an error to generate the pagination HTTP headers</#if>
@@ -95,11 +102,21 @@ public class ${controllerClass} {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK")})</#if>
     @GET
+    <#if pagination == "no">
     public List<${instanceType}> getAll${EntityClassPlural}() {
         log.debug("REST request to get all ${EntityClassPlural}");
         List<${EntityClass}> ${entityInstancePlural} = ${entityFacade}.findAll();
         return ${entityInstancePlural};
     }
+    <#else>
+    public Response getAll${EntityClassPlural}(@QueryParam("page") int page, @QueryParam("size") int size) throws URISyntaxException {
+        log.debug("REST request to get all ${EntityClassPlural}");
+        List<${EntityClass}> ${entityInstancePlural} = ${entityFacade}.findRange(page * size, size);
+        ResponseBuilder builder = Response.ok(${entityInstancePlural});
+        PaginationUtil.generatePaginationHttpHeaders(builder, new Page(page, size, ${entityFacade}.count()), "/${applicationPath}/api/${entityApiUrl}");
+        return builder.build();
+    }
+    </#if>
 
     /**
      * GET /:${pkName} : get the "${pkName}" ${entityInstance}.

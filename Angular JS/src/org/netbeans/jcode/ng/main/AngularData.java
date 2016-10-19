@@ -16,19 +16,19 @@
 package org.netbeans.jcode.ng.main;
 
 import org.netbeans.jcode.ng.main.domain.EntityConfig;
+import org.netbeans.jcode.rest.controller.RESTData;
 import org.netbeans.jcode.stack.config.data.LayerConfigData;
 
 /**
  *
  * @author Gaurav Gupta
  */
-public class AngularData extends LayerConfigData {
+public class AngularData extends LayerConfigData<RESTData> {
 
     private String module;
     private String applicationTitle;
-
     private EntityConfig applicationConfig;
-
+    private PaginationType pagination;   
 
     /**
      * @return the applicationConfig
@@ -70,5 +70,27 @@ public class AngularData extends LayerConfigData {
      */
     public void setApplicationTitle(String applicationTitle) {
         this.applicationTitle = applicationTitle;
+    }
+    
+    @Override
+    protected void onLayerConnection(){
+        getParentLayerConfigData().setPagination(pagination != null && pagination != PaginationType.NO);
+    }
+
+    /**
+     * @return the pagination
+     */
+    public PaginationType getPagination() {
+        if(pagination==null){
+            return PaginationType.NO;
+        }
+        return pagination;
+    }
+
+    /**
+     * @param pagination the pagination to set
+     */
+    public void setPagination(PaginationType pagination) {
+        this.pagination = pagination;
     }
 }

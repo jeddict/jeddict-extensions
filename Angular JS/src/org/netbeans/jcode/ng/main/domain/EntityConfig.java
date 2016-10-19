@@ -15,6 +15,8 @@
  */
 package org.netbeans.jcode.ng.main.domain;
 
+import org.netbeans.jcode.ng.main.PaginationType;
+
 /**
  *
  * @author jGauravGupta
@@ -31,7 +33,7 @@ public class EntityConfig {
      */
     public String getPagination() {
         if(pagination==null){
-            pagination = AnswerType.NO.toString();
+            pagination = PaginationType.NO.getKeyword();
         }
         return pagination;
     }

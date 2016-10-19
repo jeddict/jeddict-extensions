@@ -32,6 +32,7 @@ import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.BOLD;
 import static org.netbeans.jcode.console.Console.FG_RED;
 import static org.netbeans.jcode.console.Console.UNDERLINE;
+import static org.netbeans.jcode.core.util.AttributeType.isPrimitive;
 import static org.netbeans.jcode.core.util.Constants.JAVA_EXT;
 import org.netbeans.jcode.core.util.FileUtil;
 import org.netbeans.jcode.core.util.POMManager;
@@ -39,9 +40,6 @@ import org.netbeans.jcode.core.util.PersistenceUtil;
 import static org.netbeans.jcode.core.util.PersistenceUtil.addProperty;
 import org.netbeans.jcode.core.util.ProjectHelper;
 import org.netbeans.jcode.ejb.facade.SessionBeanData;
-import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
-import org.netbeans.jcode.entity.info.EntityClassInfo;
-import org.netbeans.jcode.entity.info.EntityResourceBeanModel;
 import org.netbeans.jcode.rest.util.RestUtils;
 import org.netbeans.jcode.core.util.SourceGroupSupport;
 import static org.netbeans.jcode.core.util.StringHelper.firstLower;
@@ -71,7 +69,8 @@ import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 import org.netbeans.jpa.modeler.spec.*;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
-
+//import org.netbeans.jcode.layer.Generator;
+import org.netbeans.jcode.layer.Generator;
 /**
  *
  * @author Gaurav Gupta
@@ -252,18 +251,55 @@ public class RESTGenerator implements Generator {
         param.put("instanceType", dto ? entityClass + "DTO" : entityClass);
         param.put("instanceName", dto ? entityInstance + "DTO" : entityInstance);
 
+        param.put("pagination", restData.isPagination()?"yes":"no");
+        param.put("fieldsContainNoOwnerOneToOne", false);
+
         Attribute idAttribute = entity.getAttributes().getIdField();
+        
         if(idAttribute!=null){
-            param.put("pkName", idAttribute.getName());
+            String dataType_FQN = idAttribute.getDataTypeLabel();
+            param.put("pkName", firstLower(idAttribute.getName()));
             param.put("pkGetter", "get"+ getMethodName(idAttribute.getName()));
-            param.put("pkType", idAttribute.getDataTypeLabel());
+            param.put("pkType", dataType_FQN);
+            param.put("isPKPrimitive", isPrimitive(dataType_FQN));
+        } 
+        
+        String restTemplate = "EntityController" ;
+//        if(idAttribute instanceof Id){
+        if(idAttribute instanceof EmbeddedId || idAttribute instanceof DefaultAttribute){
+            restTemplate = "CompositePKEntityController";
+            param.put("EntityPKClass_FQN", entity.getPackage(entityMapping.getPackage()) + '.' + idAttribute.getDataTypeLabel());
+            DefaultClass defaultClass = null;
+            if (idAttribute instanceof EmbeddedId) {
+                EmbeddedId embeddedId = (EmbeddedId) idAttribute;
+                defaultClass = embeddedId.getConnectedClass();
+            } else if (idAttribute instanceof DefaultAttribute) {
+                 defaultClass = entityMapping.findDefaultClass(((DefaultAttribute)idAttribute).getAttributeType());
+            }
+             List<DefaultAttribute> attributes = defaultClass.getAttributes();
+                StringBuilder restParamList = new StringBuilder();
+                StringBuilder restParamNameList = new StringBuilder();
+                StringBuilder restDocList = new StringBuilder();
+                for (DefaultAttribute attribute : attributes) {
+                    restParamList.append(String.format("@MatrixParam(\"%s\") %s %s,", attribute.getName(), attribute.getDataTypeLabel(), attribute.getName()));
+                    restParamNameList.append(attribute.getName()).append(',');
+                    restDocList.append(String.format("@param %s the %s of the %s", attribute.getName(), attribute.getName(), param.get("instanceName"))).append('\n');
+                }
+                restParamList.setLength(restParamList.length() - 1);
+                restParamNameList.setLength(restParamNameList.length() - 1);
+                restDocList.setLength(restDocList.length() - 1);
+                param.put("restParamList", restParamList);
+                param.put("restParamNameList", restParamNameList);
+                param.put("restDocList", restDocList);
         }
+        
         param.put("package", entity.getPackage(restData.getPackage()));
         param.put("applicationPath", restData.getRestConfigData().getApplicationPath());
         param.put("metrics", restData.isMetrics());
         param.put("docs", restData.isDocsEnable());
 
-        FileUtil.expandTemplate(TEMPLATE + "rest/entity/EntityController.java.ftl", targetFolder, controllerFileName + '.' + JAVA_EXT, param);
+        
+        FileUtil.expandTemplate(TEMPLATE + "rest/entity/"+ restTemplate +".java.ftl", targetFolder, controllerFileName + '.' + JAVA_EXT, param);
 
         return controllerFO;
     }
