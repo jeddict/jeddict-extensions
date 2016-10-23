@@ -60,7 +60,6 @@ import org.netbeans.api.java.source.ui.ScanDialog;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
 import org.netbeans.modules.j2ee.metadata.model.api.MetadataModel;
-import org.netbeans.modules.j2ee.metadata.model.api.MetadataModelAction;
 import org.netbeans.modules.j2ee.persistence.api.EntityClassScope;
 import org.netbeans.modules.j2ee.persistence.api.metadata.orm.Entity;
 import org.netbeans.modules.j2ee.persistence.api.metadata.orm.EntityMappingsMetadata;
@@ -88,6 +87,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.LinkedList;
 import javax.lang.model.element.AnnotationValue;
 import org.netbeans.api.project.Project;
 import org.netbeans.jcode.task.progress.ProgressHandler;
@@ -175,8 +175,6 @@ public class Util {
         return null;
     }
 
-
-
     static final String WIZARD_PANEL_CONTENT_DATA = WizardDescriptor.PROP_CONTENT_DATA; // NOI18N
     static final String WIZARD_PANEL_CONTENT_SELECTED_INDEX = WizardDescriptor.PROP_CONTENT_SELECTED_INDEX; //NOI18N;
 
@@ -231,7 +229,8 @@ public class Util {
         int lastIndex = currentUri.indexOf('{');
         if (lastIndex > -1) {
             params = root.substring(lastIndex - 1);
-            root = root.substring(0, lastIndex - 1); /* ../{id} we are excluding the ending '/' */
+            root = root.substring(0, lastIndex - 1);
+            /* ../{id} we are excluding the ending '/' */
 
             if (root.length() == 0) {
                 return currentUri;
@@ -458,14 +457,13 @@ public class Util {
             EntityClassInfo.FieldInfo fieldInfo = classInfo.getIdFieldInfo();
             String primaryKeyType;
             if (fieldInfo != null) {
-               primaryKeyType = fieldInfo.getType();
+                primaryKeyType = fieldInfo.getType();
             } else {
                 primaryKeyType = String.class.getName();
             }
             classInfo.setPrimaryKeyType(primaryKeyType);
         }
 
-     
         LayerConfigData bussinesLayerConfig = applicationConfigData.getBussinesLayerConfig();
         LayerConfigData controllerLayerConfig = applicationConfigData.getControllerLayerConfig();
         if (controllerLayerConfig != null) {
@@ -479,7 +477,7 @@ public class Util {
         if (bussinesLayerConfig == null) {
             return;
         }
-        inject(applicationConfigData.getBussinesLayerGenerator(),applicationConfigData, model, handler);
+        inject(applicationConfigData.getBussinesLayerGenerator(), applicationConfigData, model, handler);
         applicationConfigData.getBussinesLayerGenerator().execute();
 
         if (controllerLayerConfig == null) {
@@ -493,31 +491,40 @@ public class Util {
         }
         inject(applicationConfigData.getViewerLayerGenerator(), applicationConfigData, model, handler);
         applicationConfigData.getViewerLayerGenerator().execute();
-        
-        
+
+    }
+
+    private static List<Field> getAllFields(List<Field> fields, Class<?> type) {
+        fields.addAll(Arrays.asList(type.getDeclaredFields()));
+
+        if (type.getSuperclass() != null) {
+            fields = getAllFields(fields, type.getSuperclass());
+        }
+
+        return fields;
     }
 
     private static void inject(Generator instance, ApplicationConfigData applicationConfigData,
-             EntityResourceBeanModel model, ProgressHandler handler) {
-            LayerConfigData bussinesLayerConfig = applicationConfigData.getBussinesLayerConfig();
+            EntityResourceBeanModel model, ProgressHandler handler) {
+        LayerConfigData bussinesLayerConfig = applicationConfigData.getBussinesLayerConfig();
         LayerConfigData controllerLayerConfig = applicationConfigData.getControllerLayerConfig();
         LayerConfigData viewerLayerConfig = applicationConfigData.getViewerLayerConfig();
-        Field[] fields = instance.getClass().getDeclaredFields();
+        List<Field> fields = getAllFields(new LinkedList<Field>(), instance.getClass());
         for (Field field : fields) {
             if (field.isAnnotationPresent(ConfigData.class)) {
                 field.setAccessible(true);
                 try {
-                    if (field.getGenericType()== ApplicationConfigData.class) {
+                    if (field.getGenericType() == ApplicationConfigData.class) {
                         field.set(instance, applicationConfigData);
-                    } else if (field.getGenericType()== EntityMappings.class) {
+                    } else if (field.getGenericType() == EntityMappings.class) {
                         field.set(instance, applicationConfigData.getEntityMappings());
-                    } else if (bussinesLayerConfig!=null && field.getGenericType()== bussinesLayerConfig.getClass()) {
+                    } else if (bussinesLayerConfig != null && field.getGenericType() == bussinesLayerConfig.getClass()) {
                         field.set(instance, bussinesLayerConfig);
-                    } else if (controllerLayerConfig!=null && field.getGenericType() == controllerLayerConfig.getClass()) {
+                    } else if (controllerLayerConfig != null && field.getGenericType() == controllerLayerConfig.getClass()) {
                         field.set(instance, controllerLayerConfig);
-                    } else if (viewerLayerConfig!=null && field.getGenericType() == viewerLayerConfig.getClass()) {
+                    } else if (viewerLayerConfig != null && field.getGenericType() == viewerLayerConfig.getClass()) {
                         field.set(instance, viewerLayerConfig);
-                    } else if (model!=null && field.getGenericType() == model.getClass()) {
+                    } else if (model != null && field.getGenericType() == model.getClass()) {
                         field.set(instance, model);
                     } else if (field.getType().isAssignableFrom(handler.getClass())) {
                         field.set(instance, handler);
@@ -532,8 +539,7 @@ public class Util {
             }
         }
     }
-    
-    
+
     public static Set<String> getEntities(Project project, Set<FileObject> files)
             throws IOException {
         final Set<String> entities = new HashSet<>();
@@ -597,12 +603,12 @@ public class Util {
     }
 
     public static void modifyEntity(final org.netbeans.jpa.modeler.spec.Entity entity) {
-            JavaSource javaSource = entity.getJavaSource();
-             if (javaSource == null) {
-                return;
-            }
+        JavaSource javaSource = entity.getJavaSource();
+        if (javaSource == null) {
+            return;
+        }
 //            FileLock lock = entityFileObject.lock();//                lock.releaseLock();
-            addFormParamAnnotation(javaSource);
+        addFormParamAnnotation(javaSource);
 
     }
 
@@ -611,9 +617,9 @@ public class Util {
             ModificationResult result = javaSource.runModificationTask((final WorkingCopy working) -> {
                 working.toPhase(Phase.RESOLVED);
                 TreeMaker maker = working.getTreeMaker();
-                   JavaSourceHelper.addAnnotation(working, Arrays.asList(ID_FQN, BASIC_FQN), FORM_PARAM,
-                   (wc, variableElement) -> Collections.<ExpressionTree>singletonList(wc.getTreeMaker().Literal(variableElement.getSimpleName().toString())));
-                    
+                JavaSourceHelper.addAnnotation(working, Arrays.asList(ID_FQN, BASIC_FQN), FORM_PARAM,
+                        (wc, variableElement) -> Collections.<ExpressionTree>singletonList(wc.getTreeMaker().Literal(variableElement.getSimpleName().toString())));
+
             });
             result.commit();
         } catch (IOException e) {
@@ -621,14 +627,13 @@ public class Util {
         }
     }
 
- 
     private static void addXmlRootAnnotation(JavaSource javaSource) {
         try {
             final boolean isIncomplete[] = new boolean[1];
 
             final Task<CompilationController> task = (CompilationController controller) -> {
                 controller.toPhase(Phase.RESOLVED);
-                
+
                 isIncomplete[0] = controller.getElements().getTypeElement(
                         XMLROOT_ANNOTATION) == null || controller.getElements().
                                 getTypeElement(XML_TRANSIENT) == null;
@@ -676,7 +681,7 @@ public class Util {
 
                         @Override
                         public void run(final WorkingCopy working)
-                        throws IOException {
+                                throws IOException {
                             working.toPhase(Phase.RESOLVED);
 
                             TreeMaker maker = working.getTreeMaker();
@@ -927,6 +932,5 @@ public class Util {
             lock.releaseLock();
         }
     }
-
 
 }

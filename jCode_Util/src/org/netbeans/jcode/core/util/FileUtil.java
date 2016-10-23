@@ -171,8 +171,8 @@ public class FileUtil {
     private static void expandTemplate(InputStream template, Map<String, Object> values, FileObject target) throws IOException {
         Charset targetEncoding = FileEncodingQuery.getEncoding(target);
         FileLock lock = target.lock();
-        try (Writer w = new OutputStreamWriter(target.getOutputStream(lock), targetEncoding)) {
-            expandTemplate(template, values, targetEncoding, w);
+        try (Writer writer = new OutputStreamWriter(target.getOutputStream(lock), targetEncoding)) {
+            expandTemplate( new InputStreamReader(template), values, targetEncoding, writer);
         } finally {
             lock.releaseLock();
         }
@@ -182,23 +182,29 @@ public class FileUtil {
         }
     }
 
-    private static void expandTemplate(InputStream template, Map<String, Object> values, Charset targetEncoding, Writer w) throws IOException {
+//    public static void expandTemplate(InputStream template, Map<String, Object> values, Charset targetEncoding, Writer w) throws IOException {
+//        expandTemplate(s, values, targetEncoding, w);
+//    }
+    private static void expandTemplate(Reader reader, Map<String, Object> values, Writer writer) throws IOException {
+        expandTemplate(reader, values, Charset.defaultCharset(), writer);
+    }
+    
+    private static void expandTemplate(Reader reader, Map<String, Object> values, Charset targetEncoding, Writer writer) throws IOException {
 //        Charset sourceEnc = FileEncodingQuery.getEncoding(template);
         ScriptEngine eng = getScriptEngine();
         Bindings bind = eng.getContext().getBindings(ScriptContext.ENGINE_SCOPE);
         bind.putAll(values);
         bind.put(ENCODING_PROPERTY_NAME, targetEncoding.name());
 
-        Reader is = null;
         try {
-            eng.getContext().setWriter(w);
-            is = new InputStreamReader(template);
-            eng.eval(is);
+            eng.getContext().setWriter(writer);
+//            is = new InputStreamReader(template);
+            eng.eval(reader);
         } catch (ScriptException ex) {
             throw new IOException(ex);
         } finally {
-            if (is != null) {
-                is.close();
+            if (reader != null) {
+                reader.close();
             }
         }
     }

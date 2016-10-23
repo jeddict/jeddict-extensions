@@ -244,7 +244,7 @@ public final class StringHelper {
     }
     
     public static String getNext(String name, Predicate<String> checkExist){
-        return getNext(name, checkExist, true);
+        return getNext(name, checkExist, false);
     }
     
     public static String getNext(String name, Predicate<String> checkExist, boolean increment){
