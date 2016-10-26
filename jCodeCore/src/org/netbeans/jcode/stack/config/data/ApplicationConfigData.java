@@ -16,16 +16,14 @@
 package org.netbeans.jcode.stack.config.data;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-import static java.util.stream.Collectors.toList;
+import java.util.*;
+import java.util.stream.Stream;
 import static java.util.stream.Collectors.toSet;
-import org.apache.commons.lang.StringUtils;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.layer.Generator;
-import org.netbeans.jpa.modeler.spec.Entity;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
+import org.netbeans.jpa.modeler.spec.Entity;
 
 /**
  *
@@ -202,13 +200,13 @@ public class ApplicationConfigData implements Serializable {
      */
     public void setEntityMappings(EntityMappings entityMappings) {
         this.entityMappings = entityMappings;
-        for (Entity entity : entityMappings.getEntity().stream().filter(e -> e.getGeneratesourceCode()).collect(toList())) {
+        entityMappings.getConcreteEntityStream().filter(e -> e.getGenerateSourceCode()).forEach(entity -> {
             String entiyFQN = entity.getPackage(entityMappings.getPackage()) + '.' + entity.getClazz();
             EntityConfigData entityConfigData = new EntityConfigData(entity.getFileObject());
             entityConfigData.setLabelAttribute(entity.getLabelAttribute() != null ? entity.getLabelAttribute().getName() : null);
             entityConfigData.setSystemAttribute(entity.getAttributes().getAllAttribute().stream().filter(attr -> !attr.getIncludeInUI()).map(attr -> attr.getName()).collect(toSet()));
             this.putEntity(entiyFQN, entityConfigData);
-        }
+        });
         this.persistenceUnitName = entityMappings.getPersistenceUnitName();
     }
 

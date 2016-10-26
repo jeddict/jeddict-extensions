@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import static java.util.stream.Collectors.toList;
+import java.util.stream.Stream;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -607,6 +608,14 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
             entity = new ArrayList<>();
         }
         return this.entity;
+    }
+    
+    public List<Entity> getConcreteEntity() {
+        return getEntity().stream().filter(e -> Boolean.FALSE.equals(e.getAbstract())).collect(toList());
+    }
+    
+    public Stream<Entity> getConcreteEntityStream() {
+        return getEntity().stream().filter(e -> Boolean.FALSE.equals(e.getAbstract()));
     }
 
     public void setEntity(List<Entity> entity) {

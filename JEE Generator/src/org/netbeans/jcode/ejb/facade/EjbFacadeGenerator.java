@@ -115,7 +115,7 @@ public final class EjbFacadeGenerator implements Generator{
         FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, beanData.getPackage(), true);
         generateAbstract(targetFolder, true);
         
-        for (Entity entity : entityMapping.getEntity()) {
+        for(Entity entity : entityMapping.getConcreteEntity()) {
             handler.progress(beanData.getPrefixName() + entity.getClazz() + beanData.getSuffixName());
             createdFiles.add(generate(entity, true));
         }

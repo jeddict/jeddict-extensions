@@ -181,7 +181,8 @@ public class RESTGenerator implements Generator {
         generateUtil();
         entityPackage = entityMapping.getPackage();
         Map<String, Object> param = generateServerSideComponent();
-        for (Entity entity : entityMapping.getEntity()) {
+        
+        for(Entity entity: entityMapping.getConcreteEntity()) {
             generateEntityController(entity, param);
         }
         CDIUtil.createDD(project);
@@ -208,6 +209,7 @@ public class RESTGenerator implements Generator {
     }
     
     public FileObject generateEntityController(final Entity entity, Map<String, Object> appParam) throws IOException {
+        FileObject controllerFO = null;
         String entityFQN = entity.getFQN(entityMapping.getPackage());
         boolean overrideExisting = true, dto = false;
         final String entitySimpleName = entity.getClazz();
@@ -220,7 +222,7 @@ public class RESTGenerator implements Generator {
 
         FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, entity.getPackage(restData.getPackage()), true);
 
-        FileObject controllerFO = targetFolder.getFileObject(controllerFileName, JAVA_EXT);
+        controllerFO = targetFolder.getFileObject(controllerFileName, JAVA_EXT);
 
         if (controllerFO != null) {
             if (overrideExisting) {
@@ -300,7 +302,6 @@ public class RESTGenerator implements Generator {
 
         
         FileUtil.expandTemplate(TEMPLATE + "rest/entity/"+ restTemplate +".java.ftl", targetFolder, controllerFileName + '.' + JAVA_EXT, param);
-
         return controllerFO;
     }
 

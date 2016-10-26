@@ -90,7 +90,7 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
     private FileObject fileObject;
     
     @XmlAttribute(name = "gen")
-    private Boolean generatesourceCode;
+    private Boolean generateSourceCode;
     
     @XmlAttribute(name = "pkg")
     private String _package;
@@ -400,23 +400,23 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
     }
 
     /**
-     * @return the generatesourceCode
+     * @return the generateSourceCode
      */
-    public Boolean getGeneratesourceCode() {
-        if(generatesourceCode==null){
+    public Boolean getGenerateSourceCode() {
+        if(generateSourceCode==null){
             return true;
         }
-        return generatesourceCode;
+        return generateSourceCode;
     }
 
     /**
-     * @param generatesourceCode the generatesourceCode to set
+     * @param generateSourceCode the generateSourceCode to set
      */
-    public void setGeneratesourceCode(Boolean generatesourceCode) {
-        if(generatesourceCode!=false){
-            this.generatesourceCode = null;
+    public void setGenerateSourceCode(Boolean generateSourceCode) {
+        if(generateSourceCode!=false){
+            this.generateSourceCode = null;
         } else {
-            this.generatesourceCode = false;
+            this.generateSourceCode = false;
         }
         // default value will be true, store only for false
     }
