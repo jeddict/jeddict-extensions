@@ -534,14 +534,16 @@ public abstract class IdentifiableClass extends ManagedClass implements PrimaryK
     }
     
     
+    @Override
     public boolean isIdClassType(){
         return compositePrimaryKeyType == CompositePrimaryKeyType.IDCLASS || 
-                        (compositePrimaryKeyType == CompositePrimaryKeyType.DEFAULT && !CodePanel.isEmbeddedIdDefaultType()) ;
+                        ((compositePrimaryKeyType == CompositePrimaryKeyType.DEFAULT || compositePrimaryKeyType == null) && !CodePanel.isEmbeddedIdDefaultType()) ;
     }
     
+    @Override
     public boolean isEmbeddedIdType(){
         return compositePrimaryKeyType == CompositePrimaryKeyType.EMBEDDEDID || 
-                        (compositePrimaryKeyType == CompositePrimaryKeyType.DEFAULT && CodePanel.isEmbeddedIdDefaultType()) ;
+                        ((compositePrimaryKeyType == CompositePrimaryKeyType.DEFAULT || compositePrimaryKeyType == null) && CodePanel.isEmbeddedIdDefaultType()) ;
     }
 
     /**

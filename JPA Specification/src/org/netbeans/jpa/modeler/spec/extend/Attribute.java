@@ -361,11 +361,22 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
         }
         return valid;
     }
+    
     /**
      * @return the functionalType
      */
     public Boolean getFunctionalType() {
         return functionalType;
+    }
+    
+    public boolean isOptionalReturnType() {
+        if(Boolean.TRUE.equals(this.getJavaClass().getRootElement().getFunctionalType())){
+            return true;
+        }
+        if(Boolean.TRUE.equals(functionalType)){
+            return true;
+        }
+        return false;
     }
 
     /**

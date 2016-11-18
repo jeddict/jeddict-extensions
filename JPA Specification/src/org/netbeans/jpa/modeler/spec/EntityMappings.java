@@ -211,6 +211,9 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     @XmlElement(name = "inf")
     private Set<ReferenceClass> interfaces;
     
+    @XmlAttribute(name = "ft")
+    private Boolean functionalType;
+    
     private static final Snippet DEAFULT_SNIPPET;
     private static final ReferenceClass DEAFULT_INTERFACE;
 
@@ -1543,4 +1546,18 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     public void setInterfaces(Set<ReferenceClass> interfaces) {
         this.interfaces = interfaces;
     }
+    
+    /**
+     * @return the functionalType
+     */
+    public Boolean getFunctionalType() {
+        return functionalType;
+    }
+
+    /**
+     * @param functionalType the functionalType to set
+     */
+    public void setFunctionalType(Boolean functionalType) {
+        this.functionalType = functionalType;
+    }    
 }
