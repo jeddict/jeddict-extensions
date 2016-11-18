@@ -55,6 +55,8 @@ public enum EnumType {
             Object value = JavaSourceParserUtil.findAnnotationValue(annotationMirror, "value");
             if (value != null) {
                 enumType = EnumType.valueOf(value.toString());
+            } else {
+                enumType = DEFAULT;
             }
         }
         return enumType;
