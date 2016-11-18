@@ -25,11 +25,14 @@ import javax.lang.model.element.TypeElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import static org.netbeans.jpa.modeler.spec.NamedQuery.FIND_BY;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import org.netbeans.jpa.modeler.spec.extend.CompositePrimaryKeyType;
 import org.netbeans.jpa.modeler.spec.extend.PrimaryKeyContainer;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
+import org.netbeans.jpa.modeler.settings.code.CodePanel;
+import org.netbeans.jpa.modeler.spec.validation.adapter.CompositePrimaryKeyAdapter;
 
 public abstract class IdentifiableClass extends ManagedClass implements PrimaryKeyContainer {
 
@@ -69,6 +72,7 @@ public abstract class IdentifiableClass extends ManagedClass implements PrimaryK
     protected PostLoad postLoad;//REVENG PENDING
 
     @XmlAttribute
+    @XmlJavaTypeAdapter(CompositePrimaryKeyAdapter.class)
     private CompositePrimaryKeyType compositePrimaryKeyType;//custom added
     @XmlAttribute
     private String compositePrimaryKeyClass;//custom added
@@ -523,7 +527,21 @@ public abstract class IdentifiableClass extends ManagedClass implements PrimaryK
      */
     @Override
     public CompositePrimaryKeyType getCompositePrimaryKeyType() {
+        if(compositePrimaryKeyType == null){
+            compositePrimaryKeyType = CompositePrimaryKeyType.DEFAULT;
+        }
         return compositePrimaryKeyType;
+    }
+    
+    
+    public boolean isIdClassType(){
+        return compositePrimaryKeyType == CompositePrimaryKeyType.IDCLASS || 
+                        (compositePrimaryKeyType == CompositePrimaryKeyType.DEFAULT && !CodePanel.isEmbeddedIdDefaultType()) ;
+    }
+    
+    public boolean isEmbeddedIdType(){
+        return compositePrimaryKeyType == CompositePrimaryKeyType.EMBEDDEDID || 
+                        (compositePrimaryKeyType == CompositePrimaryKeyType.DEFAULT && CodePanel.isEmbeddedIdDefaultType()) ;
     }
 
     /**
@@ -560,7 +578,8 @@ public abstract class IdentifiableClass extends ManagedClass implements PrimaryK
 
     private void manageCompositePrimaryKeyType() {
         if (null != compositePrimaryKeyType) {
-            switch (compositePrimaryKeyType) {
+            CompositePrimaryKeyType type = compositePrimaryKeyType == CompositePrimaryKeyType.DEFAULT?(CodePanel.isEmbeddedIdDefaultType()?CompositePrimaryKeyType.EMBEDDEDID:CompositePrimaryKeyType.IDCLASS):compositePrimaryKeyType;
+            switch (type) {
                 case EMBEDDEDID:
                     this.idClass = null;
                     break;

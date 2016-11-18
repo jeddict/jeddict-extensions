@@ -39,6 +39,8 @@ public final class CodePanel extends javax.swing.JPanel {
         refractorNamedQueryComp = new javax.swing.JCheckBox();
         deleteNamedQueryComp = new javax.swing.JCheckBox();
         generateFluentAPIComp = new javax.swing.JCheckBox();
+        jLabel1 = new javax.swing.JLabel();
+        defaultCompositePrimaryKeyTypeComp = new javax.swing.JComboBox<>();
 
         org.openide.awt.Mnemonics.setLocalizedText(refractorNamedQueryComp, org.openide.util.NbBundle.getMessage(CodePanel.class, "CodePanel.refractorNamedQueryComp.text")); // NOI18N
 
@@ -51,6 +53,10 @@ public final class CodePanel extends javax.swing.JPanel {
             }
         });
 
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(CodePanel.class, "CodePanel.jLabel1.text")); // NOI18N
+
+        defaultCompositePrimaryKeyTypeComp.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "IdClass", "EmbeddedId" }));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -58,10 +64,14 @@ public final class CodePanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addGap(50, 50, 50)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(defaultCompositePrimaryKeyTypeComp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(generateFluentAPIComp)
                     .addComponent(deleteNamedQueryComp)
                     .addComponent(refractorNamedQueryComp))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(83, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -70,9 +80,13 @@ public final class CodePanel extends javax.swing.JPanel {
                 .addComponent(refractorNamedQueryComp)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(deleteNamedQueryComp)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(generateFluentAPIComp)
-                .addContainerGap(38, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(defaultCompositePrimaryKeyTypeComp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(48, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -84,20 +98,24 @@ public final class CodePanel extends javax.swing.JPanel {
          refractorNamedQueryComp.setSelected(isRefractorQuery());
          deleteNamedQueryComp.setSelected(isDeleteQuery());
          generateFluentAPIComp.setSelected(isGenerateFluentAPI());
+         defaultCompositePrimaryKeyTypeComp.setSelectedItem(getDefaultCompositePrimaryKeyType());
     }
 
     void store() {
-       NbPreferences.forModule(CodePanel.class).putBoolean("refractorNamedQuery", refractorNamedQueryComp.isSelected());
-       NbPreferences.forModule(CodePanel.class).putBoolean("deleteNamedQuery", deleteNamedQueryComp.isSelected());
-       NbPreferences.forModule(CodePanel.class).putBoolean("generateFluentAPI", generateFluentAPIComp.isSelected());
-       refractorNamedQuery=null;
-       deleteNamedQuery=null;
-       generateFluentAPI=null;
+       pref.putBoolean("refractorNamedQuery", refractorNamedQueryComp.isSelected());
+       pref.putBoolean("deleteNamedQuery", deleteNamedQueryComp.isSelected());
+       pref.putBoolean("generateFluentAPI", generateFluentAPIComp.isSelected());
+       pref.put("defaultCompositePrimaryKeyType", (String)defaultCompositePrimaryKeyTypeComp.getSelectedItem());
+        deleteNamedQuery = null;
+        refractorNamedQuery = null;
+        generateFluentAPI = null;
+        defaultCompositePrimaryKeyType = null;
     }
 
     private static Boolean deleteNamedQuery;
     private static Boolean refractorNamedQuery;
     private static Boolean generateFluentAPI;
+    private static String defaultCompositePrimaryKeyType;
     
     public static boolean isRefractorQuery() {
         if (refractorNamedQuery == null) {
@@ -119,15 +137,27 @@ public final class CodePanel extends javax.swing.JPanel {
         }
         return deleteNamedQuery;
     }
+    public static String getDefaultCompositePrimaryKeyType(){
+        if (defaultCompositePrimaryKeyType == null) {
+            defaultCompositePrimaryKeyType = pref.get("defaultCompositePrimaryKeyType", "IdClass");
+        }
+        return defaultCompositePrimaryKeyType;
+    }
     
-    boolean valid() {
+    public static boolean isEmbeddedIdDefaultType(){
+        return "EmbeddedId".equals(getDefaultCompositePrimaryKeyType());
+    }
+    
+    public boolean valid(){
         return true;
     }
     
 private static final Preferences pref = NbPreferences.forModule(CodePanel.class);
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> defaultCompositePrimaryKeyTypeComp;
     private javax.swing.JCheckBox deleteNamedQueryComp;
     private javax.swing.JCheckBox generateFluentAPIComp;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JCheckBox refractorNamedQueryComp;
     // End of variables declaration//GEN-END:variables
 }

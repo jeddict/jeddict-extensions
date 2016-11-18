@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -47,6 +48,20 @@ import org.openide.filesystems.FileObject;
 @XmlAccessorType(XmlAccessType.FIELD)
 public abstract class JavaClass extends FlowNode implements JCRELoader {
 
+    /**
+     * @return the superclassRef
+     */
+    public ReferenceClass getSuperclassRef() {
+        return superclassRef;
+    }
+
+    /**
+     * @param superclassRef the superclassRef to set
+     */
+    public void setSuperclassRef(ReferenceClass superclassRef) {
+        this.superclassRef = superclassRef;
+    }
+
     @XmlElement(name = "ts")
     private ClassMembers toStringMethod;
 
@@ -68,10 +83,6 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
     @XmlAttribute
     private String superclassId;
 
-//  @XmlElementWrapper(name = "interface-list")
-    @XmlElement(name = "inf")
-    private List<String> interfaces;
-
     @XmlTransient
     private JavaClass superclass;
 
@@ -82,6 +93,12 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
     private boolean visibile = true;
 
     private List<Annotation> annotation;
+    
+    @XmlElement(name = "ext")
+    private ReferenceClass superclassRef;//if refered from classpath
+
+    @XmlElement(name = "inf")
+    private Set<ReferenceClass> interfaces;
     
     @XmlElement(name = "snp")
     private List<Snippet> snippets;
@@ -107,7 +124,7 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
             if (Serializable.class.getName().equals(mirror.toString())) {
                 continue;
             }
-            this.addInterface(mirror.toString());
+            this.addInterface(new ReferenceClass(mirror.toString()));
         }
         this.setAnnotation(JavaSourceParserUtil.getNonEEAnnotation(element));
     }
@@ -258,32 +275,29 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
         this._abstract = _abstract;
     }
 
+    public void addInterface(ReferenceClass _interface) {
+        this.getInterfaces().add(_interface);
+    }
+
+    public void removeInterface(ReferenceClass _interface) {
+        this.getInterfaces().remove(_interface);
+    }
+    
     /**
      * @return the interfaces
      */
-    public List<String> getInterfaces() {
+    public Set<ReferenceClass> getInterfaces() {
+        if (this.interfaces == null) {
+            this.interfaces = new LinkedHashSet<>();
+        }
         return interfaces;
     }
 
     /**
      * @param interfaces the interfaces to set
      */
-    public void setInterfaces(List<String> interfaces) {
+    public void setInterfaces(Set<ReferenceClass> interfaces) {
         this.interfaces = interfaces;
-    }
-
-    public void addInterface(String _interface) {
-        if (this.interfaces == null) {
-            this.interfaces = new ArrayList<String>();
-        }
-        this.interfaces.add(_interface);
-    }
-
-    public void removeInterface(String _interface) {
-        if (this.interfaces == null) {
-            this.interfaces = new ArrayList<String>();
-        }
-        this.interfaces.remove(_interface);
     }
 
     /**

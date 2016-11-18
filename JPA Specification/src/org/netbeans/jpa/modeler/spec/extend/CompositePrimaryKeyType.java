@@ -17,5 +17,23 @@ package org.netbeans.jpa.modeler.spec.extend;
 
 public enum CompositePrimaryKeyType {
 
-    IDCLASS, EMBEDDEDID;
+    DEFAULT(null), IDCLASS("IDCLASS"), EMBEDDEDID("EMBEDDEDID");
+    
+    private final String type;
+
+    private CompositePrimaryKeyType(String type) {
+        this.type = type;
+    }
+
+    public String getType() {
+        return type;
+    }
+    
+    public static CompositePrimaryKeyType get(String type){
+        if(type != null){
+            return valueOf(type);
+        }
+        return DEFAULT;
+    }
+    
 }

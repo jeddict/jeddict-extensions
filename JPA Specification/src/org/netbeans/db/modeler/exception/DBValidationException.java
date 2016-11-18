@@ -45,8 +45,13 @@ public class DBValidationException extends ValidationException {
     /**
      * @return the validationException
      */
-    public ValidationException getValidationException() {
-        return validationException;
+//    public ValidationException getValidationException() {
+//        return validationException;
+//    }
+    
+    @Override
+    public int getErrorCode(){
+        return validationException!=null?validationException.getErrorCode():0;
     }
 
     /**

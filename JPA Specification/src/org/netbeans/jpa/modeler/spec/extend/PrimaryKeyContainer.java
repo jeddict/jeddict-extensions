@@ -24,6 +24,10 @@ public interface PrimaryKeyContainer {
     public void setIdClass(IdClass value);
 
     public CompositePrimaryKeyType getCompositePrimaryKeyType();
+    
+    public boolean isIdClassType();
+    
+    public boolean isEmbeddedIdType();
 
     public void setCompositePrimaryKeyType(CompositePrimaryKeyType compositePrimaryKeyType);
 
