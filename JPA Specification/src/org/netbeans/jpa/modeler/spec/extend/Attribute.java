@@ -45,6 +45,7 @@ import static org.netbeans.jcode.core.util.AttributeType.SHORT;
 import static org.netbeans.jcode.core.util.AttributeType.SHORT_WRAPPER;
 import static org.netbeans.jcode.core.util.AttributeType.STRING;
 import static org.netbeans.jcode.core.util.AttributeType.STRING_FQN;
+import org.netbeans.jpa.modeler.settings.code.CodePanel;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
 import org.netbeans.jpa.modeler.spec.extend.annotation.Annotation;
 import org.netbeans.jpa.modeler.spec.jaxb.JaxbVariableType;
@@ -383,17 +384,14 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
      * @return the functionalType
      */
     public Boolean getFunctionalType() {
+        if(functionalType==null){
+            return true;
+        }
         return functionalType;
     }
 
     public boolean isOptionalReturnType() {
-        if (Boolean.TRUE.equals(this.getJavaClass().getRootElement().getFunctionalType())) {
-            return true;
-        }
-        if (Boolean.TRUE.equals(functionalType)) {
-            return true;
-        }
-        return false;
+        return CodePanel.isOptionalReturnType() && getFunctionalType();
     }
 
     /**
