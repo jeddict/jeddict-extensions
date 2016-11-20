@@ -7,6 +7,7 @@
 package org.netbeans.jpa.modeler.spec;
 
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -69,9 +70,9 @@ public class Id extends PersistenceBaseAttribute {
     protected SequenceGenerator sequenceGenerator;
 
 
-    public static Id load(Element element, VariableElement variableElement) {
+    public static Id load(Element element, VariableElement variableElement, ExecutableElement getterElement) {
         Id id = new Id();
-        id.loadAttribute(element, variableElement);
+        id.loadAttribute(element, variableElement, getterElement);
         id.generatedValue = GeneratedValue.load(element, variableElement);
         id.tableGenerator = TableGenerator.load(element);
         id.sequenceGenerator = SequenceGenerator.load(element);

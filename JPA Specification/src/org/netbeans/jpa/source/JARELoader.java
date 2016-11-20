@@ -17,6 +17,7 @@ package org.netbeans.jpa.source;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
 
@@ -27,5 +28,5 @@ import org.netbeans.jpa.modeler.spec.EntityMappings;
  */
 public interface JARELoader<T> {
 
-    T load(EntityMappings entityMappings, Element element, VariableElement variableElement, AnnotationMirror annotationMirror);
+    T load(EntityMappings entityMappings, Element element, VariableElement variableElement, ExecutableElement getterElement, AnnotationMirror annotationMirror);
 }

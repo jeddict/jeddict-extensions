@@ -32,6 +32,7 @@ import org.netbeans.jpa.modeler.spec.extend.CompositePrimaryKeyType;
 import org.netbeans.jpa.modeler.spec.extend.PrimaryKeyContainer;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 import org.netbeans.jpa.modeler.settings.code.CodePanel;
+import org.netbeans.jpa.modeler.spec.extend.ReferenceClass;
 import org.netbeans.jpa.modeler.spec.validation.adapter.CompositePrimaryKeyAdapter;
 
 public abstract class IdentifiableClass extends ManagedClass implements PrimaryKeyContainer {
@@ -153,6 +154,29 @@ public abstract class IdentifiableClass extends ManagedClass implements PrimaryK
                 SqlResultSetMapping mapping  = SqlResultSetMapping.load(element, resultSetMappingsMirror);
                 mapping.setIdentifiableClass(this);
                 this.getSqlResultSetMapping().add(mapping);
+            }
+        }
+        
+        TypeElement superClassElement = JavaSourceParserUtil.getSuperclassTypeElement(element);
+        if (!superClassElement.getQualifiedName().toString().equals("java.lang.Object")) {
+            if (JavaSourceParserUtil.isEntityClass(superClassElement)) {
+                org.netbeans.jpa.modeler.spec.Entity entitySuperclassSpec = entityMappings.findEntity(superClassElement.getSimpleName().toString());
+                if (entitySuperclassSpec == null) {
+                    entitySuperclassSpec = new org.netbeans.jpa.modeler.spec.Entity();
+                    entitySuperclassSpec.load(entityMappings, superClassElement, fieldAccess);
+                    entityMappings.addEntity(entitySuperclassSpec);
+                }
+                super.addSuperclass(entitySuperclassSpec);
+            } else if (JavaSourceParserUtil.isMappedSuperClass(superClassElement)) {
+                org.netbeans.jpa.modeler.spec.MappedSuperclass mappedSuperclassSpec = entityMappings.findMappedSuperclass(superClassElement.getSimpleName().toString());
+                if (mappedSuperclassSpec == null) {
+                    mappedSuperclassSpec = new org.netbeans.jpa.modeler.spec.MappedSuperclass();
+                    mappedSuperclassSpec.load(entityMappings, superClassElement, fieldAccess);
+                    entityMappings.addMappedSuperclass(mappedSuperclassSpec);
+                }
+                super.addSuperclass(mappedSuperclassSpec);
+            } else {
+                this.setSuperclassRef(new ReferenceClass(superClassElement.toString()));
             }
         }
     }
@@ -527,9 +551,9 @@ public abstract class IdentifiableClass extends ManagedClass implements PrimaryK
      */
     @Override
     public CompositePrimaryKeyType getCompositePrimaryKeyType() {
-        if(compositePrimaryKeyType == null){
-            compositePrimaryKeyType = CompositePrimaryKeyType.DEFAULT;
-        }
+//        if(compositePrimaryKeyType == null){
+//            compositePrimaryKeyType = CompositePrimaryKeyType.DEFAULT;
+//        }
         return compositePrimaryKeyType;
     }
     
@@ -537,13 +561,13 @@ public abstract class IdentifiableClass extends ManagedClass implements PrimaryK
     @Override
     public boolean isIdClassType(){
         return compositePrimaryKeyType == CompositePrimaryKeyType.IDCLASS || 
-                        ((compositePrimaryKeyType == CompositePrimaryKeyType.DEFAULT || compositePrimaryKeyType == null) && !CodePanel.isEmbeddedIdDefaultType()) ;
+                        (compositePrimaryKeyType == CompositePrimaryKeyType.DEFAULT && !CodePanel.isEmbeddedIdDefaultType()) ;
     }
     
     @Override
     public boolean isEmbeddedIdType(){
         return compositePrimaryKeyType == CompositePrimaryKeyType.EMBEDDEDID || 
-                        ((compositePrimaryKeyType == CompositePrimaryKeyType.DEFAULT || compositePrimaryKeyType == null) && CodePanel.isEmbeddedIdDefaultType()) ;
+                        (compositePrimaryKeyType == CompositePrimaryKeyType.DEFAULT && CodePanel.isEmbeddedIdDefaultType()) ;
     }
 
     /**
@@ -552,7 +576,6 @@ public abstract class IdentifiableClass extends ManagedClass implements PrimaryK
     @Override
     public void setCompositePrimaryKeyType(CompositePrimaryKeyType compositePrimaryKeyType) {
         this.compositePrimaryKeyType = compositePrimaryKeyType;
-//        manageCompositePrimaryKeyClass();
     }
 
     /**

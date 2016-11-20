@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -93,11 +94,11 @@ public class OneToOne extends SingleRelationAttribute {
     protected Boolean orphanRemoval;
 
     @Override
-    public OneToOne load(EntityMappings entityMappings, Element element, VariableElement variableElement, AnnotationMirror annotationMirror) {
+    public OneToOne load(EntityMappings entityMappings, Element element, VariableElement variableElement, ExecutableElement getterElement, AnnotationMirror annotationMirror) {
         if(annotationMirror==null){
           annotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.OneToOne");
         }
-        super.loadAttribute(entityMappings, element, variableElement, annotationMirror);
+        super.loadAttribute(entityMappings, element, variableElement, getterElement, annotationMirror);
         this.mappedBy = (String) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "mappedBy");
         this.orphanRemoval = (Boolean) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "orphanRemoval");
         return this;

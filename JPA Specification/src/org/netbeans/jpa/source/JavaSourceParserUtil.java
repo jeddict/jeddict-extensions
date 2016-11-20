@@ -735,22 +735,21 @@ public class JavaSourceParserUtil {
     }
 
     /**
-     * TODO: actually it's guess setter from setter, need to review if it's a
-     * problem of expected
+     * guess getter from var
      *
-     * @param setter
+     * @param variableElement
      * @return
      */
-    public static VariableElement guessGetter(ExecutableElement setter) {
-        String name = setter.getSimpleName().toString().substring(3);
-        String guessGetterName = "set" + name;
-        TypeElement typeElement = (TypeElement) setter.getEnclosingElement();
-        for (VariableElement variableElement : ElementFilter.fieldsIn(typeElement.getEnclosedElements())) {
-            if (variableElement.getSimpleName().contentEquals(guessGetterName)) {
-                return variableElement;
+    public static ExecutableElement guessGetter(VariableElement variableElement) {
+        String name = variableElement.getSimpleName().toString();
+        String guessGetterName = "get" + StringHelper.firstUpper(name);
+        TypeElement typeElement = (TypeElement) variableElement.getEnclosingElement();
+        for (ExecutableElement executableElement : ElementFilter.methodsIn(typeElement.getEnclosedElements())) {
+            if (executableElement.getSimpleName().contentEquals(guessGetterName)) {
+                return executableElement;
             }
         }
-        Logger.getLogger(JavaSourceParserUtil.class.getName()).log(Level.INFO, "Cannot detect setter associated with getter: {0}", guessGetterName);
+        Logger.getLogger(JavaSourceParserUtil.class.getName()).log(Level.INFO, "Cannot detect getter associated with var: {0}", guessGetterName);
         return null;
     }
 

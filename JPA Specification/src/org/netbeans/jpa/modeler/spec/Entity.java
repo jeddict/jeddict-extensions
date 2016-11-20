@@ -30,6 +30,7 @@ import org.netbeans.jpa.modeler.spec.validator.override.AssociationValidator;
 import org.netbeans.jpa.modeler.spec.validator.override.AttributeValidator;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 import org.netbeans.jpa.modeler.spec.extend.InheritanceHandler;
+import org.netbeans.jpa.modeler.spec.extend.ReferenceClass;
 
 /**
  *
@@ -180,28 +181,6 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
         super.load(entityMappings, element, fieldAccess);
         AnnotationMirror annotationMirror = JavaSourceParserUtil.getAnnotation(element, "javax.persistence.Entity");
 
-        TypeElement superClassElement = JavaSourceParserUtil.getSuperclassTypeElement(element);
-        if (!superClassElement.getQualifiedName().toString().equals("java.lang.Object")) {
-            if (JavaSourceParserUtil.isEntityClass(superClassElement)) {
-                org.netbeans.jpa.modeler.spec.Entity entitySuperclassSpec = entityMappings.findEntity(superClassElement.getSimpleName().toString());
-                if (entitySuperclassSpec == null) {
-                    entitySuperclassSpec = new org.netbeans.jpa.modeler.spec.Entity();
-                    entitySuperclassSpec.load(entityMappings, superClassElement, fieldAccess);
-                    entityMappings.addEntity(entitySuperclassSpec);
-                }
-                super.addSuperclass(entitySuperclassSpec);
-            } else if (JavaSourceParserUtil.isMappedSuperClass(superClassElement)) {
-                org.netbeans.jpa.modeler.spec.MappedSuperclass mappedSuperclassSpec = entityMappings.findMappedSuperclass(superClassElement.getSimpleName().toString());
-                if (mappedSuperclassSpec == null) {
-                    mappedSuperclassSpec = new org.netbeans.jpa.modeler.spec.MappedSuperclass();
-                    mappedSuperclassSpec.load(entityMappings, superClassElement, fieldAccess);
-                    entityMappings.addMappedSuperclass(mappedSuperclassSpec);
-                }
-                super.addSuperclass(mappedSuperclassSpec);
-            } else {
-                //Skip
-            }
-        }
         this.table = Table.load(element);
         this.getSecondaryTable().addAll(SecondaryTable.loadTables(element));
         this.inheritance = Inheritance.load(element);

@@ -11,6 +11,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 import org.netbeans.jpa.modeler.spec.extend.IAttributes;
+import org.netbeans.jpa.modeler.spec.extend.ReferenceClass;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
@@ -80,27 +81,9 @@ public class MappedSuperclass extends IdentifiableClass {
 
     @Override
     public void load(EntityMappings entityMappings, TypeElement element, boolean fieldAccess) {
-//        AnnotationMirror annotationMirror = JavaSourceParserUtil.getAnnotation(element, "javax.persistence.MappedSuperclass");
-            if (entityMappings.findMappedSuperclass(element.getSimpleName().toString()) == null) {
+        if (entityMappings.findMappedSuperclass(element.getSimpleName().toString()) == null) {
             super.load(entityMappings, element, fieldAccess);
-            TypeElement superClassElement = JavaSourceParserUtil.getSuperclassTypeElement(element);
-            if (!superClassElement.getQualifiedName().toString().equals("java.lang.Object")) {
-                if (JavaSourceParserUtil.isEntityClass(superClassElement)) {
-                    org.netbeans.jpa.modeler.spec.Entity entitySuperclassSpec = new org.netbeans.jpa.modeler.spec.Entity();
-                    entitySuperclassSpec.load(entityMappings, superClassElement, fieldAccess);
-                    super.addSuperclass(entitySuperclassSpec);
-                    entityMappings.addEntity(entitySuperclassSpec);
-                } else if (JavaSourceParserUtil.isMappedSuperClass(superClassElement)) {
-                    org.netbeans.jpa.modeler.spec.MappedSuperclass mappedSuperclassSpec = new org.netbeans.jpa.modeler.spec.MappedSuperclass();
-                    mappedSuperclassSpec.load(entityMappings, superClassElement, fieldAccess);
-                    super.addSuperclass(mappedSuperclassSpec);
-                    entityMappings.addMappedSuperclass(mappedSuperclassSpec);
-                } else {
-                    //Skip
-                }
-            }
-
-        } 
+        }
     }
 
     @Override

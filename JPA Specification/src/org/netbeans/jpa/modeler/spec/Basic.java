@@ -6,8 +6,10 @@
 //
 package org.netbeans.jpa.modeler.spec;
 
+import java.util.Optional;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -75,10 +77,10 @@ public class Basic extends PersistenceBaseAttribute implements AccessTypeHandler
     @XmlAttribute(name = "optional")
     protected Boolean optional;
 
-    public static Basic load(Element element, VariableElement variableElement) {
+    public static Basic load(Element element, VariableElement variableElement, ExecutableElement getterElement) {
         AnnotationMirror annotationMirror = JavaSourceParserUtil.getAnnotation(element, BASIC_FQN);
         Basic basic = new Basic();
-        basic.loadAttribute(element, variableElement);
+        basic.loadAttribute(element, variableElement, getterElement);
         basic.lob = Lob.load(element, variableElement);
         basic.enumerated = EnumType.load(element, null);
         basic.fetch = FetchType.load(element, annotationMirror);

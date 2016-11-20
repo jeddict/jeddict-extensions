@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -104,11 +105,11 @@ public class OneToMany extends MultiRelationAttribute implements JoinColumnHandl
     protected Boolean orphanRemoval;
 
     @Override
-    public OneToMany load(EntityMappings entityMappings,Element element, VariableElement variableElement, AnnotationMirror annotationMirror) {
+    public OneToMany load(EntityMappings entityMappings,Element element, VariableElement variableElement, ExecutableElement getterElement, AnnotationMirror annotationMirror) {
         if(annotationMirror==null){
            annotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.OneToMany");
         }
-        super.loadAttribute(entityMappings, element, variableElement, annotationMirror);
+        super.loadAttribute(entityMappings, element, variableElement, getterElement, annotationMirror);
 
         AnnotationMirror joinColumnsAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.JoinColumns");
         if (joinColumnsAnnotationMirror != null) {

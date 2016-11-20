@@ -11,6 +11,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 import org.netbeans.jpa.modeler.spec.extend.IAttributes;
+import org.netbeans.jpa.modeler.spec.extend.ReferenceClass;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
@@ -58,13 +59,13 @@ import org.netbeans.jpa.source.JavaSourceParserUtil;
 public class Embeddable extends ManagedClass {
 
     protected EmbeddableAttributes attributes;
-    
+
     @Override
     public void load(EntityMappings entityMappings, TypeElement element, boolean fieldAccess) {
         if (entityMappings.findMappedSuperclass(element.getSimpleName().toString()) == null) { // BUG : https://java.net/bugzilla/show_bug.cgi?id=6192 NullPointerException when reverse engineering from JPA classes revisited
             TypeElement superClassElement = JavaSourceParserUtil.getSuperclassTypeElement(element);
             if (!superClassElement.getQualifiedName().toString().equals("java.lang.Object")) {
-                //Not Supported Currently
+                this.setSuperclassRef(new ReferenceClass(superClassElement.toString()));
             }
             super.load(entityMappings, element, fieldAccess);
         }

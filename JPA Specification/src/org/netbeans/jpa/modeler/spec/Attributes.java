@@ -136,26 +136,29 @@ public class Attributes extends BaseAttributes implements IPersistenceAttributes
         }
         for(Element element : elements){
                 VariableElement variableElement ;
+                ExecutableElement getterElement;
                 if(element instanceof VariableElement){
-                   variableElement = (VariableElement)element;;
+                   variableElement = (VariableElement)element;
+                   getterElement = JavaSourceParserUtil.guessGetter(variableElement);
                 } else {
                     variableElement = JavaSourceParserUtil.guessField((ExecutableElement)element);
+                    getterElement = (ExecutableElement)element;
                 }
                  
                 if (JavaSourceParserUtil.isAnnotatedWith(element, ID_FQN)
                         && !(JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.OneToOne")
                         || JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.ManyToOne"))) {
-                    this.addId(Id.load(element, variableElement));
+                    this.addId(Id.load(element, variableElement, getterElement));
                 } else if (JavaSourceParserUtil.isAnnotatedWith(element, BASIC_FQN)) {
-                    this.addBasic(Basic.load(element, variableElement));
+                    this.addBasic(Basic.load(element, variableElement, getterElement));
                 } else if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.Transient")) {
-                    this.addTransient(Transient.load(element, variableElement));
+                    this.addTransient(Transient.load(element, variableElement, getterElement));
                 } else if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.Version")) {
-                    this.addVersion(Version.load(element, variableElement));
+                    this.addVersion(Version.load(element, variableElement, getterElement));
                 } else if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.ElementCollection")) {
-                    this.addElementCollection(ElementCollection.load(entityMappings, element, variableElement));
+                    this.addElementCollection(ElementCollection.load(entityMappings, element, variableElement, getterElement));
                 } else if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.OneToOne")) {
-                    OneToOne oneToOneObj = new OneToOne().load(entityMappings, element, variableElement, null);
+                    OneToOne oneToOneObj = new OneToOne().load(entityMappings, element, variableElement, getterElement, null);
                     this.addOneToOne(oneToOneObj);
                     if(StringUtils.isNotBlank(oneToOneObj.getMapsId())){
                         mapsId.add(oneToOneObj.getMapsId());
@@ -163,7 +166,7 @@ public class Attributes extends BaseAttributes implements IPersistenceAttributes
                         mapsId.add(oneToOneObj.getName());
                     }
                 } else if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.ManyToOne")) {
-                    ManyToOne manyToOneObj = new ManyToOne().load(entityMappings, element, variableElement, null);
+                    ManyToOne manyToOneObj = new ManyToOne().load(entityMappings, element, variableElement, getterElement, null);
                     this.addManyToOne(manyToOneObj);
                     if(StringUtils.isNotBlank(manyToOneObj.getMapsId())){
                         mapsId.add(manyToOneObj.getMapsId());
@@ -171,18 +174,18 @@ public class Attributes extends BaseAttributes implements IPersistenceAttributes
                         mapsId.add(manyToOneObj.getName());
                     }
                 } else if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.OneToMany")) {
-                    OneToMany oneToManyObj = new OneToMany().load(entityMappings, element, variableElement, null);
+                    OneToMany oneToManyObj = new OneToMany().load(entityMappings, element, variableElement, getterElement, null);
                     this.addOneToMany(oneToManyObj);
                 } else if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.ManyToMany")) {
-                    ManyToMany manyToManyObj = new ManyToMany().load(entityMappings, element, variableElement, null);
+                    ManyToMany manyToManyObj = new ManyToMany().load(entityMappings, element, variableElement, getterElement, null);
                     this.addManyToMany(manyToManyObj);
                 } else if (JavaSourceParserUtil.isAnnotatedWith(element, EMBEDDED_ID_FQN)) {
-                    this.setEmbeddedId(EmbeddedId.load(entityMappings, element, variableElement));
+                    this.setEmbeddedId(EmbeddedId.load(entityMappings, element, variableElement, getterElement));
                     embeddedIdVariableElement = variableElement;
                 } else if (JavaSourceParserUtil.isAnnotatedWith(element, EMBEDDED_FQN)) {
-                    this.addEmbedded(Embedded.load(entityMappings, element, variableElement));
+                    this.addEmbedded(Embedded.load(entityMappings, element, variableElement, getterElement));
                 } else {
-                    this.addBasic(Basic.load(element, variableElement)); //Default Annotation
+                    this.addBasic(Basic.load(element, variableElement, getterElement)); //Default Annotation
                 }
 
         }
@@ -191,7 +194,8 @@ public class Attributes extends BaseAttributes implements IPersistenceAttributes
         if (this.getEmbeddedId() != null) {
             for (VariableElement variableElement : JavaSourceParserUtil.getFields(JavaSourceParserUtil.getAttributeTypeElement(embeddedIdVariableElement))) {
                 if (!mapsId.contains(variableElement.getSimpleName().toString())) {
-                    this.addId(Id.load(variableElement, variableElement));
+                    ExecutableElement getterElement = JavaSourceParserUtil.guessGetter(variableElement);
+                    this.addId(Id.load(variableElement, variableElement, getterElement));
                 }
             }
         }

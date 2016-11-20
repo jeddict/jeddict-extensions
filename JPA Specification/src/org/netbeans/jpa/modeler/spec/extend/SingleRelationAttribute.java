@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ErrorType;
@@ -57,8 +58,8 @@ public abstract class SingleRelationAttribute extends RelationAttribute implemen
     
 
     @Override
-    public void loadAttribute(EntityMappings entityMappings, Element element, VariableElement variableElement, AnnotationMirror annotationMirror) {
-        super.loadAttribute(entityMappings, element, variableElement, annotationMirror);
+    public void loadAttribute(EntityMappings entityMappings, Element element, VariableElement variableElement, ExecutableElement getterElement, AnnotationMirror annotationMirror) {
+        super.loadAttribute(entityMappings, element, variableElement, getterElement, annotationMirror);
         if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.Id")) {
             this.setPrimaryKey(Boolean.TRUE);
         }

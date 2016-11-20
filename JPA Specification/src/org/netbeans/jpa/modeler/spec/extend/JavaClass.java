@@ -48,20 +48,6 @@ import org.openide.filesystems.FileObject;
 @XmlAccessorType(XmlAccessType.FIELD)
 public abstract class JavaClass extends FlowNode implements JCRELoader {
 
-    /**
-     * @return the superclassRef
-     */
-    public ReferenceClass getSuperclassRef() {
-        return superclassRef;
-    }
-
-    /**
-     * @param superclassRef the superclassRef to set
-     */
-    public void setSuperclassRef(ReferenceClass superclassRef) {
-        this.superclassRef = superclassRef;
-    }
-
     @XmlElement(name = "ts")
     private ClassMembers toStringMethod;
 
@@ -121,9 +107,9 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
             this.setAbstract(true);
         }
         for (TypeMirror mirror : element.getInterfaces()) {
-            if (Serializable.class.getName().equals(mirror.toString())) {
-                continue;
-            }
+//            if (Serializable.class.getName().equals(mirror.toString())) {
+//                continue;
+//            }
             this.addInterface(new ReferenceClass(mirror.toString()));
         }
         this.setAnnotation(JavaSourceParserUtil.getNonEEAnnotation(element));
@@ -485,4 +471,20 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
     public void setPackage(String _package) {
         this._package = _package;
     }    
+    
+    /**
+     * @return the superclassRef
+     */
+    public ReferenceClass getSuperclassRef() {
+        return superclassRef;
+    }
+
+    /**
+     * @param superclassRef the superclassRef to set
+     */
+    public void setSuperclassRef(ReferenceClass superclassRef) {
+        this.superclassRef = superclassRef;
+    }
+
+
 }

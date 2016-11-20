@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ErrorType;
@@ -130,8 +131,8 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
     
 
     @Override
-    public void loadAttribute(EntityMappings entityMappings, Element element, VariableElement variableElement,AnnotationMirror relationAnnotationMirror) {
-        super.loadAttribute(entityMappings, element, variableElement, relationAnnotationMirror);
+    public void loadAttribute(EntityMappings entityMappings, Element element, VariableElement variableElement, ExecutableElement getterElement, AnnotationMirror relationAnnotationMirror) {
+        super.loadAttribute(entityMappings, element, variableElement, getterElement, relationAnnotationMirror);
 
         AnnotationMirror orderByMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.OrderBy");
         if (orderByMirror != null) {

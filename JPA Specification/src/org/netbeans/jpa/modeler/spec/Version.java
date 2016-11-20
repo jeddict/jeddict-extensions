@@ -7,6 +7,7 @@
 package org.netbeans.jpa.modeler.spec;
 
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -51,9 +52,9 @@ import org.netbeans.modeler.core.NBModelerUtil;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Version extends PersistenceBaseAttribute implements AccessTypeHandler {
 
-    public static Version load(Element element, VariableElement variableElement) {
+    public static Version load(Element element, VariableElement variableElement, ExecutableElement getterElement) {
         Version version = new Version();
-        version.loadAttribute(element, variableElement);
+        version.loadAttribute(element, variableElement, getterElement);
         return version;
     }
 }
