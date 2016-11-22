@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import static java.util.stream.Collectors.toList;
 import javax.script.ScriptException;
 import org.apache.commons.io.IOUtils;
 
@@ -39,10 +40,7 @@ import static org.netbeans.jcode.core.util.FileUtil.getSimpleFileNameWithExt;
 import static org.netbeans.jcode.core.util.JavaSourceHelper.getSimpleClassName;
 import org.netbeans.jcode.core.util.JavaUtil;
 import static org.netbeans.jcode.core.util.ProjectHelper.getProjectWebRoot;
-import org.netbeans.jcode.entity.info.EntityClassInfo;
-import org.netbeans.jcode.entity.info.EntityResourceBeanModel;
 import org.netbeans.jcode.layer.ConfigData;
-import org.netbeans.jcode.layer.Generator;
 import static org.netbeans.jcode.ng.main.AngularUtil.copyDynamicFile;
 import static org.netbeans.jcode.ng.main.AngularUtil.copyDynamicResource;
 import static org.netbeans.jcode.ng.main.AngularUtil.getResource;
@@ -55,7 +53,6 @@ import org.netbeans.jcode.ng.main.domain.NGRelationship;
 import org.netbeans.jcode.parser.ejs.EJSParser;
 import org.netbeans.jcode.parser.ejs.FileTypeStream;
 import org.netbeans.jcode.rest.controller.RESTData;
-import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.jpa.modeler.spec.ElementCollection;
 import org.netbeans.jpa.modeler.spec.Embedded;
@@ -82,9 +79,6 @@ public abstract class AngularGenerator implements Generator {
     protected EntityMappings entityMapping;
     
     @ConfigData
-    protected ApplicationConfigData appConfig;
-    
-    @ConfigData
     protected AngularData ngData;
 
     @ConfigData
@@ -92,9 +86,6 @@ public abstract class AngularGenerator implements Generator {
 
     @ConfigData
     protected Project project; 
-    
-//    @ConfigData
-//    protected EntityResourceBeanModel model;
     
     @ConfigData
     protected ProgressHandler handler;
@@ -138,7 +129,7 @@ public abstract class AngularGenerator implements Generator {
             handler.append(Console.wrap(AngularGenerator.class, "MSG_Copying_Entity_Files", FG_RED, BOLD, UNDERLINE));
             Map<String, String> templateLib = getResource(getTemplatePath() + "entity-include-resources.zip");
             List<NGEntity> entities = new ArrayList<>();
-            for (Entity entity : entityMapping.getConcreteEntity()) {
+            for (Entity entity : entityMapping.getConcreteEntity().collect(toList())) {
                 NGEntity ngEntity = getEntity(entity);
                 if (ngEntity != null) {
                     entities.add(ngEntity);
@@ -401,41 +392,6 @@ public abstract class AngularGenerator implements Generator {
                 ngEntity.addField(field);
             }
         }
-        
-//        for (EntityClassInfo.FieldInfo fieldInfo : entityClassInfo.getFieldInfos()) {
-//            if(fieldInfo.isGeneratedValue() || entityConfig.getSystemAttribute().contains(fieldInfo.getName())){
-//                continue;
-//            }
-//            if (fieldInfo.isRelationship()) {
-//                NGRelationship relationship = new NGRelationship(entityClassInfo, fieldInfo);
-//                EntityConfigData mappedEntityConfig ;
-//                if (fieldInfo.isManyToMany() || fieldInfo.isOneToMany()) {
-//                    mappedEntityConfig = appConfig.getEntity(fieldInfo.getTypeArg());
-//                } else {
-//                    mappedEntityConfig = appConfig.getEntity(fieldInfo.getType());
-//                }
-//                if(mappedEntityConfig.getLabelAttribute()==null || mappedEntityConfig.getLabelAttribute().equals("id")){
-//                     handler.warning(NbBundle.getMessage(Angular1Generator.class, "TITLE_Entity_Label_Missing"),
-//                                   NbBundle.getMessage(Angular1Generator.class, "MSG_Entity_Label_Missing", entityClassInfo.getName()));
-//                }
-//                relationship.setOtherEntityField(mappedEntityConfig.getLabelAttribute());
-//                entity.addRelationship(relationship);
-//            } else {
-//                if(fieldInfo.isEnumerated()){
-//                    handler.warning(NbBundle.getMessage(Angular1Generator.class, "TITLE_Enum_Type_Not_Supported"),
-//                    NbBundle.getMessage(Angular1Generator.class, "MSG_Enum_Type_Not_Supported", fieldInfo.getName(), entityClassInfo.getName()));
-//                    continue;
-//                }
-//                if(fieldInfo.isEmbedded()){
-//                    handler.warning(NbBundle.getMessage(Angular1Generator.class, "TITLE_Embedded_Type_Not_Supported"),
-//                    NbBundle.getMessage(Angular1Generator.class, "MSG_Embedded_Type_Not_Supported", fieldInfo.getName(), entityClassInfo.getName()));
-//                    continue;
-//                }
-//                NGField field = new NGField(fieldInfo);
-//                field.setFieldType(getSimpleClassName(fieldInfo.getType()));
-//                entity.addField(field);
-//            }
-//        }
         return ngEntity;
     }
 

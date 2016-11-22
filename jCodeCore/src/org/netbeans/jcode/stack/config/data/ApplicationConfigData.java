@@ -35,7 +35,6 @@ public class ApplicationConfigData implements Serializable {
     private SourceGroup sourceGroup;
     private EntityMappings entityMappings;
     private Map<String, EntityConfigData> entities;
-    private String persistenceUnitName;
 
     private LayerConfigData bussinesLayerConfig;
     private LayerConfigData controllerLayerConfig;
@@ -182,13 +181,6 @@ public class ApplicationConfigData implements Serializable {
     }
 
     /**
-     * @return the persistenceUnitName
-     */
-    public String getPersistenceUnitName() {
-        return persistenceUnitName;
-    }
-
-    /**
      * @return the entityMappings
      */
     public EntityMappings getEntityMappings() {
@@ -200,14 +192,13 @@ public class ApplicationConfigData implements Serializable {
      */
     public void setEntityMappings(EntityMappings entityMappings) {
         this.entityMappings = entityMappings;
-        entityMappings.getConcreteEntityStream().filter(e -> e.getGenerateSourceCode()).forEach(entity -> {
+        entityMappings.getConcreteEntity().filter(e -> e.getGenerateSourceCode()).forEach(entity -> {
             String entiyFQN = entity.getPackage(entityMappings.getPackage()) + '.' + entity.getClazz();
             EntityConfigData entityConfigData = new EntityConfigData(entity.getFileObject());
             entityConfigData.setLabelAttribute(entity.getLabelAttribute() != null ? entity.getLabelAttribute().getName() : null);
             entityConfigData.setSystemAttribute(entity.getAttributes().getAllAttribute().stream().filter(attr -> !attr.getIncludeInUI()).map(attr -> attr.getName()).collect(toSet()));
             this.putEntity(entiyFQN, entityConfigData);
         });
-        this.persistenceUnitName = entityMappings.getPersistenceUnitName();
     }
 
 }

@@ -16,17 +16,12 @@
 package org.netbeans.jcode.generator;
 
 import java.io.IOException;
-import java.util.Map;
 import org.netbeans.api.project.Project;
-import org.netbeans.api.project.SourceGroup;
-import org.netbeans.jcode.entity.info.EntityResourceBeanModel;
-import org.netbeans.jcode.entity.info.EntityResourceModelBuilder;
 import org.netbeans.jcode.generator.internal.ApplicationGeneratorFactory;
 import org.netbeans.jcode.generator.internal.BaseApplicationGenerator;
 import org.netbeans.jcode.jpa.util.PersistenceHelper;
 import org.netbeans.jcode.stack.config.data.*;
 import org.netbeans.jcode.task.progress.ProgressHandler;
-import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
 
 /**
@@ -55,15 +50,10 @@ public class JEEApplicationGenerator {
     public static void generate(ProgressHandler progressHandler, ApplicationConfigData applicationConfigData) {
         try {
             final Project project = applicationConfigData.getProject();
-
-            Map<String, EntityConfigData> entities = applicationConfigData.getEntities();
             final PersistenceHelper.PersistenceUnit pu = (PersistenceHelper.PersistenceUnit) new PersistenceHelper(project).getPersistenceUnit();
-
-            EntityResourceModelBuilder builder = new EntityResourceModelBuilder(entities);
-            EntityResourceBeanModel model = builder.build();
             final BaseApplicationGenerator generator = ApplicationGeneratorFactory.newInstance(project);
-            generator.initialize(model, project, pu);
-            generator.generate(progressHandler, applicationConfigData);
+            generator.initialize(project, pu);
+            generator.generate(applicationConfigData, progressHandler);
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
         }

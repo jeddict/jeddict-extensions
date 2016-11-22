@@ -22,7 +22,6 @@ import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.netbeans.jcode.core.util.StringHelper.firstUpper;
 import static org.netbeans.jcode.core.util.StringHelper.snakeCase;
 import static org.netbeans.jcode.core.util.StringHelper.startCase;
-import org.netbeans.jcode.entity.info.EntityClassInfo;
 import org.netbeans.jpa.modeler.spec.extend.BaseAttribute;
 import org.netbeans.jpa.modeler.spec.validation.constraints.Constraint;
 import org.netbeans.jpa.modeler.spec.validation.constraints.Max;
@@ -53,12 +52,6 @@ public class NGField {
     public String fieldValidateRulesMinbytes;
     public String fieldValidateRulesPattern;
 
-    @Deprecated
-    public NGField(EntityClassInfo.FieldInfo fieldInfo) {
-        this.fieldName = fieldInfo.getName();
-        this.fieldIsEnum = fieldInfo.isEnumerated();
-//        this.fieldTypeBlobContent= fieldInfo.isLob();
-    }
 
     public NGField(String fieldName) {
         this.fieldName = fieldName;

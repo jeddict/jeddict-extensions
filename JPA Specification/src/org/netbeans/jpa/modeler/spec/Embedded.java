@@ -8,6 +8,7 @@ package org.netbeans.jpa.modeler.spec;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import javax.lang.model.element.Element;
@@ -98,8 +99,9 @@ public class Embedded extends CompositionAttribute<Embeddable> implements Associ
 
         DeclaredType declaredType = (DeclaredType) variableElement.asType();
 
-        org.netbeans.jpa.modeler.spec.Embeddable embeddableClassSpec = entityMappings.findEmbeddable(declaredType.asElement().getSimpleName().toString());
-        if (embeddableClassSpec == null) {
+        Optional<org.netbeans.jpa.modeler.spec.Embeddable> embeddableClassSpecOpt = entityMappings.findEmbeddable(declaredType.asElement().getSimpleName().toString());
+        org.netbeans.jpa.modeler.spec.Embeddable embeddableClassSpec;
+        if (!embeddableClassSpecOpt.isPresent()) {
             boolean fieldAccess = false;
             if (element == variableElement) {
                 fieldAccess = true;
@@ -108,6 +110,8 @@ public class Embedded extends CompositionAttribute<Embeddable> implements Associ
             TypeElement embeddableTypeElement = JavaSourceParserUtil.getAttributeTypeElement(variableElement);
             embeddableClassSpec.load(entityMappings, embeddableTypeElement, fieldAccess);
             entityMappings.addEmbeddable(embeddableClassSpec);
+        } else {
+            embeddableClassSpec = embeddableClassSpecOpt.get();
         }
         embedded.setConnectedClass(embeddableClassSpec);
 

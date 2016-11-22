@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -368,13 +369,16 @@ public class JavaSourceParserUtil {
     }
     
     public static Embeddable loadEmbeddableClass(EntityMappings entityMappings, Element element, VariableElement variableElement, DeclaredType embeddableClass) {
-        Embeddable embeddableClassSpec = entityMappings.findEmbeddable(getSimpleClassName(embeddableClass.toString()));
-        if (embeddableClassSpec == null) {
+        Embeddable embeddableClassSpec;
+        Optional<Embeddable> embeddableClassSpecOpt = entityMappings.findEmbeddable(getSimpleClassName(embeddableClass.toString()));
+        if (!embeddableClassSpecOpt.isPresent()) {
             boolean fieldAccess = element == variableElement;
             embeddableClassSpec = new Embeddable();
             TypeElement embeddableTypeElement = getTypeElement(embeddableClass); 
             embeddableClassSpec.load(entityMappings, embeddableTypeElement, fieldAccess);
             entityMappings.addEmbeddable(embeddableClassSpec);
+        } else {
+            embeddableClassSpec = embeddableClassSpecOpt.get();
         }
         return embeddableClassSpec;
     }
@@ -394,13 +398,16 @@ public class JavaSourceParserUtil {
     }
     
     public static Entity loadEntityClass(EntityMappings entityMappings, Element element, VariableElement variableElement, DeclaredType entityClass) {
-        Entity entityClassSpec = entityMappings.findEntity(getSimpleClassName(entityClass.toString()));
-        if (entityClassSpec == null) {
+        Entity entityClassSpec;
+        Optional<Entity> entityClassSpecOpt = entityMappings.findEntity(getSimpleClassName(entityClass.toString()));
+        if (!entityClassSpecOpt.isPresent()) {
             boolean fieldAccess = element == variableElement;
             entityClassSpec = new Entity();
             TypeElement embeddableTypeElement = getTypeElement(entityClass);
             entityClassSpec.load(entityMappings, embeddableTypeElement, fieldAccess);
             entityMappings.addEntity(entityClassSpec);
+        } else {
+            entityClassSpec = entityClassSpecOpt.get();
         }
         return entityClassSpec;
     }

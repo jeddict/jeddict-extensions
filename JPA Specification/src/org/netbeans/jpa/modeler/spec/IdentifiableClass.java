@@ -160,20 +160,20 @@ public abstract class IdentifiableClass extends ManagedClass implements PrimaryK
         TypeElement superClassElement = JavaSourceParserUtil.getSuperclassTypeElement(element);
         if (!superClassElement.getQualifiedName().toString().equals("java.lang.Object")) {
             if (JavaSourceParserUtil.isEntityClass(superClassElement)) {
-                org.netbeans.jpa.modeler.spec.Entity entitySuperclassSpec = entityMappings.findEntity(superClassElement.getSimpleName().toString());
-                if (entitySuperclassSpec == null) {
-                    entitySuperclassSpec = new org.netbeans.jpa.modeler.spec.Entity();
-                    entitySuperclassSpec.load(entityMappings, superClassElement, fieldAccess);
-                    entityMappings.addEntity(entitySuperclassSpec);
-                }
+                org.netbeans.jpa.modeler.spec.Entity entitySuperclassSpec = entityMappings.findEntity(superClassElement.getSimpleName().toString()).orElseGet(() -> {
+                    org.netbeans.jpa.modeler.spec.Entity entityspec = new org.netbeans.jpa.modeler.spec.Entity();
+                    entityspec.load(entityMappings, superClassElement, fieldAccess);
+                    entityMappings.addEntity(entityspec);
+                    return entityspec;
+                });
                 super.addSuperclass(entitySuperclassSpec);
             } else if (JavaSourceParserUtil.isMappedSuperClass(superClassElement)) {
-                org.netbeans.jpa.modeler.spec.MappedSuperclass mappedSuperclassSpec = entityMappings.findMappedSuperclass(superClassElement.getSimpleName().toString());
-                if (mappedSuperclassSpec == null) {
-                    mappedSuperclassSpec = new org.netbeans.jpa.modeler.spec.MappedSuperclass();
-                    mappedSuperclassSpec.load(entityMappings, superClassElement, fieldAccess);
-                    entityMappings.addMappedSuperclass(mappedSuperclassSpec);
-                }
+                org.netbeans.jpa.modeler.spec.MappedSuperclass mappedSuperclassSpec = entityMappings.findMappedSuperclass(superClassElement.getSimpleName().toString()).orElseGet(() -> {
+                    org.netbeans.jpa.modeler.spec.MappedSuperclass mappedSpec = new org.netbeans.jpa.modeler.spec.MappedSuperclass();
+                    mappedSpec.load(entityMappings, superClassElement, fieldAccess);
+                    entityMappings.addMappedSuperclass(mappedSpec);
+                    return mappedSpec;
+               });
                 super.addSuperclass(mappedSuperclassSpec);
             } else {
                 this.setSuperclassRef(new ReferenceClass(superClassElement.toString()));

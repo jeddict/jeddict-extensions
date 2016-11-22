@@ -30,7 +30,7 @@ public abstract class AbstractGenerator {
     public AbstractGenerator() {
     }
 
-    public abstract Set<FileObject> generate(ProgressHandler handler, ApplicationConfigData applicationConfigData) throws IOException;
+    public abstract Set<FileObject> generate(ApplicationConfigData applicationConfigData, ProgressHandler handler) throws IOException;
 
     protected void initProgressReporting(ProgressHandler handler) {
         initProgressReporting(handler, true);

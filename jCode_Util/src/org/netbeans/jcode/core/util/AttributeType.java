@@ -90,6 +90,9 @@ public class AttributeType {
     }
 
     public static String getWrapperType(String primitiveType) {
+        if(isArray(primitiveType)){
+            primitiveType = primitiveType.substring(0, primitiveType.length()-2);
+        }
         String wrapperType = PRIMITIVE_DATA_TYPES.get(primitiveType);
         if(wrapperType!=null){
             return wrapperType;
@@ -104,9 +107,9 @@ public class AttributeType {
     }
 
     public static Type getType(String type) {
-        if (WRAPPER_DATA_TYPES.containsKey(type)) {
+        if (isWrapper(type)) {
             return WRAPPER;
-        } else if (PRIMITIVE_DATA_TYPES.containsKey(type)) {
+        } else if (isPrimitive(type)) {
             return PRIMITIVE;
         } else if (isArray(type)) {
             if (isPrimitiveArray(type)) {

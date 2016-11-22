@@ -21,12 +21,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import org.netbeans.jpa.modeler.spec.Entity;
-import org.netbeans.api.java.source.CompilationController;
-import org.netbeans.api.java.source.JavaSource;
-import org.netbeans.api.java.source.JavaSource.Phase;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.console.Console;
@@ -41,16 +38,13 @@ import org.netbeans.jcode.core.util.POMManager;
 import org.netbeans.jcode.core.util.SourceGroupSupport;
 import static org.netbeans.jcode.core.util.StringHelper.firstLower;
 import static org.netbeans.jcode.core.util.StringHelper.firstUpper;
-import static org.netbeans.jcode.generator.internal.util.Util.pluralize;
+import static org.netbeans.jcode.core.util.StringHelper.pluralize;
 import org.netbeans.jcode.layer.ConfigData;
-import org.netbeans.jcode.layer.Generator;
 import org.netbeans.jcode.layer.Technology;
 import static org.netbeans.jcode.layer.Technology.Type.BUSINESS;
-import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
 import org.openide.filesystems.FileObject;
-import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 import org.netbeans.jcode.layer.Generator;
@@ -77,9 +71,6 @@ public final class EjbFacadeGenerator implements Generator{
     
     @ConfigData
     private Project project; 
-    
-    @ConfigData
-    private ApplicationConfigData applicationConfigData;
     
     @ConfigData
     private EntityMappings entityMapping;
@@ -115,7 +106,7 @@ public final class EjbFacadeGenerator implements Generator{
         FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, beanData.getPackage(), true);
         generateAbstract(targetFolder, true);
         
-        for(Entity entity : entityMapping.getConcreteEntity()) {
+        for(Entity entity : entityMapping.getConcreteEntity().collect(toList())) {
             handler.progress(beanData.getPrefixName() + entity.getClazz() + beanData.getSuffixName());
             createdFiles.add(generate(entity, true));
         }
@@ -139,30 +130,14 @@ public final class EjbFacadeGenerator implements Generator{
         }
         
         afFO = org.netbeans.jcode.core.util.FileUtil.expandTemplate("org/netbeans/jcode/ejb/facade/resource/AbstractFacade.java.ftl", targetFolder, fileName+'.'+JAVA_EXT, Collections.singletonMap("package", beanData.getPackage()));
-       
-        try {//subclass created using java.source api so class resolution is required
-            JavaSource.forFileObject(afFO).runWhenScanFinished( cc -> cc.toPhase(Phase.ELEMENTS_RESOLVED), true).get();
-        } catch (InterruptedException | ExecutionException ex) {
-            Exceptions.printStackTrace(ex);
-        }
         
         return afFO;
     }
 
     /**
      * Generates the facade for the given entity class.
-     * <i>Package private visibility for tests</i>.
      *
-     * @param targetFolder the folder where the facade and interfaces are
-     * generated.
-     * @param entityClass the FQN of the entity class for which the facade is
-     * generated.
-     * @param pkg the package prefix for the generated facede.
-     * @param hasRemote specifies whether a remote interface is generated.
-     * @param hasLocal specifies whether a local interface is generated.
-     * @param strategyClass the entity manager lookup strategy.
-     *
-     * @return a set containing the generated files.
+     * @return the generated files.
      */
     private FileObject generate(final Entity entity, boolean overrideExisting) throws IOException {
         FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, entity.getPackage(beanData.getPackage()), true);
@@ -197,7 +172,7 @@ public final class EjbFacadeGenerator implements Generator{
             param.put("AbstractFacade_FQN", EMPTY);
         }
         param.put("EntityFacade", facadeName);
-        param.put("PU", applicationConfigData.getPersistenceUnitName());
+        param.put("PU", entityMapping.getPersistenceUnitName());
         param.put("package", entity.getPackage(beanData.getPackage()));
         
         Attribute idAttribute = entity.getAttributes().getIdField();

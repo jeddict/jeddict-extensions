@@ -54,14 +54,14 @@ public class LoggerProducerGenerator {
     public static final String INJECTION_POINT_VAR = "injectionPoint";
     private static final String METHID_BODY = "return Logger.getLogger(injectionPoint.getMember().getDeclaringClass().getCanonicalName());";
 
-    public static FileObject generate(FileObject packageFolder, ProgressHandler handler) throws IOException {
+    public static FileObject generate(FileObject toDir, ProgressHandler handler) throws IOException {
 
-        FileObject fileObject = packageFolder.getFileObject(LOGGER_PRODUCER_CLASS, JAVA_EXT);
+        FileObject fileObject = toDir.getFileObject(LOGGER_PRODUCER_CLASS, JAVA_EXT);
         if (fileObject != null) {
             fileObject.delete();
         }
 
-        FileObject appClass = GenerationUtils.createClass(packageFolder, LOGGER_PRODUCER_CLASS, null);
+        FileObject appClass = GenerationUtils.createClass(toDir, LOGGER_PRODUCER_CLASS, null);
         JavaSource javaSource = JavaSource.forFileObject(appClass);
         if (javaSource == null) {
             return null;

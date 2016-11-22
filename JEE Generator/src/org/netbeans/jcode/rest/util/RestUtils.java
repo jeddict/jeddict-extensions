@@ -34,6 +34,8 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -46,6 +48,7 @@ import org.apache.commons.lang.StringUtils;
 import org.netbeans.api.j2ee.core.Profile;
 import org.netbeans.api.java.classpath.ClassPath;
 import org.netbeans.api.java.source.JavaSource;
+import org.netbeans.api.java.source.ModificationResult;
 import org.netbeans.api.java.source.TreeMaker;
 import org.netbeans.api.java.source.WorkingCopy;
 import org.netbeans.api.project.Project;
@@ -54,6 +57,9 @@ import static org.netbeans.jcode.cdi.CDIConstants.INJECT;
 import static org.netbeans.jcode.core.util.Constants.JAVA_EXT;
 import org.netbeans.jcode.core.util.JavaSourceHelper;
 import org.netbeans.jcode.core.util.SourceGroupSupport;
+import static org.netbeans.jcode.jpa.JPAConstants.BASIC_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.ID_FQN;
+import static org.netbeans.jcode.rest.RestConstants.FORM_PARAM;
 import static org.netbeans.jcode.rest.RestConstants.SINGLETON_METHOD;
 import org.netbeans.jcode.rest.applicationconfig.RestConfigData;
 import org.netbeans.jcode.task.progress.ProgressHandler;
@@ -537,4 +543,22 @@ public class RestUtils {
         }
     }
 
+        public static void addFormParam(final org.netbeans.jpa.modeler.spec.Entity entity) {
+        JavaSource javaSource = entity.getJavaSource();
+        if (javaSource == null) {
+            return;
+        }
+        try {
+            ModificationResult result = javaSource.runModificationTask((final WorkingCopy working) -> {
+                working.toPhase(JavaSource.Phase.RESOLVED);
+                TreeMaker maker = working.getTreeMaker();
+                JavaSourceHelper.addAnnotation(working, Arrays.asList(ID_FQN, BASIC_FQN), FORM_PARAM,
+                        (wc, variableElement) -> Collections.<ExpressionTree>singletonList(wc.getTreeMaker().Literal(variableElement.getSimpleName().toString())));
+
+            });
+            result.commit();
+        } catch (IOException e) {
+            Logger.getLogger(RestUtils.class.getName()).log(Level.SEVERE, null, e);
+        }
+    }
 }

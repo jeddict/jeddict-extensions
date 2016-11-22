@@ -31,6 +31,7 @@ public class RestConstants {
     public static final String CONTAINER_RESPONSE = "javax.ws.rs.container.ContainerResponseFilter";
     public static final String CLIENT_REQUEST = "javax.ws.rs.client.ClientRequestFilter";
     public static final String CLIENT_RESPONSE = "javax.ws.rs.client.ClientResponseFilter";
+    public static final String FORM_PARAM = "javax.ws.rs.FormParam";
     public static final String SINGLETON_METHOD = "getSingletons";
 
 }

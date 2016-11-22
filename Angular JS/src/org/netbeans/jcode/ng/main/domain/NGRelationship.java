@@ -20,13 +20,12 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static org.apache.commons.lang.StringUtils.EMPTY;
+import org.netbeans.jcode.core.util.StringHelper;
 import static org.netbeans.jcode.core.util.StringHelper.firstLower;
 import static org.netbeans.jcode.core.util.StringHelper.firstUpper;
 import static org.netbeans.jcode.core.util.StringHelper.kebabCase;
 import static org.netbeans.jcode.core.util.StringHelper.startCase;
 import static org.netbeans.jcode.core.util.StringHelper.trim;
-import org.netbeans.jcode.entity.info.EntityClassInfo;
-import org.netbeans.jcode.entity.info.EntityClassInfo.FieldInfo;
 import org.netbeans.jpa.modeler.spec.Entity;
 import org.netbeans.jpa.modeler.spec.ManyToMany;
 import org.netbeans.jpa.modeler.spec.ManyToOne;
@@ -80,27 +79,7 @@ public class NGRelationship {
         this.otherEntityName = otherEntityName;
         this.entityAngularJSSuffix = entityAngularJSSuffix;
     }
-
-    @Deprecated
-    public NGRelationship(EntityClassInfo classInfo, FieldInfo fieldInfo) {
-        this.relationshipName = fieldInfo.getName();
-        this.ownerSide = fieldInfo.getMappedByField()==null;
-        if(fieldInfo.isManyToMany()){
-            this.otherEntityName = firstLower(fieldInfo.getSimpleTypeArgName());
-            relationshipType = MANY_TO_MANY;
-        } else if(fieldInfo.isOneToMany()){
-            this.otherEntityName = firstLower(fieldInfo.getSimpleTypeArgName());
-            relationshipType = ONE_TO_MANY;
-        } else if(fieldInfo.isManyToOne()){
-            this.otherEntityName = firstLower(fieldInfo.getSimpleTypeName());
-            relationshipType = MANY_TO_ONE;
-        } else if(fieldInfo.isOneToOne()){
-            this.otherEntityName = firstLower(fieldInfo.getSimpleTypeName());
-            relationshipType = ONE_TO_ONE;
-        } 
-        this.name = classInfo.getName();
-    }
-    
+  
         public NGRelationship(Entity entity, RelationAttribute relation) {
         this.relationshipName = relation.getName();
         this.ownerSide = relation.isOwner();
@@ -197,7 +176,7 @@ public class NGRelationship {
          if( relationshipType.equals(ONE_TO_MANY) ||  relationshipType.equals(MANY_TO_MANY)){
              return data;
          } else {
-            return org.netbeans.jcode.generator.internal.util.Util.pluralize(data);
+            return StringHelper.pluralize(data);
          }
     }
     /**

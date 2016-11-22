@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import static java.util.stream.Collectors.toList;
 import org.apache.commons.lang.StringUtils;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import org.netbeans.api.project.Project;
@@ -46,16 +47,14 @@ import static org.netbeans.jcode.core.util.StringHelper.firstLower;
 import static org.netbeans.jcode.core.util.StringHelper.firstUpper;
 import static org.netbeans.jcode.core.util.StringHelper.getMethodName;
 import static org.netbeans.jcode.core.util.StringHelper.kebabCase;
+import static org.netbeans.jcode.core.util.StringHelper.pluralize;
 import static org.netbeans.jcode.core.util.StringHelper.startCase;
 import org.netbeans.jcode.ejb.facade.EjbFacadeGenerator;
-import static org.netbeans.jcode.generator.internal.util.Util.pluralize;
 import org.netbeans.jcode.layer.ConfigData;
-import org.netbeans.jcode.layer.Generator;
 import org.netbeans.jcode.layer.Technology;
 import static org.netbeans.jcode.layer.Technology.Type.CONTROLLER;
 import org.netbeans.jcode.rest.filter.RESTFilterGenerator;
 import org.netbeans.jcode.rest.util.RestApp;
-import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.modules.j2ee.persistence.dd.common.PersistenceUnit;
 import org.netbeans.modules.j2ee.persistence.dd.common.Property;
@@ -81,9 +80,6 @@ import org.netbeans.jcode.layer.Generator;
 public class RESTGenerator implements Generator {
 
     private static final String TEMPLATE = "org/netbeans/jcode/template/";
-
-    @ConfigData
-    private ApplicationConfigData applicationConfigData;
 
     @ConfigData
     private SessionBeanData beanData;
@@ -182,7 +178,7 @@ public class RESTGenerator implements Generator {
         entityPackage = entityMapping.getPackage();
         Map<String, Object> param = generateServerSideComponent();
         
-        for(Entity entity: entityMapping.getConcreteEntity()) {
+        for(Entity entity: entityMapping.getConcreteEntity().collect(toList())) {
             generateEntityController(entity, param);
         }
         CDIUtil.createDD(project);
@@ -276,7 +272,7 @@ public class RESTGenerator implements Generator {
                 EmbeddedId embeddedId = (EmbeddedId) idAttribute;
                 defaultClass = embeddedId.getConnectedClass();
             } else if (idAttribute instanceof DefaultAttribute) {
-                 defaultClass = entityMapping.findDefaultClass(((DefaultAttribute)idAttribute).getAttributeType());
+                 defaultClass = entityMapping.findDefaultClass(((DefaultAttribute)idAttribute).getAttributeType()).get();
             }
              List<DefaultAttribute> attributes = defaultClass.getAttributes();
                 StringBuilder restParamList = new StringBuilder();
@@ -312,7 +308,7 @@ public class RESTGenerator implements Generator {
         String appPackage = restData.getAppPackage();
 
         param.put("entityPackage", entityPackage);
-        param.put("PU", applicationConfigData.getPersistenceUnitName());
+        param.put("PU", entityMapping.getPersistenceUnitName());
         param.put("applicationPath", restData.getRestConfigData().getApplicationPath());
 
         param.put("servicePackage", appPackage);
@@ -357,7 +353,7 @@ public class RESTGenerator implements Generator {
 
     private void updatePersistenceXml(List<String> classNames) {
         try {
-            String puName = applicationConfigData.getPersistenceUnitName();
+            String puName = entityMapping.getPersistenceUnitName();
             PUDataObject pud = ProviderUtil.getPUDataObject(project);
             Optional<PersistenceUnit> punitOptional = PersistenceUtil.getPersistenceUnit(project, puName);
             if (punitOptional.isPresent()) {

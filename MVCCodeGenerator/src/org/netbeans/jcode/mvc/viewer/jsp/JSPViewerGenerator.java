@@ -34,7 +34,6 @@ import static org.netbeans.jcode.console.Console.FG_RED;
 import static org.netbeans.jcode.console.Console.UNDERLINE;
 import org.netbeans.jcode.core.util.FileUtil;
 import org.netbeans.jcode.core.util.StringHelper;
-import org.netbeans.jcode.entity.info.EntityResourceBeanModel;
 import org.netbeans.jcode.layer.ConfigData;
 import org.netbeans.jcode.layer.Generator;
 import org.netbeans.jcode.layer.Technology;
@@ -46,6 +45,7 @@ import org.netbeans.jcode.mvc.viewer.dto.FromEntityBase;
 import org.netbeans.jcode.mvc.controller.Operation;
 import org.netbeans.jcode.servlet.util.ServletUtil;
 import org.netbeans.jcode.task.progress.ProgressHandler;
+import org.netbeans.jpa.modeler.spec.EntityMappings;
 import org.netbeans.modules.web.api.webmodule.WebProjectConstants;
 import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle;
@@ -110,10 +110,7 @@ public class JSPViewerGenerator implements Generator{
     private Project project; 
     
     @ConfigData
-    private SourceGroup source; 
-    
-    @ConfigData
-    private EntityResourceBeanModel model;
+    private EntityMappings entityMappings;
     
     @ConfigData
     private ProgressHandler handler;
@@ -122,7 +119,7 @@ public class JSPViewerGenerator implements Generator{
 
     @Override
     public void execute() throws IOException {
-       Set<String> entities = model.getEntityInfos().stream().map(ei -> ei.getType()).collect(toSet());
+       Set<String> entities = entityMappings.getFQEntity().collect(toSet());
         generateCRUD(entities, true);
         generateHome(entities);
         generateWelcomeFileDD();

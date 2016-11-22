@@ -115,8 +115,7 @@ public class FileUtil {
         }
     }
 
-        
-    public static FileObject getFileObject (InputStream in) throws IOException {
+    public static FileObject getFileObject(InputStream in) throws IOException {
         final File tempFile = File.createTempFile("pom", "xml");
         tempFile.deleteOnExit();
         try (FileOutputStream out = new FileOutputStream(tempFile)) {
@@ -124,7 +123,7 @@ public class FileUtil {
         }
         return org.openide.filesystems.FileUtil.toFileObject(tempFile);
     }
-    
+
     public static void copyStaticResource(String inputTemplatePath, FileObject toDir, String targetFolder, ProgressHandler handler) throws IOException {
         InputStream stream = loadResource(inputTemplatePath);
         try (ZipInputStream inputStream = new ZipInputStream(stream)) {
@@ -134,8 +133,8 @@ public class FileUtil {
                     continue;
                 }
                 String targetPath = StringUtils.isBlank(targetFolder) ? entry.getName() : targetFolder + '/' + entry.getName();
-                if(handler!=null){
-                handler.progress(targetPath);
+                if (handler != null) {
+                    handler.progress(targetPath);
                 }
                 FileObject target = org.openide.filesystems.FileUtil.createData(toDir, targetPath);
                 FileLock lock = target.lock();
@@ -150,47 +149,41 @@ public class FileUtil {
             }
         }
     }
-    
-    public static FileObject expandTemplate(String inputTemplatePath,  FileObject toDir, String toFile, Map<String, Object> params) throws IOException {
 
+    public static FileObject expandTemplate(String inputTemplatePath, FileObject toDir, String toFile, Map<String, Object> params) throws IOException {
         InputStream contentStream = loadResource(inputTemplatePath);
-
         FileObject outputFile = toDir.getFileObject(toFile);
         if (outputFile == null) {
             outputFile = org.openide.filesystems.FileUtil.createData(toDir, toFile);
         }
-        expandTemplate(contentStream, params, outputFile);
+        expandTemplate(contentStream, outputFile, params);
         return outputFile;
     }
-    
-     public static void expandTemplate(String inputTemplatePath,  FileObject toFile, Map<String, Object> params) throws IOException {
+
+    public static void expandTemplate(String inputTemplatePath, FileObject toFile, Map<String, Object> params) throws IOException {
         InputStream contentStream = org.netbeans.jcode.core.util.FileUtil.loadResource(inputTemplatePath);
-        expandTemplate(contentStream, params, toFile);
+        expandTemplate(contentStream, toFile, params);
     }
-    
-    private static void expandTemplate(InputStream template, Map<String, Object> values, FileObject target) throws IOException {
-        Charset targetEncoding = FileEncodingQuery.getEncoding(target);
-        FileLock lock = target.lock();
-        try (Writer writer = new OutputStreamWriter(target.getOutputStream(lock), targetEncoding)) {
-            expandTemplate( new InputStreamReader(template), values, targetEncoding, writer);
+
+    public static void expandTemplate(InputStream template, FileObject toFile, Map<String, Object> values) throws IOException {
+        Charset targetEncoding = FileEncodingQuery.getEncoding(toFile);
+        FileLock lock = toFile.lock();
+        try (Writer writer = new OutputStreamWriter(toFile.getOutputStream(lock), targetEncoding)) {
+            expandTemplate(new InputStreamReader(template), writer, values, targetEncoding);
         } finally {
             lock.releaseLock();
         }
-        DataObject dob = DataObject.find(target);
+        DataObject dob = DataObject.find(toFile);
         if (dob != null) {
             reformat(dob);
         }
     }
 
-//    public static void expandTemplate(InputStream template, Map<String, Object> values, Charset targetEncoding, Writer w) throws IOException {
-//        expandTemplate(s, values, targetEncoding, w);
-//    }
-    private static void expandTemplate(Reader reader, Map<String, Object> values, Writer writer) throws IOException {
-        expandTemplate(reader, values, Charset.defaultCharset(), writer);
+    public static void expandTemplate(Reader reader, Writer writer, Map<String, Object> values) throws IOException {
+        expandTemplate(reader, writer, values, Charset.defaultCharset());
     }
-    
-    private static void expandTemplate(Reader reader, Map<String, Object> values, Charset targetEncoding, Writer writer) throws IOException {
-//        Charset sourceEnc = FileEncodingQuery.getEncoding(template);
+
+    public static void expandTemplate(Reader reader, Writer writer, Map<String, Object> values, Charset targetEncoding) throws IOException {
         ScriptEngine eng = getScriptEngine();
         Bindings bind = eng.getContext().getBindings(ScriptContext.ENGINE_SCOPE);
         bind.putAll(values);
@@ -198,7 +191,6 @@ public class FileUtil {
 
         try {
             eng.getContext().setWriter(writer);
-//            is = new InputStreamReader(template);
             eng.eval(reader);
         } catch (ScriptException ex) {
             throw new IOException(ex);
@@ -208,25 +200,32 @@ public class FileUtil {
             }
         }
     }
-    
-    public static String expandTemplate(String template, Map<String, Object> values){
-        StringWriter writer= new StringWriter();
-         ScriptEngine eng = getScriptEngine();
+
+    /**
+     * In-memory template api
+     *
+     * @param templateContent
+     * @param values
+     * @return
+     */
+    public static String expandTemplate(String templateContent, Map<String, Object> values) {
+        StringWriter writer = new StringWriter();
+        ScriptEngine eng = getScriptEngine();
         Bindings bind = eng.getContext().getBindings(ScriptContext.ENGINE_SCOPE);
-        if(values!=null){
-        bind.putAll(values);
+        if (values != null) {
+            bind.putAll(values);
         }
         bind.put(ENCODING_PROPERTY_NAME, Charset.defaultCharset().name());
         eng.getContext().setWriter(writer);
-        Reader is = new StringReader(template);
+        Reader is = new StringReader(templateContent);
         try {
             eng.eval(is);
         } catch (ScriptException ex) {
             Exceptions.printStackTrace(ex);
         }
-        
+
         return writer.toString();
-       
+
     }
     private static final String ENCODING_PROPERTY_NAME = "encoding"; //NOI18N
     private static ScriptEngineManager manager;
@@ -253,25 +252,28 @@ public class FileUtil {
     }
 
     public static FileObject createFolder(FileObject folder, String name) throws IOException {
-        return org.openide.filesystems.FileUtil.createFolder(folder,name);
+        return org.openide.filesystems.FileUtil.createFolder(folder, name);
     }
-            
-    public static FileObject copyFile(String fromFile, FileObject toDir, String toFile)  throws IOException{
+
+    public static FileObject copyFile(String fromFile, FileObject toDir, String toFile) throws IOException {
         MakeFileCopy action = new MakeFileCopy(fromFile, toDir, toFile);
         org.openide.filesystems.FileUtil.runAtomicAction(action);
-        if (action.getException() != null)
+        if (action.getException() != null) {
             throw action.getException();
-        else
+        } else {
             return action.getResult();
+        }
     }
+
     private static class MakeFileCopy implements Runnable {
-        private String fromFile;
-        private FileObject toDir;
-        private String toFile;
+
+        private final String fromFile;
+        private final FileObject toDir;
+        private final String toFile;
         private IOException exception;
         private FileObject result;
 
-       MakeFileCopy(String fromFile, FileObject toDir, String toFile) {
+        MakeFileCopy(String fromFile, FileObject toDir, String toFile) {
             this.fromFile = fromFile;
             this.toDir = toDir;
             this.toFile = toFile;
@@ -285,6 +287,7 @@ public class FileUtil {
             return result;
         }
 
+        @Override
         public void run() {
             try {
 //                if (toDir.getFileObject(toFile) != null) {
@@ -303,8 +306,7 @@ public class FileUtil {
                     }
                 }
                 result = xml;
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 exception = e;
             }
         }
@@ -327,16 +329,43 @@ public class FileUtil {
         }
     }
 
-    public static String getSimpleFileName(String path){
-        return path.substring(path.lastIndexOf('/')+1, path.lastIndexOf('.'));
+    public static String getSimpleFileName(String path) {
+        return path.substring(path.lastIndexOf('/') + 1, path.lastIndexOf('.'));
+    }
+
+    public static String getSimpleFileNameWithExt(String path) {
+        return path.substring(path.lastIndexOf('/') + 1);
+    }
+
+    public static String getFileExt(String path) {
+        return path.substring(path.lastIndexOf('.') + 1);
     }
     
-    public static String getSimpleFileNameWithExt(String path){
-        return path.substring(path.lastIndexOf('/')+1);
+        public static String readResource(InputStream is, String encoding) throws IOException {
+        // read the config from resource first
+        StringBuilder sbuffer = new StringBuilder();
+        String lineSep = System.getProperty("line.separator");//NOI18N
+        BufferedReader br = new BufferedReader(new InputStreamReader(is, encoding));
+        String line = br.readLine();
+        while (line != null) {
+            sbuffer.append(line);
+            sbuffer.append(lineSep);
+            line = br.readLine();
+        }
+        br.close();
+        return sbuffer.toString();
     }
-    
-    public static String getFileExt(String path){
-        return path.substring(path.lastIndexOf('.')+1);
+
+    public static void createFile(FileObject target, String content, String encoding) throws IOException {
+        FileLock lock = target.lock();
+        try {
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(target.getOutputStream(lock), encoding));
+            bw.write(content);
+            bw.close();
+
+        } finally {
+            lock.releaseLock();
+        }
     }
-  
+
 }

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import static java.util.stream.Collectors.toList;
@@ -621,11 +622,15 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         return this.entity;
     }
     
-    public List<Entity> getConcreteEntity() {
-        return getEntity().stream().filter(e -> Boolean.FALSE.equals(e.getAbstract())).collect(toList());
+    public Stream<String> getFQEntity() {
+        return getEntity().stream().map(e -> e.getFQN(getPackage()));
     }
     
-    public Stream<Entity> getConcreteEntityStream() {
+    public Stream<String> getFQConcreteEntity() {
+        return getConcreteEntity().map(e -> e.getFQN(getPackage()));
+    }
+    
+    public Stream<Entity> getConcreteEntity() {
         return getEntity().stream().filter(e -> Boolean.FALSE.equals(e.getAbstract()));
     }
 
@@ -763,29 +768,29 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         entity_In.setRootElement(this);
     }
 
-    public Entity findEntity(String entityName) {
+    public Optional<Entity> findEntity(String entityName) {
         if(StringUtils.isBlank(entityName)){
-            return null;
+            return Optional.empty();
         }
         if (entity != null) {
             for (Entity entity_In : entity) {
                 if (entityName.equals(entity_In.getClazz())) {
-                    return entity_In;
+                    return Optional.of(entity_In);
                 }
             }
         }
-        return null;
+        return Optional.empty();
     }
 
-    public IdentifiableClass findIdentifiableClass(String className) {
+    public Optional<? extends IdentifiableClass> findIdentifiableClass(String className) {
         if(StringUtils.isBlank(className)){
-            return null;
+            return Optional.empty();
         }
-        Entity entity = findEntity(className);
-        if (entity == null) {
+        Optional<Entity> entityOpt = findEntity(className);
+        if (!entityOpt.isPresent()) {
             return findMappedSuperclass(className);
         } else {
-            return entity;
+            return entityOpt;
         }
     }
 
@@ -847,18 +852,18 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         mappedSuperclass_In.setRootElement(this);
     }
 
-    public MappedSuperclass findMappedSuperclass(String mappedSuperclassName) {
+    public Optional<MappedSuperclass> findMappedSuperclass(String mappedSuperclassName) {
         if(StringUtils.isBlank(mappedSuperclassName)){
-            return null;
+            return Optional.empty();
         }
         if (mappedSuperclass != null) {
             for (MappedSuperclass mappedSuperclass_In : mappedSuperclass) {
                 if (mappedSuperclassName.equals(mappedSuperclass_In.getClazz())) {
-                    return mappedSuperclass_In;
+                    return Optional.of(mappedSuperclass_In);
                 }
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     public void removeEmbeddable(Embeddable embeddable_In) {
@@ -870,24 +875,24 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
 
     public void addEmbeddable(Embeddable embeddable_In) {
         if (embeddable == null) {
-            embeddable = new ArrayList<Embeddable>();
+            embeddable = new ArrayList<>();
         }
         this.embeddable.add(embeddable_In);
         embeddable_In.setRootElement(this);
     }
 
-    public Embeddable findEmbeddable(String embeddableName) {
+    public Optional<Embeddable> findEmbeddable(String embeddableName) {
         if(StringUtils.isBlank(embeddableName)){
-            return null;
+            return Optional.empty();
         }
         if (embeddable != null) {
             for (Embeddable embeddable_In : embeddable) {
                 if (embeddableName.equals(embeddable_In.getClazz())) {
-                    return embeddable_In;
+                    return Optional.of(embeddable_In);
                 }
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     /**
@@ -936,30 +941,33 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
             throw new IllegalStateException("Class name can't empty");
         }
         if (this.defaultClass == null) {
-            this.defaultClass = new ArrayList<DefaultClass>();
+            this.defaultClass = new ArrayList<>();
         }
-        DefaultClass existDefaultClass = findDefaultClass(_class);
+        DefaultClass existDefaultClass;
+        Optional<DefaultClass> existDefaultClassOpt = findDefaultClass(_class);
 
-        if (existDefaultClass == null) {
+        if (!existDefaultClassOpt.isPresent()) {
             existDefaultClass = new DefaultClass(_class);
             existDefaultClass.setPackage(subPackage);
             existDefaultClass.setId(NBModelerUtil.getAutoGeneratedStringId());
             this.defaultClass.add(existDefaultClass);
             existDefaultClass.setRootElement(this);
+        } else {
+            existDefaultClass = existDefaultClassOpt.get();
         }
         return existDefaultClass;
 
     }
 
-    public DefaultClass findDefaultClass(String _class) {
+    public Optional<DefaultClass> findDefaultClass(String _class) {
         if (this.defaultClass != null) {
             for (DefaultClass defaultClass_TMP : defaultClass) {
                 if (defaultClass_TMP.getClazz().equals(_class)) {
-                    return defaultClass_TMP;
+                    return Optional.of(defaultClass_TMP);
                 }
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     /**
@@ -1062,8 +1070,8 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
 
             // If Include Referenced Classed Checkbox is Uncheked then remove attribute
             for (RelationAttribute relationAttribute : new ArrayList<>(managedClass.getAttributes().getRelationAttributes())) {
-                org.netbeans.jpa.modeler.spec.Entity targetEntity = entityMappingsSpec.findEntity(relationAttribute.getTargetEntity());
-                if (targetEntity == null) {
+                Optional<org.netbeans.jpa.modeler.spec.Entity> targetEntity = entityMappingsSpec.findEntity(relationAttribute.getTargetEntity());
+                if (!targetEntity.isPresent()) {
                     managedClass.getAttributes().removeRelationAttribute(relationAttribute);
                 }
             }
@@ -1075,11 +1083,10 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     private void manageStoredProcedureQuery(NamedStoredProcedureQuery storedProcedureQuery) {
         for(String _class : new CopyOnWriteArrayList<>(storedProcedureQuery.getResultClass())){
            String uqClass = JavaSourceHelper.getSimpleClassName(_class);
-           Entity targetEntity = this.findEntity(uqClass);
-           if (targetEntity != null) {
+           this.findEntity(uqClass).ifPresent(targetEntity -> {
                storedProcedureQuery.getResultClass().remove(_class);
                storedProcedureQuery.addResultClass(targetEntity);
-           }
+           });
         }
         
     }
@@ -1093,16 +1100,16 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     }
     private void loadMapKeyAttribute(ManagedClass managedClass , MapKeyHandler mapKeyHandler) {
         //Search in Entity
-        org.netbeans.jpa.modeler.spec.Entity entity = this.findEntity(mapKeyHandler.getMapKeyAttributeType());
-        if (entity != null) {
-            mapKeyHandler.setMapKeyEntity(entity);
+        Optional<org.netbeans.jpa.modeler.spec.Entity> entity = this.findEntity(mapKeyHandler.getMapKeyAttributeType());
+        if (entity.isPresent()) {
+            mapKeyHandler.setMapKeyEntity(entity.get());
             return;
         }
         
         //Search in Embeddable
-        Embeddable embeddable = this.findEmbeddable(mapKeyHandler.getMapKeyAttributeType());
-        if (embeddable != null) { 
-            mapKeyHandler.setMapKeyEmbeddable(embeddable);
+        Optional<Embeddable> embeddableOpt = this.findEmbeddable(mapKeyHandler.getMapKeyAttributeType());
+        if (embeddableOpt.isPresent()) { 
+            mapKeyHandler.setMapKeyEmbeddable(embeddableOpt.get());
             return;
         }
         
@@ -1125,8 +1132,9 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     }
     // Issue Fix #5949 Start
     private void manageSiblingAttribute(JavaClass sourceJavaClass, RelationAttribute relationAttribute_Owner) {
-        org.netbeans.jpa.modeler.spec.Entity targetEntity = this.findEntity(relationAttribute_Owner.getTargetEntity());
-        if (targetEntity != null) {
+        Optional<org.netbeans.jpa.modeler.spec.Entity> targetEntityOptional = this.findEntity(relationAttribute_Owner.getTargetEntity());
+        if (targetEntityOptional.isPresent()) {
+            org.netbeans.jpa.modeler.spec.Entity targetEntity = targetEntityOptional.get();
             if (relationAttribute_Owner instanceof ManyToMany) {
                 ManyToMany sourceAttribute = (ManyToMany) relationAttribute_Owner;
                 ManyToMany targetAttribute = null;

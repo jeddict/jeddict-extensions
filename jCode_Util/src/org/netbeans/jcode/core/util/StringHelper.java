@@ -267,4 +267,13 @@ public final class StringHelper {
         return nextName;
     }
 
+    public static String pluralize(String name) {
+        String pluralName = Inflector.getInstance().pluralize(name);
+
+        if (name.equals(pluralName)) {
+            return name + Constants.COLLECTION;         //NOI18N
+        } else {
+            return pluralName;
+        }
+    }
 }
