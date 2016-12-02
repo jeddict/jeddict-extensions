@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
+import org.apache.commons.lang.StringUtils;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
@@ -86,5 +87,5 @@ public class IdClass {
     public void setClazz(String value) {
         this.clazz = value;
     }
-
+    
 }

@@ -297,11 +297,13 @@
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace min="-2" pref="110" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="107" max="-2" attributes="0"/>
+                          <Component id="testcaseCheckBox" min="-2" pref="92" max="-2" attributes="0"/>
+                          <EmptySpace pref="69" max="32767" attributes="0"/>
                           <Component id="metricsCheckbox" min="-2" pref="128" max="-2" attributes="0"/>
-                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Component id="docsCheckBox" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace pref="234" max="32767" attributes="0"/>
+                          <EmptySpace min="-2" pref="60" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -312,6 +314,7 @@
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="metricsCheckbox" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="docsCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="testcaseCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -336,6 +339,14 @@
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="docsCheckBoxActionPerformed"/>
                   </Events>
+                </Component>
+                <Component class="javax.swing.JCheckBox" name="testcaseCheckBox">
+                  <Properties>
+                    <Property name="selected" type="boolean" value="true"/>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="org/netbeans/jcode/rest/controller/Bundle.properties" key="RESTPanel.testcaseCheckBox.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                    </Property>
+                  </Properties>
                 </Component>
               </SubComponents>
             </Container>

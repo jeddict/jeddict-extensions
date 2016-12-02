@@ -457,12 +457,16 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
      * @param rootPackage
      * @return the complete _package
      */
-    public String getPackage(String rootPackage) {
+    public String getAbsolutePackage(String rootPackage) {
         return StringUtils.isBlank(_package) ? rootPackage : rootPackage + '.' + _package;
     }
     
-    public String getFQN(String rootPackage) {
-        return getPackage(rootPackage) + '.' + getClazz();
+     public String getRootPackage() {
+        return getAbsolutePackage(this.getRootElement().getPackage());
+    }
+    
+    public String getFQN() {
+        return getAbsolutePackage(this.getRootElement().getPackage()) + '.' + getClazz();
     }
 
     /**

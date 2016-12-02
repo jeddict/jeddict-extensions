@@ -32,13 +32,13 @@ import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.api.project.Sources;
 import org.netbeans.api.project.ui.OpenProjects;
+import static org.netbeans.jcode.core.util.SourceGroupSupport.getFolderForPackage;
+import static org.netbeans.jcode.core.util.SourceGroupSupport.getTestSourceGroup;
 import org.netbeans.modules.j2ee.common.J2eeProjectCapabilities;
 import org.netbeans.modules.web.api.webmodule.WebModule;
 import org.netbeans.modules.web.api.webmodule.WebProjectConstants;
 import org.netbeans.modules.websvc.rest.spi.MiscUtilities;
 import org.openide.filesystems.FileObject;
-import org.openide.loaders.DataFolder;
-import org.openide.loaders.DataObject;
 import org.openide.util.Exceptions;
 
 /**
@@ -116,6 +116,15 @@ public class ProjectHelper {
         return null;
     }
     
+    public static FileObject getTestResourceDirectory(Project prj) {
+        
+        SourceGroup sourceGroup = getTestSourceGroup(prj);
+        FileObject fileObject = getFolderForPackage(sourceGroup.getRootFolder().getParent(), "resources", true);
+    //if(POMManager.isMavenProject(project)){
+        return fileObject;
+    }
+      
+   
     /**
      * check if resource of given path exists in the current project resources.
      * 

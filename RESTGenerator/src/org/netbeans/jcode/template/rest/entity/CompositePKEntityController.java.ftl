@@ -130,7 +130,7 @@ public class ${controllerClass} {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 404, message = "Not Found")})</#if>
-    @Path("/{${pkName}}")
+    @Path("/${pkName}")
     @GET
     public Response get${EntityClass}(${restParamList}) {
         ${pkType} ${pkName} = new ${pkType}(${restParamNameList});
@@ -152,7 +152,6 @@ public class ${controllerClass} {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 404, message = "Not Found")})</#if>
-    @Path("/{${pkName}}")
     @DELETE
     public Response remove${EntityClass}(${restParamList}) {
         ${pkType} ${pkName} = new ${pkType}(${restParamNameList});

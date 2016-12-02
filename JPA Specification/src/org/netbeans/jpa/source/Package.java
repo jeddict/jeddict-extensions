@@ -17,6 +17,4 @@ package org.netbeans.jpa.source;
 
 public class Package {
 
-    public static final String LANG_PACKAGE = "java.lang";
-    public static final String JPA_PACKAGE = "javax.persistence";
 }

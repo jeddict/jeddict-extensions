@@ -16,10 +16,14 @@
 package org.netbeans.jpa.modeler.spec.extend;
 
 import java.beans.PropertyChangeListener;
+import java.nio.file.FileSystems;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
 import org.netbeans.jpa.modeler.spec.Basic;
 import org.netbeans.jpa.modeler.spec.ElementCollection;
 import org.netbeans.jpa.modeler.spec.Embedded;
+import org.netbeans.jpa.modeler.spec.ManagedClass;
 import org.netbeans.jpa.modeler.spec.ManyToMany;
 import org.netbeans.jpa.modeler.spec.ManyToOne;
 import org.netbeans.jpa.modeler.spec.OneToMany;
@@ -259,5 +263,9 @@ public interface IAttributes extends JCRELoader {
     public List<Attribute> getNonRelationAttributes();
 
     public List<RelationAttribute> getRelationAttributes();
+    
+    public Set<String> getConnectedClass();
+    
+    public Set<String> getConnectedClass(Set<String> javaClasses);
 
 }

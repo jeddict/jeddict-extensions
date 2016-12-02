@@ -13,10 +13,9 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
+import static org.netbeans.jcode.core.util.Constants.LANG_PACKAGE;
 import org.netbeans.jpa.modeler.spec.extend.BaseAttribute;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
-import static org.netbeans.jpa.source.Package.LANG_PACKAGE;
-import org.netbeans.modeler.core.NBModelerUtil;
 
 /**
  *

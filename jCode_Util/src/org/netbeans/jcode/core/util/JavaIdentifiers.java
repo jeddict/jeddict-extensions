@@ -43,6 +43,7 @@
  */
 package org.netbeans.jcode.core.util;
 
+import static org.apache.commons.lang.StringUtils.EMPTY;
 import org.netbeans.api.java.classpath.ClassPath;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Parameters;
@@ -125,6 +126,16 @@ public final class JavaIdentifiers {
         }
         return fqn.substring(lastDot + 1);
     }
+    
+    public static String unqualifyGeneric(String fqn){
+        int genericIndex = fqn.indexOf('<');
+        return unqualify(genericIndex > 1 ? fqn.substring(0, genericIndex) : fqn);
+    }
+    
+    public static String getGenericType(String fqn){
+        int genericIndex = fqn.indexOf('<');
+        return genericIndex > 1 ? fqn.substring(genericIndex) : EMPTY;
+    }
 
     /**
      * Gets the package name of the given fully qualified class name.
@@ -136,6 +147,8 @@ public final class JavaIdentifiers {
      * a valid fully qualified name.
      */
     public static String getPackageName(String fqn) {
+        int genericIndex = fqn.indexOf('<');
+        fqn = genericIndex > 1 ? fqn.substring(0, genericIndex) : fqn;
         checkFQN(fqn);
         int lastDot = fqn.lastIndexOf("."); // NOI18N
         if (lastDot < 0){

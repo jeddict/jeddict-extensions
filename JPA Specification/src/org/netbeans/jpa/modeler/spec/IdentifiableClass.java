@@ -551,9 +551,6 @@ public abstract class IdentifiableClass extends ManagedClass implements PrimaryK
      */
     @Override
     public CompositePrimaryKeyType getCompositePrimaryKeyType() {
-//        if(compositePrimaryKeyType == null){
-//            compositePrimaryKeyType = CompositePrimaryKeyType.DEFAULT;
-//        }
         return compositePrimaryKeyType;
     }
     

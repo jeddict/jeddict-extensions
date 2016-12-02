@@ -63,7 +63,7 @@ import org.netbeans.jpa.modeler.spec.extend.Attribute;
 public final class EjbFacadeGenerator implements Generator{
     
     private static final String TEMPLATE = "org/netbeans/jcode/template/";
-    private static final String FACADE_ABSTRACT = "Abstract"; //NOI18N
+    public static final String FACADE_ABSTRACT = "Abstract"; //NOI18N
     protected static final String EJB_STATELESS = "javax.ejb.Stateless"; //NOI18N
     
     @ConfigData
@@ -92,7 +92,7 @@ public final class EjbFacadeGenerator implements Generator{
         if(POMManager.isMavenProject(project)){
             POMManager pomManager = new POMManager(TEMPLATE + pom, project);
             pomManager.setSourceVersion("1.8");
-            pomManager.execute();
+            
             pomManager.commit();
         } else {
             handler.warning(NbBundle.getMessage(EjbFacadeGenerator.class, "TITLE_Maven_Project_Not_Found"),
@@ -140,8 +140,8 @@ public final class EjbFacadeGenerator implements Generator{
      * @return the generated files.
      */
     private FileObject generate(final Entity entity, boolean overrideExisting) throws IOException {
-        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, entity.getPackage(beanData.getPackage()), true);
-        String entityFQN = entity.getPackage(entityMapping.getPackage()) + '.' + entity.getClazz();
+        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, entity.getAbsolutePackage(beanData.getPackage()), true);
+        String entityFQN = entity.getFQN();
         final String entitySimpleName = entity.getClazz();
         String abstractFileName = beanData.getPrefixName() + FACADE_ABSTRACT + beanData.getSuffixName();
         String facadeName = beanData.getPrefixName() + entitySimpleName + beanData.getSuffixName();
@@ -166,14 +166,14 @@ public final class EjbFacadeGenerator implements Generator{
         param.put("entityInstancePlural", pluralize(firstLower(entitySimpleName)));
         
         param.put("AbstractFacade", abstractFileName);
-        if(!entity.getPackage(beanData.getPackage()).equals(beanData.getPackage())) { //if both EntityFacade and AbstractFacade are not in same package
+        if(!entity.getAbsolutePackage(beanData.getPackage()).equals(beanData.getPackage())) { //if both EntityFacade and AbstractFacade are not in same package
             param.put("AbstractFacade_FQN", beanData.getPackage() + "." + abstractFileName);
         } else {
             param.put("AbstractFacade_FQN", EMPTY);
         }
         param.put("EntityFacade", facadeName);
         param.put("PU", entityMapping.getPersistenceUnitName());
-        param.put("package", entity.getPackage(beanData.getPackage()));
+        param.put("package", entity.getAbsolutePackage(beanData.getPackage()));
         
         Attribute idAttribute = entity.getAttributes().getIdField();
         if (idAttribute != null) {
@@ -191,7 +191,7 @@ public final class EjbFacadeGenerator implements Generator{
                 }
             } else if (idAttribute instanceof EmbeddedId || idAttribute instanceof DefaultAttribute) {
                 param.put("EntityPKClass", idAttribute.getDataTypeLabel());
-                param.put("EntityPKClass_FQN", entity.getPackage(entityMapping.getPackage()) + '.' + idAttribute.getDataTypeLabel());
+                param.put("EntityPKClass_FQN", entity.getRootPackage() + '.' + idAttribute.getDataTypeLabel());
             }
         }
         

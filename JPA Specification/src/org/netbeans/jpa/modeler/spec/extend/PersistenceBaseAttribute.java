@@ -20,12 +20,11 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import org.apache.commons.lang.StringUtils;
+import static org.netbeans.jcode.core.util.Constants.LANG_PACKAGE;
 import org.netbeans.jpa.modeler.spec.AccessType;
 import org.netbeans.jpa.modeler.spec.Column;
 import org.netbeans.jpa.modeler.spec.TemporalType;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
-import static org.netbeans.jpa.source.Package.LANG_PACKAGE;
-import org.netbeans.modeler.core.NBModelerUtil;
 
 /**
  *

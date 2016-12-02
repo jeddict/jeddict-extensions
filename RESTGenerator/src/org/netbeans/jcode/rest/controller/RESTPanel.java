@@ -10,7 +10,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
+ * License for the specificmet language governing permissions and limitations under
  * the License.
  */
 package org.netbeans.jcode.rest.controller;
@@ -117,6 +117,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
        
         setMetrics(data.isMetrics());
         setDocsEnable(data.isDocsEnable());
+        setTestCase(data.isTestCase());
         
         setSelectedEventType(data.getFilterTypes());
     }
@@ -137,6 +138,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         data.setFilterTypes(getSelectedEventType());
         data.setMetrics(isMetrics());
         data.setDocsEnable(isDocsEnable());
+        data.setTestCase(isTestCase());
         
         set(pref, data);
     }
@@ -260,6 +262,14 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         metricsCheckbox.setSelected(metrics);
     }
     
+   private boolean isTestCase() {
+        return testcaseCheckBox.isSelected();
+    }
+
+    private void setTestCase(boolean testCase) {
+        testcaseCheckBox.setSelected(testCase);
+    }
+    
     private boolean isDocsEnable() {
         return docsCheckBox.isSelected();
     }
@@ -314,6 +324,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         wrapper = new javax.swing.JLayeredPane();
         metricsCheckbox = new javax.swing.JCheckBox();
         docsCheckBox = new javax.swing.JCheckBox();
+        testcaseCheckBox = new javax.swing.JCheckBox();
 
         warningPanel.setLayout(new java.awt.BorderLayout(10, 0));
 
@@ -430,19 +441,25 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
             }
         });
 
+        testcaseCheckBox.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(testcaseCheckBox, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.testcaseCheckBox.text")); // NOI18N
+
         wrapper.setLayer(metricsCheckbox, javax.swing.JLayeredPane.DEFAULT_LAYER);
         wrapper.setLayer(docsCheckBox, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        wrapper.setLayer(testcaseCheckBox, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout wrapperLayout = new javax.swing.GroupLayout(wrapper);
         wrapper.setLayout(wrapperLayout);
         wrapperLayout.setHorizontalGroup(
             wrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(wrapperLayout.createSequentialGroup()
-                .addGap(110, 110, 110)
+                .addGap(107, 107, 107)
+                .addComponent(testcaseCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 69, Short.MAX_VALUE)
                 .addComponent(metricsCheckbox, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addComponent(docsCheckBox)
-                .addContainerGap(234, Short.MAX_VALUE))
+                .addGap(60, 60, 60))
         );
         wrapperLayout.setVerticalGroup(
             wrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -450,7 +467,8 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addGroup(wrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(metricsCheckbox)
-                    .addComponent(docsCheckBox)))
+                    .addComponent(docsCheckBox)
+                    .addComponent(testcaseCheckBox)))
         );
 
         miscPanel.add(wrapper, java.awt.BorderLayout.CENTER);
@@ -553,6 +571,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
     private javax.swing.JTextField prefixField;
     private javax.swing.JTextField suffixField;
     private javax.swing.JPanel suffixPanel;
+    private javax.swing.JCheckBox testcaseCheckBox;
     private javax.swing.JLabel warningLabel;
     private javax.swing.JPanel warningPanel;
     private javax.swing.JLayeredPane wrapper;

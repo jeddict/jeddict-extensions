@@ -180,7 +180,7 @@ public class MVCControllerGenerator implements Generator {
     }
 
     public Set<FileObject> generate(Entity entity, final boolean hasRemote, final boolean hasLocal, boolean overrideExisting) throws IOException {
-        final String entityFQN = entity.getFQN(entityMapping.getPackage());
+        final String entityFQN = entity.getFQN();
         final String idClass = entity.getAttributes().getIdField().getDataTypeLabel();
         final Set<FileObject> createdFiles = new HashSet<>();
         final String entitySimpleName = entity.getClazz();
@@ -189,12 +189,12 @@ public class MVCControllerGenerator implements Generator {
 //        final String constantName = StringHelper.toConstant(entitySimpleName);
 
         String facadeFileName = beanData.getPrefixName() + entitySimpleName + beanData.getSuffixName();
-        String fqFacadeFileName = entity.getPackage(beanData.getPackage()) + '.' + facadeFileName;
+        String fqFacadeFileName = entity.getAbsolutePackage(beanData.getPackage()) + '.' + facadeFileName;
 
         String controllerFileName = mvcData.getPrefixName() + entitySimpleName + mvcData.getSuffixName();
         handler.progress(controllerFileName);
 
-        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, entity.getPackage(mvcData.getPackage()), true);
+        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, entity.getAbsolutePackage(mvcData.getPackage()), true);
 
         FileObject controllerFO = targetFolder.getFileObject(controllerFileName, JAVA_EXT);//skips here
 
@@ -430,9 +430,9 @@ public class MVCControllerGenerator implements Generator {
         return createdFiles;
     }
 
-    public void generatePrimaryKeyMethod(final FileObject restResourceClass, Entity entity, EntityMappings model) throws IOException {
+    public void generatePrimaryKeyMethod(final FileObject restResourceClass, Entity entity, EntityMappings entityMappings) throws IOException {
         if ((entity.isEmbeddedIdType() && entity.getAttributes().getEmbeddedId() != null) || entity.isIdClassType()) {
-            final String idType = entity.getPackage(model.getPackage())+'.'+ entity.getCompositePrimaryKeyClass();
+            final String idType = entity.getRootPackage()+'.'+ entity.getCompositePrimaryKeyClass();
             JavaSource javaSource = JavaSource.forFileObject(restResourceClass);
             Task<WorkingCopy> task = new Task<WorkingCopy>() {
 
@@ -608,12 +608,8 @@ public class MVCControllerGenerator implements Generator {
             }
         }
 
-        FileObject restAppPack = null;
-        try {
-            restAppPack = SourceGroupSupport.getFolderForPackage(sourceGroup, mvcData.getRestConfigData().getPackage(), true);
-        } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
-        }
+        FileObject restAppPack = SourceGroupSupport.getFolderForPackage(sourceGroup, mvcData.getRestConfigData().getPackage(), true);
+        
 
         final String appClassName = mvcData.getRestConfigData().getApplicationClass();
         try {
@@ -839,7 +835,7 @@ public class MVCControllerGenerator implements Generator {
         if (POMManager.isMavenProject(project)) {
             POMManager pomManager = new POMManager(TEMPLATE + "pom/_pom.xml", project);
             pomManager.setSourceVersion("1.8");
-            pomManager.execute();
+            
             pomManager.commit();
         } else {
             handler.warning(NbBundle.getMessage(MVCControllerGenerator.class, "TITLE_Maven_Project_Not_Found"),

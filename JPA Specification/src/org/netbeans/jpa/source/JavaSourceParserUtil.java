@@ -52,6 +52,7 @@ import org.netbeans.api.java.source.CompilationController;
 import org.netbeans.api.java.source.WorkingCopy;
 import static org.netbeans.jcode.core.util.JavaSourceHelper.getSimpleClassName;
 import org.netbeans.jcode.core.util.StringHelper;
+import static org.netbeans.jcode.jpa.JPAConstants.PERSISTENCE_PACKAGE;
 import org.netbeans.jpa.modeler.spec.Embeddable;
 import org.netbeans.jpa.modeler.spec.Entity;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
@@ -70,7 +71,6 @@ import org.netbeans.jpa.modeler.spec.validation.constraints.NotNull;
 import org.netbeans.jpa.modeler.spec.validation.constraints.Null;
 import org.netbeans.jpa.modeler.spec.validation.constraints.Past;
 import org.netbeans.jpa.modeler.spec.validation.constraints.Size;
-import static org.netbeans.jpa.source.Package.JPA_PACKAGE;
 import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Utilities;
@@ -152,7 +152,7 @@ public class JavaSourceParserUtil {
     }
 
     //"javax.persistence|javax.xml.bind.annotation"
-    private static final Pattern JPA_PACKAGE_PATTERN = Pattern.compile(JPA_PACKAGE);
+    private static final Pattern JPA_PACKAGE_PATTERN = Pattern.compile(PERSISTENCE_PACKAGE);
     private static final Class[] BEAN_VALIDATION_REVENG_CLASS_LIST = new Class[]{
         AssertFalse.class, AssertTrue.class, Null.class, NotNull.class, Size.class, DecimalMax.class, DecimalMin.class,
         Max.class, Min.class, Digits.class, Future.class, Past.class, Pattern.class};

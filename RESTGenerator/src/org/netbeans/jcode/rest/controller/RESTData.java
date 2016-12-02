@@ -38,6 +38,7 @@ public class RESTData extends LayerConfigData {
     private List<FilterType> filterTypes;
     private boolean metrics = true;
     private boolean docsEnable = true;
+    private boolean testCase = true;
     private boolean pagination;
     
     /**
@@ -186,6 +187,20 @@ public class RESTData extends LayerConfigData {
      */
     public void setPagination(boolean pagination) {
         this.pagination = pagination;
+    }
+
+    /**
+     * @return the testCase
+     */
+    public boolean isTestCase() {
+        return testCase;
+    }
+
+    /**
+     * @param testCase the testCase to set
+     */
+    public void setTestCase(boolean testCase) {
+        this.testCase = testCase;
     }
 
 }

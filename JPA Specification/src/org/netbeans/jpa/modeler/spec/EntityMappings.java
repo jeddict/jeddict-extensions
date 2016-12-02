@@ -623,11 +623,11 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     }
     
     public Stream<String> getFQEntity() {
-        return getEntity().stream().map(e -> e.getFQN(getPackage()));
+        return getEntity().stream().map(Entity::getFQN);
     }
     
     public Stream<String> getFQConcreteEntity() {
-        return getConcreteEntity().map(e -> e.getFQN(getPackage()));
+        return getConcreteEntity().map(Entity::getFQN);
     }
     
     public Stream<Entity> getConcreteEntity() {

@@ -1,6 +1,7 @@
 <#if package??>package ${package};</#if>
 
 import ${SecurityConfig_FQN};
+import ${UserAuthenticationToken_FQN};
 import ${User_FQN};
 import java.util.*;
 import java.util.stream.Collectors;

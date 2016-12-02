@@ -18,15 +18,27 @@ package org.netbeans.jpa.modeler.spec.extend;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.XMLAttributes;
+import org.netbeans.jcode.core.util.AttributeType.Type;
+import static org.netbeans.jcode.core.util.AttributeType.Type.ARRAY;
+import static org.netbeans.jcode.core.util.AttributeType.Type.OTHER;
+import static org.netbeans.jcode.core.util.AttributeType.getArrayType;
+import static org.netbeans.jcode.core.util.AttributeType.getType;
+import org.netbeans.jcode.core.util.JavaIdentifiers;
 import org.netbeans.jpa.modeler.db.accessor.BasicSpecAccessor;
 import org.netbeans.jpa.modeler.db.accessor.ElementCollectionSpecAccessor;
 import org.netbeans.jpa.modeler.db.accessor.EmbeddedSpecAccessor;
@@ -34,7 +46,6 @@ import org.netbeans.jpa.modeler.db.accessor.ManyToManySpecAccessor;
 import org.netbeans.jpa.modeler.db.accessor.ManyToOneSpecAccessor;
 import org.netbeans.jpa.modeler.db.accessor.OneToManySpecAccessor;
 import org.netbeans.jpa.modeler.db.accessor.OneToOneSpecAccessor;
-import org.netbeans.jpa.modeler.db.accessor.TransientSpecAccessor;
 import org.netbeans.jpa.modeler.spec.Basic;
 import org.netbeans.jpa.modeler.spec.ElementCollection;
 import org.netbeans.jpa.modeler.spec.Embedded;
@@ -49,16 +60,6 @@ import org.netbeans.jpa.modeler.spec.Transient;
  *
  * @author Shiwani Gupta <jShiwaniGupta@gmail.com>
  */
-//@XmlType(propOrder = {
-//    "basic",
-//    "manyToOne",
-//    "oneToMany",
-//    "oneToOne",
-//    "manyToMany",
-//    "elementCollection",
-//    "embedded",
-//    "_transient"
-//})
 @XmlAccessorType(XmlAccessType.FIELD)
 public abstract class BaseAttributes implements IAttributes {
 
@@ -121,6 +122,19 @@ public abstract class BaseAttributes implements IAttributes {
             setBasic(new ArrayList<Basic>());
         }
         return this.basic;
+    }
+    
+    public List<Basic> getSuperBasic(){
+        List<Basic> superVersion = new ArrayList();
+        JavaClass currentManagedClass = getJavaClass();
+        do {
+            if(currentManagedClass instanceof ManagedClass){
+               ManagedClass identifiableClass = (ManagedClass)currentManagedClass;
+               superVersion.addAll(identifiableClass.getAttributes().getBasic());
+            }
+            currentManagedClass = currentManagedClass.getSuperclass();
+        } while(currentManagedClass != null);
+        return superVersion;
     }
 
     public Optional<Basic> getBasic(String id) {
@@ -472,7 +486,65 @@ public abstract class BaseAttributes implements IAttributes {
         relationAttributes.addAll(this.getManyToMany());
         return relationAttributes;
     }
+    
+    @Override
+    public Set<String> getConnectedClass(){
+        return getConnectedClass(new HashSet<>());
+    }
+    
+    @Override
+    public Set<String> getConnectedClass(Set<String> javaClasses){
+        javaClasses.add(getJavaClass().getFQN());
+        if(getJavaClass().getSuperclass()!=null && getJavaClass().getSuperclass() instanceof ManagedClass){
+            javaClasses.addAll(((ManagedClass)getJavaClass().getSuperclass()).getAttributes().getConnectedClass(javaClasses));
+        }
+        javaClasses.addAll(getBasicConnectedClass(javaClasses));        
+        javaClasses.addAll(getRelationConnectedClass(javaClasses));
+        javaClasses.addAll(getEmbeddedConnectedClass(javaClasses));
+        javaClasses.addAll(getElementCollectionConnectedClass(javaClasses));
+        return javaClasses;
+    }
+    
+    public Set<String> getRelationConnectedClass(Set<String> javaClasses){
+        Map<ManagedClass, String> releationClasses = getRelationAttributes().stream().map(RelationAttribute::getConnectedEntity).distinct().filter(jc -> !javaClasses.contains(jc.getFQN())).collect(Collectors.toMap(Function.identity(), jc -> jc.getFQN()));
+        javaClasses.addAll(releationClasses.values());
+        for (ManagedClass releationClass : releationClasses.keySet()) {
+            javaClasses.addAll(releationClass.getAttributes().getConnectedClass(javaClasses));
+        }
+        return javaClasses;
+    }
+    public Set<String> getEmbeddedConnectedClass(Set<String> javaClasses){
+        Map<ManagedClass, String> releationClasses = getEmbedded().stream().map(Embedded::getConnectedClass).distinct().filter(jc -> !javaClasses.contains(jc.getFQN())).collect(Collectors.toMap(Function.identity(), jc -> jc.getFQN()));
+        javaClasses.addAll(releationClasses.values());
+        for (ManagedClass releationClass : releationClasses.keySet()) {
+            javaClasses.addAll(releationClass.getAttributes().getConnectedClass(javaClasses));
+        }
+        return javaClasses;
+    }
+        public Set<String> getElementCollectionConnectedClass(Set<String> javaClasses){
+        Map<ManagedClass, String> releationClasses = getElementCollection().stream().filter(ec -> ec.getConnectedClass()!=null).map(ElementCollection::getConnectedClass).distinct().filter(jc -> !javaClasses.contains(jc.getFQN())).collect(Collectors.toMap(Function.identity(), jc -> jc.getFQN()));
+        javaClasses.addAll(releationClasses.values());
+        for (ManagedClass releationClass : releationClasses.keySet()) {
+            javaClasses.addAll(releationClass.getAttributes().getConnectedClass(javaClasses));
+        }
+        return javaClasses;
+    }
 
+    public Set<String> getBasicConnectedClass(Set<String> javaClasses) {
+        List<String> basicClasses = getBasic().stream().map(Basic::getDataTypeLabel).filter(dataType -> {
+            if(StringUtils.isNotEmpty(dataType)){
+                Type type = getType(dataType);
+                if(type == OTHER || type == ARRAY){
+                    return !JavaIdentifiers.getPackageName(type == ARRAY ? getArrayType(dataType) : dataType).startsWith("java");
+                }
+            }
+            return false;
+            
+        }).distinct().collect(Collectors.toList());
+        javaClasses.addAll(basicClasses);
+        return javaClasses;
+    }
+    
     public Optional<RelationAttribute> getRelationAttribute(String id) {
         return getRelationAttributes().stream().filter(a -> a.getId().equals(id)).findFirst();
     }

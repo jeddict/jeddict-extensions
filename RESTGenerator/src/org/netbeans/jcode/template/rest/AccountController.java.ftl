@@ -106,8 +106,6 @@ public class ${restPrefix}Account${restSuffix} {
 
                             if (mailConfig.isEnable()) {
                                 mailService.sendActivationEmail(user, baseUrl);
-                            } else {
-                                activateAccount(user.getActivationKey());
                             }
 
                             return Response.status(CREATED).build();

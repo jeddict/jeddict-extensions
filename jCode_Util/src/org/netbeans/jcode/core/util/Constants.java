@@ -31,51 +31,34 @@ public class Constants {
     public static final String RESOURCE_SUFFIX = "Resource";
 
     public static final String XML_TRANSIENT_ANNOTATION = "XmlTransient";
-
     public static final String XML_ROOT_ELEMENT_ANNOTATION = "XmlRootElement";
-
     public static final String XML_ELEMENT_ANNOTATION = "XmlElement";
-
     public static final String XML_ATTRIBUTE_ANNOTATION = "XmlAttribute";
-
     public static final String URI_TYPE = "java.net.URI";
-
     public static final String XML_ANNOTATION_PACKAGE = "javax.xml.bind.annotation.";
-
     public static final String XML_ROOT_ELEMENT = XML_ANNOTATION_PACKAGE + XML_ROOT_ELEMENT_ANNOTATION;
-
     public static final String XML_ELEMENT = XML_ANNOTATION_PACKAGE + XML_ELEMENT_ANNOTATION;
-
     public static final String XML_ATTRIBUTE = XML_ANNOTATION_PACKAGE + XML_ATTRIBUTE_ANNOTATION;
-
     public static final String XML_TRANSIENT = XML_ANNOTATION_PACKAGE + XML_TRANSIENT_ANNOTATION;
 
     public static final String VOID = "void";
 
     public static final String COLLECTION = "Collection";
-
     public static final String COLLECTION_TYPE = "java.util.Collection";
-
     public static final String COLLECTIONS_TYPE = "java.util.Collections";
-
     public static final String LIST_TYPE = "java.util.List";
-
     public static final String SET_TYPE = "java.util.Set";
-
     public static final String ARRAY_LIST_TYPE = "java.util.ArrayList";
-
     public static final String HASH_SET_TYPE = "java.util.HashSet";
 
     public static final String REQUEST_SCOPE = "javax.enterprise.context.RequestScoped";
 
-    static final Modifier[] PUBLIC = new Modifier[]{Modifier.PUBLIC};
-
+    public static final Modifier[] PUBLIC = new Modifier[]{Modifier.PUBLIC};
     public static final Modifier[] PRIVATE = new Modifier[]{Modifier.PRIVATE};
+    public static final Modifier[] PUBLIC_STATIC_FINAL = new Modifier[]{Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL};
 
-    public static final Modifier[] PUBLIC_STATIC_FINAL = new Modifier[]{
-        Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL
-    };
-
+    
+    public static final String LANG_PACKAGE = "java.lang";
     public static final String JAVA_EXT = "java";
     public static final String JAVA_EXT_SUFFIX = ".java";
 

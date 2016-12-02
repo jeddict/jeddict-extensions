@@ -9,8 +9,11 @@ package org.netbeans.jpa.modeler.spec;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -385,11 +388,24 @@ public class Attributes extends BaseAttributes implements IPersistenceAttributes
     @Override
     public List<Version> getVersion() {
         if (version == null) {
-            version = new ArrayList<Version>();
+            version = new ArrayList<>();
         }
         return this.version;
     }
-
+    
+    public List<Version> getSuperVersion(){
+        List<Version> superVersion = new ArrayList();
+        JavaClass currentManagedClass = getJavaClass();
+        do {
+            if(currentManagedClass instanceof IdentifiableClass){
+               IdentifiableClass identifiableClass = (IdentifiableClass)currentManagedClass;
+               superVersion.addAll(identifiableClass.getAttributes().getVersion());
+            }
+            currentManagedClass = currentManagedClass.getSuperclass();
+        } while(currentManagedClass != null);
+        return superVersion;
+    }
+    
     @Override
     public void addVersion(Version version) {
         this.getVersion().add(version);
@@ -532,7 +548,26 @@ public class Attributes extends BaseAttributes implements IPersistenceAttributes
         } while(currentManagedClass != null);
         return null;
     }
+   
+       public Set<String> getConnectedClass(final Set<String> javaClasses){
+        super.getConnectedClass(javaClasses);
+        getCompositeKeyConnectedClass().ifPresent(jc -> javaClasses.add(jc));
+        return javaClasses;
+    }
     
+    public Optional<String> getCompositeKeyConnectedClass(){
+            List<Id> superIds = this.getSuperId();
+         if(superIds.size() != 1) {
+             EmbeddedId superEmbeddedId = this.getSuperEmbeddedId();
+             if(superEmbeddedId!=null){
+                 return Optional.of(superEmbeddedId.getConnectedClass().getFQN());
+             } else {
+                 IdClass idClass = this.getSuperIdClass();
+                 return Optional.of(getJavaClass().getRootPackage() + '.' +idClass.getClazz());
+             }
+         }
+        return Optional.empty();
+    }
     
 }
   
