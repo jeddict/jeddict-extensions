@@ -148,7 +148,6 @@ public class JSPPanel extends LayerConfigPanel<JSPData> {
         org.openide.awt.Mnemonics.setLocalizedText(warningLabel, org.openide.util.NbBundle.getMessage(JSPPanel.class, "JSPPanel.warningLabel.text")); // NOI18N
         warningPanel.add(warningLabel, java.awt.BorderLayout.CENTER);
 
-        cdnCheckBox.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(cdnCheckBox, org.openide.util.NbBundle.getMessage(JSPPanel.class, "JSPPanel.cdnCheckBox.text")); // NOI18N
 
         internetNotAvailable.setForeground(new java.awt.Color(206, 0, 0));

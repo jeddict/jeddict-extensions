@@ -29,7 +29,7 @@ public class JSPData extends LayerConfigData {
     private String folder;
     
     private String resourceFolder;
-    private boolean onlineTheme = true;
+    private boolean onlineTheme;
 
     /**
      * @return the folder
