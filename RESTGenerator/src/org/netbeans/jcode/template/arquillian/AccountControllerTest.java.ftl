@@ -34,7 +34,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.valid4j.matchers.http.HttpResponseMatchers.hasStatus;
 
 /**
- * Test class for the ${restPrefix}Account${restSuffix} REST serice.
+ * Test class for the ${restPrefix}Account${restSuffix} REST controller.
  *
  */
 public class ${restPrefix}Account${restSuffix}Test extends ApplicationTest {

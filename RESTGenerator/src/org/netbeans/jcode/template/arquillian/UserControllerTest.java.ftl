@@ -29,7 +29,7 @@ import static org.valid4j.matchers.http.HttpResponseMatchers.hasStatus;
 import ${UserFacade_FQN};
 
 /**
- * Test class for the ${restPrefix}User${restSuffix} REST service.
+ * Test class for the ${restPrefix}User${restSuffix} REST controller.
  *
  */
 public class ${restPrefix}User${restSuffix}Test extends ApplicationTest {

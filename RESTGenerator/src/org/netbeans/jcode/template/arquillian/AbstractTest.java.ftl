@@ -20,6 +20,10 @@ import org.jboss.shrinkwrap.resolver.api.maven.MavenResolverSystem;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 
+/**
+ * Abstract class for base application packaging.
+ *
+ */
 @RunWith(Arquillian.class)
 public abstract class AbstractTest {
 

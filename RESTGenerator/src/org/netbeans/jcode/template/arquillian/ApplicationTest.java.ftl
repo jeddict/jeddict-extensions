@@ -25,7 +25,10 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Before;
 
-
+/**
+ * Abstract class for application packaging.
+ *
+ */
 public abstract class ApplicationTest extends AbstractTest {
 
     protected static final String USERNAME = "admin";
