@@ -29,8 +29,6 @@ public abstract class ManagedClass extends JavaClass {
     @XmlAttribute(name = "metadata-complete")
     protected Boolean metadataComplete;//REVENG PENDING
 
-    @XmlElement(name = "des")
-    protected String description;
 
     public abstract IAttributes getAttributes();
 
@@ -83,23 +81,4 @@ public abstract class ManagedClass extends JavaClass {
         this.metadataComplete = value;
     }
 
-    /**
-     * Gets the value of the description property.
-     *
-     * @return possible object is {@link String }
-     *
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * Sets the value of the description property.
-     *
-     * @param value allowed object is {@link String }
-     *
-     */
-    public void setDescription(String value) {
-        this.description = value;
-    }
 }

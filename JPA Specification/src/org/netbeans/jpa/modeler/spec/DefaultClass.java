@@ -35,7 +35,7 @@ import org.netbeans.jpa.modeler.spec.extend.JavaClass;
 public class DefaultClass extends JavaClass {
 
     private boolean embeddable;
-    private String description;
+    
     @XmlElement(name = "attribute")
     private List<DefaultAttribute> attributes;
 
@@ -66,20 +66,6 @@ public class DefaultClass extends JavaClass {
         }
         this.attributes.add(attributes);
         attributes.setJavaClass(this);
-    }
-
-    /**
-     * @return the description
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * @param description the description to set
-     */
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     /**
