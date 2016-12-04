@@ -83,6 +83,9 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
     @XmlAttribute(name = "name", required = true)
     protected String name;
 
+    @XmlAttribute(name = "dv")
+    protected String defaultValue;
+
     @XmlAttribute(name = "ui")
     private Boolean includeInUI;
 
@@ -399,6 +402,15 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
      */
     public void setFunctionalType(Boolean functionalType) {
         this.functionalType = functionalType;
+    }
+
+    
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
     }
 
 }
