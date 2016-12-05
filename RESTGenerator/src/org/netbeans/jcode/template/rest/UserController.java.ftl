@@ -3,7 +3,6 @@
 import ${AuthorityFacade_FQN};
 import ${UserFacade_FQN};
 import ${User_FQN};
-import ${Authority_FQN};
 import ${MailService_FQN};
 import ${UserService_FQN};
 import ${ManagedUserDTO_FQN};
@@ -20,7 +19,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
-import java.util.stream.Collectors;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -161,11 +161,7 @@ public class ${restPrefix}User${restSuffix} {
                     user.setEmail(managedUserDTO.getEmail());
                     user.setActivated(managedUserDTO.isActivated());
                     user.setLangKey(managedUserDTO.getLangKey());
-                    Set<Authority> authorities = user.getAuthorities();
-                    authorities.clear();
-                    managedUserDTO.getAuthorities().stream().forEach(
-                            authority -> authorities.add(${authorityFacade}.find(authority))
-                    );
+                    user.setAuthorities(managedUserDTO.getAuthorities().stream().map(authorityFacade::find).collect(toSet()));
                     ${userFacade}.edit(user);
                     return HeaderUtil.createAlert(Response.ok(new ManagedUserDTO(${userFacade}
                             .find(managedUserDTO.getId()))), "userManagement.updated", managedUserDTO.getLogin())
@@ -195,7 +191,7 @@ public class ${restPrefix}User${restSuffix} {
         List<User> userList = ${userFacade}.findRange(page * size, size);
         List<ManagedUserDTO> managedUserDTOs = userList.stream()
                 .map(ManagedUserDTO::new)
-                .collect(Collectors.toList());
+                .collect(toList());
 
         ResponseBuilder builder = Response.ok(managedUserDTOs);
         PaginationUtil.generatePaginationHttpHeaders(builder, new Page(page, size, ${userFacade}.count()), "/${applicationPath}/api/users");

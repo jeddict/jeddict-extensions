@@ -17,7 +17,6 @@ import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.CREATED;
 import static javax.ws.rs.core.Response.Status.OK;
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -103,7 +102,6 @@ public class ${restPrefix}User${restSuffix}Test extends ApplicationTest {
     }
 
     @Test
-    @InSequence(1)
     public void testCreateUserDuplicateEmail() throws Exception {
         // Good
         ManagedUserDTO validUser = new ManagedUserDTO(
@@ -138,7 +136,6 @@ public class ${restPrefix}User${restSuffix}Test extends ApplicationTest {
     }
 
     @Test
-    @InSequence(2)
     public void testGetExistingUser() throws Exception {
         Response response = target("api/users/admin").get();
         assertThat(response, hasStatus(Response.Status.OK));
@@ -147,7 +144,6 @@ public class ${restPrefix}User${restSuffix}Test extends ApplicationTest {
     }
 
     @Test
-    @InSequence(4)
     public void testGetAllUser() throws Exception {
         Response response = target("api/users", singletonMap("size", 5)).get();
         assertThat(response, hasStatus(Response.Status.OK));
@@ -156,14 +152,12 @@ public class ${restPrefix}User${restSuffix}Test extends ApplicationTest {
     }
 
     @Test
-    @InSequence(3)
     public void testGetUnknownUser() throws Exception {
         Response response = target("api/users/unknown").get();
         assertThat(response, hasStatus(Response.Status.NOT_FOUND));
     }
 
     @Test
-    @InSequence(5)
     public void testUpdateUser() throws Exception {
         Response response = target("api/users/user").get();
         assertThat(response, hasStatus(Response.Status.OK));
@@ -175,7 +169,6 @@ public class ${restPrefix}User${restSuffix}Test extends ApplicationTest {
     }
 
     @Test
-    @InSequence(6)
     public void testDeleteUser() throws Exception {
         Response response = target("api/users/{login}", singletonMap("login", "user")).delete();
         assertThat(response, hasStatus(OK));

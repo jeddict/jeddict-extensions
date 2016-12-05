@@ -24,6 +24,7 @@ import javax.validation.constraints.Pattern;
     @NamedQuery(name = "findUserByActivationKey", query = "select u from User u where u.activationKey = :activationKey"),
     @NamedQuery(name = "findUserByUserId", query = "select u from User u where u.id = :id")
 })
+@NamedEntityGraph(name = "graph.user.authorities", attributeNodes = @NamedAttributeNode("authorities"))
 public class User extends AbstractAuditingEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;

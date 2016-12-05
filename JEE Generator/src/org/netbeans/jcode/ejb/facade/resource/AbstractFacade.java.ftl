@@ -70,11 +70,18 @@ public abstract class AbstractFacade<E,P> {
     }
 
     public Optional<E> findSingleByNamedQuery(String namedQueryName, Map<String, Object> parameters, Class<E> classT) {
+        return findSingleByNamedQuery(namedQueryName, null, parameters, classT);
+    }
+
+    public Optional<E> findSingleByNamedQuery(String namedQueryName, String entityGraph, Map<String, Object> parameters, Class<E> classT) {
         Set<Entry<String, Object>> rawParameters = parameters.entrySet();
         TypedQuery<E> query = getEntityManager().createNamedQuery(namedQueryName, classT);
         rawParameters.stream().forEach((entry) -> {
             query.setParameter(entry.getKey(), entry.getValue());
         });
+        if(entityGraph != null){
+            query.setHint("javax.persistence.loadgraph", getEntityManager().getEntityGraph(entityGraph));
+        }
         return findOrEmpty(() -> query.getSingleResult());
     }
 

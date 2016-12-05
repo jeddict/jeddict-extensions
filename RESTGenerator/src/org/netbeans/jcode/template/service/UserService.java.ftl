@@ -19,6 +19,7 @@ import java.time.ZonedDateTime;
 import javax.inject.Inject;
 import java.util.*;
 import javax.ejb.Stateless;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * Service class for managing users.
@@ -121,11 +122,7 @@ public class UserService {
             user.setLangKey(userDTO.getLangKey());
         }
         if (userDTO.getAuthorities() != null) {
-            Set<Authority> authorities = new HashSet<>();
-            userDTO.getAuthorities().stream().forEach(
-                    authority -> authorities.add(${authorityFacade}.find(authority))
-            );
-            user.setAuthorities(authorities);
+            user.setAuthorities(userDTO.getAuthorities().stream().map(authorityFacade::find).collect(toSet()));
         }
         String encryptedPassword = passwordEncoder.encode(RandomUtil.generatePassword());
         user.setPassword(encryptedPassword);
@@ -165,25 +162,18 @@ public class UserService {
     }
 
     public Optional<User> getUserWithAuthoritiesByLogin(String login) {
-        return ${userFacade}.findOneByLogin(login).map(u -> {
-            u.getAuthorities().size();
-            return u;
-        });
+        return userFacade.findOneWithAuthoritiesByLogin(login);
     }
 
     public User getUserWithAuthorities(Long id) {
-        User user = ${userFacade}.find(id);
-        user.getAuthorities().size(); // eagerly load the association
-        return user;
+        return userFacade.findOneWithAuthoritiesById(id).orElse(null);
     }
 
     public User getUserWithAuthorities() {
         if (securityUtils.getCurrentUserLogin() == null) {
             return null;
         }
-        User user = ${userFacade}.findOneByLogin(securityUtils.getCurrentUserLogin()).get();
-        user.getAuthorities().size(); // eagerly load the association
-        return user;
+        return userFacade.findOneWithAuthoritiesByLogin(securityUtils.getCurrentUserLogin()).orElse(null);
     }
 
     public User authenticate(UserAuthenticationToken authenticationToken) throws AuthenticationException {

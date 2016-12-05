@@ -1,7 +1,7 @@
 <#if package??>package ${package};</#if>
 
 import ${User_FQN};
-import java.util.Collections;
+import static java.util.Collections.singletonMap;
 import java.util.Optional;
 import javax.ejb.Stateless;
 import javax.inject.Named;
@@ -25,28 +25,37 @@ public class ${UserFacade} extends AbstractFacade<User, Long> {
     }
 
     public Optional<User> findOneByLogin(String login) {
-        return findSingleByNamedQuery("findUserByLogin", Collections.singletonMap("login", login), User.class);
+        return findSingleByNamedQuery("findUserByLogin", singletonMap("login", login), User.class);
     }
 
     public Optional<User> findOneByEmail(String email) {
-        return findSingleByNamedQuery("findUserByEmail", Collections.singletonMap("email", email), User.class);
+        return findSingleByNamedQuery("findUserByEmail", singletonMap("email", email), User.class);
     }
 
     public Optional<User> findOneByResetKey(String resetKey) {
-        return findSingleByNamedQuery("findUserByResetKey", Collections.singletonMap("resetKey", resetKey), User.class);
+        return findSingleByNamedQuery("findUserByResetKey", singletonMap("resetKey", resetKey), User.class);
     }
 
     public Optional<User> findOneByActivationKey(String activationKey) {
-        return findSingleByNamedQuery("findUserByActivationKey", Collections.singletonMap("activationKey", activationKey), User.class);
+        return findSingleByNamedQuery("findUserByActivationKey", singletonMap("activationKey", activationKey), User.class);
     }
 
 <#--public List<User> findAllByActivatedIsFalseAndCreatedDateBefore(ZonedDateTime dateTime){
        TypedQuery<User> query = em.createNamedQuery("findUserByActivationKey", User.class);
        query.setParameter("createdDate", false);
        return query.getResultList();
-    }    -->
+    }    
+-->
     public Optional<User> findOneById(Long userId) {
-        return findSingleByNamedQuery("findUserByUserId", Collections.singletonMap("id", userId), User.class);
+        return findSingleByNamedQuery("findUserByUserId", singletonMap("id", userId), User.class);
+    }
+
+    public Optional<User> findOneWithAuthoritiesById(Long userId) {
+        return findSingleByNamedQuery("findUserByUserId", "graph.user.authorities", singletonMap("id", userId), User.class);
+    }
+
+    public Optional<User> findOneWithAuthoritiesByLogin(String login) {
+        return findSingleByNamedQuery("findUserByLogin", "graph.user.authorities", singletonMap("login", login), User.class);
     }
 
 }
