@@ -16,9 +16,9 @@ import javax.ws.rs.core.Response;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.CREATED;
 import static javax.ws.rs.core.Response.Status.OK;
+import static org.hamcrest.CoreMatchers.is;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -140,7 +140,7 @@ public class ${restPrefix}User${restSuffix}Test extends ApplicationTest {
         Response response = target("api/users/admin").get();
         assertThat(response, hasStatus(Response.Status.OK));
         ManagedUserDTO user = response.readEntity(ManagedUserDTO.class);
-        assertEquals(user.getEmail(), "admin@example.com");
+        assertThat(user.getEmail(), is("admin@example.com"));
     }
 
     @Test
@@ -148,7 +148,7 @@ public class ${restPrefix}User${restSuffix}Test extends ApplicationTest {
         Response response = target("api/users", singletonMap("size", 5)).get();
         assertThat(response, hasStatus(Response.Status.OK));
         List<ManagedUserDTO> users = response.readEntity(List.class);
-        assertEquals(users.size(), ${userFacade}.findAll().size());
+        assertThat(users.size(), is(${userFacade}.findAll().size()));
     }
 
     @Test

@@ -295,7 +295,7 @@ public class RESTGenerator implements Generator {
             StringBuilder restParamNameList = new StringBuilder();
             StringBuilder restDocList = new StringBuilder();
             for (DefaultAttribute attribute : attributes) {
-                restParamList.append(String.format("@MatrixParam(\"%s\") %s %s,", attribute.getName(), attribute.getDataTypeLabel(), attribute.getName()));
+                restParamList.append(String.format("@QueryParam(\"%s\") %s %s,", attribute.getName(), attribute.getDataTypeLabel(), attribute.getName()));
                 restParamNameList.append(attribute.getName()).append(',');
                 restDocList.append(String.format("@param %s the %s of the %s", attribute.getName(), attribute.getName(), param.get("instanceName"))).append('\n');
             }
@@ -329,7 +329,9 @@ public class RESTGenerator implements Generator {
         FileUtil.expandTemplate(TEMPLATE + "rest/entity/" + restTemplate + ".java.ftl", targetFolder, controllerFileName + '.' + JAVA_EXT, param);
 
         
-        Function<Attribute,Map<String,Object>> con = attr -> {
+        //entity controller test-case
+        if (restData.isTestCase()) {
+            Function<Attribute,Map<String,Object>> con = attr -> {
             Map<String,Object> attrConf = new HashMap<>();
             attrConf.put("name", attr.getName());
             attrConf.put("Name", firstUpper(attr.getName()));
@@ -340,9 +342,9 @@ public class RESTGenerator implements Generator {
             attrConf.put("dataType", attr.getDataTypeLabel());
             attrConf.put("defaultValue", getAttributeDefaultValue(attr.getDataTypeLabel()));
             attrConf.put("updatedValue", getAttributeUpdateValue(attr.getDataTypeLabel()));
-            attrConf.put("array", isArray(attr.getDataTypeLabel()));
-            attrConf.put("precision", isPrecision(attr.getDataTypeLabel()));
-            attrConf.put("precisionType", isDouble(attr.getDataTypeLabel())?'d':'f');
+//            attrConf.put("array", isArray(attr.getDataTypeLabel()));
+//            attrConf.put("precision", isPrecision(attr.getDataTypeLabel()));
+//            attrConf.put("precisionType", isDouble(attr.getDataTypeLabel())?'d':'f');
             
             return attrConf;
             
@@ -362,9 +364,9 @@ public class RESTGenerator implements Generator {
             param.put("idAttributes", entity.getAttributes().getSuperId().stream().filter(id -> !id.isGeneratedValue())
                     .filter(attr -> getAttributeDefaultValue(attr.getDataTypeLabel()) != null).map(con).collect(toList()));
             
-            String matrixParam = allIdAttributes.stream().map(attrConf -> String.format("%s={%s}",attrConf.get("name"),attrConf.get("name"))).collect(Collectors.joining(";"));
-            param.put("matrixParam", matrixParam);
-            
+//            String matrixParam = allIdAttributes.stream().map(attrConf -> String.format("%s={%s}",attrConf.get("name"),attrConf.get("name"))).collect(Collectors.joining(";"));
+//            param.put("matrixParam", matrixParam);
+//            
         
        List<Map<String,Object>> basicAttributes = entity.getAttributes().getSuperBasic().stream()
                .filter(attr -> getAttributeDefaultValue(attr.getDataTypeLabel())!=null).map(con).collect(toList());
@@ -374,8 +376,7 @@ public class RESTGenerator implements Generator {
                 param.put("connectedClasses", connectedClasses.stream().map(jc -> JavaIdentifiers.unqualify(jc)).collect(toList()));
                 param.put("connectedFQClasses", connectedClasses);
                 
-        //entity controller test-case
-        if (restData.isTestCase()) {
+       
             String controllerTestFileName = controllerFileName + "Test";
             handler.progress(controllerTestFileName);
 

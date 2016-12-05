@@ -18,9 +18,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.MatrixParam;
-<#if pagination != "no">
 import javax.ws.rs.QueryParam;
+<#if pagination != "no">
 import javax.ws.rs.core.Response.ResponseBuilder;
 import ${Page_FQN};
 import ${PaginationUtil_FQN};

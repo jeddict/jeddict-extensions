@@ -24,7 +24,6 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -56,7 +55,7 @@ public class ${restPrefix}Account${restSuffix}Test extends ApplicationTest {
         assertThat(response, hasStatus(OK));
         UserDTO user = response.readEntity(UserDTO.class);
         assertNotNull(user);
-        assertEquals(user.getLogin(), USERNAME);
+        assertThat(user.getLogin(), is(USERNAME));
     }
 
     @Test

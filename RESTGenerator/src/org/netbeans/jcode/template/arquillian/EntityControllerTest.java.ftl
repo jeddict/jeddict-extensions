@@ -5,14 +5,15 @@ import ${EntityFacade_FQN};
 <#list connectedFQClasses as connectedFQClass>
 import ${connectedFQClass};
 </#list>
-<#if eid>
-import java.util.HashMap;
-import java.util.Map;
-<#elseif pkStrategy == "IdClass">
+<#if eid || pkStrategy == "IdClass">
 import java.util.HashMap;
 import java.util.Map;
 <#else>
 import static java.util.Collections.singletonMap;
+</#if>
+<#if eid || pagination!= "no">
+import java.util.HashMap;
+import java.util.Map;
 </#if>
 import java.util.List;
 import javax.ejb.EJB;
@@ -91,10 +92,10 @@ public class ${controllerClass}Test extends ApplicationTest {
         assertThat(${entityInstancePlural}.size(), is(databaseSizeBeforeCreate + 1));
         ${EntityClass} test${EntityClass} = ${entityInstancePlural}.get(${entityInstancePlural}.size() - 1);
 <#list idAttributes as attribute>
-        assertEquals(test${EntityClass}<#if eid>.${pkGetter}()</#if>.${attribute.getter}(), DEFAULT_${attribute.NAME}<#if attribute.precision>, 0.0${attribute.precisionType}</#if>);
+        assertThat(test${EntityClass}<#if eid>.${pkGetter}()</#if>.${attribute.getter}(), is(DEFAULT_${attribute.NAME}));
 </#list>
 <#list attributes as attribute>
-        assert<#if attribute.array>Array</#if>Equals(test${EntityClass}.${attribute.getter}(), DEFAULT_${attribute.NAME}<#if attribute.precision>, 0.0${attribute.precisionType}</#if>);
+        assertThat(test${EntityClass}.${attribute.getter}(), is(DEFAULT_${attribute.NAME}));
 </#list>
     }
 
@@ -103,9 +104,13 @@ public class ${controllerClass}Test extends ApplicationTest {
     public void getAll${EntityClassPlural}() throws Exception {
 
         int databaseSize = ${entityFacade}.findAll().size();
-
+<#if pagination!= "no">
+        Map<String, Object> params = new HashMap<>();
+        params.put("page", 0);
+        params.put("size", 10);
+</#if>
         // Get all the ${entityInstancePlural}
-        Response response = target(RESOURCE_PATH).get();
+        Response response = target(RESOURCE_PATH<#if pagination!= "no">, params</#if>).get();
         assertThat(response, hasStatus(Status.OK));
         assertThat(response, hasContentType(MediaType.APPLICATION_JSON_TYPE));
 
@@ -125,16 +130,16 @@ public class ${controllerClass}Test extends ApplicationTest {
 <#list allIdAttributes as attribute>
         params.put("${attribute.name}", ${instanceName}<#if eid>.${pkGetter}()</#if>.${attribute.getter}());
 </#list>
-        Response response = target(RESOURCE_PATH + "/${pkName};${matrixParam}", params).get();
+        Response response = target(RESOURCE_PATH + "/${pkName}", params).get();
 </#if>
         ${instanceType} test${instanceType} = response.readEntity(${instanceType}.class);
         assertThat(response, hasStatus(Status.OK));
         assertThat(response, hasContentType(MediaType.APPLICATION_JSON_TYPE));
 <#list allIdAttributes as attribute>
-        assertEquals(test${instanceType}<#if eid>.${pkGetter}()</#if>.${attribute.getter}(), ${instanceName}<#if eid>.${pkGetter}()</#if>.${attribute.getter}()<#if attribute.precision>, 0.0${attribute.precisionType}</#if>);
+        assertThat(test${instanceType}<#if eid>.${pkGetter}()</#if>.${attribute.getter}(), is(${instanceName}<#if eid>.${pkGetter}()</#if>.${attribute.getter}()));
 </#list>
 <#list attributes as attribute>
-        assert<#if attribute.array>Array</#if>Equals(test${instanceType}.${attribute.getter}(), DEFAULT_${attribute.NAME}<#if attribute.precision>, 0.0${attribute.precisionType}</#if>);
+        assertThat(test${instanceType}.${attribute.getter}(), is(DEFAULT_${attribute.NAME}));
 </#list>
     }
 
@@ -150,7 +155,7 @@ public class ${controllerClass}Test extends ApplicationTest {
 <#list allIdAttributes as attribute>
         params.put("${attribute.name}", Long.MAX_VALUE);
 </#list>
-        Response response = target(RESOURCE_PATH + "/${pkName};${matrixParam}", params).get();
+        Response response = target(RESOURCE_PATH + "/${pkName}", params).get();
 </#if>
         assertThat(response, hasStatus(Status.NOT_FOUND));
     }
@@ -185,10 +190,10 @@ public class ${controllerClass}Test extends ApplicationTest {
         assertThat(${entityInstancePlural}.size(), is(databaseSizeBeforeUpdate));
         ${EntityClass} test${EntityClass} = ${entityInstancePlural}.get(${entityInstancePlural}.size() - 1);
 <#list idAttributes as attribute>
-        assertEquals(test${EntityClass}<#if eid>.${pkGetter}()</#if>.${attribute.getter}(), ${instanceName}<#if eid>.${pkGetter}()</#if>.${attribute.getter}()<#if attribute.precision>, 0.0${attribute.precisionType}</#if>);
+        assertThat(test${EntityClass}<#if eid>.${pkGetter}()</#if>.${attribute.getter}(), is(${instanceName}<#if eid>.${pkGetter}()</#if>.${attribute.getter}()));
 </#list>
 <#list attributes as attribute>
-        assert<#if attribute.array>Array</#if>Equals(test${EntityClass}.${attribute.getter}(), UPDATED_${attribute.NAME}<#if attribute.precision>, 0.0${attribute.precisionType}</#if>);
+        assertThat(test${EntityClass}.${attribute.getter}(), is(UPDATED_${attribute.NAME}));
 </#list>
     }
 
@@ -206,7 +211,7 @@ public class ${controllerClass}Test extends ApplicationTest {
 <#list allIdAttributes as attribute>
         params.put("${attribute.name}", ${instanceName}<#if eid>.${pkGetter}()</#if>.${attribute.getter}());
 </#list>
-        Response response = target(RESOURCE_PATH + ";${matrixParam}", params).delete();
+        Response response = target(RESOURCE_PATH, params).delete();
 </#if>
         assertThat(response, hasStatus(Status.OK));
 
