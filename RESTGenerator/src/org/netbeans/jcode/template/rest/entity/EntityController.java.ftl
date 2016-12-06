@@ -62,7 +62,7 @@ public class ${controllerClass} {
         log.debug("REST request to save ${EntityClass} : {}", ${instanceName});
         ${entityFacade}.create(${instanceName});
         return HeaderUtil.createEntityCreationAlert(Response.created(new URI("/${applicationPath}/api/${entityApiUrl}/" + ${instanceName}.${pkGetter}())),
-                "${entityInstance}", <#if isPKPrimitive>String.valueOf(${instanceName}.${pkGetter}())<#else>${instanceName}.${pkGetter}().toString()</#if>)
+                "${entityInstance}", <#if isPKPrimitive>String.valueOf(${instanceName}.${pkGetter}())<#elseif pkType == "String">${instanceName}.${pkGetter}()<#else>${instanceName}.${pkGetter}().toString()</#if>)
                 .entity(${instanceName}).build();
     }
 

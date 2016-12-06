@@ -34,10 +34,10 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.XMLAttributes;
 import org.netbeans.jcode.core.util.AttributeType.Type;
-import static org.netbeans.jcode.core.util.AttributeType.Type.ARRAY;
 import static org.netbeans.jcode.core.util.AttributeType.Type.OTHER;
 import static org.netbeans.jcode.core.util.AttributeType.getArrayType;
 import static org.netbeans.jcode.core.util.AttributeType.getType;
+import static org.netbeans.jcode.core.util.AttributeType.isArray;
 import org.netbeans.jcode.core.util.JavaIdentifiers;
 import org.netbeans.jpa.modeler.db.accessor.BasicSpecAccessor;
 import org.netbeans.jpa.modeler.db.accessor.ElementCollectionSpecAccessor;
@@ -533,9 +533,10 @@ public abstract class BaseAttributes implements IAttributes {
     public Set<String> getBasicConnectedClass(Set<String> javaClasses) {
         List<String> basicClasses = getBasic().stream().map(Basic::getDataTypeLabel).filter(dataType -> {
             if(StringUtils.isNotEmpty(dataType)){
+                dataType = isArray(dataType) ? getArrayType(dataType) : dataType;
                 Type type = getType(dataType);
-                if(type == OTHER || type == ARRAY){
-                    return !JavaIdentifiers.getPackageName(type == ARRAY ? getArrayType(dataType) : dataType).startsWith("java");
+                if(type == OTHER){
+                    return !JavaIdentifiers.getPackageName(dataType).startsWith("java");
                 }
             }
             return false;

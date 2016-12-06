@@ -18,13 +18,14 @@ package org.netbeans.jcode.rest.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import static java.util.Collections.EMPTY_MAP;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 import org.apache.commons.lang.StringUtils;
 import static org.apache.commons.lang.StringUtils.EMPTY;
@@ -38,10 +39,7 @@ import static org.netbeans.jcode.console.Console.FG_RED;
 import static org.netbeans.jcode.console.Console.UNDERLINE;
 import static org.netbeans.jcode.core.util.AttributeType.getAttributeDefaultValue;
 import static org.netbeans.jcode.core.util.AttributeType.getAttributeUpdateValue;
-import static org.netbeans.jcode.core.util.AttributeType.isArray;
 import static org.netbeans.jcode.core.util.AttributeType.isBoolean;
-import static org.netbeans.jcode.core.util.AttributeType.isDouble;
-import static org.netbeans.jcode.core.util.AttributeType.isPrecision;
 import static org.netbeans.jcode.core.util.AttributeType.isPrimitive;
 import static org.netbeans.jcode.core.util.Constants.JAVA_EXT;
 import org.netbeans.jcode.core.util.FileUtil;
@@ -349,6 +347,7 @@ public class RESTGenerator implements Generator {
             return attrConf;
             
         };
+            
         
         if (idAttribute instanceof DefaultAttribute) {
                 param.put("pkStrategy","IdClass");
@@ -450,12 +449,16 @@ public class RESTGenerator implements Generator {
             configRoot = source.getRootFolder();
         }
         FileUtil.copyStaticResource(TEMPLATE + "config/config-resources.zip", configRoot, null, handler);
-        if (restData.isTestCase()) {
-            configRoot = ProjectHelper.getTestResourceDirectory(project);
-            FileUtil.copyStaticResource(TEMPLATE + "arquillian/config/config-resources.zip", configRoot, null, handler);
-        }
         updatePersistenceXml(Arrays.asList(entityPackage + ".User", entityPackage + ".Authority"));
 
+        if (restData.isTestCase()) {
+            configRoot = ProjectHelper.getTestResourceDirectory(project);
+            FileUtil.expandTemplate(TEMPLATE + "arquillian/config/arquillian.xml.ftl", configRoot, "arquillian.xml", EMPTY_MAP);
+            FileUtil.expandTemplate(TEMPLATE + "arquillian/config/glassfish-resources.xml.ftl", configRoot, "glassfish-resources.xml", EMPTY_MAP);
+            FileUtil.expandTemplate(TEMPLATE + "arquillian/config/web.xml.ftl", configRoot, "web.xml", EMPTY_MAP);
+            FileUtil.expandTemplate(TEMPLATE + "arquillian/config/test-persistence.xml.ftl", configRoot, "test-persistence.xml", Collections.singletonMap("PU_NAME", entityMapping.getPersistenceUnitName()));
+        }
+        
         return param;
     }
 

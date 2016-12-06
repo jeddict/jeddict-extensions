@@ -556,8 +556,8 @@ public class Attributes extends BaseAttributes implements IPersistenceAttributes
     }
     
     public Optional<String> getCompositeKeyConnectedClass(){
-            List<Id> superIds = this.getSuperId();
-         if(superIds.size() != 1) {
+            List<Id> superIds = this.getSuperId(); 
+         if(superIds.size() > 1) {
              EmbeddedId superEmbeddedId = this.getSuperEmbeddedId();
              if(superEmbeddedId!=null){
                  return Optional.of(superEmbeddedId.getConnectedClass().getFQN());
