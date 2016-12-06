@@ -21,7 +21,8 @@ public enum SnippetLocationType {
     BEFORE_FIELD("Before Field"), AFTER_FIELD("After Field"), 
     BEFORE_METHOD("Before Method"), AFTER_METHOD("After Method"),
     BEFORE_CLASS("Before Class"), AFTER_CLASS("After Class"),
-    BEFORE_PACKAGE("Before Package");
+    BEFORE_PACKAGE("Before Package"), AFTER_PACKAGE("After Package"),
+    IMPORT("Import");
     
     private final String title;
 
