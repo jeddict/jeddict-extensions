@@ -26,15 +26,14 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ErrorType;
+import javax.persistence.MapKeyColumn;
+import javax.persistence.MapKeyJoinColumn;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.StringUtils;
-import static org.netbeans.jcode.core.util.AttributeType.BIGDECIMAL;
-import static org.netbeans.jcode.core.util.AttributeType.STRING;
-import static org.netbeans.jcode.core.util.AttributeType.STRING_FQN;
 import static org.netbeans.jcode.core.util.JavaSourceHelper.getSimpleClassName;
 import static org.netbeans.jcode.jpa.JPAConstants.MAP_KEY_COLUMN_FQN;
 import static org.netbeans.jcode.jpa.JPAConstants.MAP_KEY_ENUMERATED_FQN;
@@ -53,6 +52,8 @@ import org.netbeans.jpa.modeler.spec.JoinColumn;
 import org.netbeans.jpa.modeler.spec.OrderColumn;
 import org.netbeans.jpa.modeler.spec.TemporalType;
 import org.netbeans.jpa.modeler.spec.jaxb.JaxbVariableType;
+import org.netbeans.jpa.modeler.spec.validation.constraints.Constraint;
+import org.netbeans.jpa.modeler.spec.validation.constraints.Size;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 import static org.netbeans.jpa.source.JavaSourceParserUtil.isEmbeddableClass;
 import static org.netbeans.jpa.source.JavaSourceParserUtil.isEntityClass;
@@ -691,5 +692,11 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
 //        return isScaleAttributeType(getMapKeyAttributeType());
 //    }
     
+    @Override
+    public Set<Class<? extends Constraint>> getConstraintsClass() {
+        Set<Class<? extends Constraint>> classes = super.getConstraintsClass();
+        classes.add(Size.class);
+        return classes;
+    }
     
 }

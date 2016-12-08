@@ -165,7 +165,7 @@ public class JavaSourceParserUtil {
     }
 
     public static void getBeanValidation(BaseAttribute attribute, Element element) {
-        Set<Constraint> constraints = new HashSet<>();
+        Set<Constraint> constraints = org.netbeans.jpa.modeler.spec.extend.Attribute.CONSTRAINTS_SUPPLIER.get();
         for (AnnotationMirror annotationMirror : element.getAnnotationMirrors()) {
             String annotationQualifiedName = getAnnotationQualifiedName(annotationMirror);
             Class<? extends Constraint> bvClass = SUPPORTED_BV_REVENG_CLASS_SET.get(annotationQualifiedName);

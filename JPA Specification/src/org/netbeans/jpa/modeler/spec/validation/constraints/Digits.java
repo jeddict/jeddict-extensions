@@ -24,13 +24,13 @@ import org.netbeans.jpa.source.JavaSourceParserUtil;
  *
  * @author Gaurav Gupta
  */
-@XmlRootElement(name="di")
+@XmlRootElement(name = "di")
 public class Digits extends Constraint {
 
-    @XmlAttribute(name="f")
-    private Integer fraction ;
+    @XmlAttribute(name = "f")
+    private Integer fraction;
 
-    @XmlAttribute(name="i")
+    @XmlAttribute(name = "i")
     private Integer integer;
 
     /**
@@ -60,13 +60,22 @@ public class Digits extends Constraint {
     public void setInteger(Integer integer) {
         this.integer = integer;
     }
-    
-    
+
     @Override
     public void load(AnnotationMirror annotationMirror) {
         super.load(annotationMirror);
-         this.integer = (Integer)JavaSourceParserUtil.findAnnotationValue(annotationMirror, "integer");
-         this.fraction = (Integer)JavaSourceParserUtil.findAnnotationValue(annotationMirror, "fraction");
+        this.integer = (Integer) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "integer");
+        this.fraction = (Integer) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "fraction");
     }
 
+    @Override
+    public boolean isEmpty() {
+        return fraction == null && integer == null;
+    }
+    
+    @Override
+    protected void clearConstraint(){
+        fraction = null;
+        integer = null;
+    }
 }

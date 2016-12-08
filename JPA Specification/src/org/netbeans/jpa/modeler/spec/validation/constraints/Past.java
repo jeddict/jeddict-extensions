@@ -21,10 +21,19 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author Gaurav Gupta
  */
-@XmlRootElement(name="pa")
+@XmlRootElement(name = "pa")
 public class Past extends Constraint {
 
     public Past() {
     }
- 
+
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
+    
+    @Override
+    protected void clearConstraint(){
+        
+    }
 }

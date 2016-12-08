@@ -21,13 +21,19 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author Gaurav Gupta
  */
-@XmlRootElement(name="nu")
+@XmlRootElement(name = "nu")
 public class Null extends Constraint {
 
     public Null() {
     }
- 
-//    public NotNull(Attribute attribute, Boolean selected) {
-//        super( attribute, selected);
-//    }
+
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+    @Override
+    protected void clearConstraint() {
+
+    }
 }

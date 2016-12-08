@@ -32,7 +32,6 @@ import org.netbeans.jpa.source.JavaSourceParserUtil;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlJavaTypeAdapter(value = ConstraintsValidator.class)
-//@XmlSeeAlso({NotNull.class,Size.class,Max.class,Min.class})
 public abstract class Constraint implements JCREBVLoader {
 
     @XmlTransient
@@ -41,6 +40,16 @@ public abstract class Constraint implements JCREBVLoader {
     @XmlAttribute(name = "m")
     private String message;
 
+    public abstract boolean isEmpty();
+    
+    protected abstract void clearConstraint();
+    
+    public void clear(){ 
+        selected = false;
+        message = null;
+        clearConstraint();
+    }
+    
     public String getMessage() {
         return message;
     }

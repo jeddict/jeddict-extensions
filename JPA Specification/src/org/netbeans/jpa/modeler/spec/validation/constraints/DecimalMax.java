@@ -18,6 +18,7 @@ package org.netbeans.jpa.modeler.spec.validation.constraints;
 import javax.lang.model.element.AnnotationMirror;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import org.apache.commons.lang.StringUtils;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
@@ -44,4 +45,13 @@ public class DecimalMax extends Constraint {
         this.value = JavaSourceParserUtil.findAnnotationValueAsString(annotationMirror, "value");
     }
 
+    @Override
+    public boolean isEmpty() {
+        return StringUtils.isBlank(value);
+    }
+    
+    @Override
+    protected void clearConstraint(){
+        value = null;
+    }
 }

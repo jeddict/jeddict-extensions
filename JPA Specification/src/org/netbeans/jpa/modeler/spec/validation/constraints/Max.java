@@ -44,4 +44,13 @@ public class Max extends Constraint {
         this.value = (Long) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "value");
     }
 
+    @Override
+    public boolean isEmpty() {
+        return value == null;
+    }
+
+    @Override
+    protected void clearConstraint() {
+        value = null;
+    }
 }

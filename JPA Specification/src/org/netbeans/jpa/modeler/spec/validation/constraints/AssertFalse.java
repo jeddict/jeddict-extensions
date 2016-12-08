@@ -26,4 +26,14 @@ public class AssertFalse extends Constraint {
 
     public AssertFalse() {
     }
+    
+    @Override
+    public boolean isEmpty(){
+        return false;
+    }
+    
+    @Override
+    protected void clearConstraint(){
+        
+    }
 }

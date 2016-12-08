@@ -28,7 +28,7 @@ public class ConstraintsValidator extends MarshalValidator<Constraint> {
     }
 
     public static boolean isEmpty(Constraint constraint) {
-        return !constraint.getSelected();
+        return !constraint.getSelected() || constraint.isEmpty();
     }
 
 }

@@ -67,4 +67,15 @@ public class Size extends Constraint {
         this.min = (Integer) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "min");
         this.max = (Integer) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "max");
     }
+
+    @Override
+    public boolean isEmpty() {
+        return min == null && max == null;
+    }
+
+    @Override
+    protected void clearConstraint() {
+        min = null;
+        max = null;
+    }
 }

@@ -75,7 +75,7 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
     @XmlTransient
     private Set<JavaClass> subclassList;
 
-    @XmlAttribute
+    @XmlAttribute(name="v")
     private boolean visibile = true;
 
     private List<Annotation> annotation;

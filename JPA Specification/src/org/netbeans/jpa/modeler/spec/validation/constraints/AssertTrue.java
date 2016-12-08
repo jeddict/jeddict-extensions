@@ -21,9 +21,20 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author Gaurav Gupta
  */
-@XmlRootElement(name="at")
+@XmlRootElement(name = "at")
 public class AssertTrue extends Constraint {
 
     public AssertTrue() {
     }
+
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+    @Override
+    protected void clearConstraint() {
+
+    }
+
 }

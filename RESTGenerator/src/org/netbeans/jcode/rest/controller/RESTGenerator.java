@@ -37,8 +37,6 @@ import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.BOLD;
 import static org.netbeans.jcode.console.Console.FG_RED;
 import static org.netbeans.jcode.console.Console.UNDERLINE;
-import static org.netbeans.jcode.core.util.AttributeType.getAttributeDefaultValue;
-import static org.netbeans.jcode.core.util.AttributeType.getAttributeUpdateValue;
 import static org.netbeans.jcode.core.util.AttributeType.isBoolean;
 import static org.netbeans.jcode.core.util.AttributeType.isPrimitive;
 import static org.netbeans.jcode.core.util.Constants.JAVA_EXT;
@@ -78,8 +76,9 @@ import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 import org.netbeans.jpa.modeler.spec.*;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
-//import org.netbeans.jcode.layer.Generator;
 import org.netbeans.jcode.layer.Generator;
+import static org.netbeans.jpa.modeler.spec.validation.constraints.ConstraintUtil.getAttributeDefaultValue;
+import static org.netbeans.jpa.modeler.spec.validation.constraints.ConstraintUtil.getAttributeUpdateValue;
 
 /**
  *
@@ -205,15 +204,16 @@ public class RESTGenerator implements Generator {
             generateEntityController(entity, param);
         }
         CDIUtil.createDD(project);
-        if (restData.isTestCase()) {
-            addMavenDependencies("arquillian/pom/_pom.xml");
-        }
+        
         addMavenDependencies("rest/pom/_pom.xml");
         if (restData.isMetrics()) {
             addMavenDependencies("metrics/pom/_pom.xml");
         }
         if (restData.isDocsEnable()) {
             addMavenDependencies("docs/pom/_pom.xml");
+        }
+        if (restData.isTestCase()) {
+            addMavenDependencies("arquillian/pom/_pom.xml");
         }
         
     }
@@ -338,8 +338,9 @@ public class RESTGenerator implements Generator {
             attrConf.put("getter", (isBoolean(attr.getDataTypeLabel())?"is":"get")+ firstUpper(attr.getName()));
             
             attrConf.put("dataType", attr.getDataTypeLabel());
-            attrConf.put("defaultValue", getAttributeDefaultValue(attr.getDataTypeLabel()));
-            attrConf.put("updatedValue", getAttributeUpdateValue(attr.getDataTypeLabel()));
+            ;
+            attrConf.put("defaultValue", getAttributeDefaultValue(attr.getDataTypeLabel(), attr.getConstraintsMap()));
+            attrConf.put("updatedValue", getAttributeUpdateValue(attr.getDataTypeLabel(), attr.getConstraintsMap()));
 //            attrConf.put("array", isArray(attr.getDataTypeLabel()));
 //            attrConf.put("precision", isPrecision(attr.getDataTypeLabel()));
 //            attrConf.put("precisionType", isDouble(attr.getDataTypeLabel())?'d':'f');
