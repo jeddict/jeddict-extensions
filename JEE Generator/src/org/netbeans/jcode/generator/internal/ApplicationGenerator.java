@@ -18,14 +18,19 @@ package org.netbeans.jcode.generator.internal;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import org.netbeans.jcode.jpa.util.PersistenceHelper;
 import org.netbeans.jcode.layer.ConfigData;
 import org.netbeans.jcode.layer.Generator;
+import org.netbeans.jcode.layer.TechContext;
 
 import org.netbeans.jcode.rest.util.RestUtils;
 import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
@@ -65,64 +70,82 @@ public class ApplicationGenerator extends BaseApplicationGenerator {
         float unit = 1.5f;
         float webUnit = 5f;
         float count = applicationConfigData.getEntityMappings().getConcreteEntity().count();
-        if(applicationConfigData.getBussinesLayerConfig()!=null){
+        if(applicationConfigData.getBussinesTechContext()!=null){
             count = count + count*unit;
         }
-        if(applicationConfigData.getControllerLayerConfig()!=null){
+        if(applicationConfigData.getControllerTechContext()!=null){
             count = count + count*unit;
         }
-        if(applicationConfigData.getViewerLayerConfig()!=null){
+        if(applicationConfigData.getViewerTechContext()!=null){
             count = count + count*webUnit;
         }
         return (int)count;
     }
 
     private void generateCRUD(ApplicationConfigData applicationConfigData, ProgressHandler handler) throws IOException {
-
-        LayerConfigData bussinesLayerConfig = applicationConfigData.getBussinesLayerConfig();
-        LayerConfigData controllerLayerConfig = applicationConfigData.getControllerLayerConfig();
-        if (controllerLayerConfig != null) {
-            controllerLayerConfig.setParentLayerConfigData(bussinesLayerConfig);
-        }
-        LayerConfigData viewerLayerConfig = applicationConfigData.getViewerLayerConfig();
-        if (viewerLayerConfig != null) {
-            viewerLayerConfig.setParentLayerConfigData(controllerLayerConfig);
-        }
-
+        Map<Class<? extends LayerConfigData>,LayerConfigData> layerConfigData = new HashMap<>();
+        TechContext bussinesLayerConfig = applicationConfigData.getBussinesTechContext();
         if (bussinesLayerConfig == null) {
             return;
         }
-        inject(applicationConfigData.getBussinesLayerGenerator(), applicationConfigData, handler);
-        applicationConfigData.getBussinesLayerGenerator().execute();
+        layerConfigData.put(applicationConfigData.getBussinesTechContext().getPanel().getConfigData().getClass(),applicationConfigData.getBussinesTechContext().getPanel().getConfigData());
+        layerConfigData.putAll(applicationConfigData.getBussinesTechContext().getSiblingTechContext()
+                .stream().map(context -> context.getPanel().getConfigData()).collect(toMap(data -> data.getClass(), identity(), (d1,d2)->d1)));
+
+        TechContext controllerLayerConfig = applicationConfigData.getControllerTechContext();
+        TechContext viewerLayerConfig = null;
+        if (controllerLayerConfig != null) {
+            controllerLayerConfig.getPanel().getConfigData().setParentLayerConfigData(bussinesLayerConfig.getPanel().getConfigData());
+            layerConfigData.put(applicationConfigData.getControllerTechContext().getPanel().getConfigData().getClass(),applicationConfigData.getControllerTechContext().getPanel().getConfigData());
+            layerConfigData.putAll(applicationConfigData.getControllerTechContext().getSiblingTechContext()
+                    .stream().map(context -> context.getPanel().getConfigData()).collect(toMap(data -> data.getClass(), identity(), (d1,d2)->d1)));
+
+            viewerLayerConfig = applicationConfigData.getViewerTechContext();
+            if (viewerLayerConfig != null) {
+                viewerLayerConfig.getPanel().getConfigData().setParentLayerConfigData(controllerLayerConfig.getPanel().getConfigData());
+                layerConfigData.put(applicationConfigData.getViewerTechContext().getPanel().getConfigData().getClass(),applicationConfigData.getViewerTechContext().getPanel().getConfigData());
+                layerConfigData.putAll(applicationConfigData.getViewerTechContext().getSiblingTechContext()
+                        .stream().map(context -> context.getPanel().getConfigData()).collect(toMap(data -> data.getClass(), identity(), (d1,d2)->d1)));
+            }
+        }
+        
+        inject(applicationConfigData.getBussinesTechContext().getGenerator(), applicationConfigData, layerConfigData, handler);
+        applicationConfigData.getBussinesTechContext().getGenerator().execute();
+        for (TechContext context : applicationConfigData.getBussinesTechContext().getSiblingTechContext()) {
+            inject(context.getGenerator(), applicationConfigData, layerConfigData, handler);
+            context.getGenerator().execute();
+        }
 
         if (controllerLayerConfig == null) {
             return;
         }
-        inject(applicationConfigData.getControllerLayerGenerator(), applicationConfigData, handler);
-        applicationConfigData.getControllerLayerGenerator().execute();
-
+        inject(applicationConfigData.getControllerTechContext().getGenerator(), applicationConfigData, layerConfigData, handler);
+        applicationConfigData.getControllerTechContext().getGenerator().execute();
+        for (TechContext context : applicationConfigData.getControllerTechContext().getSiblingTechContext()) {
+            inject(context.getGenerator(), applicationConfigData, layerConfigData, handler);
+            context.getGenerator().execute();
+        }
+        
         if (viewerLayerConfig == null) {
             return;
         }
-        inject(applicationConfigData.getViewerLayerGenerator(), applicationConfigData, handler);
-        applicationConfigData.getViewerLayerGenerator().execute();
-
+        inject(applicationConfigData.getViewerTechContext().getGenerator(), applicationConfigData, layerConfigData, handler);
+        applicationConfigData.getViewerTechContext().getGenerator().execute();
+        for (TechContext context : applicationConfigData.getBussinesTechContext().getSiblingTechContext()) {
+            inject(context.getGenerator(), applicationConfigData, layerConfigData, handler);
+            context.getGenerator().execute();
+        }
     }
 
     private List<Field> getAllFields(List<Field> fields, Class<?> type) {
         fields.addAll(Arrays.asList(type.getDeclaredFields()));
-
         if (type.getSuperclass() != null) {
             fields = getAllFields(fields, type.getSuperclass());
         }
-
         return fields;
     }
 
-    private void inject(Generator instance, ApplicationConfigData applicationConfigData, ProgressHandler handler) {
-        LayerConfigData bussinesLayerConfig = applicationConfigData.getBussinesLayerConfig();
-        LayerConfigData controllerLayerConfig = applicationConfigData.getControllerLayerConfig();
-        LayerConfigData viewerLayerConfig = applicationConfigData.getViewerLayerConfig();
+    private void inject(Generator instance, ApplicationConfigData applicationConfigData, Map<Class<? extends LayerConfigData>,LayerConfigData> layerConfigData, ProgressHandler handler) {
         List<Field> fields = getAllFields(new LinkedList<>(), instance.getClass());
         for (Field field : fields) {
             if (field.isAnnotationPresent(ConfigData.class)) {
@@ -132,18 +155,14 @@ public class ApplicationGenerator extends BaseApplicationGenerator {
                         field.set(instance, applicationConfigData);
                     } else if (field.getGenericType() == EntityMappings.class) {
                         field.set(instance, applicationConfigData.getEntityMappings());
-                    } else if (bussinesLayerConfig != null && field.getGenericType() == bussinesLayerConfig.getClass()) {
-                        field.set(instance, bussinesLayerConfig);
-                    } else if (controllerLayerConfig != null && field.getGenericType() == controllerLayerConfig.getClass()) {
-                        field.set(instance, controllerLayerConfig);
-                    } else if (viewerLayerConfig != null && field.getGenericType() == viewerLayerConfig.getClass()) {
-                        field.set(instance, viewerLayerConfig);
                     } else if (field.getType().isAssignableFrom(handler.getClass())) {
                         field.set(instance, handler);
                     } else if (field.getType().isAssignableFrom(applicationConfigData.getProject().getClass())) {
                         field.set(instance, applicationConfigData.getProject());
                     } else if (field.getType().isAssignableFrom(applicationConfigData.getSourceGroup().getClass())) {
                         field.set(instance, applicationConfigData.getSourceGroup());
+                    } else if(LayerConfigData.class.isAssignableFrom(field.getType())){
+                        field.set(instance, layerConfigData.get(field.getType()));
                     }
                 } catch (IllegalArgumentException | IllegalAccessException e) {
                     e.printStackTrace();

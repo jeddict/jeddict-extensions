@@ -60,8 +60,6 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
 
     private static final String DEFAULT_PACKAGE = "controller";
     private static final String DEFAULT_APP_PACKAGE = "app";
-    private boolean useJersey;
-    private List<RestApplication> restApplications;
     private RestConfigDialog configDialog;
     private final Map<JCheckBox, FilterType> eventTypeBoxs = new HashMap<>();
     private Preferences pref;
@@ -179,30 +177,6 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         }
         addChangeListener(prefixField);
         addChangeListener(suffixField);
-
-//        eventObserversPanel.removeAll();
-//
-//        for (FilterType type : values()) {
-//            JCheckBox eventTypeBox = new JCheckBox();
-//            setLocalizedText(eventTypeBox, type.toString()); // NOI18N
-//            eventObserversPanel.add(eventTypeBox);
-//            eventTypeBoxs.put(eventTypeBox, type);
-//        }
-
-        final RestSupport restSupport = project.getLookup().lookup(RestSupport.class);
-        if (restSupport != null) {
-            if (restSupport.isEE5() && restSupport.hasJersey1(true)
-                    || restSupport.hasSpringSupport() && !restSupport.hasJersey2(true)) {
-                useJersey = true;
-            }
-
-            runWhenScanFinished(() -> {
-                restApplications = restSupport.getRestApplications();
-                if (configDialog != null) {
-                    configDialog.setRestApplicationClasses(restApplications);
-                }
-            }, getMessage(RESTPanel.class, "RESTPanel.scanningExistingApp.text"));
-        }
     }
 
     public String getPackage() {
@@ -542,12 +516,17 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
     private void openApplicationConfig() {
         if (configDialog == null) {
             configDialog = new RestConfigDialog();
-            if (restApplications != null) {
-                configDialog.setRestApplicationClasses(restApplications);
-            }
             configDialog.init(getPackage(), project, sourceGroup);
+            final RestSupport restSupport = project.getLookup().lookup(RestSupport.class);
+            if (restSupport != null) {
+                runWhenScanFinished(() -> {
+                    configDialog.setRestApplicationClasses(restSupport.getRestApplications());
+                    configDialog.setVisible(true);
+                }, getMessage(RESTPanel.class, "RESTPanel.scanningExistingApp.text"));
+            }
+        } else {
+            configDialog.setVisible(true);
         }
-        configDialog.setVisible(true);
         if (configDialog.getDialogResult() == OK_OPTION) {
             this.getConfigData().setRestConfigData(configDialog.getRestConfigData());
         }

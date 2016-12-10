@@ -17,13 +17,12 @@ package org.netbeans.jcode.stack.config.data;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Stream;
 import static java.util.stream.Collectors.toSet;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.layer.Generator;
+import org.netbeans.jcode.layer.TechContext;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
-import org.netbeans.jpa.modeler.spec.Entity;
 
 /**
  *
@@ -36,54 +35,84 @@ public class ApplicationConfigData implements Serializable {
     private EntityMappings entityMappings;
     private Map<String, EntityConfigData> entities;
 
-    private LayerConfigData bussinesLayerConfig;
-    private LayerConfigData controllerLayerConfig;
-    private LayerConfigData viewerLayerConfig;
-    private Generator bussinesLayerGenerator;
-    private Generator controllerLayerGenerator;
-    private Generator viewerLayerGenerator;
+//    private LayerConfigData bussinesLayerConfig;
+//    private LayerConfigData controllerLayerConfig;
+//    private LayerConfigData viewerLayerConfig;
+//    private Generator bussinesLayerGenerator;
+//    private Generator controllerLayerGenerator;
+//    private Generator viewerLayerGenerator;
+    
+    private TechContext bussinesTechContext;
+    private TechContext controllerTechContext;
+    private TechContext viewerTechContext;
 
-    /**
-     * @return the bussinesLayerConfig
-     */
-    public LayerConfigData getBussinesLayerConfig() {
-        return bussinesLayerConfig;
+    public TechContext getBussinesTechContext() {
+        return bussinesTechContext;
     }
 
-    /**
-     * @param bussinesLayerConfig the bussinesLayerConfig to set
-     */
-    public void setBussinesLayerConfig(LayerConfigData bussinesLayerConfig) {
-        this.bussinesLayerConfig = bussinesLayerConfig;
+    public void setBussinesTechContext(TechContext bussinesTechContext) {
+        this.bussinesTechContext = bussinesTechContext;
     }
 
-    /**
-     * @return the controllerLayerConfig
-     */
-    public LayerConfigData getControllerLayerConfig() {
-        return controllerLayerConfig;
+    public TechContext getControllerTechContext() {
+        return controllerTechContext;
     }
 
-    /**
-     * @param controllerLayerConfig the controllerLayerConfig to set
-     */
-    public void setControllerLayerConfig(LayerConfigData controllerLayerConfig) {
-        this.controllerLayerConfig = controllerLayerConfig;
+    public void setControllerTechContext(TechContext controllerTechContext) {
+        this.controllerTechContext = controllerTechContext;
     }
 
-    /**
-     * @return the viewerLayerConfig
-     */
-    public LayerConfigData getViewerLayerConfig() {
-        return viewerLayerConfig;
+    public TechContext getViewerTechContext() {
+        return viewerTechContext;
     }
 
-    /**
-     * @param viewerLayerConfig the viewerLayerConfig to set
-     */
-    public void setViewerLayerConfig(LayerConfigData viewerLayerConfig) {
-        this.viewerLayerConfig = viewerLayerConfig;
+    public void setViewerTechContext(TechContext viewerLayerTechContext) {
+        this.viewerTechContext = viewerLayerTechContext;
     }
+    
+    
+//
+//    /**
+//     * @return the bussinesLayerConfig
+//     */
+//    public LayerConfigData getBussinesLayerConfig() {
+//        return bussinesLayerConfig;
+//    }
+//
+//    /**
+//     * @param bussinesLayerConfig the bussinesLayerConfig to set
+//     */
+//    public void setBussinesLayerConfig(LayerConfigData bussinesLayerConfig) {
+//        this.bussinesLayerConfig = bussinesLayerConfig;
+//    }
+//
+//    /**
+//     * @return the controllerLayerConfig
+//     */
+//    public LayerConfigData getControllerLayerConfig() {
+//        return controllerLayerConfig;
+//    }
+//
+//    /**
+//     * @param controllerLayerConfig the controllerLayerConfig to set
+//     */
+//    public void setControllerLayerConfig(LayerConfigData controllerLayerConfig) {
+//        this.controllerLayerConfig = controllerLayerConfig;
+//    }
+//
+//    /**
+//     * @return the viewerLayerConfig
+//     */
+//    public LayerConfigData getViewerLayerConfig() {
+//        return viewerLayerConfig;
+//    }
+//
+//    /**
+//     * @param viewerLayerConfig the viewerLayerConfig to set
+//     */
+//    public void setViewerLayerConfig(LayerConfigData viewerLayerConfig) {
+//        this.viewerLayerConfig = viewerLayerConfig;
+//    }
 
     /**
      * @return the project
@@ -138,47 +167,47 @@ public class ApplicationConfigData implements Serializable {
         return getEntities().put(key, value);
     }
 
-    /**
-     * @return the bussinesLayerGenerator
-     */
-    public Generator getBussinesLayerGenerator() {
-        return bussinesLayerGenerator;
-    }
-
-    /**
-     * @param bussinesLayerGenerator the bussinesLayerGenerator to set
-     */
-    public void setBussinesLayerGenerator(Generator bussinesLayerGenerator) {
-        this.bussinesLayerGenerator = bussinesLayerGenerator;
-    }
-
-    /**
-     * @return the controllerLayerGenerator
-     */
-    public Generator getControllerLayerGenerator() {
-        return controllerLayerGenerator;
-    }
-
-    /**
-     * @param controllerLayerGenerator the controllerLayerGenerator to set
-     */
-    public void setControllerLayerGenerator(Generator controllerLayerGenerator) {
-        this.controllerLayerGenerator = controllerLayerGenerator;
-    }
-
-    /**
-     * @return the viewerLayerGenerator
-     */
-    public Generator getViewerLayerGenerator() {
-        return viewerLayerGenerator;
-    }
-
-    /**
-     * @param viewerLayerGenerator the viewerLayerGenerator to set
-     */
-    public void setViewerLayerGenerator(Generator viewerLayerGenerator) {
-        this.viewerLayerGenerator = viewerLayerGenerator;
-    }
+//    /**
+//     * @return the bussinesLayerGenerator
+//     */
+//    public Generator getBussinesLayerGenerator() {
+//        return bussinesLayerGenerator;
+//    }
+//
+//    /**
+//     * @param bussinesLayerGenerator the bussinesLayerGenerator to set
+//     */
+//    public void setBussinesLayerGenerator(Generator bussinesLayerGenerator) {
+//        this.bussinesLayerGenerator = bussinesLayerGenerator;
+//    }
+//
+//    /**
+//     * @return the controllerLayerGenerator
+//     */
+//    public Generator getControllerLayerGenerator() {
+//        return controllerLayerGenerator;
+//    }
+//
+//    /**
+//     * @param controllerLayerGenerator the controllerLayerGenerator to set
+//     */
+//    public void setControllerLayerGenerator(Generator controllerLayerGenerator) {
+//        this.controllerLayerGenerator = controllerLayerGenerator;
+//    }
+//
+//    /**
+//     * @return the viewerLayerGenerator
+//     */
+//    public Generator getViewerLayerGenerator() {
+//        return viewerLayerGenerator;
+//    }
+//
+//    /**
+//     * @param viewerLayerGenerator the viewerLayerGenerator to set
+//     */
+//    public void setViewerLayerGenerator(Generator viewerLayerGenerator) {
+//        this.viewerLayerGenerator = viewerLayerGenerator;
+//    }
 
     /**
      * @return the entityMappings

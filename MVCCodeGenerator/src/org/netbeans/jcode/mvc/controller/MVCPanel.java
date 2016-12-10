@@ -27,11 +27,13 @@ import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JList;
+import static javax.swing.JOptionPane.OK_OPTION;
 import javax.swing.event.ChangeEvent;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.text.JTextComponent;
 import org.apache.commons.lang.StringUtils;
 import org.netbeans.api.java.source.ui.ScanDialog;
+import static org.netbeans.api.java.source.ui.ScanDialog.runWhenScanFinished;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.SourceGroup;
@@ -55,9 +57,6 @@ import static org.openide.util.NbBundle.getMessage;
 public class MVCPanel extends LayerConfigPanel<MVCData> {
 
     private static final String DEFAULT_PACKAGE = "controller";
-//    private boolean useJersey;
-    private boolean configuredREST;
-    private List<RestApplication> restApplications;
     private RestConfigDialog configDialog;
     private final Map<JCheckBox, ControllerEventType> eventTypeBoxs = new HashMap<>();
     private Preferences pref;
@@ -173,33 +172,6 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
             eventObserversPanel.add(eventTypeBox);
             eventTypeBoxs.put(eventTypeBox, type);
         }
-
-        final RestSupport restSupport = project.getLookup().lookup(RestSupport.class);
-//        if (restSupport != null) {
-//            if (restSupport.isEE5() && restSupport.hasJersey1(true)
-//                    || restSupport.hasSpringSupport() && !restSupport.hasJersey2(true)) {
-//                useJersey = true;
-//            }
-//        }
-        if (restSupport != null) {
-            ScanDialog.runWhenScanFinished(() -> {
-                boolean configured;//restSupport.isRestSupportOn();
-                configured = restSupport.hasJerseyServlet();
-                restApplications = restSupport.getRestApplications();
-                if (!configured) {
-                    configured = restApplications != null && !restApplications.isEmpty();
-                }
-                if (configDialog != null) {
-                    configDialog.setRestApplicationClasses(restApplications);
-                }
-                configurREST(configured);
-            }, getMessage(MVCPanel.class, "MVCPanel.scanningExistingApp.text"));
-
-        }
-    }
-
-    private void configurREST(boolean configured) {
-        configuredREST = configured;
     }
 
     public String getPackage() {
@@ -540,23 +512,7 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
     }//GEN-LAST:event_suffixFieldPropertyChange
 
     private void applicationConfigButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applicationConfigButtonActionPerformed
-//        if (useJersey) {
-//            NotifyDescriptor d = new NotifyDescriptor.Message(getMessage(MVCPanel.class, "MVCPanel.notSupported.text"), NotifyDescriptor.INFORMATION_MESSAGE);
-//            d.setTitle(getMessage(MVCPanel.class, "MVCPanel.notSupported.title"));
-//            DialogDisplayer.getDefault().notify(d);
-//        } else if (configuredREST) { //Don't delete it
-//            final RestSupport restSupport = project.getLookup().lookup(RestSupport.class);
-//            List<RestApplication> restApplications = restSupport.getRestApplications();
-//            List<String> restApplicationClasses = restApplications.stream().map(a -> a.getApplicationClass()).collect(Collectors.toList());
-//            int reply = javax.swing.JOptionPane.showConfirmDialog(WindowManager.getDefault().getMainWindow(),
-//                    getMessage(MVCPanel.class, "MVCPanel.pathExist.text", restApplicationClasses),
-//                    getMessage(MVCPanel.class, "MVCPanel.pathExist.title"), JOptionPane.YES_NO_OPTION);
-//            if (reply == JOptionPane.YES_OPTION) {
-//                openApplicationConfig();
-//            }
-//        } else {
         openApplicationConfig();
-//        }
     }//GEN-LAST:event_applicationConfigButtonActionPerformed
 
     private void viewComboPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_viewComboPropertyChange
@@ -566,16 +522,22 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
     private void jCheckBox4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox4ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jCheckBox4ActionPerformed
-    private void openApplicationConfig() {
+    
+     private void openApplicationConfig() {
         if (configDialog == null) {
             configDialog = new RestConfigDialog();
-            if (restApplications != null) {
-                configDialog.setRestApplicationClasses(restApplications);
-            }
             configDialog.init(getPackage(), project, sourceGroup);
+            final RestSupport restSupport = project.getLookup().lookup(RestSupport.class);
+            if (restSupport != null) {
+                runWhenScanFinished(() -> {
+                    configDialog.setRestApplicationClasses(restSupport.getRestApplications());
+                    configDialog.setVisible(true);
+                }, getMessage(MVCPanel.class, "MVCPanel.scanningExistingApp.text"));
+            }
+        } else {
+            configDialog.setVisible(true);
         }
-        configDialog.setVisible(true);
-        if (configDialog.getDialogResult() == javax.swing.JOptionPane.OK_OPTION) {
+        if (configDialog.getDialogResult() == OK_OPTION) {
             this.getConfigData().setRestConfigData(configDialog.getRestConfigData());
         }
     }

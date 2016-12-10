@@ -16,10 +16,10 @@
 package org.netbeans.jcode.rest.applicationconfig;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.prefs.Preferences;
+import static java.util.stream.Collectors.toMap;
 import javax.lang.model.SourceVersion;
 import javax.swing.ComboBoxModel;
 import javax.swing.event.ChangeEvent;
@@ -44,11 +44,12 @@ public class RestConfigPanel extends LayerConfigPanel<RestConfigData> {
     private Preferences pref;
     private static final String DEFAULT_PACKAGE = "util";
     public static final String DEFAULT_RESOURCE_FOLDER = "webresources";
-    private Map<String,RestApplication> restApplications = Collections.EMPTY_MAP;
+    private Map<String, RestApplication> restApplications = Collections.EMPTY_MAP;
+
     public RestConfigPanel() {
         initComponents();
     }
-    
+
     @Override
     public boolean hasError() {
         warningLabel.setText("");
@@ -58,14 +59,14 @@ public class RestConfigPanel extends LayerConfigPanel<RestConfigData> {
             return true;
         }
         String restClass = getRestClass();
-       
+
         if (!SourceVersion.isName(restClass)) {
             warningLabel.setText(NbBundle.getMessage(RestConfigPanel.class, "RestConfigDialog.invalidClassName.message"));
             return true;
         }
-        
+
         String restPath = getRestPath();
-       
+
         if (StringUtils.isBlank(restPath)) {
             warningLabel.setText(NbBundle.getMessage(RestConfigPanel.class, "RestConfigDialog.invalidPath.message"));
             return true;
@@ -74,50 +75,48 @@ public class RestConfigPanel extends LayerConfigPanel<RestConfigData> {
             warningLabel.setText(NbBundle.getMessage(RestConfigPanel.class, "RestConfigDialog.reservedPath.message", DEFAULT_RESOURCE_FOLDER));
             return true;
         }
-        
-        
-        
+
         RestApplication restApplication = restApplications.get(restPath);
-         if (restApplication !=null && !restApplication.getApplicationClass().equals(_package + "." +restClass)) {
+        if (restApplication != null && !restApplication.getApplicationClass().equals(_package + "." + restClass)) {
             warningLabel.setText(NbBundle.getMessage(RestConfigPanel.class, "RestConfigDialog.alreadyExist.message", restApplication.getApplicationClass()));
             return true;
         }
         return false;
     }
-    
-    
+
     @Override
     public void stateChanged(ChangeEvent e) {
         hasError();
     }
-    
+
     @Override
-    public void read(){
-    this.setConfigData(PreferenceUtils.get(pref,RestConfigData.class));
+    public void read() {
+        this.setConfigData(PreferenceUtils.get(pref, RestConfigData.class));
         RestConfigData data = this.getConfigData();
-        if(StringUtils.isNotBlank(data.getPackage())){
+        if (StringUtils.isNotBlank(data.getPackage())) {
             setPackage(data.getPackage());
         }
-        
-        if(StringUtils.isNotBlank(data.getApplicationPath())){
+
+        if (StringUtils.isNotBlank(data.getApplicationPath())) {
             setRestPath(data.getApplicationPath());
         }
-        
-        if(StringUtils.isNotBlank(data.getApplicationClass())){
+
+        if (StringUtils.isNotBlank(data.getApplicationClass())) {
             setRestClass(data.getApplicationClass());
         }
-        
+
     }
+
     @Override
-    public void store(){
+    public void store() {
         this.getConfigData().setApplicationClass(getRestClass());
         this.getConfigData().setApplicationPath(getRestPath());
         this.getConfigData().setPackage(getPackage());
         PreferenceUtils.set(pref, this.getConfigData());
     }
-    
+
     @Override
-    public void init(String _package,Project project, SourceGroup sourceGroup) {
+    public void init(String _package, Project project, SourceGroup sourceGroup) {
         pref = ProjectUtils.getPreferences(project, RestConfigData.class, true);
         if (sourceGroup != null) {
             packageCombo.setRenderer(PackageView.listRenderer());
@@ -135,9 +134,8 @@ public class RestConfigPanel extends LayerConfigPanel<RestConfigData> {
         }
         addChangeListener(restConfigClassField);
         addChangeListener(restPathField);
-        
-    }
 
+    }
 
     public String getPackage() {
         return ((JTextComponent) packageCombo.getEditor().getEditorComponent()).getText().trim();
@@ -154,9 +152,6 @@ public class RestConfigPanel extends LayerConfigPanel<RestConfigData> {
         ((JTextComponent) packageCombo.getEditor().getEditorComponent()).setText(_package);
     }
 
-    
-   
-    
     public String getRestClass() {
         return restConfigClassField.getText().trim();
     }
@@ -173,7 +168,6 @@ public class RestConfigPanel extends LayerConfigPanel<RestConfigData> {
         restPathField.setText(path);
     }
 
-    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -274,7 +268,7 @@ public class RestConfigPanel extends LayerConfigPanel<RestConfigData> {
     private void packageComboPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_packageComboPropertyChange
         fire();
     }//GEN-LAST:event_packageComboPropertyChange
-      
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox packageCombo;
     private javax.swing.JLabel packageLabel;
@@ -293,9 +287,6 @@ public class RestConfigPanel extends LayerConfigPanel<RestConfigData> {
      * @param restApplicationClasses the restApplicationClasses to set
      */
     public void setRestApplicationClasses(List<RestApplication> restApplicationList) {
-        restApplications = new HashMap<>();
-        restApplicationList.stream().forEach((restApplication) -> {
-            restApplications.put(restApplication.getApplicationPath(), restApplication);
-        });
+        restApplications = restApplicationList.stream().collect(toMap(app -> app.getApplicationPath(), app -> app, (app1, app2) -> app1));
     }
 }

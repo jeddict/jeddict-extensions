@@ -15,29 +15,59 @@
  */
 package org.netbeans.jcode.layer;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import org.netbeans.api.project.Project;
+import org.netbeans.api.project.SourceGroup;
+import org.netbeans.jcode.stack.config.panel.DefaultConfigPanel;
 import org.netbeans.jcode.stack.config.panel.LayerConfigPanel;
+import org.openide.util.Exceptions;
 
 /**
  *
  * @author jGauravGupta <gaurav.gupta.jc@gmail.com>
  */
 public class TechContext {
-    
+
     private Generator generator;
     private Technology technology;
+    private LayerConfigPanel panel;
+    private List<TechContext> siblingTechContext;
 
     public TechContext(Generator generator, Technology technology) {
         this.generator = generator;
         this.technology = technology;
+        this.siblingTechContext = Generator.getSiblingTechContexts(generator);
     }
 
     public TechContext(Generator generator) {
-       this.generator = generator;
-       this.technology = generator.getClass().getAnnotation(Technology.class);
+        this(generator, generator.getClass().getAnnotation(Technology.class));
     }
 
+    public void createPanel(Project project, SourceGroup sourceGroup, String _package) {
+        if (panel == null) {
+            if (isValid()) {
+                try {
+                    panel = getTechnology().panel().newInstance();
+                } catch (InstantiationException | IllegalAccessException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+            } else {
+                panel = new DefaultConfigPanel();
+            }
+
+            panel.init(_package, project, sourceGroup);
+            panel.read();
+            
+            getSiblingTechContext().forEach(context -> context.createPanel(project, sourceGroup, _package));
+        }
+    }
     
+      public LayerConfigPanel getPanel() {
+        return panel;
+    }
+
     /**
      * @return the generator
      */
@@ -50,7 +80,7 @@ public class TechContext {
      */
     public void setGenerator(Generator generator) {
         this.generator = generator;
-       this.technology = generator.getClass().getAnnotation(Technology.class);
+        this.technology = generator.getClass().getAnnotation(Technology.class);
     }
 
     /**
@@ -72,7 +102,7 @@ public class TechContext {
         return technology.label();
     }
 
-    public boolean isValid(){
+    public boolean isValid() {
         return getTechnology().panel() != null && getTechnology().panel() != LayerConfigPanel.class;
     }
 
@@ -92,12 +122,29 @@ public class TechContext {
             return false;
         }
         final TechContext other = (TechContext) obj;
-        if (this.generator.getClass()!= other.generator.getClass()) {
+        if (this.generator.getClass() != other.generator.getClass()) {
             return false;
         }
         return true;
     }
-    
-    
-    
+
+    public List<TechContext> getSiblingTechContext() {
+        if (siblingTechContext == null) {
+            siblingTechContext = new ArrayList<>();
+        }
+        return siblingTechContext;
+    }
+
+    public void setSiblingTechContext(List<TechContext> siblingTechContext) {
+        this.siblingTechContext = siblingTechContext;
+    }
+
+    public boolean addSiblingTechContext(TechContext e) {
+        return getSiblingTechContext().add(e);
+    }
+
+    public boolean removeSiblingTechContext(TechContext o) {
+        return getSiblingTechContext().remove(o);
+    }
+
 }

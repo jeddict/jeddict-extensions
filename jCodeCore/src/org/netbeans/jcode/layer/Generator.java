@@ -17,6 +17,7 @@ package org.netbeans.jcode.layer;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.openide.util.Lookup;
 
@@ -39,20 +40,7 @@ public interface Generator {
     }
 
     static List<TechContext> getBusinessService() {
-        List<TechContext> codeGenerators = new ArrayList<>();
-        List<TechContext> customCodeGenerators = new ArrayList<>();
-        Lookup.getDefault().lookupAll(Generator.class).stream().forEach((Generator codeGenerator) -> {
-            Technology technology = codeGenerator.getClass().getAnnotation(Technology.class);
-            if (technology.type() == Technology.Type.BUSINESS) {
-                if (technology.panel() == org.netbeans.jcode.stack.config.panel.LayerConfigPanel.class) {
-                    codeGenerators.add(new TechContext(codeGenerator));
-                } else {
-                    customCodeGenerators.add(new TechContext(codeGenerator));
-                }
-            }
-        });
-        codeGenerators.addAll(customCodeGenerators);
-        return codeGenerators;
+        return getTechContexts(null, Technology.Type.BUSINESS);
     }
 
     static List<TechContext> getController(TechContext parentCodeGenerator) {
@@ -62,10 +50,25 @@ public interface Generator {
     static List<TechContext> getViewer(TechContext parentCodeGenerator) {
         return getTechContexts(parentCodeGenerator, Technology.Type.VIEWER);
     }
-        
+    
+    
+    
+    
+    
+    static List<TechContext> getSiblingTechContexts(Generator rootCodeGenerator) {
+        List<TechContext> siblingCodeGenerators = new ArrayList<>();
+        Lookup.getDefault().lookupAll(Generator.class).stream().forEach((Generator codeGenerator) -> {
+            Technology technology = codeGenerator.getClass().getAnnotation(Technology.class);
+            if (technology.type() == Technology.Type.NONE
+                    && Arrays.stream(technology.sibling()).filter(sibling -> sibling == rootCodeGenerator.getClass()).findAny().isPresent()) {
+                siblingCodeGenerators.add(new TechContext(codeGenerator));
+            }
+        });
+        return siblingCodeGenerators;
+    }
     
     static List<TechContext> getTechContexts(TechContext parentCodeGenerator, Technology.Type type) {
-        List<TechContext> codeGenerators = new ArrayList<>();
+        List<TechContext> codeGenerators = new ArrayList<>();//default <none> type //LayerConfigPanel
         List<TechContext> customCodeGenerators = new ArrayList<>();
        
         Lookup.getDefault().lookupAll(Generator.class).stream().forEach((Generator codeGenerator) -> {
@@ -74,17 +77,21 @@ public interface Generator {
                 if (technology.panel() == org.netbeans.jcode.stack.config.panel.LayerConfigPanel.class) {
                     codeGenerators.add(new TechContext(codeGenerator));
                 } else {
-                    for (Class<? extends Generator> genClass : technology.parents()) {
-                        if (genClass == parentCodeGenerator.getGenerator().getClass()) {
-                            customCodeGenerators.add(new TechContext(codeGenerator));
-                            break;
+                    if (parentCodeGenerator != null) {
+                        for (Class<? extends Generator> genClass : technology.parents()) {
+                            if (genClass == parentCodeGenerator.getGenerator().getClass()) {
+                                customCodeGenerators.add(new TechContext(codeGenerator));
+                                break;
+                            }
                         }
-                    }
-                    for (Class<? extends Generator> genClass : parentCodeGenerator.getTechnology().children()) {
-                        if (genClass == codeGenerator.getClass()) {
-                            customCodeGenerators.add(new TechContext(codeGenerator));
-                            break;
+                        for (Class<? extends Generator> genClass : parentCodeGenerator.getTechnology().children()) {
+                            if (genClass == codeGenerator.getClass()) {
+                                customCodeGenerators.add(new TechContext(codeGenerator));
+                                break;
+                            }
                         }
+                    } else {
+                        customCodeGenerators.add(new TechContext(codeGenerator));
                     }
                 }
             }
