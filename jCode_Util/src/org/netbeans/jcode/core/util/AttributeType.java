@@ -80,25 +80,32 @@ public class AttributeType {
     }
     
     public static String getPrimitiveType(String wrapperType) {
+        boolean array = false;
+        if (isArray(wrapperType)) {
+            array = true;
+            wrapperType = wrapperType.substring(0, wrapperType.length() - 2);
+        }
         String primitiveType = WRAPPER_DATA_TYPES.get(wrapperType);
         if (primitiveType != null) {
-            return primitiveType;
+            return primitiveType + (array?"[]":"");
         } else {
-            return wrapperType;
+            return wrapperType + (array?"[]":"");
         }
     }
 
     private static final Map<String, String> PRIMITIVE_DATA_TYPES = WRAPPER_DATA_TYPES.entrySet().stream().collect(Collectors.toMap(Entry::getValue, Entry::getKey));
 
     public static String getWrapperType(String primitiveType) {
+        boolean array = false;
         if (isArray(primitiveType)) {
+            array = true;
             primitiveType = primitiveType.substring(0, primitiveType.length() - 2);
         }
         String wrapperType = PRIMITIVE_DATA_TYPES.get(primitiveType);
         if (wrapperType != null) {
-            return wrapperType;
+            return wrapperType + (array?"[]":"");
         } else {
-            return primitiveType;
+            return primitiveType + (array?"[]":"");
         }
     }
 

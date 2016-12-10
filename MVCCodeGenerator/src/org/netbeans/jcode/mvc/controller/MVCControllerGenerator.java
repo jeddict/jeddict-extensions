@@ -521,7 +521,7 @@ public class MVCControllerGenerator implements Generator {
                             keyBuidler.append("for( int i=0;i<").append(name).append(".size();i++){"); 
                             keyBuidler.append("field[i]= new ");
                             if (type == PRIMITIVE_ARRAY) {
-                                keyBuidler.append(getWrapperType(dataType))  ;
+                                keyBuidler.append(getWrapperType(dataType))  ;//todo remove array
                             } else {
                                 keyBuidler.append(dataType);
                             }
