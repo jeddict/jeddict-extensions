@@ -24,52 +24,77 @@ import org.netbeans.jcode.stack.config.data.LayerConfigData;
  */
 public class DockerConfigData extends LayerConfigData {
 
-    private String prefixName;
-    private String suffixName;
-    private String _package;
+    private ServerType serverType;
+    private String serverVersion;
+    private DatabaseType databaseType;
+    private String databaseVersion;
+    private String dbUserName = "root";
+    private String dbPassword = "secret";
+    private String dataSource = "SampleDS";
+    private String dbName = "sample";
 
-    /**
-     * @return the _package
-     */
-    public String getPackage() {
-        return _package;
-    }
-
-    /**
-     * @param _package the _package to set
-     */
-    public void setPackage(String _package) {
-        this._package = _package;
-    }
-    
-        /**
-     * @return the suffixName
-     */
-    public String getSuffixName() {
-        if(StringUtils.isBlank(suffixName)){
-            suffixName = "Facade";
-        }
-        return suffixName;
+    public ServerType getServerType() {
+        return serverType;
     }
 
-    /**
-     * @param suffixName the suffixName to set
-     */
-    public void setSuffixName(String suffixName) {
-        this.suffixName = suffixName;
+    public void setServerType(ServerType serverType) {
+        this.serverType = serverType;
     }
 
-    /**
-     * @return the prefixName
-     */
-    public String getPrefixName() {
-        return prefixName;
+    public String getServerVersion() {
+        return serverVersion;
     }
 
-    /**
-     * @param prefixName the prefixName to set
-     */
-    public void setPrefixName(String prefixName) {
-        this.prefixName = prefixName;
+    public void setServerVersion(String serverVersion) {
+        this.serverVersion = serverVersion;
     }
+
+    public DatabaseType getDatabaseType() {
+        return databaseType;
+    }
+
+    public void setDatabaseType(DatabaseType databaseType) {
+        this.databaseType = databaseType;
+    }
+
+    public String getDatabaseVersion() {
+        return databaseVersion;
+    }
+
+    public void setDatabaseVersion(String databaseVersion) {
+        this.databaseVersion = databaseVersion;
+    }
+
+    public String getDbUserName() {
+        return dbUserName;
+    }
+
+    public void setDbUserName(String dbUserName) {
+        this.dbUserName = dbUserName;
+    }
+
+    public String getDbPassword() {
+        return dbPassword;
+    }
+
+    public void setDbPassword(String dbPassword) {
+        this.dbPassword = dbPassword;
+    }
+
+    public String getDataSource() {
+        return dataSource;
+    }
+
+    public void setDataSource(String dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    public String getDbName() {
+        return dbName;
+    }
+
+    public void setDbName(String dbName) {
+        this.dbName = dbName;
+    }
+
 }

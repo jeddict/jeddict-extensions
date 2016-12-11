@@ -8,11 +8,15 @@
     <packaging>jar</packaging>
     <name>app_pom</name>
 
+    <properties>
+        <version.javaee>7.0</version.javaee>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
-            <version>7.0</version>
+            <version>${version.javaee}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

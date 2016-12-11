@@ -34,15 +34,19 @@ import org.netbeans.modules.maven.embedder.EmbedderFactory;
 import org.netbeans.modules.maven.model.ModelOperation;
 import org.netbeans.modules.maven.model.Utilities;
 import org.netbeans.modules.maven.model.pom.Activation;
-import org.netbeans.modules.maven.model.pom.ActivationCustom;
-import org.netbeans.modules.maven.model.pom.Build;
+import org.netbeans.modules.maven.model.pom.BuildBase;
 import org.netbeans.modules.maven.model.pom.Configuration;
+import org.netbeans.modules.maven.model.pom.Dependency;
+import org.netbeans.modules.maven.model.pom.DependencyContainer;
 import org.netbeans.modules.maven.model.pom.DependencyManagement;
+import org.netbeans.modules.maven.model.pom.POMComponent;
+import org.netbeans.modules.maven.model.pom.POMExtensibilityElement;
 import org.netbeans.modules.maven.model.pom.POMModel;
 import org.netbeans.modules.maven.model.pom.POMModelFactory;
 import org.netbeans.modules.maven.model.pom.Plugin;
 import org.netbeans.modules.maven.model.pom.PluginExecution;
 import org.netbeans.modules.maven.model.pom.Profile;
+import org.netbeans.modules.maven.model.pom.Properties;
 import org.netbeans.modules.maven.model.pom.Repository;
 import org.netbeans.modules.maven.model.pom.RepositoryPolicy;
 import org.openide.filesystems.FileObject;
@@ -81,95 +85,124 @@ public class POMManager {
     }
 
     private void execute() {
-        registerDependency();
-        registerRepository();
-        registerPlugin();
-        registerProfile();
+        try {
+            pomModel.startTransaction();
+            org.netbeans.modules.maven.model.pom.Project pomProject = pomModel.getProject();
+            if (pomProject.getProperties() == null) {
+                pomProject.setProperties(pomModel.getFactory().createProperties());
+            }
+            registerProperties(sourceModel.getProperties(), pomProject.getProperties());
+            pomProject.setDependencyManagement(registerDependencyManagement(sourceModel.getDependencyManagement(), pomProject.getDependencyManagement()));
+            registerDependency(sourceModel.getDependencies(), pomProject);
+            registerRepository();
+            registerPlugin();
+            registerProfile();
+        } finally {
+            pomModel.endTransaction();
+        }
+    }
+
+    private Properties registerProperties(java.util.Properties source, Properties target) {
+        if (source!= null && !source.isEmpty()) {
+            if (target == null) {
+                target = pomModel.getFactory().createProperties();
+            }
+            for (String sourceKey : source.stringPropertyNames()) {
+                String sourceValue = source.getProperty(sourceKey);
+                String targetValue = target.getProperty(sourceKey);
+                if (targetValue == null) {
+                    target.setProperty(sourceKey, sourceValue);
+                }
+            }
+        }
+        return target;
     }
 
     private void registerPlugin() {
         if (sourceModel.getBuild() != null && !sourceModel.getBuild().getPlugins().isEmpty()) {
-            try {
-                pomModel.startTransaction();
-                org.netbeans.modules.maven.model.pom.Project pomProject = pomModel.getProject();
-                Build bld = pomProject.getBuild();
-                if (bld == null) {
-                    bld = pomModel.getFactory().createBuild();
-                    pomProject.setBuild(bld);
+            registerBuild(sourceModel.getBuild(), pomModel.getProject().getBuild());
+        }
+    }
+
+    private BuildBase registerBuild(org.apache.maven.model.BuildBase sourceBuild, BuildBase targetBuild) {
+        if(sourceBuild == null || sourceBuild.getPlugins() == null || sourceBuild.getPlugins().isEmpty()){
+            return targetBuild;
+        }
+        if (targetBuild == null) {
+            targetBuild = pomModel.getFactory().createBuild();
+        }
+        for (org.apache.maven.model.Plugin sourcePlugin : sourceBuild.getPlugins()) {
+            Plugin targetPlugin = targetBuild.findPluginById(sourcePlugin.getGroupId(), sourcePlugin.getArtifactId());
+            if (targetPlugin == null) {
+                targetPlugin = pomModel.getFactory().createPlugin();
+                targetPlugin.setGroupId(sourcePlugin.getGroupId());
+                targetPlugin.setArtifactId(sourcePlugin.getArtifactId());
+                if(sourcePlugin.getExtensions() != null){
+                    targetPlugin.setExtensions(Boolean.TRUE);
                 }
+                targetBuild.addPlugin(targetPlugin);
 
-                for (org.apache.maven.model.Plugin plugin : sourceModel.getBuild().getPlugins()) {
-                    Plugin plg = bld.findPluginById(plugin.getGroupId(), plugin.getArtifactId());
-                    if (plg == null) {
-                        plg = pomModel.getFactory().createPlugin();
-                        plg.setGroupId(plugin.getGroupId());
-                        plg.setArtifactId(plugin.getArtifactId());
-                        plg.setExtensions(Boolean.TRUE);
-                        bld.addPlugin(plg);
+                if (sourcePlugin.getConfiguration() != null) {
+                    Xpp3Dom parentDOM = (Xpp3Dom) sourcePlugin.getConfiguration();
 
-                        if (plugin.getConfiguration() != null) {
-                            Xpp3Dom parentDOM = (Xpp3Dom) plugin.getConfiguration();
-
-                            Configuration cnf = plg.getConfiguration();
-                            if (cnf == null) {
-                                cnf = pomModel.getFactory().createConfiguration();
-                                plg.setConfiguration(cnf);
-                            }
-                            for (Xpp3Dom childDOM : parentDOM.getChildren()) {
-                                childDOM.getName();
-                                childDOM.getValue();
-                                cnf.setSimpleParameter(childDOM.getName(), childDOM.getValue());
-                            }
-                        }
-
-                        if (plugin.getExecutions() != null && !plugin.getExecutions().isEmpty()) {
-                            for (org.apache.maven.model.PluginExecution execution : plugin.getExecutions()) {
-                                PluginExecution pluginExecution = pomModel.getFactory().createExecution();
-                                pluginExecution.setId(execution.getId());
-                                pluginExecution.setPhase(execution.getPhase());
-                                execution.getGoals().forEach(pluginExecution::addGoal);
-                                plg.addExecution(pluginExecution);
-                            }
-                        }
+                    Configuration targetConfig = targetPlugin.getConfiguration();
+                    if (targetConfig == null) {
+                        targetConfig = pomModel.getFactory().createConfiguration();
+                        targetPlugin.setConfiguration(targetConfig);
                     }
-                    plg.setVersion(plugin.getVersion());
+                    loadDom(parentDOM, targetConfig);
                 }
-            } finally {
-                pomModel.endTransaction();
+
+                if (sourcePlugin.getExecutions() != null && !sourcePlugin.getExecutions().isEmpty()) {
+                    for (org.apache.maven.model.PluginExecution execution : sourcePlugin.getExecutions()) {
+                        PluginExecution pluginExecution = pomModel.getFactory().createExecution();
+                        pluginExecution.setId(execution.getId());
+                        pluginExecution.setPhase(execution.getPhase());
+                        execution.getGoals().forEach(pluginExecution::addGoal);
+                        targetPlugin.addExecution(pluginExecution);
+                    }
+                }
+            }
+            targetPlugin.setVersion(sourcePlugin.getVersion());
+        }
+        return targetBuild;
+    }
+
+    private void loadDom(Xpp3Dom source, POMComponent target) {
+        for (Xpp3Dom childDOM : source.getChildren()) {
+            if (childDOM.getValue() != null) {
+                if (target instanceof Configuration) {
+                    ((Configuration) target).setSimpleParameter(childDOM.getName(), childDOM.getValue());
+                } else {
+                    target.setChildElementText("ree", childDOM.getValue(), new QName(childDOM.getName()));
+                }
+            } else {
+                POMExtensibilityElement element = pomModel.getFactory().createPOMExtensibilityElement(new QName(childDOM.getName()));
+                target.addExtensibilityElement(element);
+                loadDom(childDOM, element);
             }
         }
     }
-    
+
     private void registerProfile() {
         if (!sourceModel.getProfiles().isEmpty()) {
-            try {
-                pomModel.startTransaction();
-                org.netbeans.modules.maven.model.pom.Project pomProject = pomModel.getProject();
-                for (org.apache.maven.model.Profile sourceProfile : sourceModel.getProfiles()) {
-                    Profile targetProfile = pomProject.findProfileById(sourceProfile.getId());
-                    if (targetProfile == null) {
-                        targetProfile = pomModel.getFactory().createProfile();
-                        pomProject.addProfile(targetProfile);
-                        targetProfile.setId(sourceProfile.getId());
-                        if (sourceProfile.getActivation() != null) {
-                            Activation activation = pomModel.getFactory().createActivation();
-                            targetProfile.setActivation(activation);
-                            activation.setChildElementText("activeByDefault", Boolean.toString(sourceProfile.getActivation().isActiveByDefault()), new QName("activeByDefault"));
-                        }
-                    }
-                    targetProfile.setDependencyManagement(registerDependencyManagement(sourceProfile.getDependencyManagement(), targetProfile.getDependencyManagement()));
-                    for (org.apache.maven.model.Dependency sourceDependency : sourceProfile.getDependencies()) {
-                        org.netbeans.modules.maven.model.pom.Dependency targetDependency = targetProfile.findDependencyById(sourceDependency.getGroupId(), sourceDependency.getArtifactId(), null);
-                        if (targetDependency == null) {
-                            targetDependency = createDependency(sourceDependency);
-                            targetProfile.addDependency(targetDependency);
-                        } else {
-                            targetDependency.setVersion(sourceDependency.getVersion());
-                        }
+            org.netbeans.modules.maven.model.pom.Project pomProject = pomModel.getProject();
+            for (org.apache.maven.model.Profile sourceProfile : sourceModel.getProfiles()) {
+                Profile targetProfile = pomProject.findProfileById(sourceProfile.getId());
+                if (targetProfile == null) {
+                    targetProfile = pomModel.getFactory().createProfile();
+                    pomProject.addProfile(targetProfile);
+                    targetProfile.setId(sourceProfile.getId());
+                    targetProfile.setProperties(registerProperties(sourceProfile.getProperties(), targetProfile.getProperties()));
+                    if (sourceProfile.getActivation() != null) {
+                        Activation activation = pomModel.getFactory().createActivation();
+                        targetProfile.setActivation(activation);
+                        activation.setChildElementText("activeByDefault", Boolean.toString(sourceProfile.getActivation().isActiveByDefault()), new QName("activeByDefault"));
                     }
                 }
-            } finally {
-                pomModel.endTransaction();
+                targetProfile.setDependencyManagement(registerDependencyManagement(sourceProfile.getDependencyManagement(), targetProfile.getDependencyManagement()));
+                registerDependency(sourceProfile.getDependencies(), targetProfile);
+                targetProfile.setBuildBase(registerBuild(sourceProfile.getBuild(), targetProfile.getBuildBase()));
             }
         }
     }
@@ -179,46 +212,32 @@ public class POMManager {
             if (target == null) {
                 target = pomModel.getFactory().createDependencyManagement();
             }
-            for (org.apache.maven.model.Dependency sourceDependency : source.getDependencies()) {
-                org.netbeans.modules.maven.model.pom.Dependency targetDependency = target.findDependencyById(sourceDependency.getGroupId(), sourceDependency.getArtifactId(), null);
-                if (targetDependency == null) {
-                    targetDependency = createDependency(sourceDependency);
-                    target.addDependency(targetDependency);
-                } else {
-                    targetDependency.setVersion(sourceDependency.getVersion());
-                }
-            }
+            registerDependency(source.getDependencies(), target);
         }
         return target;
     }
-    private void registerDependency() {
-        try {
-            pomModel.startTransaction();
-            pomModel.getProject().setDependencyManagement(registerDependencyManagement(sourceModel.getDependencyManagement(), pomModel.getProject().getDependencyManagement()));
-            sourceModel.getDependencies().forEach((sourceDependency) -> {
-                org.netbeans.modules.maven.model.pom.Dependency targetDependency = pomModel.getProject().findDependencyById(sourceDependency.getGroupId(), sourceDependency.getArtifactId(), null);
-                if (targetDependency == null) {
-                    targetDependency = createDependency(sourceDependency);
-                    pomModel.getProject().addDependency(targetDependency);
-                } else {
-                    targetDependency.setVersion(sourceDependency.getVersion());
-                }
-            });
-        } finally {
-            pomModel.endTransaction();
-        }
 
+    private void registerDependency(List<org.apache.maven.model.Dependency> source, DependencyContainer target) {
+        source.forEach((sourceDependency) -> {
+            org.netbeans.modules.maven.model.pom.Dependency targetDependency = target.findDependencyById(sourceDependency.getGroupId(), sourceDependency.getArtifactId(), null);
+            if (targetDependency == null) {
+                targetDependency = createDependency(sourceDependency);
+                target.addDependency(targetDependency);
+            } else {
+                targetDependency.setVersion(sourceDependency.getVersion());
+            }
+        });
     }
 
-    private org.netbeans.modules.maven.model.pom.Dependency createDependency(org.apache.maven.model.Dependency source) {
+    private Dependency createDependency(org.apache.maven.model.Dependency source) {
         org.netbeans.modules.maven.model.pom.Dependency target = pomModel.getFactory().createDependency();
         target.setGroupId(source.getGroupId());
         target.setArtifactId(source.getArtifactId());
         target.setVersion(source.getVersion());
         target.setClassifier(source.getClassifier());
-      if(!"jar".equals(source.getType())) {
-          target.setType(source.getType()); 
-      }
+        if (!"jar".equals(source.getType())) {
+            target.setType(source.getType());
+        }
         target.setScope(source.getScope());
 
         return target;
@@ -226,7 +245,7 @@ public class POMManager {
 
     private void registerRepository() {
         if (sourceModel.getRepositories().size() > 0) {
-            operations.add((POMModel pomModel) -> {
+            operations.add(pomModel -> {
                 Set<String> existingRepositories = pomModel.getProject().getRepositories() != null ? pomModel.getProject().getRepositories().stream().map(r -> r.getId()).collect(toSet()) : Collections.EMPTY_SET;
                 for (org.apache.maven.model.Repository repository : sourceModel.getRepositories()) {
                     if (!existingRepositories.contains(repository.getId())) {
@@ -248,7 +267,7 @@ public class POMManager {
     }
 
     public void setSourceVersion(final String version) {
-        operations.add((POMModel pomModel) -> ModelUtils.setSourceLevel(pomModel, version));
+        operations.add(pomModel -> ModelUtils.setSourceLevel(pomModel, version));
     }
 
     private void downloadDependency() {

@@ -309,14 +309,16 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
 
         jPanel1.setLayout(new java.awt.GridLayout(5, 0, 0, 10));
 
+        suffixPanel.setPreferredSize(new java.awt.Dimension(200, 27));
         suffixPanel.setLayout(new java.awt.BorderLayout(10, 0));
 
+        namePane.setPreferredSize(new java.awt.Dimension(150, 27));
         namePane.setLayout(new javax.swing.BoxLayout(namePane, javax.swing.BoxLayout.LINE_AXIS));
 
         prefixField.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         prefixField.setText(org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.prefixField.text")); // NOI18N
         prefixField.setToolTipText(org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.prefixField.toolTipText")); // NOI18N
-        prefixField.setPreferredSize(new java.awt.Dimension(100, 27));
+        prefixField.setPreferredSize(new java.awt.Dimension(50, 27));
         prefixField.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
             public void propertyChange(java.beans.PropertyChangeEvent evt) {
                 prefixFieldPropertyChange(evt);
@@ -332,7 +334,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         namePane.add(entityLabel);
 
         suffixField.setText(org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.suffixField.text")); // NOI18N
-        suffixField.setPreferredSize(new java.awt.Dimension(100, 27));
+        suffixField.setPreferredSize(new java.awt.Dimension(50, 27));
         suffixField.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
             public void propertyChange(java.beans.PropertyChangeEvent evt) {
                 suffixFieldPropertyChange(evt);
@@ -429,7 +431,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
             .addGroup(wrapperLayout.createSequentialGroup()
                 .addGap(107, 107, 107)
                 .addComponent(testcaseCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 69, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(metricsCheckbox, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(docsCheckBox)
@@ -454,14 +456,12 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGap(10, 10, 10)
+                .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

@@ -41,8 +41,12 @@ public @interface Technology {
     Class<? extends Generator>[] children() default {};
     
     Class<? extends Generator>[] sibling() default {};
+    
+    int index() default -1;
 
     String label() default NONE_LABEL;
+    
+    String description() default "";
     
     enum Type {
         BUSINESS,CONTROLLER,VIEWER, NONE;

@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang.StringUtils.EMPTY;
+import org.jcode.docker.generator.DockerGenerator;
 import org.netbeans.jpa.modeler.spec.Entity;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
@@ -59,7 +60,7 @@ import org.netbeans.jpa.modeler.spec.extend.Attribute;
  */
 
 @ServiceProvider(service=Generator.class)
-@Technology(type=BUSINESS, label="Session Bean Facade", panel=SessionBeanPanel.class)
+@Technology(type=BUSINESS, label="Session Bean Facade", panel=SessionBeanPanel.class, sibling = {DockerGenerator.class})
 public final class EjbFacadeGenerator implements Generator{
     
     private static final String TEMPLATE = "org/netbeans/jcode/template/";

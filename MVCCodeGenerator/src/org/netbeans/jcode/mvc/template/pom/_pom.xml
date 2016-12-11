@@ -10,11 +10,9 @@
     <name>ShoppingSystem</name>
 
     <properties>
-        <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <failOnMissingWebXml>false</failOnMissingWebXml>
+        <version.mvc>1.0-edr2</version.mvc>
+        <version.ozark>1.0.0-m02</version.ozark>
+        <version.soteria>1.0-m01-SNAPSHOT</version.soteria>
     </properties>
     
     <dependencies>
@@ -22,18 +20,18 @@
         <dependency>
             <groupId>javax.mvc</groupId>
             <artifactId>javax.mvc-api</artifactId>
-            <version>1.0-edr2</version>
+            <version>${version.mvc}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.ozark</groupId>
             <artifactId>ozark</artifactId>
-            <version>1.0.0-m02</version>
+            <version>${version.ozark}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.omnifaces</groupId>
             <artifactId>soteria</artifactId>
-            <version>1.0-m01-SNAPSHOT</version>
+            <version>${version.soteria}</version>
         </dependency>
     </dependencies>
     

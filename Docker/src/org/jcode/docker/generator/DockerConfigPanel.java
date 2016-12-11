@@ -16,18 +16,16 @@
 package org.jcode.docker.generator;
 
 import java.util.prefs.Preferences;
-import javax.lang.model.SourceVersion;
-import javax.swing.ComboBoxModel;
-import javax.swing.text.JTextComponent;
+import java.util.stream.Stream;
+import javax.swing.DefaultComboBoxModel;
 import org.apache.commons.lang.StringUtils;
+import static org.jcode.docker.generator.ServerType.NONE;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.SourceGroup;
-import static org.netbeans.jcode.core.util.JavaIdentifiers.isValidPackageName;
 import org.netbeans.jcode.stack.config.panel.LayerConfigPanel;
 import org.netbeans.jcode.util.PreferenceUtils;
-import org.netbeans.spi.java.project.support.ui.PackageView;
-import org.openide.util.NbBundle;
+import static org.openide.util.NbBundle.getMessage;
 
 /**
  *
@@ -45,124 +43,134 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
     @Override
     public boolean hasError() {
         warningLabel.setText("");
-        if (!isValidPackageName(getPackage())) {
-            warningLabel.setText(NbBundle.getMessage(DockerConfigPanel.class, "XTechnologyConfigPanel.invalidPackage.message"));
-            return true;
-        }
-        String prefix = getPrefix();
-        String suffix = getSuffix();
-        
-        if (StringUtils.isNotBlank(prefix) && !SourceVersion.isName(prefix)) {
-            warningLabel.setText(NbBundle.getMessage(DockerConfigPanel.class, "XTechnologyConfigPanel.invalidPrefix.message"));
-            return true;
-        }
-        if (StringUtils.isNotBlank(suffix) && !SourceVersion.isName(prefix +'_'+ suffix)) {
-            warningLabel.setText(NbBundle.getMessage(DockerConfigPanel.class, "XTechnologyConfigPanel.invalidSuffix.message"));
-            return true;
+        if (getServerType() != NONE) {
+            if (StringUtils.isBlank(dbUserTextField.getText())) {
+                warningLabel.setText(getMessage(DockerConfigPanel.class, "DockerConfigPanel.invalidDBUserName.message"));
+                return true;
+            }
+            if (StringUtils.isBlank(dbPasswordTextField.getText())) {
+                warningLabel.setText(getMessage(DockerConfigPanel.class, "DockerConfigPanel.invalidDBPassword.message"));
+                return true;
+            }
+            if (StringUtils.isBlank(dbNameTextField.getText())) {
+                warningLabel.setText(getMessage(DockerConfigPanel.class, "DockerConfigPanel.invalidDBName.message"));
+                return true;
+            }
+            if (StringUtils.isBlank(dsTextField.getText())) {
+                warningLabel.setText(getMessage(DockerConfigPanel.class, "DockerConfigPanel.invalidDataSource.message"));
+                return true;
+            }
+            if(!validateDB()){
+                return true;
+            }
+        } else {
+            warningLabel.setText(getMessage(DockerConfigPanel.class, "DockerConfigPanel.DockerDisabled.message"));
         }
         return false;
     }
     
-        
-    
-    
-    @Override
-    public void read(){
-        this.setConfigData(PreferenceUtils.get(pref,DockerConfigData.class));
-        DockerConfigData data = this.getConfigData();
-        if(StringUtils.isNotBlank(data.getPackage())){
-            setPackage(data.getPackage());
+    private boolean validateDB(){
+        if(getDatabaseType() == DatabaseType.MYSQL){
+            if(StringUtils.equals(dbUserTextField.getText(), "root")){
+                 warningLabel.setText(getMessage(DockerConfigPanel.class, "MYSQL_ROOT_USER_EXIST"));
+                return false;
+            }
         }
-        
-        if(StringUtils.isNotBlank(data.getPrefixName())){
-            setPrefix(data.getPrefixName());
-        }
-        
-        if(StringUtils.isNotBlank(data.getSuffixName())){
-            setSuffix(data.getSuffixName());
-        }
-        
+        return true;
     }
+
     @Override
-    public void store(){
-        this.getConfigData().setPrefixName(getPrefix());
-        this.getConfigData().setSuffixName(getSuffix());
-        this.getConfigData().setPackage(getPackage());
+    public void read() {
+        this.setConfigData(PreferenceUtils.get(pref, DockerConfigData.class));
+        DockerConfigData data = this.getConfigData();
+        if (data.getServerType() != null) {
+            serverComboBox.setSelectedItem(data.getServerType());
+        }
+        if (StringUtils.isNotBlank(data.getServerVersion())) {
+            serverVersionComboBox.setSelectedItem(data.getServerVersion());
+        }
+        if (data.getDatabaseType() != null) {
+            dbComboBox.setSelectedItem(data.getDatabaseType());
+        }
+        if (StringUtils.isNotBlank(data.getDatabaseVersion())) {
+            dbVersionComboBox.setSelectedItem(data.getDatabaseVersion());
+        }
+        if (StringUtils.isNotBlank(data.getDbUserName())) {
+            dbUserTextField.setText(data.getDbUserName());
+        }
+        if (StringUtils.isNotBlank(data.getDbPassword())) {
+            dbPasswordTextField.setText(data.getDbPassword());
+        }
+        if (StringUtils.isNotBlank(data.getDbName())) {
+            dbNameTextField.setText(data.getDbName());
+        }
+        if (StringUtils.isNotBlank(data.getDataSource())) {
+            dsTextField.setText(data.getDataSource());
+        }
+    }
+
+    @Override
+    public void store() {
+        DockerConfigData data = this.getConfigData();
+        data.setServerType(getServerType());
+        data.setServerVersion((String) serverVersionComboBox.getSelectedItem());
+        data.setDatabaseType(getDatabaseType());
+        data.setDatabaseVersion((String) dbVersionComboBox.getSelectedItem());
+        data.setDbName(dbNameTextField.getText());
+        data.setDataSource(dsTextField.getText());
+        data.setDbUserName(dbUserTextField.getText());
+        data.setDbPassword(dbPasswordTextField.getText());
         PreferenceUtils.set(pref, this.getConfigData());
     }
-    
+
     @Override
     public void init(String _package, Project project, SourceGroup sourceGroup) {
         pref = ProjectUtils.getPreferences(project, DockerConfigData.class, true);
-        if (sourceGroup != null) {
-            packageCombo.setRenderer(PackageView.listRenderer());
-            ComboBoxModel model = PackageView.createListView(sourceGroup);
-            if (model.getSize() > 0) {
-                model.setSelectedItem(model.getElementAt(0));
-            }
-            packageCombo.setModel(model);
-            addChangeListener(packageCombo);
-            if (StringUtils.isBlank(_package)) {
-                setPackage(DEFAULT_PACKAGE);
-            } else {
-                setPackage(_package + '.' + DEFAULT_PACKAGE);
-            }
-        }
-        addChangeListener(prefixField);
-        addChangeListener(suffixField);
+        serverComboBoxActionPerformed(null);
+        dbComboBoxActionPerformed(null);
     }
 
-    public String getPackage() {
-        return ((JTextComponent) packageCombo.getEditor().getEditorComponent()).getText().trim();
+    private ServerType getServerType() {
+        return (ServerType) serverComboBox.getSelectedItem();
     }
 
-    private void setPackage(String _package) {
-        ComboBoxModel model = packageCombo.getModel();
-        for (int i = 0; i < model.getSize(); i++) {
-            if (model.getElementAt(i).toString().equals(_package)) {
-                model.setSelectedItem(model.getElementAt(i));
-                return;
-            }
-        }
-        ((JTextComponent) packageCombo.getEditor().getEditorComponent()).setText(_package);
-    }
-    
-    public String getSuffix() {
-        return suffixField.getText().trim();
-    }
-    
-    public String getPrefix() {
-        return prefixField.getText().trim();
-    }
-    
-      private void setPrefix(String prefix) {
-        prefixField.setText(prefix);
-    }
-    private void setSuffix(String suffix) {
-        suffixField.setText(suffix);
+    private DatabaseType getDatabaseType() {
+        return (DatabaseType) dbComboBox.getSelectedItem();
     }
 
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         warningPanel = new javax.swing.JPanel();
         warningLabel = new javax.swing.JLabel();
-        jPanel1 = new javax.swing.JPanel();
-        suffixPanel = new javax.swing.JPanel();
-        namePane = new javax.swing.JLayeredPane();
-        prefixField = new javax.swing.JTextField();
-        entityLabel = new javax.swing.JLabel();
-        suffixField = new javax.swing.JTextField();
-        nameLabel = new javax.swing.JLabel();
-        packagePanel = new javax.swing.JPanel();
-        packageLabel = new javax.swing.JLabel();
-        packageCombo = new javax.swing.JComboBox();
+        panel = new javax.swing.JPanel();
+        serverWrapperPanel = new javax.swing.JPanel();
+        serverConfigPanel = new javax.swing.JLayeredPane();
+        serverComboBox = new javax.swing.JComboBox<>();
+        serverVersionLabel = new javax.swing.JLabel();
+        serverVersionComboBox = new javax.swing.JComboBox<>();
+        serverLabel = new javax.swing.JLabel();
+        dbWrapperPanel = new javax.swing.JPanel();
+        dbConfigPanel = new javax.swing.JLayeredPane();
+        dbComboBox = new javax.swing.JComboBox<>();
+        dbVersionLabel = new javax.swing.JLabel();
+        dbVersionComboBox = new javax.swing.JComboBox<>();
+        dbLabel = new javax.swing.JLabel();
+        dbCredentialPanel = new javax.swing.JPanel();
+        dbUserPanel = new javax.swing.JPanel();
+        dbUserLabel = new javax.swing.JLabel();
+        dbUserTextField = new javax.swing.JTextField();
+        dbPasswordPanel = new javax.swing.JPanel();
+        dbPasswordLabel = new javax.swing.JLabel();
+        dbPasswordTextField = new javax.swing.JTextField();
+        dsWrpperPanel = new javax.swing.JPanel();
+        dbNamePanel = new javax.swing.JPanel();
+        dbNameLabel = new javax.swing.JLabel();
+        dbNameTextField = new javax.swing.JTextField();
+        dsPanel = new javax.swing.JPanel();
+        dsLabel = new javax.swing.JLabel();
+        dsTextField = new javax.swing.JTextField();
 
         warningPanel.setLayout(new java.awt.BorderLayout(10, 0));
 
@@ -171,126 +179,209 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
         org.openide.awt.Mnemonics.setLocalizedText(warningLabel, org.openide.util.NbBundle.getMessage(DockerConfigPanel.class, "DockerConfigPanel.warningLabel.text")); // NOI18N
         warningPanel.add(warningLabel, java.awt.BorderLayout.CENTER);
 
-        jPanel1.setLayout(new java.awt.GridLayout(2, 0, 0, 15));
+        panel.setPreferredSize(new java.awt.Dimension(560, 25));
+        panel.setLayout(new java.awt.GridLayout(5, 0, 0, 10));
 
-        suffixPanel.setLayout(new java.awt.BorderLayout(10, 0));
+        serverWrapperPanel.setLayout(new java.awt.BorderLayout(10, 0));
 
-        namePane.setLayout(new javax.swing.BoxLayout(namePane, javax.swing.BoxLayout.LINE_AXIS));
+        serverConfigPanel.setLayout(new javax.swing.BoxLayout(serverConfigPanel, javax.swing.BoxLayout.LINE_AXIS));
 
-        prefixField.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        prefixField.setText(org.openide.util.NbBundle.getMessage(DockerConfigPanel.class, "DockerConfigPanel.prefixField.text")); // NOI18N
-        prefixField.setToolTipText(org.openide.util.NbBundle.getMessage(DockerConfigPanel.class, "DockerConfigPanel.prefixField.toolTipText")); // NOI18N
-        prefixField.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                prefixFieldPropertyChange(evt);
+        serverComboBox.setModel(new DefaultComboBoxModel(Stream.of(ServerType.values()).toArray(ServerType[]::new)));
+        serverComboBox.setPreferredSize(new java.awt.Dimension(200, 26));
+        serverComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                serverComboBoxActionPerformed(evt);
             }
         });
-        namePane.add(prefixField);
+        serverConfigPanel.add(serverComboBox);
 
-        entityLabel.setForeground(javax.swing.UIManager.getDefaults().getColor("Button.shadow"));
-        entityLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        org.openide.awt.Mnemonics.setLocalizedText(entityLabel, org.openide.util.NbBundle.getMessage(DockerConfigPanel.class, "DockerConfigPanel.entityLabel.text")); // NOI18N
-        entityLabel.setPreferredSize(new java.awt.Dimension(58, 27));
-        entityLabel.setRequestFocusEnabled(false);
-        namePane.add(entityLabel);
+        serverVersionLabel.setForeground(javax.swing.UIManager.getDefaults().getColor("Button.shadow"));
+        serverVersionLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        org.openide.awt.Mnemonics.setLocalizedText(serverVersionLabel, org.openide.util.NbBundle.getMessage(DockerConfigPanel.class, "DockerConfigPanel.serverVersionLabel.text")); // NOI18N
+        serverVersionLabel.setPreferredSize(new java.awt.Dimension(80, 27));
+        serverVersionLabel.setRequestFocusEnabled(false);
+        serverConfigPanel.add(serverVersionLabel);
 
-        suffixField.setText(org.openide.util.NbBundle.getMessage(DockerConfigPanel.class, "DockerConfigPanel.suffixField.text")); // NOI18N
-        suffixField.setToolTipText(org.openide.util.NbBundle.getMessage(DockerConfigPanel.class, "DockerConfigPanel.suffixField.toolTipText")); // NOI18N
-        suffixField.setPreferredSize(new java.awt.Dimension(100, 27));
-        suffixField.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                suffixFieldPropertyChange(evt);
+        serverVersionComboBox.setPreferredSize(new java.awt.Dimension(80, 26));
+        serverConfigPanel.add(serverVersionComboBox);
+
+        serverWrapperPanel.add(serverConfigPanel, java.awt.BorderLayout.CENTER);
+
+        org.openide.awt.Mnemonics.setLocalizedText(serverLabel, org.openide.util.NbBundle.getMessage(DockerConfigPanel.class, "DockerConfigPanel.serverLabel.text")); // NOI18N
+        serverLabel.setPreferredSize(new java.awt.Dimension(70, 17));
+        serverWrapperPanel.add(serverLabel, java.awt.BorderLayout.WEST);
+
+        panel.add(serverWrapperPanel);
+
+        dbWrapperPanel.setLayout(new java.awt.BorderLayout(10, 0));
+
+        dbConfigPanel.setLayout(new javax.swing.BoxLayout(dbConfigPanel, javax.swing.BoxLayout.LINE_AXIS));
+
+        dbComboBox.setModel(new DefaultComboBoxModel(Stream.of(DatabaseType.values()).toArray(DatabaseType[]::new)));
+        dbComboBox.setPreferredSize(new java.awt.Dimension(200, 30));
+        dbComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dbComboBoxActionPerformed(evt);
             }
         });
-        namePane.add(suffixField);
+        dbConfigPanel.add(dbComboBox);
 
-        suffixPanel.add(namePane, java.awt.BorderLayout.CENTER);
+        dbVersionLabel.setForeground(javax.swing.UIManager.getDefaults().getColor("Button.shadow"));
+        dbVersionLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        org.openide.awt.Mnemonics.setLocalizedText(dbVersionLabel, org.openide.util.NbBundle.getMessage(DockerConfigPanel.class, "DockerConfigPanel.dbVersionLabel.text")); // NOI18N
+        dbVersionLabel.setPreferredSize(new java.awt.Dimension(80, 27));
+        dbVersionLabel.setRequestFocusEnabled(false);
+        dbConfigPanel.add(dbVersionLabel);
 
-        nameLabel.setLabelFor(suffixField);
-        org.openide.awt.Mnemonics.setLocalizedText(nameLabel, org.openide.util.NbBundle.getMessage(DockerConfigPanel.class, "DockerConfigPanel.nameLabel.text")); // NOI18N
-        nameLabel.setPreferredSize(new java.awt.Dimension(100, 17));
-        suffixPanel.add(nameLabel, java.awt.BorderLayout.WEST);
+        dbVersionComboBox.setPreferredSize(new java.awt.Dimension(80, 26));
+        dbConfigPanel.add(dbVersionComboBox);
 
-        jPanel1.add(suffixPanel);
+        dbWrapperPanel.add(dbConfigPanel, java.awt.BorderLayout.CENTER);
 
-        packagePanel.setLayout(new java.awt.BorderLayout(10, 0));
+        org.openide.awt.Mnemonics.setLocalizedText(dbLabel, org.openide.util.NbBundle.getMessage(DockerConfigPanel.class, "DockerConfigPanel.dbLabel.text")); // NOI18N
+        dbLabel.setPreferredSize(new java.awt.Dimension(70, 17));
+        dbWrapperPanel.add(dbLabel, java.awt.BorderLayout.WEST);
 
-        packageLabel.setLabelFor(packageCombo);
-        org.openide.awt.Mnemonics.setLocalizedText(packageLabel, org.openide.util.NbBundle.getMessage(DockerConfigPanel.class, "DockerConfigPanel.packageLabel.text")); // NOI18N
-        packageLabel.setPreferredSize(new java.awt.Dimension(100, 17));
-        packagePanel.add(packageLabel, java.awt.BorderLayout.LINE_START);
+        panel.add(dbWrapperPanel);
 
-        packageCombo.setEditable(true);
-        packageCombo.setEditable(true);
-        packageCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { " " }));
-        packageCombo.setMinimumSize(new java.awt.Dimension(60, 27));
-        packageCombo.setName(""); // NOI18N
-        packageCombo.setPreferredSize(new java.awt.Dimension(60, 27));
-        packageCombo.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                packageComboPropertyChange(evt);
-            }
-        });
-        packagePanel.add(packageCombo, java.awt.BorderLayout.CENTER);
+        dbCredentialPanel.setPreferredSize(new java.awt.Dimension(603, 27));
+        dbCredentialPanel.setLayout(new java.awt.GridLayout(1, 2));
 
-        jPanel1.add(packagePanel);
+        dbUserPanel.setLayout(new java.awt.BorderLayout());
+
+        org.openide.awt.Mnemonics.setLocalizedText(dbUserLabel, org.openide.util.NbBundle.getMessage(DockerConfigPanel.class, "DockerConfigPanel.dbUserLabel.text")); // NOI18N
+        dbUserLabel.setPreferredSize(new java.awt.Dimension(80, 17));
+        dbUserPanel.add(dbUserLabel, java.awt.BorderLayout.WEST);
+
+        dbUserTextField.setText(org.openide.util.NbBundle.getMessage(DockerConfigPanel.class, "DockerConfigPanel.dbUserTextField.text")); // NOI18N
+        dbUserTextField.setPreferredSize(new java.awt.Dimension(14, 27));
+        dbUserPanel.add(dbUserTextField, java.awt.BorderLayout.CENTER);
+
+        dbCredentialPanel.add(dbUserPanel);
+
+        dbPasswordPanel.setLayout(new java.awt.BorderLayout());
+
+        dbPasswordLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        org.openide.awt.Mnemonics.setLocalizedText(dbPasswordLabel, org.openide.util.NbBundle.getMessage(DockerConfigPanel.class, "DockerConfigPanel.dbPasswordLabel.text")); // NOI18N
+        dbPasswordLabel.setPreferredSize(new java.awt.Dimension(90, 17));
+        dbPasswordPanel.add(dbPasswordLabel, java.awt.BorderLayout.WEST);
+
+        dbPasswordTextField.setText(org.openide.util.NbBundle.getMessage(DockerConfigPanel.class, "DockerConfigPanel.dbPasswordTextField.text")); // NOI18N
+        dbPasswordTextField.setPreferredSize(new java.awt.Dimension(14, 27));
+        dbPasswordPanel.add(dbPasswordTextField, java.awt.BorderLayout.CENTER);
+
+        dbCredentialPanel.add(dbPasswordPanel);
+
+        panel.add(dbCredentialPanel);
+
+        dsWrpperPanel.setLayout(new java.awt.GridLayout(1, 2));
+
+        dbNamePanel.setLayout(new java.awt.BorderLayout());
+
+        org.openide.awt.Mnemonics.setLocalizedText(dbNameLabel, org.openide.util.NbBundle.getMessage(DockerConfigPanel.class, "DockerConfigPanel.dbNameLabel.text")); // NOI18N
+        dbNameLabel.setPreferredSize(new java.awt.Dimension(80, 17));
+        dbNamePanel.add(dbNameLabel, java.awt.BorderLayout.WEST);
+
+        dbNameTextField.setText(org.openide.util.NbBundle.getMessage(DockerConfigPanel.class, "DockerConfigPanel.dbNameTextField.text")); // NOI18N
+        dbNameTextField.setPreferredSize(new java.awt.Dimension(14, 27));
+        dbNamePanel.add(dbNameTextField, java.awt.BorderLayout.CENTER);
+
+        dsWrpperPanel.add(dbNamePanel);
+
+        dsPanel.setLayout(new java.awt.BorderLayout());
+
+        dsLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        org.openide.awt.Mnemonics.setLocalizedText(dsLabel, org.openide.util.NbBundle.getMessage(DockerConfigPanel.class, "DockerConfigPanel.dsLabel.text")); // NOI18N
+        dsLabel.setPreferredSize(new java.awt.Dimension(90, 17));
+        dsPanel.add(dsLabel, java.awt.BorderLayout.WEST);
+
+        dsTextField.setText(org.openide.util.NbBundle.getMessage(DockerConfigPanel.class, "DockerConfigPanel.dsTextField.text")); // NOI18N
+        dsTextField.setPreferredSize(new java.awt.Dimension(14, 27));
+        dsPanel.add(dsTextField, java.awt.BorderLayout.CENTER);
+
+        dsWrpperPanel.add(dsPanel);
+
+        panel.add(dsWrpperPanel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 615, Short.MAX_VALUE)
+            .addGap(0, 545, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 595, Short.MAX_VALUE)
+                    .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 533, Short.MAX_VALUE)
                     .addContainerGap()))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 595, Short.MAX_VALUE)
+                    .addComponent(panel, javax.swing.GroupLayout.DEFAULT_SIZE, 533, Short.MAX_VALUE)
                     .addContainerGap()))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 132, Short.MAX_VALUE)
+            .addGap(0, 336, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                    .addContainerGap(101, Short.MAX_VALUE)
+                    .addContainerGap(310, Short.MAX_VALUE)
                     .addComponent(warningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap()))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(61, Short.MAX_VALUE)))
+                    .addComponent(panel, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(180, Short.MAX_VALUE)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void suffixFieldPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_suffixFieldPropertyChange
-     fire();
-    }//GEN-LAST:event_suffixFieldPropertyChange
+    private void serverComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverComboBoxActionPerformed
+        setVisibility(getServerType() != ServerType.NONE);
+        serverVersionComboBox.removeAllItems();
+        serverVersionComboBox.setModel(new DefaultComboBoxModel(getServerType().getVersion().stream().toArray(String[]::new)));
+    }//GEN-LAST:event_serverComboBoxActionPerformed
 
-    private void packageComboPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_packageComboPropertyChange
-        fire();
-    }//GEN-LAST:event_packageComboPropertyChange
+    private void dbComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dbComboBoxActionPerformed
+        dbVersionComboBox.removeAllItems();
+        dbVersionComboBox.setModel(new DefaultComboBoxModel(getDatabaseType().getVersion().stream().toArray(String[]::new)));
+    }//GEN-LAST:event_dbComboBoxActionPerformed
 
-    private void prefixFieldPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_prefixFieldPropertyChange
-        fire();
-    }//GEN-LAST:event_prefixFieldPropertyChange
-    
+    private void setVisibility(boolean status) {
+        if (dbWrapperPanel.isVisible()!= status) {
+            dbWrapperPanel.setVisible(status);
+            dsWrpperPanel.setVisible(status);
+            dbCredentialPanel.setVisible(status);
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel entityLabel;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JLabel nameLabel;
-    private javax.swing.JLayeredPane namePane;
-    private javax.swing.JComboBox packageCombo;
-    private javax.swing.JLabel packageLabel;
-    private javax.swing.JPanel packagePanel;
-    private javax.swing.JTextField prefixField;
-    private javax.swing.JTextField suffixField;
-    private javax.swing.JPanel suffixPanel;
+    private javax.swing.JComboBox<DatabaseType> dbComboBox;
+    private javax.swing.JLayeredPane dbConfigPanel;
+    private javax.swing.JPanel dbCredentialPanel;
+    private javax.swing.JLabel dbLabel;
+    private javax.swing.JLabel dbNameLabel;
+    private javax.swing.JPanel dbNamePanel;
+    private javax.swing.JTextField dbNameTextField;
+    private javax.swing.JLabel dbPasswordLabel;
+    private javax.swing.JPanel dbPasswordPanel;
+    private javax.swing.JTextField dbPasswordTextField;
+    private javax.swing.JLabel dbUserLabel;
+    private javax.swing.JPanel dbUserPanel;
+    private javax.swing.JTextField dbUserTextField;
+    private javax.swing.JComboBox<String> dbVersionComboBox;
+    private javax.swing.JLabel dbVersionLabel;
+    private javax.swing.JPanel dbWrapperPanel;
+    private javax.swing.JLabel dsLabel;
+    private javax.swing.JPanel dsPanel;
+    private javax.swing.JTextField dsTextField;
+    private javax.swing.JPanel dsWrpperPanel;
+    private javax.swing.JPanel panel;
+    private javax.swing.JComboBox<ServerType> serverComboBox;
+    private javax.swing.JLayeredPane serverConfigPanel;
+    private javax.swing.JLabel serverLabel;
+    private javax.swing.JComboBox<String> serverVersionComboBox;
+    private javax.swing.JLabel serverVersionLabel;
+    private javax.swing.JPanel serverWrapperPanel;
     private javax.swing.JLabel warningLabel;
     private javax.swing.JPanel warningPanel;
     // End of variables declaration//GEN-END:variables

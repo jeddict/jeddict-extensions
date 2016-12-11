@@ -123,6 +123,10 @@ public class ProjectHelper {
     //if(POMManager.isMavenProject(project)){
         return fileObject;
     }
+
+    public static FileObject getDockerDirectory(SourceGroup sourceGroup) {
+        return getFolderForPackage(sourceGroup.getRootFolder().getParent(), "docker", true);
+    }
       
    
     /**

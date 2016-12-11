@@ -8,51 +8,54 @@
     <packaging>war</packaging>
     <name>metrics_pom</name>
 
+    <properties>
+        <version.metrics>3.1.2</version.metrics>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-core</artifactId>
-            <version>3.1.2</version>
+            <version>${version.metrics}</version>
         </dependency>
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-annotation</artifactId>
-            <version>3.1.2</version>
+            <version>${version.metrics}</version>
         </dependency>
 <!--        <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-ehcache</artifactId>
-            <version>3.1.2</version>
+            <version>${version.metrics}</version>
         </dependency>
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-graphite</artifactId>
-            <version>3.1.2</version>
+            <version>${version.metrics}</version>
         </dependency>-->
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-healthchecks</artifactId>
-            <version>3.1.2</version>
+            <version>${version.metrics}</version>
         </dependency>
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-json</artifactId>
-            <version>3.1.2</version>
+            <version>${version.metrics}</version>
         </dependency>
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-jvm</artifactId>
-            <version>3.1.2</version>
+            <version>${version.metrics}</version>
         </dependency>
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-servlet</artifactId>
-            <version>3.1.2</version>
+            <version>${version.metrics}</version>
         </dependency>
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-servlets</artifactId>
-            <version>3.1.2</version>
+            <version>${version.metrics}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>metrics-healthchecks</artifactId>
@@ -63,8 +66,7 @@
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-jersey2</artifactId>
-            <version>3.1.2</version>
-            <type>jar</type>
+            <version>${version.metrics}</version>
         </dependency>
     </dependencies>
 

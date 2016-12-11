@@ -18,7 +18,10 @@ package org.netbeans.jcode.layer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import static java.util.stream.Collectors.toSet;
 import org.openide.util.Lookup;
 
 /**
@@ -51,20 +54,19 @@ public interface Generator {
         return getTechContexts(parentCodeGenerator, Technology.Type.VIEWER);
     }
     
-    
-    
-    
-    
     static List<TechContext> getSiblingTechContexts(Generator rootCodeGenerator) {
-        List<TechContext> siblingCodeGenerators = new ArrayList<>();
+        Technology rootTechnology = rootCodeGenerator.getClass().getAnnotation(Technology.class);
+        Set<Class<? extends Generator>> rootCodeGeneratorSibling = Arrays.stream(rootTechnology.sibling()).collect(toSet());
+        Set<TechContext> siblingCodeGenerators = new LinkedHashSet<>();
         Lookup.getDefault().lookupAll(Generator.class).stream().forEach((Generator codeGenerator) -> {
             Technology technology = codeGenerator.getClass().getAnnotation(Technology.class);
-            if (technology.type() == Technology.Type.NONE
-                    && Arrays.stream(technology.sibling()).filter(sibling -> sibling == rootCodeGenerator.getClass()).findAny().isPresent()) {
+            //if direct lookup || reverse lookup
+            if (technology.type() == Technology.Type.NONE && (rootCodeGeneratorSibling.contains(codeGenerator.getClass()) ||
+                Arrays.stream(technology.sibling()).filter(sibling -> sibling == rootCodeGenerator.getClass()).findAny().isPresent())) {
                 siblingCodeGenerators.add(new TechContext(codeGenerator));
-            }
+            } 
         });
-        return siblingCodeGenerators;
+        return new ArrayList<>(siblingCodeGenerators);
     }
     
     static List<TechContext> getTechContexts(TechContext parentCodeGenerator, Technology.Type type) {

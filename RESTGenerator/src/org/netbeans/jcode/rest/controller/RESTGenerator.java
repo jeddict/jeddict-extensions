@@ -221,7 +221,6 @@ public class RESTGenerator implements Generator {
     private void addMavenDependencies(String pom) {
         if (POMManager.isMavenProject(project)) {
             POMManager pomManager = new POMManager(TEMPLATE + pom, project);
-            pomManager.setSourceVersion("1.8");
             pomManager.commit();
         } else {
             handler.warning(NbBundle.getMessage(RESTGenerator.class, "TITLE_Maven_Project_Not_Found"),
