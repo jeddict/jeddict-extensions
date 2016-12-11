@@ -7,7 +7,6 @@
     <packaging>war</packaging>
     <name>docker_pom</name>
 
-
     <profiles>
         <profile>
             <id>docker</id>
@@ -15,6 +14,7 @@
                 <version.fabric8>0.17.2</version.fabric8>
             </properties>
             <build>
+                <finalName>${project.artifactId}</finalName>
                 <plugins>
                     <plugin>
                         <groupId>io.fabric8</groupId>

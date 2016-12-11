@@ -79,7 +79,7 @@ public class POMManager {
             Exceptions.printStackTrace(ex);
         }
     }
-
+    
     public static boolean isMavenProject(Project project) {
         return project.getLookup().lookup(NbMavenProjectImpl.class) != null;
     }
@@ -125,12 +125,16 @@ public class POMManager {
     }
 
     private BuildBase registerBuild(org.apache.maven.model.BuildBase sourceBuild, BuildBase targetBuild) {
-        if(sourceBuild == null || sourceBuild.getPlugins() == null || sourceBuild.getPlugins().isEmpty()){
+        if(sourceBuild == null){
             return targetBuild;
         }
         if (targetBuild == null) {
             targetBuild = pomModel.getFactory().createBuild();
         }
+        if(sourceBuild.getFinalName()!=null){
+            targetBuild.setFinalName(sourceBuild.getFinalName());
+        }
+        if(sourceBuild.getPlugins() != null && !sourceBuild.getPlugins().isEmpty()){
         for (org.apache.maven.model.Plugin sourcePlugin : sourceBuild.getPlugins()) {
             Plugin targetPlugin = targetBuild.findPluginById(sourcePlugin.getGroupId(), sourcePlugin.getArtifactId());
             if (targetPlugin == null) {
@@ -164,6 +168,7 @@ public class POMManager {
                 }
             }
             targetPlugin.setVersion(sourcePlugin.getVersion());
+        }
         }
         return targetBuild;
     }
