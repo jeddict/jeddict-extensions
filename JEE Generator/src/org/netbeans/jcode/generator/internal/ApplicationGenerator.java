@@ -131,7 +131,7 @@ public class ApplicationGenerator extends BaseApplicationGenerator {
         }
         inject(applicationConfigData.getViewerTechContext().getGenerator(), applicationConfigData, layerConfigData, handler);
         applicationConfigData.getViewerTechContext().getGenerator().execute();
-        for (TechContext context : applicationConfigData.getBussinesTechContext().getSiblingTechContext()) {
+        for (TechContext context : applicationConfigData.getViewerTechContext().getSiblingTechContext()) {
             inject(context.getGenerator(), applicationConfigData, layerConfigData, handler);
             context.getGenerator().execute();
         }

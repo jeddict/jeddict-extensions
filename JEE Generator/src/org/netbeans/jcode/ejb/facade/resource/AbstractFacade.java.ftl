@@ -49,11 +49,18 @@ public abstract class AbstractFacade<E,P> {
     }
 
     public List<E> findRange(int startPosition, int size) {
+        return findRange(startPosition, size, null);
+    }
+    
+    public List<E> findRange(int startPosition, int size, String entityGraph) {
         CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
         cq.select(cq.from(entityClass));
         Query q = getEntityManager().createQuery(cq);
         q.setMaxResults(size);
         q.setFirstResult(startPosition);
+        if (entityGraph != null) {
+            q.setHint("javax.persistence.loadgraph", getEntityManager().getEntityGraph(entityGraph));
+        }
         return q.getResultList();
     }
 

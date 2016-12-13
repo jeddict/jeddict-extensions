@@ -88,6 +88,9 @@ public class SourceGroupSupport {
         if(testGroups.isEmpty() && create){
             if (SourceGroupModifier.createSourceGroup(project, JavaProjectConstants.SOURCES_TYPE_JAVA, JavaProjectConstants.SOURCES_HINT_TEST) != null){
                 return getTestSourceGroups(project, false);
+            } else {
+                System.out.println("");
+                throw new IllegalStateException("Test Source group creation failed");
             }
         }
         return testGroups;

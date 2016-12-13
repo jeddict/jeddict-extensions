@@ -50,6 +50,9 @@ public class DockerConfigData extends LayerConfigData {
     }
 
     public DatabaseType getDatabaseType() {
+        if(serverType == null || serverType == ServerType.NONE){
+            return null;
+        }
         return databaseType;
     }
 

@@ -11,10 +11,11 @@
         <profile>
             <id>docker</id>
             <properties>
+                <build_name>${project.artifactId}</build_name>
                 <version.fabric8>0.17.2</version.fabric8>
             </properties>
             <build>
-                <finalName>${project.artifactId}</finalName>
+                <finalName>${build_name}</finalName>
                 <plugins>
                     <plugin>
                         <groupId>io.fabric8</groupId>

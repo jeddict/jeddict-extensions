@@ -108,7 +108,7 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
-            <id>payara-embedded-test</id>
+            <id>payara-embedded</id>
             <dependencies> 
                 <dependency>
                     <groupId>org.jboss.arquillian.container</groupId>

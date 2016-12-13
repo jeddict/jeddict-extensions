@@ -18,6 +18,7 @@ package org.netbeans.jcode.core.util;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.apache.maven.wagon.providers.http.commons.lang.StringUtils;
 import org.netbeans.api.project.Project;
 import org.netbeans.modules.j2ee.persistence.dd.common.PersistenceUnit;
 import org.netbeans.modules.j2ee.persistence.dd.common.Properties;
@@ -31,14 +32,21 @@ import org.netbeans.modules.j2ee.persistence.unit.PUDataObject;
  * @author jGauravGupta
  */
 public class PersistenceUtil {
-    
-    
-    public static Optional<PersistenceUnit> getPersistenceUnit(Project project, String puName) throws InvalidPersistenceXmlException{
-          PUDataObject pud = ProviderUtil.getPUDataObject(project);
-          return Arrays.stream(pud.getPersistence().getPersistenceUnit()).filter(persistenceUnit_In -> persistenceUnit_In.getName().equalsIgnoreCase(puName)).findFirst();
-           
+
+    public static Optional<PersistenceUnit> getPersistenceUnit(Project project, String puName) throws InvalidPersistenceXmlException {
+        PUDataObject pud = ProviderUtil.getPUDataObject(project);
+        return Arrays.stream(pud.getPersistence().getPersistenceUnit()).filter(persistenceUnit_In -> persistenceUnit_In.getName().equalsIgnoreCase(puName)).findFirst();
+
     }
-        public static void addProperty(PersistenceUnit punit, String key , String value){
+
+    public static void removeProperty(PersistenceUnit punit, String key) {
+        if (punit.getProperties() != null || punit.getProperties().getProperty2() != null) {
+            Arrays.stream(punit.getProperties().getProperty2()).filter(p1 -> StringUtils.equals(p1.getName(), key))
+                    .findAny().ifPresent(p1 -> punit.getProperties().removeProperty2(p1));
+        }
+    }
+
+    public static void addProperty(PersistenceUnit punit, String key, String value) {
         Properties properties = punit.getProperties();
         if (properties == null) {
             properties = punit.newProperties();
@@ -55,12 +63,13 @@ public class PersistenceUtil {
         } else {
             properties.addProperty2(property);
         }
-        System.out.println(Arrays.stream(punit.getProperties().getProperty2()).map(p -> p.getName()+'.'+p.getValue()).collect(Collectors.joining("|", "<", ">")));
+        System.out.println(Arrays.stream(punit.getProperties().getProperty2()).map(p -> p.getName() + '.' + p.getValue()).collect(Collectors.joining("|", "<", ">")));
     }
-        /**
-     * @return the property from the given properties whose name matches 
-     * the given propertyName
-     * or null if the given properties didn't contain property with a matching name.
+
+    /**
+     * @return the property from the given properties whose name matches the
+     * given propertyName or null if the given properties didn't contain
+     * property with a matching name.
      */
     public static Property getProperty(Property[] properties, String propertyName) {
 

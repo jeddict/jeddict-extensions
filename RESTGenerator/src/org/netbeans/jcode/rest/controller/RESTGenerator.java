@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import static java.util.Collections.EMPTY_MAP;
+import static java.util.Collections.singletonMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ import java.util.function.Function;
 import static java.util.stream.Collectors.toList;
 import org.apache.commons.lang.StringUtils;
 import static org.apache.commons.lang.StringUtils.EMPTY;
+import org.jcode.docker.generator.DockerConfigData;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.cdi.logger.LoggerProducerGenerator;
@@ -41,6 +43,7 @@ import static org.netbeans.jcode.core.util.AttributeType.isBoolean;
 import static org.netbeans.jcode.core.util.AttributeType.isPrimitive;
 import static org.netbeans.jcode.core.util.Constants.JAVA_EXT;
 import org.netbeans.jcode.core.util.FileUtil;
+import static org.netbeans.jcode.core.util.FileUtil.expandTemplate;
 import org.netbeans.jcode.core.util.JavaIdentifiers;
 import org.netbeans.jcode.core.util.POMManager;
 import org.netbeans.jcode.core.util.PersistenceUtil;
@@ -49,6 +52,7 @@ import org.netbeans.jcode.core.util.ProjectHelper;
 import org.netbeans.jcode.ejb.facade.SessionBeanData;
 import org.netbeans.jcode.rest.util.RestUtils;
 import org.netbeans.jcode.core.util.SourceGroupSupport;
+import static org.netbeans.jcode.core.util.SourceGroupSupport.getFolderForPackage;
 import static org.netbeans.jcode.core.util.StringHelper.firstLower;
 import static org.netbeans.jcode.core.util.StringHelper.firstUpper;
 import static org.netbeans.jcode.core.util.StringHelper.getMethodName;
@@ -96,6 +100,9 @@ public class RESTGenerator implements Generator {
 
     @ConfigData
     private RESTData restData;
+
+    @ConfigData
+    private DockerConfigData dockerConfigData;
 
     @ConfigData
     private Project project;
@@ -323,7 +330,7 @@ public class RESTGenerator implements Generator {
                 throw new IOException("File already exists exception: " + controllerFO.getPath());
             }
         }
-        FileUtil.expandTemplate(TEMPLATE + "rest/entity/" + restTemplate + ".java.ftl", targetFolder, controllerFileName + '.' + JAVA_EXT, param);
+        expandTemplate(TEMPLATE + "rest/entity/" + restTemplate + ".java.ftl", targetFolder, controllerFileName + '.' + JAVA_EXT, param);
 
         
         //entity controller test-case
@@ -390,7 +397,7 @@ public class RESTGenerator implements Generator {
                     throw new IOException("File already exists exception: " + controllerFO.getPath());
                 }
             }
-            FileUtil.expandTemplate(TEMPLATE + "arquillian/EntityControllerTest.java.ftl", targetTestFolder, controllerTestFileName + '.' + JAVA_EXT, param);
+            expandTemplate(TEMPLATE + "arquillian/EntityControllerTest.java.ftl", targetTestFolder, controllerTestFileName + '.' + JAVA_EXT, param);
         }
         return controllerFO;
     }
@@ -419,6 +426,7 @@ public class RESTGenerator implements Generator {
         param.put("restSuffix", restData.getSuffixName());
         param.put("metrics", restData.isMetrics());
         param.put("docs", restData.isDocsEnable());
+        param.put("serverType", dockerConfigData.getServerType());
 
         //config
         expandServerSideComponent(source, appPackage, EMPTY, EMPTY, CONFIG_TEMPLATES, param);
@@ -448,15 +456,18 @@ public class RESTGenerator implements Generator {
         if (configRoot == null) {//non-maven project
             configRoot = source.getRootFolder();
         }
-        FileUtil.copyStaticResource(TEMPLATE + "config/config-resources.zip", configRoot, null, handler);
+        
+        expandTemplate(TEMPLATE + "config/resource/insert.sql.ftl", getFolderForPackage(configRoot, "META-INF.sql", true), "insert.sql", singletonMap("database",dockerConfigData.getDatabaseType()!=null?dockerConfigData.getDatabaseType():"Derby"));
+        FileUtil.copyStaticResource(TEMPLATE + "config/resource/config-resources.zip", configRoot, null, handler);
         updatePersistenceXml(Arrays.asList(entityPackage + ".User", entityPackage + ".Authority"));
 
         if (restData.isTestCase()) {
             configRoot = ProjectHelper.getTestResourceDirectory(project);
-            FileUtil.expandTemplate(TEMPLATE + "arquillian/config/arquillian.xml.ftl", configRoot, "arquillian.xml", EMPTY_MAP);
-            FileUtil.expandTemplate(TEMPLATE + "arquillian/config/glassfish-resources.xml.ftl", configRoot, "glassfish-resources.xml", EMPTY_MAP);
-            FileUtil.expandTemplate(TEMPLATE + "arquillian/config/web.xml.ftl", configRoot, "web.xml", EMPTY_MAP);
-            FileUtil.expandTemplate(TEMPLATE + "arquillian/config/test-persistence.xml.ftl", configRoot, "test-persistence.xml", Collections.singletonMap("PU_NAME", entityMapping.getPersistenceUnitName()));
+            expandTemplate(TEMPLATE + "arquillian/config/arquillian.xml.ftl", configRoot, "arquillian.xml", EMPTY_MAP);
+            expandTemplate(TEMPLATE + "arquillian/config/glassfish-resources.xml.ftl", configRoot, "glassfish-resources.xml", EMPTY_MAP);
+            expandTemplate(TEMPLATE + "arquillian/config/web.xml.ftl", configRoot, "web.xml", EMPTY_MAP);
+            expandTemplate(TEMPLATE + "arquillian/config/test-persistence.xml.ftl", configRoot, "test-persistence.xml", Collections.singletonMap("PU_NAME", entityMapping.getPersistenceUnitName()));
+            expandTemplate(TEMPLATE + "config/resource/insert.sql.ftl", getFolderForPackage(configRoot, "META-INF.sql", true), "insert.sql", singletonMap("database","Derby"));
         }
         
         return param;
@@ -508,7 +519,7 @@ public class RESTGenerator implements Generator {
                     }
                     param.put(templateFile + "_FQN", templatePackage + '.' + fileName);
                     FileObject targetFolder = SourceGroupSupport.getFolderForPackage(targetSourceGroup, (String) param.get("package"), true);
-                    FileUtil.expandTemplate(TEMPLATE + template.getPath(), targetFolder, fileName + '.' + JAVA_EXT, param);
+                    expandTemplate(TEMPLATE + template.getPath(), targetFolder, fileName + '.' + JAVA_EXT, param);
                 }
             }
         } catch (Exception ex) {

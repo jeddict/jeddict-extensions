@@ -19,6 +19,7 @@ import java.util.prefs.Preferences;
 import java.util.stream.Stream;
 import javax.swing.DefaultComboBoxModel;
 import org.apache.commons.lang.StringUtils;
+import static org.jcode.docker.generator.DockerGenerator.getJNDI;
 import static org.jcode.docker.generator.ServerType.NONE;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectUtils;
@@ -171,6 +172,8 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
         dsPanel = new javax.swing.JPanel();
         dsLabel = new javax.swing.JLabel();
         dsTextField = new javax.swing.JTextField();
+        infoPanel = new javax.swing.JPanel();
+        infoLabel = new javax.swing.JLabel();
 
         warningPanel.setLayout(new java.awt.BorderLayout(10, 0));
 
@@ -297,11 +300,23 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
 
         dsTextField.setText(org.openide.util.NbBundle.getMessage(DockerConfigPanel.class, "DockerConfigPanel.dsTextField.text")); // NOI18N
         dsTextField.setPreferredSize(new java.awt.Dimension(14, 27));
+        dsTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dsTextFieldActionPerformed(evt);
+            }
+        });
         dsPanel.add(dsTextField, java.awt.BorderLayout.CENTER);
 
         dsWrpperPanel.add(dsPanel);
 
         panel.add(dsWrpperPanel);
+
+        infoPanel.setLayout(new java.awt.BorderLayout(10, 0));
+
+        infoLabel.setForeground(new java.awt.Color(102, 0, 255));
+        infoLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        org.openide.awt.Mnemonics.setLocalizedText(infoLabel, org.openide.util.NbBundle.getMessage(DockerConfigPanel.class, "DockerConfigPanel.infoLabel.text")); // NOI18N
+        infoPanel.add(infoLabel, java.awt.BorderLayout.CENTER);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -318,6 +333,11 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
                     .addContainerGap()
                     .addComponent(panel, javax.swing.GroupLayout.DEFAULT_SIZE, 533, Short.MAX_VALUE)
                     .addContainerGap()))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(infoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 533, Short.MAX_VALUE)
+                    .addContainerGap()))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -332,6 +352,11 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
                     .addContainerGap()
                     .addComponent(panel, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap(180, Short.MAX_VALUE)))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addContainerGap(300, Short.MAX_VALUE)
+                    .addComponent(infoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(16, 16, 16)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -346,12 +371,17 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
         dbVersionComboBox.setModel(new DefaultComboBoxModel(getDatabaseType().getVersion().stream().toArray(String[]::new)));
     }//GEN-LAST:event_dbComboBoxActionPerformed
 
+    private void dsTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dsTextFieldActionPerformed
+        infoLabel.setText("JNDI : " + getJNDI(getServerType(), dsTextField.getText()));
+    }//GEN-LAST:event_dsTextFieldActionPerformed
+
     private void setVisibility(boolean status) {
         if (dbWrapperPanel.isVisible()!= status) {
             dbWrapperPanel.setVisible(status);
             dsWrpperPanel.setVisible(status);
             dbCredentialPanel.setVisible(status);
         }
+        infoLabel.setText(status?"":getMessage(DockerConfigPanel.class, "DOCKER_DISABLED"));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -375,6 +405,8 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
     private javax.swing.JPanel dsPanel;
     private javax.swing.JTextField dsTextField;
     private javax.swing.JPanel dsWrpperPanel;
+    private javax.swing.JLabel infoLabel;
+    private javax.swing.JPanel infoPanel;
     private javax.swing.JPanel panel;
     private javax.swing.JComboBox<ServerType> serverComboBox;
     private javax.swing.JLayeredPane serverConfigPanel;

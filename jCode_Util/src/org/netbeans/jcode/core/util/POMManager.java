@@ -39,6 +39,7 @@ import org.netbeans.modules.maven.model.pom.Configuration;
 import org.netbeans.modules.maven.model.pom.Dependency;
 import org.netbeans.modules.maven.model.pom.DependencyContainer;
 import org.netbeans.modules.maven.model.pom.DependencyManagement;
+import org.netbeans.modules.maven.model.pom.Exclusion;
 import org.netbeans.modules.maven.model.pom.POMComponent;
 import org.netbeans.modules.maven.model.pom.POMExtensibilityElement;
 import org.netbeans.modules.maven.model.pom.POMModel;
@@ -228,24 +229,36 @@ public class POMManager {
             if (targetDependency == null) {
                 targetDependency = createDependency(sourceDependency);
                 target.addDependency(targetDependency);
-            } else {
-                targetDependency.setVersion(sourceDependency.getVersion());
-            }
+            } 
+            updateDependency(sourceDependency, targetDependency);
         });
     }
 
     private Dependency createDependency(org.apache.maven.model.Dependency source) {
-        org.netbeans.modules.maven.model.pom.Dependency target = pomModel.getFactory().createDependency();
+        Dependency target = pomModel.getFactory().createDependency();
         target.setGroupId(source.getGroupId());
         target.setArtifactId(source.getArtifactId());
-        target.setVersion(source.getVersion());
         target.setClassifier(source.getClassifier());
         if (!"jar".equals(source.getType())) {
             target.setType(source.getType());
         }
         target.setScope(source.getScope());
-
         return target;
+    }
+    
+    private void updateDependency(org.apache.maven.model.Dependency source, Dependency target){
+        target.setVersion(source.getVersion());
+        if(source.getExclusions()!=null && !source.getExclusions().isEmpty()){
+            for(org.apache.maven.model.Exclusion sourceExclusion : source.getExclusions()){
+                          Exclusion targetExclusion = target.findExclusionById(sourceExclusion.getGroupId(), sourceExclusion.getArtifactId());
+                          if(targetExclusion==null){
+                              targetExclusion = pomModel.getFactory().createExclusion();
+                              targetExclusion.setGroupId(sourceExclusion.getGroupId());
+                              targetExclusion.setArtifactId(sourceExclusion.getArtifactId());
+                              target.addExclusion(targetExclusion);
+                          }
+            }
+        }
     }
 
     private void registerRepository() {

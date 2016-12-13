@@ -3,6 +3,7 @@
 import ${User_FQN};
 import static java.util.Collections.singletonMap;
 import java.util.Optional;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
@@ -56,6 +57,10 @@ public class ${UserFacade} extends AbstractFacade<User, Long> {
 
     public Optional<User> findOneWithAuthoritiesByLogin(String login) {
         return findSingleByNamedQuery("findUserByLogin", "graph.user.authorities", singletonMap("login", login), User.class);
+    }
+    
+    public List<User> getUsersWithAuthorities(int startPosition, int size) {
+        return findRange(startPosition, size, "graph.user.authorities");
     }
 
 }

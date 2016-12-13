@@ -188,7 +188,7 @@ public class ${restPrefix}User${restSuffix} {
     @Produces(MediaType.APPLICATION_JSON)
     @Secured
     public Response getAllUsers(@QueryParam("page") int page, @QueryParam("size") int size) throws URISyntaxException {
-        List<User> userList = ${userFacade}.findRange(page * size, size);
+        List<User> userList = ${userFacade}.getUsersWithAuthorities(page * size, size);
         List<ManagedUserDTO> managedUserDTOs = userList.stream()
                 .map(ManagedUserDTO::new)
                 .collect(toList());

@@ -11,18 +11,20 @@ import ${SecurityUtils_FQN};
  */
 public class AuditListner {
 
-    @Inject
-    private SecurityUtils securityUtils;
+    <#assign wf = serverType == "Wildfly" >
+    <#if wf>//Issue : https://issues.jboss.org/browse/WFLY-2387</#if>
+    <#if wf>//</#if>@Inject
+    <#if wf>//</#if>private SecurityUtils securityUtils;
 
     @PrePersist
     void onCreate(AbstractAuditingEntity entity) {
         entity.setCreatedDate(new Date());
-        entity.setCreatedBy(securityUtils.getCurrentUserLogin());
+        <#if wf>//</#if>entity.setCreatedBy(securityUtils.getCurrentUserLogin());
     }
 
     @PreUpdate
     void onUpdate(AbstractAuditingEntity entity) {
         entity.setLastModifiedDate(new Date());
-        entity.setLastModifiedBy(securityUtils.getCurrentUserLogin());
+        <#if wf>//</#if>entity.setLastModifiedBy(securityUtils.getCurrentUserLogin());
     }
 }

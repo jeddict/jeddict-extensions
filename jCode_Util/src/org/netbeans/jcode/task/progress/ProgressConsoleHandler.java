@@ -16,16 +16,17 @@
 package org.netbeans.jcode.task.progress;
 
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.BG_BLUE;
+import static org.netbeans.jcode.console.Console.BG_GREEN;
 import static org.netbeans.jcode.console.Console.BG_MAGENTA;
 import static org.netbeans.jcode.console.Console.BG_RED;
 import static org.netbeans.jcode.console.Console.BLINK;
 import static org.netbeans.jcode.console.Console.BOLD;
 import static org.netbeans.jcode.console.Console.FG_BLUE;
+import static org.netbeans.jcode.console.Console.FG_GREEN;
 import static org.netbeans.jcode.console.Console.FG_MAGENTA;
 import static org.netbeans.jcode.console.Console.FG_RED;
 import static org.netbeans.jcode.console.Console.FG_WHITE;
@@ -44,6 +45,7 @@ public class ProgressConsoleHandler implements ProgressHandler {
     private final Set<Message> errorMessage = new LinkedHashSet<>();
     private final Set<Message> warningMessage = new LinkedHashSet<>();
     private final Set<Message> infoMessage = new LinkedHashSet<>();
+    private final Set<Message> helpMessage = new LinkedHashSet<>();
 
     public ProgressConsoleHandler(ITaskSupervisor taskSupervisor) {
         this.taskSupervisor = taskSupervisor;
@@ -85,9 +87,11 @@ public class ProgressConsoleHandler implements ProgressHandler {
 
     @Override
     public void finish() {
+        
         printMessage(MessageType.INFO,BG_BLUE,FG_BLUE, infoMessage);
         printMessage(MessageType.WARNING,BG_MAGENTA,FG_MAGENTA, warningMessage);
         printMessage(MessageType.ERROR,BG_RED, FG_RED, errorMessage);
+        printMessage(MessageType.HELP,BG_GREEN, FG_GREEN, helpMessage);
     }
 
     @Override
@@ -103,6 +107,11 @@ public class ProgressConsoleHandler implements ProgressHandler {
     @Override
     public void info(String title, String message) {
         infoMessage.add(new Message(title, message));
+    }
+    
+    @Override
+    public void help(String title, String message) {
+        helpMessage.add(new Message(title, message));
     }
 
     private void printMessage(MessageType messageType, Console bgColor, Console fgColor, Set<Message> messageRepository) {
@@ -134,7 +143,7 @@ public class ProgressConsoleHandler implements ProgressHandler {
     }
 
     enum MessageType {
-        ERROR("Error"), WARNING("Warning"), INFO("Info");
+        ERROR("Error"), WARNING("Warning"), INFO("Info"), HELP("Help");
         private final String value;
 
         private MessageType(String value) {

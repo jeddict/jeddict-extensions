@@ -177,7 +177,7 @@ public class UserService {
     }
 
     public User authenticate(UserAuthenticationToken authenticationToken) throws AuthenticationException {
-        Optional<User> userOptional = ${userFacade}.findOneByLogin(authenticationToken.getPrincipal());
+        Optional<User> userOptional = ${userFacade}.findOneWithAuthoritiesByLogin(authenticationToken.getPrincipal());
         if (userOptional.isPresent() && userOptional.get().getActivated() && userOptional.get().getPassword().equals(passwordEncoder.encode(authenticationToken.getCredentials()))) {
             return userOptional.get();
         } else {

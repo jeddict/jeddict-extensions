@@ -257,7 +257,13 @@ public class JPAConstants {
     public static final String LOCK_MODE_TYPE = "LockModeType";
     public static final String LOCK_MODE_TYPE_FQN = PERSISTENCE_PACKAGE_PREFIX + LOCK_MODE_TYPE;
     
-    
+   //Persistence.xml
+    public static final String JDBC_URL = "javax.persistence.jdbc.url";
+    public static final String JDBC_PASSWORD = "javax.persistence.jdbc.password";
+    public static final String JDBC_DRIVER = "javax.persistence.jdbc.driver";
+    public static final String JDBC_USER = "javax.persistence.jdbc.user";
+    public static final String JBOSS_DATASOURCE_PREFIX = "java:/";
+
     
 
 }

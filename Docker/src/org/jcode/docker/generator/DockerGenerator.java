@@ -18,7 +18,9 @@ package org.jcode.docker.generator;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import static org.jcode.docker.generator.ServerType.NONE;
+import static org.jcode.docker.generator.ServerType.WILDFLY;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.console.Console;
@@ -27,17 +29,30 @@ import static org.netbeans.jcode.console.Console.FG_RED;
 import static org.netbeans.jcode.console.Console.UNDERLINE;
 import static org.netbeans.jcode.core.util.FileUtil.expandTemplate;
 import org.netbeans.jcode.core.util.POMManager;
+import org.netbeans.jcode.core.util.PersistenceUtil;
+import static org.netbeans.jcode.core.util.PersistenceUtil.removeProperty;
 import static org.netbeans.jcode.core.util.ProjectHelper.getDockerDirectory;
+import static org.netbeans.jcode.jpa.JPAConstants.JBOSS_DATASOURCE_PREFIX;
+import static org.netbeans.jcode.jpa.JPAConstants.JDBC_DRIVER;
+import static org.netbeans.jcode.jpa.JPAConstants.JDBC_PASSWORD;
+import static org.netbeans.jcode.jpa.JPAConstants.JDBC_URL;
+import static org.netbeans.jcode.jpa.JPAConstants.JDBC_USER;
 import org.netbeans.jcode.layer.ConfigData;
 import org.netbeans.jcode.layer.Generator;
 import org.netbeans.jcode.layer.Technology;
 import org.netbeans.jcode.task.progress.ProgressHandler;
+import org.netbeans.jpa.modeler.spec.EntityMappings;
 import org.openide.filesystems.FileObject;
-import org.openide.util.NbBundle;
+import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
+import org.netbeans.modules.j2ee.persistence.dd.common.PersistenceUnit;
+import org.netbeans.modules.j2ee.persistence.provider.InvalidPersistenceXmlException;
+import org.netbeans.modules.j2ee.persistence.provider.ProviderUtil;
+import org.netbeans.modules.j2ee.persistence.unit.PUDataObject;
+import org.openide.util.NbBundle;
 
 /**
- * Generates EJB facades for entity classes.
+ * Generates Docker image.
  *
  * @author Gaurav Gupta
  */
@@ -59,18 +74,57 @@ public final class DockerGenerator implements Generator {
     @ConfigData
     private ProgressHandler handler;
 
+    @ConfigData
+    private EntityMappings entityMapping;
+
     @Override
     public void execute() throws IOException {
         if (dockerConfig.getServerType() != NONE) {
             handler.progress(Console.wrap(DockerGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
+            
+             handler.help(NbBundle.getMessage(DockerGenerator.class, "DOCKER_MACHINE_GUIDE_TITLE"),
+                    NbBundle.getMessage(DockerGenerator.class, "DOCKER_MACHINE_GUIDE"));
+             
+             handler.help(NbBundle.getMessage(DockerGenerator.class, "DOCKER_GUIDE_TITLE"),
+                    NbBundle.getMessage(DockerGenerator.class, "DOCKER_GUIDE"));
+           
             System.out.println("");
             FileObject targetFolder = getDockerDirectory(source);
             Map<String, Object> params = new HashMap<>();
             params.put("docker", dockerConfig);
-            params.put("binary", "build.war");
+//            params.put("binary", "build.war");
             expandTemplate(TEMPLATE + "DockerFile_" + dockerConfig.getServerType().name() + ".ftl", targetFolder, "DockerFile", params);
-            expandTemplate(TEMPLATE + "docker-compose_" + dockerConfig.getServerType().name() + ".yml.ftl", targetFolder, "docker-compose.yml", params);
+            expandTemplate(TEMPLATE + "docker-compose.yml.ftl", targetFolder, "docker-compose.yml", params);
             addMavenDependencies("fabric8io/pom/_pom.xml");
+            updatePersistenceXml();
+        }
+    }
+
+    private void updatePersistenceXml() {
+        try {
+            String puName = entityMapping.getPersistenceUnitName();
+            PUDataObject pud = ProviderUtil.getPUDataObject(project);
+            Optional<PersistenceUnit> punitOptional = PersistenceUtil.getPersistenceUnit(project, puName);
+            if (punitOptional.isPresent()) {
+                PersistenceUnit punit = punitOptional.get();
+                punit.setTransactionType("JTA");
+                removeProperty(punit, JDBC_URL);
+                removeProperty(punit, JDBC_PASSWORD);
+                removeProperty(punit, JDBC_DRIVER);
+                removeProperty(punit, JDBC_USER);
+                punit.setJtaDataSource(getJNDI(dockerConfig.getServerType(), dockerConfig.getDataSource()));
+                pud.save();
+            }
+        } catch (InvalidPersistenceXmlException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+    }
+    
+    public static String getJNDI(ServerType server, String dataSource) {
+        if (server == WILDFLY) {
+            return JBOSS_DATASOURCE_PREFIX + "jdbc/" + dataSource;
+        } else {
+            return "jdbc/" + dataSource;
         }
     }
 
