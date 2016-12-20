@@ -394,6 +394,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.jLabel1.text")); // NOI18N
         jLabel1.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jLabel1.setAlignmentY(0.0F);
         jPanel1.add(jLabel1);
 
         miscPanel.setLayout(new java.awt.BorderLayout());
@@ -456,12 +457,14 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(10, 10, 10)
-                .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 611, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

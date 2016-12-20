@@ -16,12 +16,13 @@
 package org.netbeans.jcode.core.util;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import static java.util.stream.Collectors.toSet;
+import javax.swing.SwingUtilities;
 import javax.xml.namespace.QName;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.ModelReader;
@@ -34,6 +35,7 @@ import org.netbeans.modules.maven.embedder.EmbedderFactory;
 import org.netbeans.modules.maven.model.ModelOperation;
 import org.netbeans.modules.maven.model.Utilities;
 import org.netbeans.modules.maven.model.pom.Activation;
+import org.netbeans.modules.maven.model.pom.ActivationProperty;
 import org.netbeans.modules.maven.model.pom.BuildBase;
 import org.netbeans.modules.maven.model.pom.Configuration;
 import org.netbeans.modules.maven.model.pom.Dependency;
@@ -53,6 +55,8 @@ import org.netbeans.modules.maven.model.pom.RepositoryPolicy;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
 import org.openide.util.RequestProcessor;
+import javax.swing.SwingUtilities;
+import static org.openide.filesystems.FileUtil.toFileObject;
 
 /**
  *
@@ -60,29 +64,92 @@ import org.openide.util.RequestProcessor;
  */
 public class POMManager {
 
-    private Model sourceModel;
     private Project project;
     private FileObject pomFileObject;
-    private List<ModelOperation<POMModel>> operations;
     private POMModel pomModel;
+    private NbMavenProjectImpl mavenProject;
+    
+    private Model sourceModel;
+    private List<ModelOperation<POMModel>> operations;
+    
 
     public POMManager(String inputResource, Project project) {
         try {
+            //target
             this.project = project;
+            mavenProject = project.getLookup().lookup(NbMavenProjectImpl.class);
+            pomFileObject = toFileObject(mavenProject.getPOMFile());
+            pomModel = POMModelFactory.getDefault().createFreshModel(Utilities.createModelSource(pomFileObject));
+            //source
             operations = new ArrayList<>();
-            InputStream pomStream = FileUtil.loadResource(inputResource);
             ModelReader reader = EmbedderFactory.getProjectEmbedder().lookupComponent(ModelReader.class);
-            sourceModel = reader.read(pomStream, Collections.singletonMap(ModelReader.IS_STRICT, false));
-            pomFileObject = org.openide.filesystems.FileUtil.toFileObject(project.getLookup().lookup(NbMavenProjectImpl.class).getPOMFile());
-            org.netbeans.modules.xml.xam.ModelSource source = Utilities.createModelSource(pomFileObject);
-            pomModel = POMModelFactory.getDefault().createFreshModel(source);
+            sourceModel = reader.read(FileUtil.loadResource(inputResource), Collections.singletonMap(ModelReader.IS_STRICT, false));
+          
+             
+            
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
         }
     }
     
+    public void fixDistributionProperties() {
+        try {
+            pomModel.startTransaction();
+        org.netbeans.modules.maven.model.pom.Project pomProject = pomModel.getProject();
+        if (pomProject.getGroupId() != null) {
+            pomProject.setGroupId(pomProject.getGroupId().toLowerCase());
+        }
+        if (pomProject.getArtifactId() != null) {
+            pomProject.setArtifactId(pomProject.getArtifactId().toLowerCase());
+        }
+        if (pomProject.getVersion() != null) {
+            pomProject.setVersion(pomProject.getVersion().toLowerCase());
+        }
+         } finally {
+            pomModel.endTransaction();
+        }
+    }
+    
+    public void addProperties(String profile, java.util.Properties prop) {
+        try {
+            pomModel.startTransaction();
+            org.netbeans.modules.maven.model.pom.Project pomProject = pomModel.getProject();
+            if (profile != null) {
+                Profile targetProfile = pomProject.findProfileById(profile);
+                if (targetProfile == null) {
+                    throw new IllegalArgumentException(String.format("Profile[%s] not exist", profile));
+                }
+                registerProperties(prop, targetProfile.getProperties());
+            } else {
+                registerProperties(prop, pomProject.getProperties());
+            }
+        } finally {
+            pomModel.endTransaction();
+        }
+    }
+    
+    
     public static boolean isMavenProject(Project project) {
         return project.getLookup().lookup(NbMavenProjectImpl.class) != null;
+    }
+    
+    private static final RequestProcessor RP = new RequestProcessor("Maven loading");
+    public static void reload(Project project){
+        NbMavenProjectImpl mavenProject = project.getLookup().lookup(NbMavenProjectImpl.class);
+        try {
+            FileObject pomFileObject = toFileObject(mavenProject.getPOMFile());
+            POMModel model = POMModelFactory.getDefault().getModel(Utilities.createModelSource(pomFileObject));
+            Utilities.saveChanges(model);
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+
+        RP.post(() -> {
+            project.getLookup().lookup(NbMavenProject.class).triggerDependencyDownload();
+            NbMavenProject.fireMavenProjectReload(mavenProject);
+        });
+        
+        SwingUtilities.invokeLater(()->NbMavenProject.fireMavenProjectReload(mavenProject));
     }
 
     private void execute() {
@@ -104,16 +171,16 @@ public class POMManager {
     }
 
     private Properties registerProperties(java.util.Properties source, Properties target) {
-        if (source!= null && !source.isEmpty()) {
+     if (source!= null && !source.isEmpty()) {
             if (target == null) {
                 target = pomModel.getFactory().createProperties();
             }
             for (String sourceKey : source.stringPropertyNames()) {
                 String sourceValue = source.getProperty(sourceKey);
-                String targetValue = target.getProperty(sourceKey);
-                if (targetValue == null) {
+//                String targetValue = target.getProperty(sourceKey);
+//                if (targetValue == null) {
                     target.setProperty(sourceKey, sourceValue);
-                }
+//                }
             }
         }
         return target;
@@ -203,7 +270,16 @@ public class POMManager {
                     if (sourceProfile.getActivation() != null) {
                         Activation activation = pomModel.getFactory().createActivation();
                         targetProfile.setActivation(activation);
-                        activation.setChildElementText("activeByDefault", Boolean.toString(sourceProfile.getActivation().isActiveByDefault()), new QName("activeByDefault"));
+                         if (sourceProfile.getActivation().getProperty() != null) {
+                            org.apache.maven.model.ActivationProperty sourceProperty = sourceProfile.getActivation().getProperty();
+                            ActivationProperty targetProperty = pomModel.getFactory().createActivationProperty();
+                            activation.setActivationProperty(targetProperty);
+                            targetProperty.setName(sourceProperty.getName());
+                            targetProperty.setValue(sourceProperty.getValue());
+//                            activation.setChildElementText(sourceProperty.getName(), sourceProperty.getValue(), new QName(sourceProperty.getName()));
+                        } else {
+                            activation.setChildElementText("activeByDefault", Boolean.toString(sourceProfile.getActivation().isActiveByDefault()), new QName("activeByDefault"));
+                        } 
                     }
                 }
                 targetProfile.setDependencyManagement(registerDependencyManagement(sourceProfile.getDependencyManagement(), targetProfile.getDependencyManagement()));
@@ -288,15 +364,28 @@ public class POMManager {
         operations.add(pomModel -> ModelUtils.setSourceLevel(pomModel, version));
     }
 
-    private void downloadDependency() {
-        RequestProcessor.getDefault().post(project.getLookup().lookup(NbMavenProject.class)::triggerDependencyDownload);
-    }
+//    private void downloadDependency() {
+//        RequestProcessor.getDefault().post(() -> {
+//            project.getLookup().lookup(NbMavenProject.class).triggerDependencyDownload();
+//            NbMavenProject.fireMavenProjectReload(mavenProject);
+//        });
+//    }
 
     public void commit() {
         execute();
         if (operations.size() > 0) {
             Utilities.performPOMModelOperations(pomFileObject, operations);
         }
-        downloadDependency();
+//        downloadDependency();
+        
     }
+//    
+//    public static void reloadProject(Project project){
+//        NbMavenProject mavenProject = project.getLookup().lookup(NbMavenProject.class);
+//            RequestProcessor.getDefault().post(() -> {
+//                if(mavenProject.isMavenProjectLoaded()){
+//                    downloadDependency(project);
+//                }
+//            });
+//    }
 }

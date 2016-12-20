@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import static java.util.stream.Collectors.toList;
 import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.BOLD;
 import static org.netbeans.jcode.console.Console.FG_RED;
@@ -34,27 +33,24 @@ import org.netbeans.jcode.rest.controller.RESTGenerator;
 import org.openide.util.lookup.ServiceProvider;
 import org.netbeans.jcode.layer.Generator;
 import static org.netbeans.jcode.ng.main.AngularUtil.copyDynamicFile;
-import static org.netbeans.jcode.ng.main.AngularUtil.getResource;
 import org.netbeans.jcode.ng.main.domain.ApplicationSourceFilter;
-import org.netbeans.jcode.ng.main.domain.NG1SourceFilter;
+import org.netbeans.jcode.ng.main.domain.NG2SourceFilter;
 import org.netbeans.jcode.ng.main.domain.NGApplicationConfig;
 import org.netbeans.jcode.ng.main.domain.NGEntity;
 import org.netbeans.jcode.parser.ejs.EJSParser;
-import org.netbeans.jpa.modeler.spec.Entity;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
-
 /**
  *
  * @author Gaurav Gupta
  */
-@ServiceProvider(service = Generator.class)
-@Technology(type = VIEWER, label = "Angular JS 1", panel = AngularPanel.class, parents = {RESTGenerator.class})
-public class Angular1Generator extends AngularGenerator {
+//@ServiceProvider(service = Generator.class)
+//@Technology(type = VIEWER, label = "Angular JS 2", panel = AngularPanel.class, parents = {RESTGenerator.class})
+public class Angular2Generator extends AngularGenerator {
 
-    private static final String TEMPLATE = "org/netbeans/jcode/template/angular1/";
-    private ApplicationSourceFilter sourceFilter;
-
+    private static final String TEMPLATE = "org/netbeans/jcode/template/angular2/";
+   private ApplicationSourceFilter sourceFilter;
+   
     @Override
     public String getTemplatePath() {
         return TEMPLATE;
@@ -63,13 +59,11 @@ public class Angular1Generator extends AngularGenerator {
     @Override
     protected ApplicationSourceFilter getApplicationSourceFilter(NGApplicationConfig applicationConfig) {
         if (sourceFilter == null) {
-            sourceFilter = new NG1SourceFilter(applicationConfig);
+            sourceFilter = new NG2SourceFilter(applicationConfig);
         }
         return sourceFilter;
     }
-    private final static String MODULE_JS = "app/app.module.js";
     
-    @Override
         protected void generateClientSideComponent() {
         try {
             
@@ -77,21 +71,13 @@ public class Angular1Generator extends AngularGenerator {
             ApplicationSourceFilter fileFilter = getApplicationSourceFilter(applicationConfig);
             
             handler.append(Console.wrap(AngularGenerator.class, "MSG_Copying_Entity_Files", FG_RED, BOLD, UNDERLINE));
-            Map<String, String> templateLib = getResource(getTemplatePath() + "entity-include-resources.zip");
             List<NGEntity> entities = new ArrayList<>();
-            for (Entity entity : entityMapping.getConcreteEntity().collect(toList())) {
-                NGEntity ngEntity = getEntity(entity);
-                if (ngEntity != null) {
-                    entities.add(ngEntity);
-                    generateNgEntity(applicationConfig, fileFilter, getEntityConfig(), ngEntity, templateLib);
-                    generateNgEntityi18nResource(applicationConfig, fileFilter, ngEntity);
-                }
-            }
+            
             applicationConfig.setEntities(entities);
             
             generateNgApplication(applicationConfig, fileFilter);
-            generateNgApplicationi18nResource(applicationConfig, fileFilter);
-            generateNgLocaleResource(applicationConfig, fileFilter);
+//            generateNgApplicationi18nResource(applicationConfig, fileFilter);
+//            generateNgLocaleResource(applicationConfig, fileFilter);
             generateNgHome(applicationConfig, fileFilter);
             
         } catch (IOException ex) {
@@ -104,20 +90,20 @@ public class Angular1Generator extends AngularGenerator {
 
         Map<String, Object> data = new HashMap();
         data.put("entityScriptFiles", entityScriptFiles);
-        scriptFiles.remove(MODULE_JS);
-        scriptFiles.add(0, MODULE_JS);
         data.put("scriptFiles", scriptFiles);
 
         EJSParser parser = new EJSParser();
         parser.addContext(applicationConfig);
         parser.addContext(data);
 
-        Function<String, String> pathResolver = templatePath -> templatePath.substring(templatePath.lastIndexOf("/_")+2);// "_index.html" ->  "index.html";
-
-        copyDynamicFile(getParserManager(parser, null),getTemplatePath() +  "_index.html", webRoot, pathResolver, handler);
+        Function<String, String> pathResolver = templatePath -> templatePath.substring(templatePath.lastIndexOf("/_") + 2);// "_index.html" ->  "index.html";
+//project-resource.zip
+        copyDynamicFile(getParserManager(parser, null), getTemplatePath() + "_index.hbs", webRoot, pathResolver, handler);
         copyDynamicFile(getParserManager(parser, null), getTemplatePath() + "_bower.json", project.getProjectDirectory(), pathResolver, handler);
         handler.append(Console.wrap(AngularGenerator.class, "MSG_Copying_Bower_Lib_Files", FG_RED, BOLD));
         FileUtil.copyStaticResource(getTemplatePath() + "bower_components.zip", webRoot, null, handler);
     }
 
+ 
+    
 }

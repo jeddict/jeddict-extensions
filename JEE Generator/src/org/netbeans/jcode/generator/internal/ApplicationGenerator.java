@@ -27,6 +27,8 @@ import java.util.Set;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
+import org.netbeans.jcode.core.util.POMManager;
+import org.netbeans.jcode.core.util.PersistenceUtil;
 import org.netbeans.jcode.jpa.util.PersistenceHelper;
 import org.netbeans.jcode.layer.ConfigData;
 import org.netbeans.jcode.layer.Generator;
@@ -37,7 +39,10 @@ import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
 import org.netbeans.jcode.stack.config.data.LayerConfigData;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
+import org.netbeans.modules.j2ee.persistence.provider.InvalidPersistenceXmlException;
+import org.netbeans.modules.j2ee.persistence.provider.ProviderUtil;
 import org.openide.filesystems.FileObject;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -116,25 +121,35 @@ public class ApplicationGenerator extends BaseApplicationGenerator {
             context.getGenerator().execute();
         }
 
-        if (controllerLayerConfig == null) {
-            return;
+        if (controllerLayerConfig != null) {
+            inject(applicationConfigData.getControllerTechContext().getGenerator(), applicationConfigData, layerConfigData, handler);
+            applicationConfigData.getControllerTechContext().getGenerator().execute();
+            for (TechContext context : applicationConfigData.getControllerTechContext().getSiblingTechContext()) {
+                inject(context.getGenerator(), applicationConfigData, layerConfigData, handler);
+                context.getGenerator().execute();
+            }
         }
-        inject(applicationConfigData.getControllerTechContext().getGenerator(), applicationConfigData, layerConfigData, handler);
-        applicationConfigData.getControllerTechContext().getGenerator().execute();
-        for (TechContext context : applicationConfigData.getControllerTechContext().getSiblingTechContext()) {
-            inject(context.getGenerator(), applicationConfigData, layerConfigData, handler);
-            context.getGenerator().execute();
+
+        if (viewerLayerConfig != null) {
+            inject(applicationConfigData.getViewerTechContext().getGenerator(), applicationConfigData, layerConfigData, handler);
+            applicationConfigData.getViewerTechContext().getGenerator().execute();
+            for (TechContext context : applicationConfigData.getViewerTechContext().getSiblingTechContext()) {
+                inject(context.getGenerator(), applicationConfigData, layerConfigData, handler);
+                context.getGenerator().execute();
+            }
         }
         
-        if (viewerLayerConfig == null) {
-            return;
+        if(POMManager.isMavenProject(getProject())){
+            POMManager.reload(getProject());
         }
-        inject(applicationConfigData.getViewerTechContext().getGenerator(), applicationConfigData, layerConfigData, handler);
-        applicationConfigData.getViewerTechContext().getGenerator().execute();
-        for (TechContext context : applicationConfigData.getViewerTechContext().getSiblingTechContext()) {
-            inject(context.getGenerator(), applicationConfigData, layerConfigData, handler);
-            context.getGenerator().execute();
-        }
+        
+//        PersistenceUtil.getPersistenceUnit(getProject(), applicationConfigData.getEntityMappings().getPersistenceUnitName()).ifPresent(pud -> {
+//            try {
+//                ProviderUtil.getPUDataObject(getProject()).save();
+//            } catch (InvalidPersistenceXmlException ex) {
+//                Exceptions.printStackTrace(ex);
+//            }
+//        });
     }
 
     private List<Field> getAllFields(List<Field> fields, Class<?> type) {

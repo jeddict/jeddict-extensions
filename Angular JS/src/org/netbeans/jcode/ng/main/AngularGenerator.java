@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import static java.util.stream.Collectors.toList;
 import javax.script.ScriptException;
 import org.apache.commons.io.IOUtils;
 
@@ -33,7 +32,6 @@ import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.BOLD;
 import static org.netbeans.jcode.console.Console.FG_RED;
 import static org.netbeans.jcode.console.Console.UNDERLINE;
-import org.netbeans.jcode.core.util.FileUtil;
 import static org.netbeans.jcode.core.util.FileUtil.getFileExt;
 import static org.netbeans.jcode.core.util.FileUtil.getSimpleFileName;
 import static org.netbeans.jcode.core.util.FileUtil.getSimpleFileNameWithExt;
@@ -41,9 +39,7 @@ import static org.netbeans.jcode.core.util.JavaSourceHelper.getSimpleClassName;
 import org.netbeans.jcode.core.util.JavaUtil;
 import static org.netbeans.jcode.core.util.ProjectHelper.getProjectWebRoot;
 import org.netbeans.jcode.layer.ConfigData;
-import static org.netbeans.jcode.ng.main.AngularUtil.copyDynamicFile;
 import static org.netbeans.jcode.ng.main.AngularUtil.copyDynamicResource;
-import static org.netbeans.jcode.ng.main.AngularUtil.getResource;
 import org.netbeans.jcode.ng.main.domain.NGApplicationConfig;
 import org.netbeans.jcode.ng.main.domain.ApplicationSourceFilter;
 import org.netbeans.jcode.ng.main.domain.EntityConfig;
@@ -90,10 +86,10 @@ public abstract class AngularGenerator implements Generator {
     @ConfigData
     protected ProgressHandler handler;
 
-    protected static final List<String> PARSER_FILE_TYPE = Arrays.asList("html", "js", "css", "scss", "json");
+    protected static final List<String> PARSER_FILE_TYPE = Arrays.asList("html", "js", "css", "scss", "json", "ts");
 //    private static final List<String> BINARY_FILE_TYPE = Arrays.asList("gif", "ico", "png", "jpeg", "jpg");
 
-    private Consumer<FileTypeStream> getParserManager(EJSParser parser, Map<String, String> extTemplate) {
+    protected Consumer<FileTypeStream> getParserManager(EJSParser parser, Map<String, String> extTemplate) {
         return (fileTypeStream) -> {
             try {
                 if (PARSER_FILE_TYPE.contains(fileTypeStream.getFileType())) {
@@ -107,9 +103,8 @@ public abstract class AngularGenerator implements Generator {
         };
     }
 
-    private List<String> entityScriptFiles;
-    private List<String> scriptFiles;
-    private final static String MODULE_JS = "app/app.module.js";
+    protected List<String> entityScriptFiles;
+    protected List<String> scriptFiles;
     
     public abstract String getTemplatePath();
     
@@ -120,58 +115,9 @@ public abstract class AngularGenerator implements Generator {
         generateClientSideComponent();
     }
     
-    protected void generateClientSideComponent() {
-        try {
-            
-            NGApplicationConfig applicationConfig = getAppConfig();
-            ApplicationSourceFilter fileFilter = new ApplicationSourceFilter(applicationConfig);
-            
-            handler.append(Console.wrap(AngularGenerator.class, "MSG_Copying_Entity_Files", FG_RED, BOLD, UNDERLINE));
-            Map<String, String> templateLib = getResource(getTemplatePath() + "entity-include-resources.zip");
-            List<NGEntity> entities = new ArrayList<>();
-            for (Entity entity : entityMapping.getConcreteEntity().collect(toList())) {
-                NGEntity ngEntity = getEntity(entity);
-                if (ngEntity != null) {
-                    entities.add(ngEntity);
-                    generateNgEntity(applicationConfig, fileFilter, getEntityConfig(), ngEntity, templateLib);
-                    generateNgEntityi18nResource(applicationConfig, fileFilter, ngEntity);
-                }
-            }
-            applicationConfig.setEntities(entities);
-            
-            generateNgApplication(applicationConfig, fileFilter);
-            generateNgApplicationi18nResource(applicationConfig, fileFilter);
-            generateNgLocaleResource(applicationConfig, fileFilter);
-            generateNgHome(applicationConfig, fileFilter);
-            
-        } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
-        }
-    }
-
-    protected void generateNgHome(NGApplicationConfig applicationConfig, ApplicationSourceFilter fileFilter) throws IOException {
-        FileObject webRoot = getProjectWebRoot(project);
-
-        Map<String, Object> data = new HashMap();
-        data.put("entityScriptFiles", entityScriptFiles);
-        scriptFiles.remove(MODULE_JS);
-        scriptFiles.add(0, MODULE_JS);
-        data.put("scriptFiles", scriptFiles);
-
-        EJSParser parser = new EJSParser();
-        parser.addContext(applicationConfig);
-        parser.addContext(data);
-
-        Function<String, String> pathResolver = (templatePath) -> {
-            return templatePath.substring(templatePath.lastIndexOf("/_")+2);// "_index.html" ->  "index.html"
-        };
-
-        copyDynamicFile(getParserManager(parser, null),getTemplatePath() +  "_index.html", webRoot, pathResolver, handler);
-        copyDynamicFile(getParserManager(parser, null), getTemplatePath() + "_bower.json", project.getProjectDirectory(), pathResolver, handler);
-        handler.append(Console.wrap(AngularGenerator.class, "MSG_Copying_Bower_Lib_Files", FG_RED, BOLD));
-        FileUtil.copyStaticResource(getTemplatePath() + "bower_components.zip", webRoot, null, handler);
-
-    }
+    protected abstract ApplicationSourceFilter getApplicationSourceFilter(NGApplicationConfig applicationConfig);
+    
+    protected abstract void generateClientSideComponent();
 
     protected void generateNgApplication(NGApplicationConfig applicationConfig, ApplicationSourceFilter fileFilter) throws IOException {
         handler.append(Console.wrap(AngularGenerator.class, "MSG_Copying_Application_Files", FG_RED, BOLD, UNDERLINE));
@@ -320,7 +266,7 @@ public abstract class AngularGenerator implements Generator {
         return applicationConfig;
     }
 
-    private NGEntity getEntity(Entity entity) {
+    protected NGEntity getEntity(Entity entity) {
         Attribute idAttribute = entity.getAttributes().getIdField();
         if (idAttribute instanceof EmbeddedId || idAttribute instanceof DefaultAttribute) {
             handler.error(NbBundle.getMessage(AngularGenerator.class, "TITLE_Composite_Key_Not_Supported"),

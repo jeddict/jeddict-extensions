@@ -19,3 +19,5 @@
         <property name="url" value="jdbc:h2:mem:payaraEmbedded"/>
     </jdbc-connection-pool>-->
 </resources>
+
+<!--This is ignored now and JavaEE 7 default datasource is used-->

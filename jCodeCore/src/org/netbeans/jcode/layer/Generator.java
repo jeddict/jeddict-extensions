@@ -61,7 +61,7 @@ public interface Generator {
         Lookup.getDefault().lookupAll(Generator.class).stream().forEach((Generator codeGenerator) -> {
             Technology technology = codeGenerator.getClass().getAnnotation(Technology.class);
             //if direct lookup || reverse lookup
-            if (technology.type() == Technology.Type.NONE && (rootCodeGeneratorSibling.contains(codeGenerator.getClass()) ||
+            if (technology!=null && technology.type() == Technology.Type.NONE && (rootCodeGeneratorSibling.contains(codeGenerator.getClass()) ||
                 Arrays.stream(technology.sibling()).filter(sibling -> sibling == rootCodeGenerator.getClass()).findAny().isPresent())) {
                 siblingCodeGenerators.add(new TechContext(codeGenerator));
             } 

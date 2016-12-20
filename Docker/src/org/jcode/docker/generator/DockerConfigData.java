@@ -15,7 +15,6 @@
  */
 package org.jcode.docker.generator;
 
-import org.apache.commons.lang.StringUtils;
 import org.netbeans.jcode.stack.config.data.LayerConfigData;
 
 /**
@@ -28,10 +27,13 @@ public class DockerConfigData extends LayerConfigData {
     private String serverVersion;
     private DatabaseType databaseType;
     private String databaseVersion;
-    private String dbUserName = "root";
+    private String dbUserName = "myuser";
     private String dbPassword = "secret";
     private String dataSource = "SampleDS";
     private String dbName = "sample";
+    private String dockerMachine;
+    private boolean dockerEnable = true;
+    private boolean dockerActivated = true;
 
     public ServerType getServerType() {
         return serverType;
@@ -100,4 +102,45 @@ public class DockerConfigData extends LayerConfigData {
         this.dbName = dbName;
     }
 
+    /**
+     * @return the dockerMachine
+     */
+    public String getDockerMachine() {
+        return dockerMachine;
+    }
+
+    /**
+     * @param dockerMachine the dockerMachine to set
+     */
+    public void setDockerMachine(String dockerMachine) {
+        this.dockerMachine = dockerMachine;
+    }
+
+    /**
+     * @return the dockerEnable
+     */
+    public boolean isDockerEnable() {
+        return dockerEnable;
+    }
+
+    /**
+     * @param dockerEnable the dockerEnable to set
+     */
+    public void setDockerEnable(boolean dockerEnable) {
+        this.dockerEnable = dockerEnable;
+    }
+
+    /**
+     * @return the dockerActivated
+     */
+    public boolean isDockerActivated() {
+        return dockerActivated;
+    }
+
+    /**
+     * @param dockerActivated the dockerActivated to set
+     */
+    public void setDockerActivated(boolean dockerActivated) {
+        this.dockerActivated = dockerActivated;
+    }
 }

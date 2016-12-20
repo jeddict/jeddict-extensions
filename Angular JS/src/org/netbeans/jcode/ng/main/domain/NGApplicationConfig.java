@@ -48,43 +48,47 @@ public class NGApplicationConfig {
     public static final String MONGODB_DATABASE_TYPE = "mongodb";
     public static final String H2_DISK_DATABASE_TYPE = "h2Disk";
     public static final String H2_MEMORY_DATABASE_TYPE = "h2Memory";
-    
+
     private String applicationPath;//rest path
 
     public String MAIN_SRC_DIR = "src/main/webapp/";
     public String TEST_SRC_DIR = "src/test/javascript/";
-    
+
     public String angularAppName;
+    public String angular2AppName;
+
     public boolean enableTranslation;
     public String nativeLanguage = "en";
     private Set<String> languages = new HashSet<>(Arrays.asList("en"));
 
     public boolean enableSocialSignIn;
-    
+
+    public boolean skipUserManagement;
+
     public String authenticationType;
-    
+
     public String jhiPrefix;
     public String jhiPrefixCapitalized;
-    
+
     public String applicationType;
     public String websocket;
-    
+
     public String searchEngine;
     public String databaseType;
     public String devDatabaseType;
     public String hibernateCache;//ehcache2
-    
+
     public String baseName;
     public String capitalizedBaseName;
     public String camelizedBaseName;
     public String dasherizedBaseName;
     public String lowercaseBaseName;
-    
+
     public boolean useSass = false;
-    
+
     public List<NGEntity> entities;
     private String restPackage;
-    
+
     private boolean enableMetrics;
     private boolean enableLogs = false;
     private boolean enableHealth = false;
@@ -92,7 +96,7 @@ public class NGApplicationConfig {
     private boolean enableAudits = false;
     private boolean enableProfile = false;
     private boolean enableDocs = false;
-    
+
     /**
      * @return the jhiPrefixCapitalized
      */
@@ -245,7 +249,7 @@ public class NGApplicationConfig {
      * @return the baseName
      */
     public String getBaseName() {
-        if(baseName == null){
+        if (baseName == null) {
             baseName = EMPTY;
         }
         return baseName;
@@ -276,6 +280,19 @@ public class NGApplicationConfig {
             camelizedBaseName = camelCase(baseName);
         }
         return camelizedBaseName;
+    }
+
+    public String getAngular2AppName() {
+        if (angular2AppName == null) {
+            angular2AppName = firstUpper(getCamelizedBaseName());
+        }
+        return angular2AppName;
+    }
+
+    public boolean isSkipUserManagement() {
+
+//        this.skipUserManagement = this.configOptions.skipUserManagement || this.options['skip-user-management'] || this.config.get('skipUserManagement');
+        return skipUserManagement;
     }
 
     /**

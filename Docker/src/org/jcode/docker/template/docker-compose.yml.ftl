@@ -31,7 +31,11 @@ services:
             MYSQL_USER: '${docker.dbUserName}'
             MYSQL_PASSWORD: '${docker.dbPassword}'
             MYSQL_DATABASE: '${docker.dbName}'
-            
+#        volumes:
+#            - data-mysql:/var/lib/mysql
+#volumes:  
+#    data-mysql:
+#        driver: local       
 <#elseif docker.databaseType == "PostgreSQL">
         image: postgres:${docker.databaseVersion}
         ports:
@@ -40,4 +44,9 @@ services:
             POSTGRES_USER: '${docker.dbUserName}'
             POSTGRES_PASSWORD: '${docker.dbPassword}'
             POSTGRES_DB: '${docker.dbName}'
+#        volumes:
+#           - data-postgres:/var/lib/postgresql/data
+#volumes:  
+#    data-postgres:
+#      driver: local
 </#if>

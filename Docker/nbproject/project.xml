@@ -7,23 +7,6 @@
             <suite-component/>
             <module-dependencies>
                 <dependency>
-                    <code-name-base>org.netbeans.modeler.specification</code-name-base>
-                    <build-prerequisite/>
-                    <compile-dependency/>
-                    <run-dependency>
-                        <specification-version>2.5.10</specification-version>
-                    </run-dependency>
-                </dependency>
-                <dependency>
-                    <code-name-base>org.netbeans.modules.xml.multiview</code-name-base>
-                    <build-prerequisite/>
-                    <compile-dependency/>
-                    <run-dependency>
-                        <release-version>1</release-version>
-                        <implementation-version/>
-                    </run-dependency>
-                </dependency>
-                <dependency>
                     <code-name-base>org.apache.commons.lang</code-name-base>
                     <build-prerequisite/>
                     <compile-dependency/>
@@ -56,6 +39,40 @@
                     </run-dependency>
                 </dependency>
                 <dependency>
+                    <code-name-base>org.netbeans.modeler.properties</code-name-base>
+                    <build-prerequisite/>
+                    <compile-dependency/>
+                    <run-dependency>
+                        <specification-version>2.7</specification-version>
+                    </run-dependency>
+                </dependency>
+                <dependency>
+                    <code-name-base>org.netbeans.modeler.specification</code-name-base>
+                    <build-prerequisite/>
+                    <compile-dependency/>
+                    <run-dependency>
+                        <specification-version>2.5.10</specification-version>
+                    </run-dependency>
+                </dependency>
+                <dependency>
+                    <code-name-base>org.netbeans.modules.docker.api</code-name-base>
+                    <build-prerequisite/>
+                    <compile-dependency/>
+                    <run-dependency>
+                        <release-version>0</release-version>
+                        <implementation-version/>
+                    </run-dependency>
+                </dependency>
+                <dependency>
+                    <code-name-base>org.netbeans.modules.docker.ui</code-name-base>
+                    <build-prerequisite/>
+                    <compile-dependency/>
+                    <run-dependency>
+                        <release-version>0</release-version>
+                        <implementation-version/>
+                    </run-dependency>
+                </dependency>
+                <dependency>
                     <code-name-base>org.netbeans.modules.j2ee.persistence</code-name-base>
                     <build-prerequisite/>
                     <compile-dependency/>
@@ -70,15 +87,6 @@
                     <run-dependency>
                         <release-version>1</release-version>
                         <implementation-version/>
-                    </run-dependency>
-                </dependency>
-              
-                <dependency>
-                    <code-name-base>org.netbeans.modeler.properties</code-name-base>
-                    <build-prerequisite/>
-                    <compile-dependency/>
-                    <run-dependency>
-                        <specification-version>2.7</specification-version>
                     </run-dependency>
                 </dependency>
                 <dependency>
@@ -108,6 +116,31 @@
                     </run-dependency>
                 </dependency>
                 <dependency>
+                    <code-name-base>org.netbeans.modules.xml.multiview</code-name-base>
+                    <build-prerequisite/>
+                    <compile-dependency/>
+                    <run-dependency>
+                        <release-version>1</release-version>
+                        <implementation-version/>
+                    </run-dependency>
+                </dependency>
+                <dependency>
+                    <code-name-base>org.openide.actions</code-name-base>
+                    <build-prerequisite/>
+                    <compile-dependency/>
+                    <run-dependency>
+                        <specification-version>6.6</specification-version>
+                    </run-dependency>
+                </dependency>
+                <dependency>
+                    <code-name-base>org.openide.awt</code-name-base>
+                    <build-prerequisite/>
+                    <compile-dependency/>
+                    <run-dependency>
+                        <specification-version>7.67.1</specification-version>
+                    </run-dependency>
+                </dependency>
+                <dependency>
                     <code-name-base>org.openide.dialogs</code-name-base>
                     <build-prerequisite/>
                     <compile-dependency/>
@@ -124,19 +157,27 @@
                     </run-dependency>
                 </dependency>
                 <dependency>
-                    <code-name-base>org.openide.awt</code-name-base>
-                    <build-prerequisite/>
-                    <compile-dependency/>
-                    <run-dependency>
-                        <specification-version>7.67.1</specification-version>
-                    </run-dependency>
-                </dependency>
-                <dependency>
                     <code-name-base>org.openide.filesystems</code-name-base>
                     <build-prerequisite/>
                     <compile-dependency/>
                     <run-dependency>
                         <specification-version>9.10.1</specification-version>
+                    </run-dependency>
+                </dependency>
+                <dependency>
+                    <code-name-base>org.openide.loaders</code-name-base>
+                    <build-prerequisite/>
+                    <compile-dependency/>
+                    <run-dependency>
+                        <specification-version>7.63.1</specification-version>
+                    </run-dependency>
+                </dependency>
+                <dependency>
+                    <code-name-base>org.openide.nodes</code-name-base>
+                    <build-prerequisite/>
+                    <compile-dependency/>
+                    <run-dependency>
+                        <specification-version>7.42.1</specification-version>
                     </run-dependency>
                 </dependency>
                 <dependency>
@@ -156,22 +197,6 @@
                     </run-dependency>
                 </dependency>
                 <dependency>
-                    <code-name-base>org.openide.nodes</code-name-base>
-                    <build-prerequisite/>
-                    <compile-dependency/>
-                    <run-dependency>
-                        <specification-version>7.42.1</specification-version>
-                    </run-dependency>
-                </dependency>
-                <dependency>
-                    <code-name-base>org.openide.loaders</code-name-base>
-                    <build-prerequisite/>
-                    <compile-dependency/>
-                    <run-dependency>
-                        <specification-version>7.63.1</specification-version>
-                    </run-dependency>
-                </dependency>
-                <dependency>
                     <code-name-base>org.openide.util.ui</code-name-base>
                     <build-prerequisite/>
                     <compile-dependency/>
@@ -185,14 +210,6 @@
                     <compile-dependency/>
                     <run-dependency>
                         <specification-version>6.15</specification-version>
-                    </run-dependency>
-                </dependency>
-                <dependency>
-                    <code-name-base>org.openide.actions</code-name-base>
-                    <build-prerequisite/>
-                    <compile-dependency/>
-                    <run-dependency>
-                        <specification-version>6.6</specification-version>
                     </run-dependency>
                 </dependency>
             </module-dependencies>

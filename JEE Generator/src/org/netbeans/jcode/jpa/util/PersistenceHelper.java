@@ -43,7 +43,9 @@ public class PersistenceHelper {
 
     private static final String TRANSACTION_TYPE_ATTR = "transaction-type";         //NOI18N
 
-    private static final String RESOURCE_LOCAL_VALUE = "RESOURCE_LOCAL";        //NOI18N
+    public static final String JTA_VALUE = "JTA";
+    
+    public static final String RESOURCE_LOCAL_VALUE = "RESOURCE_LOCAL";        //NOI18N
 
     private static final String JTA_DATA_SOURCE_TAG = "jta-data-source";        //NOI18N
 

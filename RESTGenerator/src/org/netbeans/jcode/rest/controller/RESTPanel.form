@@ -17,13 +17,17 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" attributes="0">
-              <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
-              <Component id="warningPanel" max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
+                      <Component id="warningPanel" pref="611" max="32767" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jPanel1" pref="0" max="32767" attributes="0"/>
+                  </Group>
+              </Group>
               <EmptySpace max="-2" attributes="0"/>
-          </Group>
-          <Group type="102" alignment="0" attributes="0">
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="jPanel1" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -271,6 +275,7 @@
               <ResourceString bundle="org/netbeans/jcode/rest/controller/Bundle.properties" key="RESTPanel.jLabel1.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
             </Property>
             <Property name="verticalAlignment" type="int" value="1"/>
+            <Property name="alignmentY" type="float" value="0.0"/>
           </Properties>
         </Component>
         <Container class="javax.swing.JPanel" name="miscPanel">

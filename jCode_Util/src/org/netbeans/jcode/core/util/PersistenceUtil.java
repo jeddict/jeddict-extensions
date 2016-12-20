@@ -16,6 +16,8 @@
 package org.netbeans.jcode.core.util;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.maven.wagon.providers.http.commons.lang.StringUtils;
@@ -26,6 +28,7 @@ import org.netbeans.modules.j2ee.persistence.dd.common.Property;
 import org.netbeans.modules.j2ee.persistence.provider.InvalidPersistenceXmlException;
 import org.netbeans.modules.j2ee.persistence.provider.ProviderUtil;
 import org.netbeans.modules.j2ee.persistence.unit.PUDataObject;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -33,10 +36,15 @@ import org.netbeans.modules.j2ee.persistence.unit.PUDataObject;
  */
 public class PersistenceUtil {
 
-    public static Optional<PersistenceUnit> getPersistenceUnit(Project project, String puName) throws InvalidPersistenceXmlException {
-        PUDataObject pud = ProviderUtil.getPUDataObject(project);
-        return Arrays.stream(pud.getPersistence().getPersistenceUnit()).filter(persistenceUnit_In -> persistenceUnit_In.getName().equalsIgnoreCase(puName)).findFirst();
-
+    public static Optional<PersistenceUnit> getPersistenceUnit(Project project, String puName) {
+        PUDataObject pud;
+        try {
+            pud = ProviderUtil.getPUDataObject(project);
+            return Arrays.stream(pud.getPersistence().getPersistenceUnit()).filter(persistenceUnit_In -> persistenceUnit_In.getName().equalsIgnoreCase(puName)).findFirst();
+        } catch (InvalidPersistenceXmlException ex) {
+            Exceptions.printStackTrace(ex);
+            return Optional.empty();
+        }
     }
 
     public static void removeProperty(PersistenceUnit punit, String key) {
@@ -85,6 +93,31 @@ public class PersistenceUtil {
         }
 
         return null;
+    }
+
+    public static void updatePersistenceUnit(Project project, PersistenceUnit persistenceUnit) {
+        PUDataObject pud;
+        try {
+            pud = ProviderUtil.getPUDataObject(project);
+            if (!Arrays.stream(pud.getPersistence().getPersistenceUnit()).filter(pu -> Objects.equals(pu, persistenceUnit)).findAny().isPresent()) {
+                pud.addPersistenceUnit(persistenceUnit);
+            }
+            pud.modelUpdated();
+            pud.save();
+        } catch (InvalidPersistenceXmlException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+    }
+
+    public static void addClasses(Project project, PersistenceUnit persistenceUnit, List<String> classNames) {
+        try {
+            PUDataObject pud = ProviderUtil.getPUDataObject(project);
+            classNames.stream().forEach((entityClass) -> {
+                pud.addClass(persistenceUnit, entityClass, false);
+            });
+        } catch (InvalidPersistenceXmlException ex) {
+            Exceptions.printStackTrace(ex);
+        }
     }
 
 }

@@ -16,25 +16,29 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <EmptySpace min="0" pref="545" max="32767" attributes="0"/>
+          <Group type="102" alignment="1" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="panel" pref="594" max="32767" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <Component id="buildInstanceVisual" max="32767" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="dockerMachineCheckBox" min="-2" max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+          </Group>
           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="warningPanel" pref="533" max="32767" attributes="0"/>
+                  <Component id="warningPanel" pref="594" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
           <Group type="103" rootIndex="2" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="panel" pref="533" max="32767" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
-              </Group>
-          </Group>
-          <Group type="103" rootIndex="3" groupAlignment="0" attributes="0">
-              <Group type="102" attributes="0">
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Component id="infoPanel" pref="533" max="32767" attributes="0"/>
+                  <Component id="infoPanel" pref="594" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -42,7 +46,16 @@
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <EmptySpace min="0" pref="336" max="32767" attributes="0"/>
+          <Group type="102" alignment="1" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Component id="buildInstanceVisual" min="-2" max="-2" attributes="0"/>
+                  <Component id="dockerMachineCheckBox" min="-2" pref="23" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Component id="panel" min="-2" pref="150" max="-2" attributes="0"/>
+              <EmptySpace pref="146" max="32767" attributes="0"/>
+          </Group>
           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
               <Group type="102" alignment="1" attributes="0">
                   <EmptySpace pref="310" max="32767" attributes="0"/>
@@ -51,17 +64,10 @@
               </Group>
           </Group>
           <Group type="103" rootIndex="2" groupAlignment="0" attributes="0">
-              <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Component id="panel" min="-2" pref="150" max="-2" attributes="0"/>
-                  <EmptySpace pref="180" max="32767" attributes="0"/>
-              </Group>
-          </Group>
-          <Group type="103" rootIndex="3" groupAlignment="0" attributes="0">
               <Group type="102" alignment="1" attributes="0">
-                  <EmptySpace pref="300" max="32767" attributes="0"/>
-                  <Component id="infoPanel" min="-2" pref="20" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
+                  <EmptySpace pref="283" max="32767" attributes="0"/>
+                  <Component id="infoPanel" min="-2" pref="22" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
               </Group>
           </Group>
       </Group>
@@ -126,13 +132,14 @@
                       <Connection code="new DefaultComboBoxModel(Stream.of(ServerType.values()).toArray(ServerType[]::new))" type="code"/>
                     </Property>
                     <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                      <Dimension value="[200, 26]"/>
+                      <Dimension value="[115, 35]"/>
                     </Property>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="serverComboBoxActionPerformed"/>
                   </Events>
                   <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="addChangeListener(serverComboBox);"/>
                     <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;ServerType&gt;"/>
                   </AuxValues>
                 </Component>
@@ -172,7 +179,7 @@
                   <ResourceString bundle="org/jcode/docker/generator/Bundle.properties" key="DockerConfigPanel.serverLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                 </Property>
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                  <Dimension value="[70, 17]"/>
+                  <Dimension value="[78, 17]"/>
                 </Property>
               </Properties>
               <Constraints>
@@ -204,7 +211,7 @@
                       <Connection code="new DefaultComboBoxModel(Stream.of(DatabaseType.values()).toArray(DatabaseType[]::new))" type="code"/>
                     </Property>
                     <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                      <Dimension value="[200, 30]"/>
+                      <Dimension value="[115, 35]"/>
                     </Property>
                   </Properties>
                   <Events>
@@ -250,7 +257,7 @@
                   <ResourceString bundle="org/jcode/docker/generator/Bundle.properties" key="DockerConfigPanel.dbLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                 </Property>
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                  <Dimension value="[70, 17]"/>
+                  <Dimension value="[78, 17]"/>
                 </Property>
               </Properties>
               <Constraints>
@@ -270,6 +277,7 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
             <Property name="columns" type="int" value="2"/>
+            <Property name="horizontalGap" type="int" value="25"/>
             <Property name="rows" type="int" value="1"/>
           </Layout>
           <SubComponents>
@@ -283,7 +291,7 @@
                       <ResourceString bundle="org/jcode/docker/generator/Bundle.properties" key="DockerConfigPanel.dbUserLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                     <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                      <Dimension value="[80, 17]"/>
+                      <Dimension value="[87, 17]"/>
                     </Property>
                   </Properties>
                   <Constraints>
@@ -352,6 +360,7 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
             <Property name="columns" type="int" value="2"/>
+            <Property name="horizontalGap" type="int" value="25"/>
             <Property name="rows" type="int" value="1"/>
           </Layout>
           <SubComponents>
@@ -365,7 +374,7 @@
                       <ResourceString bundle="org/jcode/docker/generator/Bundle.properties" key="DockerConfigPanel.dbNameLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                     <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                      <Dimension value="[80, 17]"/>
+                      <Dimension value="[87, 17]"/>
                     </Property>
                   </Properties>
                   <Constraints>
@@ -459,5 +468,24 @@
         </Component>
       </SubComponents>
     </Container>
+    <Component class="org.netbeans.modules.docker.ui.build2.BuildInstanceVisual" name="buildInstanceVisual">
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="Component buildInstanceLabel = buildInstanceVisual.getComponent(0);&#xa;if(buildInstanceLabel instanceof JLabel){&#xa;((JLabel) buildInstanceLabel).setText(&quot;Docker Machine :&quot;);&#xa;}&#xa;Component buildInstanceCombo = buildInstanceVisual.getComponent(1);&#xa;if(buildInstanceCombo instanceof JComboBox){&#xa;((JComboBox)buildInstanceCombo).addActionListener(e -&gt; checkDockerStatus());&#xa;}"/>
+      </AuxValues>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="dockerMachineCheckBox">
+      <Properties>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="org/jcode/docker/generator/Bundle.properties" key="DockerConfigPanel.dockerMachineCheckBox.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+        </Property>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="dockerMachineCheckBoxActionPerformed"/>
+      </Events>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="addChangeListener(dockerMachineCheckBox);"/>
+      </AuxValues>
+    </Component>
   </SubComponents>
 </Form>

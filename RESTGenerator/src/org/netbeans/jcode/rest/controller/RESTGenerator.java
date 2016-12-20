@@ -46,8 +46,10 @@ import org.netbeans.jcode.core.util.FileUtil;
 import static org.netbeans.jcode.core.util.FileUtil.expandTemplate;
 import org.netbeans.jcode.core.util.JavaIdentifiers;
 import org.netbeans.jcode.core.util.POMManager;
-import org.netbeans.jcode.core.util.PersistenceUtil;
+import static org.netbeans.jcode.core.util.PersistenceUtil.addClasses;
 import static org.netbeans.jcode.core.util.PersistenceUtil.addProperty;
+import static org.netbeans.jcode.core.util.PersistenceUtil.getPersistenceUnit;
+import static org.netbeans.jcode.core.util.PersistenceUtil.updatePersistenceUnit;
 import org.netbeans.jcode.core.util.ProjectHelper;
 import org.netbeans.jcode.ejb.facade.SessionBeanData;
 import org.netbeans.jcode.rest.util.RestUtils;
@@ -70,9 +72,6 @@ import org.netbeans.jcode.rest.util.RestApp;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.modules.j2ee.persistence.dd.common.PersistenceUnit;
 import org.netbeans.modules.j2ee.persistence.dd.common.Property;
-import org.netbeans.modules.j2ee.persistence.provider.InvalidPersistenceXmlException;
-import org.netbeans.modules.j2ee.persistence.provider.ProviderUtil;
-import org.netbeans.modules.j2ee.persistence.unit.PUDataObject;
 import org.netbeans.modules.websvc.rest.spi.RestSupport;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
@@ -464,7 +463,7 @@ public class RESTGenerator implements Generator {
         if (restData.isTestCase()) {
             configRoot = ProjectHelper.getTestResourceDirectory(project);
             expandTemplate(TEMPLATE + "arquillian/config/arquillian.xml.ftl", configRoot, "arquillian.xml", EMPTY_MAP);
-            expandTemplate(TEMPLATE + "arquillian/config/glassfish-resources.xml.ftl", configRoot, "glassfish-resources.xml", EMPTY_MAP);
+//            expandTemplate(TEMPLATE + "arquillian/config/glassfish-resources.xml.ftl", configRoot, "glassfish-resources.xml", EMPTY_MAP);
             expandTemplate(TEMPLATE + "arquillian/config/web.xml.ftl", configRoot, "web.xml", EMPTY_MAP);
             expandTemplate(TEMPLATE + "arquillian/config/test-persistence.xml.ftl", configRoot, "test-persistence.xml", Collections.singletonMap("PU_NAME", entityMapping.getPersistenceUnitName()));
             expandTemplate(TEMPLATE + "config/resource/insert.sql.ftl", getFolderForPackage(configRoot, "META-INF.sql", true), "insert.sql", singletonMap("database","Derby"));
@@ -474,10 +473,8 @@ public class RESTGenerator implements Generator {
     }
 
     private void updatePersistenceXml(List<String> classNames) {
-        try {
             String puName = entityMapping.getPersistenceUnitName();
-            PUDataObject pud = ProviderUtil.getPUDataObject(project);
-            Optional<PersistenceUnit> punitOptional = PersistenceUtil.getPersistenceUnit(project, puName);
+            Optional<PersistenceUnit> punitOptional = getPersistenceUnit(project, puName);
             if (punitOptional.isPresent()) {
                 PersistenceUnit punit = punitOptional.get();
                 String SCHEMA_GEN_ACTION = "javax.persistence.schema-generation.database.action";
@@ -491,16 +488,12 @@ public class RESTGenerator implements Generator {
                 addProperty(punit, SCHEMA_GEN_ACTION, DROP_CREATE);
                 addProperty(punit, SQL_LOAD_SCRIPT, "META-INF/sql/insert.sql");
 
-                classNames.stream().forEach((entityClass) -> {
-                    pud.addClass(punit, entityClass, false);
-                });
-                pud.save();
+                addClasses(project, punit, classNames);
+                updatePersistenceUnit(project, punit);
             }
-        } catch (InvalidPersistenceXmlException ex) {
-            Exceptions.printStackTrace(ex);
-        }
+       
     }
-
+ 
     private void expandServerSideComponent(SourceGroup targetSourceGroup, String _package, String prefixName, String suffixName, List<Template> templates, Map<String, Object> param) {
         String fileName = null;
         try {

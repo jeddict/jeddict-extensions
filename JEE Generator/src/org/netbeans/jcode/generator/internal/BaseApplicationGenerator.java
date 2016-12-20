@@ -55,29 +55,4 @@ public abstract class BaseApplicationGenerator extends AbstractGenerator {
         return persistenceUnit;
     }
 
-//    protected String getIdFieldToUriStmt(FieldInfo idField) {
-//        String getterName = Util.getGetterName(idField);
-//
-//        if (idField.isEmbeddedId()) {
-//            Collection<FieldInfo> fields = idField.getFieldInfos();
-//            StringBuilder stmt = new StringBuilder();
-//            int index = 0;
-//
-//            for (FieldInfo f : fields) {
-//                if (index++ > 0) {
-//                    stmt.append(" + \",\" + ");             // NOI18N
-//                }
-//                stmt.append("entity.");                   // NOI18N
-//                stmt.append(getterName);
-//                stmt.append("().");                       // NOI18N
-//                stmt.append(Util.getGetterName(f));
-//                stmt.append("()");                       // NOI18N
-//            }
-//
-//            return stmt.toString();
-//        } else {
-//            return "entity." + getterName + "()";           // NOI18N
-//        }
-//    }
-
 }

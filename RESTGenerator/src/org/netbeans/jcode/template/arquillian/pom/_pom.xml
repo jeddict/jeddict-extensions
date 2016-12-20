@@ -34,18 +34,6 @@
             <version>${version.junit}</version>
             <scope>test</scope>
         </dependency>
-<!--        <dependency>
-            <groupId>org.jboss.arquillian.container</groupId>
-            <artifactId>arquillian-glassfish-embedded-3.1</artifactId>
-            <version>1.0.0.CR4</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>fish.payara.extras</groupId>
-            <artifactId>payara-embedded-all</artifactId>
-            <version> 4.1.1.163.0.1</version>
-            <scope>test</scope>
-        </dependency> -->
         <dependency>
             <groupId>org.jboss.arquillian.junit</groupId>
             <artifactId>arquillian-junit-container</artifactId>
@@ -106,7 +94,10 @@
                 <version.jersey>2.24</version.jersey>
             </properties>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <!--<activeByDefault>true</activeByDefault>-->
+                <property>
+                    <name>!skipTests</name>
+                </property>
             </activation>
             <id>payara-embedded</id>
             <dependencies> 

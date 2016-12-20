@@ -19,6 +19,3 @@ INSERT INTO authority (${escape}name${escape}) VALUES ('ROLE_USER')
 INSERT INTO user_authority (user_id, authority_name) VALUES (1001, 'ROLE_USER')
 INSERT INTO user_authority (user_id, authority_name) VALUES (1002, 'ROLE_USER')
 INSERT INTO user_authority (user_id, authority_name) VALUES (1002, 'ROLE_ADMIN')
-
-
-

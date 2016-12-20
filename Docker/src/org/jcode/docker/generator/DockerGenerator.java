@@ -19,7 +19,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import static org.jcode.docker.generator.ServerType.NONE;
+import static org.jcode.docker.generator.ServerType.PAYARA;
 import static org.jcode.docker.generator.ServerType.WILDFLY;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
@@ -50,6 +52,7 @@ import org.netbeans.modules.j2ee.persistence.provider.InvalidPersistenceXmlExcep
 import org.netbeans.modules.j2ee.persistence.provider.ProviderUtil;
 import org.netbeans.modules.j2ee.persistence.unit.PUDataObject;
 import org.openide.util.NbBundle;
+import org.openide.util.RequestProcessor;
 
 /**
  * Generates Docker image.
@@ -61,6 +64,8 @@ import org.openide.util.NbBundle;
 public final class DockerGenerator implements Generator {
 
     private static final String TEMPLATE = "org/jcode/docker/template/";
+    private static final String DOCKER_MACHINE_PROPERTY = "docker.machine";
+    private static final String DOCKER_PROFILE = "docker";
 
     @ConfigData
     private DockerConfigData dockerConfig;
@@ -76,34 +81,36 @@ public final class DockerGenerator implements Generator {
 
     @ConfigData
     private EntityMappings entityMapping;
+    
+    private static final String DOCKER_FILE = "DockerFile";
+    private static final String DOCKER_COMPOSE = "docker-compose.yml";
 
     @Override
     public void execute() throws IOException {
-        if (dockerConfig.getServerType() != NONE) {
+        if (dockerConfig.isDockerEnable() && dockerConfig.getServerType() != NONE) {
             handler.progress(Console.wrap(DockerGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
             
-             handler.help(NbBundle.getMessage(DockerGenerator.class, "DOCKER_MACHINE_GUIDE_TITLE"),
-                    NbBundle.getMessage(DockerGenerator.class, "DOCKER_MACHINE_GUIDE"));
-             
-             handler.help(NbBundle.getMessage(DockerGenerator.class, "DOCKER_GUIDE_TITLE"),
-                    NbBundle.getMessage(DockerGenerator.class, "DOCKER_GUIDE"));
+//             handler.help(NbBundle.getMessage(DockerGenerator.class, "DOCKER_MACHINE_GUIDE_TITLE"),
+//                    NbBundle.getMessage(DockerGenerator.class, "DOCKER_MACHINE_GUIDE"));
+//             
+//             handler.help(NbBundle.getMessage(DockerGenerator.class, "DOCKER_GUIDE_TITLE"),
+//                    NbBundle.getMessage(DockerGenerator.class, "DOCKER_GUIDE"));
            
-            System.out.println("");
             FileObject targetFolder = getDockerDirectory(source);
             Map<String, Object> params = new HashMap<>();
             params.put("docker", dockerConfig);
-//            params.put("binary", "build.war");
-            expandTemplate(TEMPLATE + "DockerFile_" + dockerConfig.getServerType().name() + ".ftl", targetFolder, "DockerFile", params);
-            expandTemplate(TEMPLATE + "docker-compose.yml.ftl", targetFolder, "docker-compose.yml", params);
+            expandTemplate(TEMPLATE + "DockerFile_" + dockerConfig.getServerType().name() + ".ftl", targetFolder, DOCKER_FILE, params);
+            handler.progress(DOCKER_FILE);
+            expandTemplate(TEMPLATE + "docker-compose.yml.ftl", targetFolder, DOCKER_COMPOSE, params);
+            handler.progress(DOCKER_COMPOSE);
             addMavenDependencies("fabric8io/pom/_pom.xml");
+            
             updatePersistenceXml();
         }
     }
 
     private void updatePersistenceXml() {
-        try {
             String puName = entityMapping.getPersistenceUnitName();
-            PUDataObject pud = ProviderUtil.getPUDataObject(project);
             Optional<PersistenceUnit> punitOptional = PersistenceUtil.getPersistenceUnit(project, puName);
             if (punitOptional.isPresent()) {
                 PersistenceUnit punit = punitOptional.get();
@@ -113,11 +120,9 @@ public final class DockerGenerator implements Generator {
                 removeProperty(punit, JDBC_DRIVER);
                 removeProperty(punit, JDBC_USER);
                 punit.setJtaDataSource(getJNDI(dockerConfig.getServerType(), dockerConfig.getDataSource()));
-                pud.save();
+                punit.setProvider(getProvider(dockerConfig.getServerType(), punit.getProvider()));
+                PersistenceUtil.updatePersistenceUnit(project, punit);
             }
-        } catch (InvalidPersistenceXmlException ex) {
-            Exceptions.printStackTrace(ex);
-        }
     }
     
     public static String getJNDI(ServerType server, String dataSource) {
@@ -127,11 +132,25 @@ public final class DockerGenerator implements Generator {
             return "jdbc/" + dataSource;
         }
     }
+    
+    public static String getProvider(ServerType server, String existingProvider) {
+        if (server == WILDFLY) {
+            return "org.hibernate.ejb.HibernatePersistence";
+        } else if (server == PAYARA) {
+            return "org.eclipse.persistence.jpa.PersistenceProvider";
+        } else {
+            return existingProvider;
+        }
+    }
 
     private void addMavenDependencies(String pom) {
         if (POMManager.isMavenProject(project)) {
             POMManager pomManager = new POMManager(TEMPLATE + pom, project);
+            pomManager.fixDistributionProperties();
             pomManager.commit();
+            Properties properties = new Properties();
+            properties.put(DOCKER_MACHINE_PROPERTY, dockerConfig.getDockerMachine());
+            pomManager.addProperties(DOCKER_PROFILE, properties);
         } else {
             handler.warning(NbBundle.getMessage(DockerGenerator.class, "TITLE_Maven_Project_Not_Found"),
                     NbBundle.getMessage(DockerGenerator.class, "MSG_Maven_Project_Not_Found"));
