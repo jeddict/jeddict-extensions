@@ -153,7 +153,7 @@ public class AttributeType {
     }
 
     public static String getArrayType(String type) {
-        return type.substring(0, type.length() - 2);
+        return type.substring(0, type.length() - 2).trim(); 
     }
 
     public static boolean isArray(String type) {

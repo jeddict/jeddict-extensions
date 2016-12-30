@@ -58,7 +58,9 @@ import org.openide.util.LookupEvent;
  * @author Gaurav Gupta
  */
 public class FileUtil {
-
+    
+    private static final Logger LOG = Logger.getLogger(FileUtil.class.getName());
+    
     public static InputStream loadResource(String resource) {
         InputStream inputStream = null;
         try {
@@ -167,6 +169,10 @@ public class FileUtil {
 
     public static void expandTemplate(InputStream template, FileObject toFile, Map<String, Object> values) throws IOException {
         Charset targetEncoding = FileEncodingQuery.getEncoding(toFile);
+        if(toFile.isLocked()){
+            LOG.log(Level.SEVERE, "File {0} is locked", new Object[]{toFile.getName()});
+            return;
+        }
         FileLock lock = toFile.lock();
         try (Writer writer = new OutputStreamWriter(toFile.getOutputStream(lock), targetEncoding)) {
             expandTemplate(new InputStreamReader(template), writer, values, targetEncoding);

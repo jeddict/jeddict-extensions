@@ -163,7 +163,7 @@ public class POMManager {
             pomProject.setDependencyManagement(registerDependencyManagement(sourceModel.getDependencyManagement(), pomProject.getDependencyManagement()));
             registerDependency(sourceModel.getDependencies(), pomProject);
             registerRepository();
-            registerPlugin();
+            registerBuild();
             registerProfile();
         } finally {
             pomModel.endTransaction();
@@ -186,13 +186,13 @@ public class POMManager {
         return target;
     }
 
-    private void registerPlugin() {
+    private void registerBuild() {
         if (sourceModel.getBuild() != null && !sourceModel.getBuild().getPlugins().isEmpty()) {
-            registerBuild(sourceModel.getBuild(), pomModel.getProject().getBuild());
+            registerBuildBase(sourceModel.getBuild(), pomModel.getProject().getBuild());
         }
     }
 
-    private BuildBase registerBuild(org.apache.maven.model.BuildBase sourceBuild, BuildBase targetBuild) {
+    private BuildBase registerBuildBase(org.apache.maven.model.BuildBase sourceBuild, BuildBase targetBuild) {
         if(sourceBuild == null){
             return targetBuild;
         }
@@ -213,25 +213,16 @@ public class POMManager {
                     targetPlugin.setExtensions(Boolean.TRUE);
                 }
                 targetBuild.addPlugin(targetPlugin);
-
-                if (sourcePlugin.getConfiguration() != null) {
-                    Xpp3Dom parentDOM = (Xpp3Dom) sourcePlugin.getConfiguration();
-
-                    Configuration targetConfig = targetPlugin.getConfiguration();
-                    if (targetConfig == null) {
-                        targetConfig = pomModel.getFactory().createConfiguration();
-                        targetPlugin.setConfiguration(targetConfig);
-                    }
-                    loadDom(parentDOM, targetConfig);
-                }
+                targetPlugin.setConfiguration(registerConfiguration(sourcePlugin.getConfiguration(),targetPlugin.getConfiguration()));
 
                 if (sourcePlugin.getExecutions() != null && !sourcePlugin.getExecutions().isEmpty()) {
-                    for (org.apache.maven.model.PluginExecution execution : sourcePlugin.getExecutions()) {
-                        PluginExecution pluginExecution = pomModel.getFactory().createExecution();
-                        pluginExecution.setId(execution.getId());
-                        pluginExecution.setPhase(execution.getPhase());
-                        execution.getGoals().forEach(pluginExecution::addGoal);
-                        targetPlugin.addExecution(pluginExecution);
+                    for (org.apache.maven.model.PluginExecution sourceExecution : sourcePlugin.getExecutions()) {
+                        PluginExecution targetExecution = pomModel.getFactory().createExecution();
+                        targetExecution.setId(sourceExecution.getId());
+                        targetExecution.setPhase(sourceExecution.getPhase());
+                        targetExecution.setConfiguration(registerConfiguration(sourceExecution.getConfiguration(),targetExecution.getConfiguration()));
+                        sourceExecution.getGoals().forEach(targetExecution::addGoal);
+                        targetPlugin.addExecution(targetExecution);
                     }
                 }
             }
@@ -240,7 +231,17 @@ public class POMManager {
         }
         return targetBuild;
     }
-
+    
+    private Configuration registerConfiguration(Object sourceConfig, Configuration targetConfig) {
+        if (sourceConfig != null) {
+            Xpp3Dom parentDOM = (Xpp3Dom) sourceConfig;
+            if (targetConfig == null) {
+                targetConfig = pomModel.getFactory().createConfiguration();
+            }
+            loadDom(parentDOM, targetConfig);
+        }
+        return targetConfig;
+    }
     private void loadDom(Xpp3Dom source, POMComponent target) {
         for (Xpp3Dom childDOM : source.getChildren()) {
             if (childDOM.getValue() != null) {
@@ -284,7 +285,7 @@ public class POMManager {
                 }
                 targetProfile.setDependencyManagement(registerDependencyManagement(sourceProfile.getDependencyManagement(), targetProfile.getDependencyManagement()));
                 registerDependency(sourceProfile.getDependencies(), targetProfile);
-                targetProfile.setBuildBase(registerBuild(sourceProfile.getBuild(), targetProfile.getBuildBase()));
+                targetProfile.setBuildBase(registerBuildBase(sourceProfile.getBuild(), targetProfile.getBuildBase()));
             }
         }
     }

@@ -32,8 +32,9 @@ public class DockerConfigData extends LayerConfigData {
     private String dataSource = "SampleDS";
     private String dbName = "sample";
     private String dockerMachine;
-    private boolean dockerEnable = true;
-    private boolean dockerActivated = true;
+    private boolean dockerEnable;
+    private boolean dockerActivated;//checkbox
+
 
     public ServerType getServerType() {
         return serverType;

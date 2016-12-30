@@ -23,15 +23,18 @@ import java.util.List;
  * @author jGauravGupta
  */
 public enum DatabaseType {
-    MYSQL("MySQL", Arrays.asList("latest","5.5","5.6","5.7", "8.0")),
-    POSTGRESQL("PostgreSQL", Arrays.asList("latest", "9.6", "9.5", "9.4", "9.3", "9.2"));
+    MYSQL("MySQL", Arrays.asList("latest","5.5","5.6","5.7", "8.0"), true),
+    POSTGRESQL("PostgreSQL", Arrays.asList("latest", "9.6", "9.5", "9.4", "9.3", "9.2"), true),
+    DERBY("Derby", Arrays.asList("--"), false);
     
     String displayName;
     List<String> version;
+    boolean dockerSupport;
 
-    private DatabaseType(String displayName, List<String> version) {
+    private DatabaseType(String displayName, List<String> version, boolean dockerSupport) {
         this.displayName = displayName;
         this.version = version;
+        this.dockerSupport = dockerSupport;
     }
     
     public String getDisplayName() {
@@ -42,6 +45,10 @@ public enum DatabaseType {
         return version;
     }
     
+    public boolean isDockerSupport() {
+        return dockerSupport;
+    }
+
     @Override
     public String toString() {
         return displayName;

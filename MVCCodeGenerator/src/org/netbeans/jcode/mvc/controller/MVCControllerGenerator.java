@@ -458,7 +458,7 @@ public class MVCControllerGenerator implements Generator {
                             vars,
                             Collections.<ExpressionTree>emptyList(),
                             getBody(entity.isEmbeddedIdType()?entity.getAttributes().getEmbeddedId().getConnectedClass():
-                                    entityMapping.findDefaultClass(entity.getIdClass().getClazz()).get(), workingCopy), null);
+                                    entityMapping.findDefaultClass(entity.getIdClass().getClazz()).orElse(null), workingCopy), null);
 
                     for (Tree typeDeclaration : tree.getTypeDecls()) {
                         if (TreeUtilities.CLASS_TREE_KINDS.contains(typeDeclaration.getKind())) {

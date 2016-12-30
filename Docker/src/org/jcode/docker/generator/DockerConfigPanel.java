@@ -214,7 +214,7 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
         serverConfigPanel.setLayout(new javax.swing.BoxLayout(serverConfigPanel, javax.swing.BoxLayout.LINE_AXIS));
 
         addChangeListener(serverComboBox);
-        serverComboBox.setModel(new DefaultComboBoxModel(Stream.of(ServerType.values()).toArray(ServerType[]::new)));
+        loadServerTypeModel();
         serverComboBox.setPreferredSize(new java.awt.Dimension(115, 35));
         serverComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -245,7 +245,7 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
 
         dbConfigPanel.setLayout(new javax.swing.BoxLayout(dbConfigPanel, javax.swing.BoxLayout.LINE_AXIS));
 
-        dbComboBox.setModel(new DefaultComboBoxModel(Stream.of(DatabaseType.values()).toArray(DatabaseType[]::new)));
+        loadDatabaseTypeModel();
         dbComboBox.setPreferredSize(new java.awt.Dimension(115, 35));
         dbComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -345,7 +345,7 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
 
         Component buildInstanceLabel = buildInstanceVisual.getComponent(0);
         if(buildInstanceLabel instanceof JLabel){
-            ((JLabel) buildInstanceLabel).setText("Docker Machine :");
+            ((JLabel) buildInstanceLabel).setText("Docker host :");
         }
         Component buildInstanceCombo = buildInstanceVisual.getComponent(1);
         if(buildInstanceCombo instanceof JComboBox){
@@ -409,7 +409,7 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
     }// </editor-fold>//GEN-END:initComponents
 
     private void serverComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverComboBoxActionPerformed
-        setVisibility(getServerType() != ServerType.NONE);
+        setVisibility(dockerMachineCheckBox.isSelected());//getServerType() != ServerType.NONE);
         checkDockerStatus();
         serverVersionComboBox.removeAllItems();
         serverVersionComboBox.setModel(new DefaultComboBoxModel(getServerType().getVersion().stream().toArray(String[]::new)));
@@ -426,12 +426,14 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
 
     private void dockerMachineCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dockerMachineCheckBoxActionPerformed
        checkDockerStatus();
+       loadDatabaseTypeModel();
+       setVisibility(dockerMachineCheckBox.isSelected());
        Arrays.stream(buildInstanceVisual.getComponents()).forEach(c-> c.setEnabled(dockerMachineCheckBox.isSelected()));//Docker Machine
     }//GEN-LAST:event_dockerMachineCheckBoxActionPerformed
 
     private void setVisibility(boolean status) {
-        if (dbWrapperPanel.isVisible() != status) {
-            dbWrapperPanel.setVisible(status);
+        if (dsWrpperPanel.isVisible() != status) {
+//            dbWrapperPanel.setVisible(status);
             dsWrpperPanel.setVisible(status);
             dbCredentialPanel.setVisible(status);
         }
@@ -450,6 +452,15 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
         }
         return false;
     }
+    
+    private void loadServerTypeModel(){
+        serverComboBox.setModel(new DefaultComboBoxModel(Stream.of(ServerType.values()).toArray(ServerType[]::new)));
+}
+    
+    private void loadDatabaseTypeModel(){
+         dbComboBox.setModel(new DefaultComboBoxModel(Stream.of(DatabaseType.values()).filter(type -> type.isDockerSupport() || !dockerMachineCheckBox.isSelected()).toArray(DatabaseType[]::new)));
+    }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private org.netbeans.modules.docker.ui.build2.BuildInstanceVisual buildInstanceVisual;
