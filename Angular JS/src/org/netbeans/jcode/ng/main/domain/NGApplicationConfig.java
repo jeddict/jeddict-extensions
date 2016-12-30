@@ -49,7 +49,6 @@ public class NGApplicationConfig {
     public static final String H2_DISK_DATABASE_TYPE = "h2Disk";
     public static final String H2_MEMORY_DATABASE_TYPE = "h2Memory";
 
-<<<<<<< HEAD
     //Path
     public String MAIN_DIR = "src/main/";
     public String TEST_DIR = "src/test/";
@@ -62,61 +61,21 @@ public class NGApplicationConfig {
     public String BUILD_DIR;
     public String DIST_DIR;
 
-=======
->>>>>>> origin/master
     private String applicationPath;//rest path
     public String buildTool;
 
-<<<<<<< HEAD
-=======
-    public String MAIN_SRC_DIR = "src/main/webapp/";
-    public String TEST_SRC_DIR = "src/test/javascript/";
-
->>>>>>> origin/master
     public String angularAppName;
     public String angular2AppName;
-<<<<<<< HEAD
     public String applicationType;//gateway , monolith
     public String serverPort = "8080";
     public String microserviceAppName;
-=======
-
-    public boolean enableTranslation;
-    public String nativeLanguage = "en";
-    private Set<String> languages = new HashSet<>(Arrays.asList("en"));
-
-    public boolean enableSocialSignIn;
-
-    public boolean skipUserManagement;
-
-    public String authenticationType;
-
-    public String jhiPrefix;
-    public String jhiPrefixCapitalized;
-
-    public String applicationType;
-    public String websocket;
-
-    public String searchEngine;
-    public String databaseType;
-    public String devDatabaseType;
-    public String hibernateCache;//ehcache2
-
->>>>>>> origin/master
     public String baseName;
     public String capitalizedBaseName;
     public String camelizedBaseName;
     public String dasherizedBaseName;
     public String lowercaseBaseName;
-<<<<<<< HEAD
-=======
-
-    public boolean useSass = false;
-
->>>>>>> origin/master
     public List<NGEntity> entities;
     private String restPackage;
-<<<<<<< HEAD
     public String authenticationType;
 
     //i18n
@@ -145,25 +104,14 @@ public class NGApplicationConfig {
     //filter    
     private boolean enableSocialSignIn;
     private boolean skipUserManagement;
-=======
 
->>>>>>> origin/master
     private boolean enableMetrics;
-<<<<<<< HEAD
     private boolean enableLogs;
     private boolean enableHealth;
     private boolean enableConfiguration;
     private boolean enableAudits;
     private boolean enableProfile;
     private boolean enableDocs;
-=======
-    private boolean enableLogs = false;
-    private boolean enableHealth = false;
-    private boolean enableConfiguration = false;
-    private boolean enableAudits = false;
-    private boolean enableProfile = false;
-    private boolean enableDocs = false;
->>>>>>> origin/master
 
     /**
      * @return the jhiPrefixCapitalized
@@ -358,19 +306,6 @@ public class NGApplicationConfig {
     }
 
     public boolean isSkipUserManagement() {
-        return skipUserManagement;
-    }
-
-    public String getAngular2AppName() {
-        if (angular2AppName == null) {
-            angular2AppName = firstUpper(getCamelizedBaseName());
-        }
-        return angular2AppName;
-    }
-
-    public boolean isSkipUserManagement() {
-
-//        this.skipUserManagement = this.configOptions.skipUserManagement || this.options['skip-user-management'] || this.config.get('skipUserManagement');
         return skipUserManagement;
     }
 

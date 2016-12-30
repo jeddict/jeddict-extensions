@@ -87,22 +87,14 @@ public abstract class AngularGenerator implements Generator {
     @ConfigData
     protected ProgressHandler handler;
 
-<<<<<<< HEAD
     protected static final List<String> PARSER_FILE_TYPE = Arrays.asList("html", "js", "css", "scss", "json", "ts", "hbs");
-=======
-    protected static final List<String> PARSER_FILE_TYPE = Arrays.asList("html", "js", "css", "scss", "json", "ts");
->>>>>>> origin/master
 //    private static final List<String> BINARY_FILE_TYPE = Arrays.asList("gif", "ico", "png", "jpeg", "jpg");
 
-<<<<<<< HEAD
     protected Consumer<FileTypeStream> getParserManager(EJSParser parser) {
         return getParserManager(parser, null, null);
     }
 
     protected Consumer<FileTypeStream> getParserManager(EJSParser parser, Map<String, String> embeddedTemplate, List<String> skipFile) {
-=======
-    protected Consumer<FileTypeStream> getParserManager(EJSParser parser, Map<String, String> extTemplate) {
->>>>>>> origin/master
         return (fileTypeStream) -> {
             try {
 
@@ -119,11 +111,6 @@ public abstract class AngularGenerator implements Generator {
 
     protected List<String> entityScriptFiles;
     protected List<String> scriptFiles;
-<<<<<<< HEAD
-
-=======
-    
->>>>>>> origin/master
     public abstract String getTemplatePath();
 
     @Override
@@ -132,80 +119,10 @@ public abstract class AngularGenerator implements Generator {
         scriptFiles = new ArrayList<>();
         generateClientSideComponent();
     }
-<<<<<<< HEAD
 
     protected abstract ApplicationSourceFilter getApplicationSourceFilter(NGApplicationConfig applicationConfig);
 
     protected abstract void generateClientSideComponent();
-=======
-    
-    protected abstract ApplicationSourceFilter getApplicationSourceFilter(NGApplicationConfig applicationConfig);
-    
-    protected abstract void generateClientSideComponent();
-
-    protected void generateNgApplication(NGApplicationConfig applicationConfig, ApplicationSourceFilter fileFilter) throws IOException {
-        handler.append(Console.wrap(AngularGenerator.class, "MSG_Copying_Application_Files", FG_RED, BOLD, UNDERLINE));
-        FileObject webRoot = getProjectWebRoot(project);
-
-        EJSParser parser = new EJSParser();
-        parser.addContext(applicationConfig);
-
-        Function<String, String> pathResolver = (templatePath) -> {
-            String simpleFileName = getSimpleFileNameWithExt(templatePath);
-            String ext = getFileExt(templatePath);
-            
-            if (!templatePath.startsWith("app")) {
-                if (!fileFilter.isEnable(templatePath)) {
-                    return null;
-                }
-            } else if (!fileFilter.isEnable(simpleFileName)) {
-                return null;
-            }
-            if (templatePath.contains("/_")) {
-                templatePath = templatePath.replaceAll("/_", "/");
-            }
-            if ("js".equals(ext)) {
-                scriptFiles.add(templatePath);
-            }
-            return templatePath;
-        };
-        copyDynamicResource(getParserManager(parser, null), getTemplatePath() + "web-resources.zip", webRoot, pathResolver, handler);
-    }
-
-    protected void generateNgEntity(NGApplicationConfig applicationConfig, ApplicationSourceFilter fileFilter,
-            EntityConfig config, NGEntity entity, Map<String, String> templateLib) throws IOException {
-        FileObject webRoot = getProjectWebRoot(project);
-        EJSParser parser = new EJSParser();
-        parser.addContext(applicationConfig);
-        parser.addContext(entity);
-        parser.addContext(config);
-
-        Function<String, String> pathResolver = (templatePath) -> {
-            String simpleFileName = getSimpleFileNameWithExt(templatePath);
-            String ext = templatePath.substring(templatePath.lastIndexOf('.') + 1);
-            if (!fileFilter.isEnable(simpleFileName)) {
-                return null;
-            }
-            if (templatePath.contains("_entity-management" + ".html")) {
-                templatePath = templatePath.replace("_entity-management", entity.getEntityFolderName() + '/' + entity.getEntityPluralFileName());
-            } else if (templatePath.contains("services/_entity.service.js")) {
-                templatePath = templatePath.replace("services/_entity.service.js",
-                        "entities/" + entity.getEntityFolderName() + '/' + entity.getEntityServiceFileName() + ".service.js");
-            } else if (templatePath.contains("services/_entity-search.service.js")) {
-                templatePath = templatePath.replace("services/_entity-search.service.js",
-                        "entities/" + entity.getEntityFolderName() + '/' + entity.getEntityServiceFileName() + ".search.service.js");
-            } else {
-                templatePath = templatePath.replace("_entity-management", entity.getEntityFolderName() + '/' + entity.getEntityFileName());
-            }
-
-            if ("js".equals(ext)) {
-                entityScriptFiles.add(templatePath);
-            }
-            return templatePath;
-        };
-        copyDynamicResource(getParserManager(parser, templateLib), getTemplatePath() + "entity-resources.zip", webRoot, pathResolver, handler);
-    }
->>>>>>> origin/master
 
     protected void generateNgEntityi18nResource(NGApplicationConfig applicationConfig, ApplicationSourceFilter fileFilter, NGEntity entity) throws IOException {
         FileObject webRoot = getProjectWebRoot(project);
