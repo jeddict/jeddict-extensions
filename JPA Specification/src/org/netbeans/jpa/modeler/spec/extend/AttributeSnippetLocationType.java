@@ -15,19 +15,18 @@
  */
 package org.netbeans.jpa.modeler.spec.extend;
 
-public enum SnippetLocationType {
+public enum AttributeSnippetLocationType implements SnippetLocation {
 
-    DEFAULT("Default"), 
     BEFORE_FIELD("Before Field"), AFTER_FIELD("After Field"), 
     BEFORE_METHOD("Before Method"), AFTER_METHOD("After Method"),
-    BEFORE_CLASS("Before Class"), AFTER_CLASS("After Class"),
-    BEFORE_PACKAGE("Before Package"), AFTER_PACKAGE("After Package"),
+    PRE_GETTER("Pre Getter"), GETTER("Getter"),
+    PRE_SETTER("Pre Setter"), SETTER("Setter"), POST_SETTER("Post Setter"),
     IMPORT("Import");
     
     private final String title;
 
     
-    private SnippetLocationType(String title) {
+    private AttributeSnippetLocationType(String title) {
         this.title = title;
     }
 

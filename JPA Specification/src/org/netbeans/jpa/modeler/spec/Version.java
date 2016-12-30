@@ -57,4 +57,9 @@ public class Version extends PersistenceBaseAttribute implements AccessTypeHandl
         version.loadAttribute(element, variableElement, getterElement);
         return version;
     }
+    
+    @Override
+    public boolean isOptionalReturnType() {
+        return false;
+    }
 }

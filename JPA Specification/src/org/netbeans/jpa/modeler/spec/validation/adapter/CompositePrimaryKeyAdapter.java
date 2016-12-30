@@ -22,7 +22,7 @@ public class CompositePrimaryKeyAdapter extends XmlAdapter<String, CompositePrim
 
    @Override
    public String marshal(CompositePrimaryKeyType compositePrimaryKeyType) {
-      return compositePrimaryKeyType.getType();
+      return compositePrimaryKeyType!=null?compositePrimaryKeyType.getType():null;
    }
 
    @Override

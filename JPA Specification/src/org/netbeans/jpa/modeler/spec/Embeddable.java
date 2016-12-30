@@ -62,7 +62,7 @@ public class Embeddable extends ManagedClass {
 
     @Override
     public void load(EntityMappings entityMappings, TypeElement element, boolean fieldAccess) {
-        if (entityMappings.findMappedSuperclass(element.getSimpleName().toString()) == null) { // BUG : https://java.net/bugzilla/show_bug.cgi?id=6192 NullPointerException when reverse engineering from JPA classes revisited
+        if (!entityMappings.findMappedSuperclass(element.getSimpleName().toString()).isPresent()) { // BUG : https://java.net/bugzilla/show_bug.cgi?id=6192 NullPointerException when reverse engineering from JPA classes revisited
             TypeElement superClassElement = JavaSourceParserUtil.getSuperclassTypeElement(element);
             if (!superClassElement.getQualifiedName().toString().equals("java.lang.Object")) {
                 this.setSuperclassRef(new ReferenceClass(superClassElement.toString()));

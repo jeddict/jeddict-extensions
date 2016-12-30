@@ -749,10 +749,10 @@ public class JavaSourceParserUtil {
      */
     public static ExecutableElement guessGetter(VariableElement variableElement) {
         String name = variableElement.getSimpleName().toString();
-        String guessGetterName = "get" + StringHelper.firstUpper(name);
+        String guessGetterName = StringHelper.firstUpper(name);
         TypeElement typeElement = (TypeElement) variableElement.getEnclosingElement();
         for (ExecutableElement executableElement : ElementFilter.methodsIn(typeElement.getEnclosedElements())) {
-            if (executableElement.getSimpleName().contentEquals(guessGetterName)) {
+            if (executableElement.getSimpleName().contentEquals("get" + guessGetterName) || executableElement.getSimpleName().contentEquals("is" + guessGetterName)) {
                 return executableElement;
             }
         }

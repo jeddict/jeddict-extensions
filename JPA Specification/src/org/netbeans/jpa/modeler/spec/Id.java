@@ -163,4 +163,9 @@ public class Id extends PersistenceBaseAttribute {
             return id.getName();
         }
     }
+    
+    @Override
+    public boolean isOptionalReturnType() {
+        return false;
+    }
 }

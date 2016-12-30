@@ -60,6 +60,7 @@ import javax.xml.bind.annotation.XmlType;
     "postUpdate",
     "postLoad"
 })
+@Deprecated
 public class EntityListener {
 
     protected String description;

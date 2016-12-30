@@ -115,9 +115,9 @@ public class ConstraintUtil {
         //TODO : @Future & @Past for Date        
         DEFAULT_VALUE.put(CALENDAR, cm -> "java.util.Calendar.getInstance()");
         DEFAULT_VALUE.put(DATE, cm -> "java.util.Date.from(java.time.Instant.EPOCH)");
-        DEFAULT_VALUE.put(SQL_DATE, cm -> "java.sql.Date.from(java.time.Instant.EPOCH)");
-        DEFAULT_VALUE.put(SQL_TIME, cm -> "java.sql.Time.from(java.time.Instant.EPOCH)");
-        DEFAULT_VALUE.put(SQL_TIMESTAMP, cm -> "java.sql.Timestamp.from(java.time.Instant.EPOCH)");
+//        DEFAULT_VALUE.put(SQL_DATE, cm -> "java.sql.Date.from(java.time.Instant.EPOCH)");
+//        DEFAULT_VALUE.put(SQL_TIME, cm -> "java.sql.Time.from(java.time.Instant.EPOCH)");
+//        DEFAULT_VALUE.put(SQL_TIMESTAMP, cm -> "java.sql.Timestamp.from(java.time.Instant.EPOCH)");
         DEFAULT_VALUE.put(BYTE_ARRAY, cm -> "new byte[] {1, 2, 3}");
         DEFAULT_VALUE.put(BYTE_WRAPPER_ARRAY, cm -> "new Byte[] {1, 2, 3}");
         DEFAULT_VALUE.put(CHAR_ARRAY, cm -> "new char[] {'a', 'b', 'c'}");
@@ -159,9 +159,9 @@ public class ConstraintUtil {
         //TODO : @Future & @Past for Date        
         UPDATE_VALUE.put(CALENDAR, cm -> "java.util.Calendar.getInstance()");
         UPDATE_VALUE.put(DATE, cm -> "java.util.Date.from(java.time.Instant.now())");
-        UPDATE_VALUE.put(SQL_DATE, cm -> "java.sql.Date.from(java.time.Instant.now())");
-        UPDATE_VALUE.put(SQL_TIME, cm -> "java.sql.Time.from(java.time.Instant.now())");
-        UPDATE_VALUE.put(SQL_TIMESTAMP, cm -> "java.sql.Timestamp.from(java.time.Instant.now())");
+//        UPDATE_VALUE.put(SQL_DATE, cm -> "java.sql.Date.from(java.time.Instant.now())");
+//        UPDATE_VALUE.put(SQL_TIME, cm -> "java.sql.Time.from(java.time.Instant.now())");
+//        UPDATE_VALUE.put(SQL_TIMESTAMP, cm -> "java.sql.Timestamp.from(java.time.Instant.now())");
         UPDATE_VALUE.put(BYTE_ARRAY, cm -> "new byte[] {4, 5, 6}");
         UPDATE_VALUE.put(BYTE_WRAPPER_ARRAY, cm -> "new Byte[] {4, 5, 6}");
         UPDATE_VALUE.put(CHAR_ARRAY, cm -> "new char[] {'d', 'e', 'f'}");

@@ -6,14 +6,16 @@
 //
 package org.netbeans.jpa.modeler.spec;
 
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import org.netbeans.jpa.modeler.spec.extend.ReferenceClass;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
@@ -46,13 +48,12 @@ import org.netbeans.jpa.source.JavaSourceParserUtil;
  *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "entity-listeners", propOrder = {
-    "entityListener"
-})
 public class EntityListeners {
 
-    @XmlElement(name = "entity-listener")
-    protected List<EntityListener> entityListener;
+//    @XmlElement(name = "entity-listener")
+//    protected List<EntityListener> entityListener;
+    @XmlElement(name = "ln")
+    private Set<ReferenceClass> entityListener;
 
     public static EntityListeners load(Element element, AnnotationMirror annotationMirror) {
         EntityListeners entityListeners = null;
@@ -60,7 +61,7 @@ public class EntityListeners {
         if (entityListenersMirrorList != null) {
             entityListeners = new EntityListeners();
             for (Object entityListenerObj : entityListenersMirrorList) {
-                entityListeners.getEntityListener().add(new EntityListener(entityListenerObj.toString()));
+                entityListeners.getEntityListener().add(new ReferenceClass(entityListenerObj.toString()));
             }
         }
         return entityListeners;
@@ -88,11 +89,26 @@ public class EntityListeners {
      *
      *
      */
-    public List<EntityListener> getEntityListener() {
+    public Set<ReferenceClass> getEntityListener() {
         if (entityListener == null) {
-            entityListener = new ArrayList<EntityListener>();
+            entityListener = new LinkedHashSet<>();
         }
         return this.entityListener;
+    }
+
+    /**
+     * @param entityListener the entityListener to set
+     */
+    public void setEntityListener(Set<ReferenceClass> entityListener) {
+        this.entityListener = entityListener;
+    }
+
+    public void addEntityListener(ReferenceClass entityListener) {
+        this.getEntityListener().add(entityListener);
+    }
+
+    public void removeEntityListener(ReferenceClass entityListener) {
+        this.getEntityListener().remove(entityListener);
     }
 
 }

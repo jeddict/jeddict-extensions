@@ -81,7 +81,7 @@ public class MappedSuperclass extends IdentifiableClass {
 
     @Override
     public void load(EntityMappings entityMappings, TypeElement element, boolean fieldAccess) {
-        if (entityMappings.findMappedSuperclass(element.getSimpleName().toString()) == null) {
+        if (!entityMappings.findMappedSuperclass(element.getSimpleName().toString()).isPresent()) {
             super.load(entityMappings, element, fieldAccess);
         }
     }

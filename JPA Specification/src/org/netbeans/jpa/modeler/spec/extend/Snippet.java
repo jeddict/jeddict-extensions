@@ -25,13 +25,11 @@ import javax.xml.bind.annotation.XmlValue;
  * @author Gaurav Gupta
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Snippet {
+public abstract class Snippet<L extends SnippetLocation> {
 
     
     @XmlAttribute(name = "e")
     private boolean enable = true;
-    @XmlAttribute(name="loc")
-    private SnippetLocationType locationType;
     @XmlValue
     private String value;
 
@@ -52,22 +50,12 @@ public class Snippet {
     /**
      * @return the locationType
      */
-    public SnippetLocationType getLocationType() {
-        if(locationType==null){
-            return SnippetLocationType.DEFAULT;
-        }
-        return locationType;
-    }
+    public abstract L getLocationType();
 
     /**
      * @param locationType the locationType to set
      */
-    public void setLocationType(SnippetLocationType locationType) {
-        if(locationType == SnippetLocationType.DEFAULT){
-            locationType = null;
-        }
-        this.locationType = locationType;
-    }
+    public abstract void setLocationType(L locationType);
 
     /**
      * @return the value

@@ -170,7 +170,7 @@ public abstract class IdentifiableClass extends ManagedClass implements PrimaryK
             } else if (JavaSourceParserUtil.isMappedSuperClass(superClassElement)) {
                 org.netbeans.jpa.modeler.spec.MappedSuperclass mappedSuperclassSpec = entityMappings.findMappedSuperclass(superClassElement.getSimpleName().toString()).orElseGet(() -> {
                     org.netbeans.jpa.modeler.spec.MappedSuperclass mappedSpec = new org.netbeans.jpa.modeler.spec.MappedSuperclass();
-                    mappedSpec.load(entityMappings, superClassElement, fieldAccess);
+                   mappedSpec.load(entityMappings, superClassElement, fieldAccess);
                     entityMappings.addMappedSuperclass(mappedSpec);
                     return mappedSpec;
                });
@@ -290,6 +290,9 @@ public abstract class IdentifiableClass extends ManagedClass implements PrimaryK
      *
      */
     public EntityListeners getEntityListeners() {
+        if(entityListeners==null){
+            entityListeners = new EntityListeners();
+        }
         return entityListeners;
     }
 

@@ -85,7 +85,7 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
 
     @XmlElement(name = "an")
     private List<Annotation> annotation;
-    @XmlAttribute(name="v")
+    @XmlAttribute(name = "v")
     private boolean visibile = true;
     @XmlElement(name = "des")
     private String description;
@@ -113,22 +113,36 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
 
     @XmlAttribute(name = "ft")
     private Boolean functionalType;
-    
-    
+
+    @XmlElement(name = "snp")
+    private List<AttributeSnippet> snippets;
+
     @XmlElementWrapper(name = "bv")
     @XmlElements({
-        @XmlElement(name = "nu", type = Null.class),
-        @XmlElement(name = "nn", type = NotNull.class),
-        @XmlElement(name = "af", type = AssertFalse.class),
-        @XmlElement(name = "at", type = AssertTrue.class),
-        @XmlElement(name = "pa", type = Past.class),
-        @XmlElement(name = "fu", type = Future.class),
-        @XmlElement(name = "si", type = Size.class),
-        @XmlElement(name = "pt", type = Pattern.class),
-        @XmlElement(name = "mi", type = Min.class),
-        @XmlElement(name = "ma", type = Max.class),
-        @XmlElement(name = "dmi", type = DecimalMin.class),
-        @XmlElement(name = "dma", type = DecimalMax.class),
+        @XmlElement(name = "nu", type = Null.class)
+        ,
+        @XmlElement(name = "nn", type = NotNull.class)
+        ,
+        @XmlElement(name = "af", type = AssertFalse.class)
+        ,
+        @XmlElement(name = "at", type = AssertTrue.class)
+        ,
+        @XmlElement(name = "pa", type = Past.class)
+        ,
+        @XmlElement(name = "fu", type = Future.class)
+        ,
+        @XmlElement(name = "si", type = Size.class)
+        ,
+        @XmlElement(name = "pt", type = Pattern.class)
+        ,
+        @XmlElement(name = "mi", type = Min.class)
+        ,
+        @XmlElement(name = "ma", type = Max.class)
+        ,
+        @XmlElement(name = "dmi", type = DecimalMin.class)
+        ,
+        @XmlElement(name = "dma", type = DecimalMax.class)
+        ,
         @XmlElement(name = "di", type = Digits.class)
     })
     private Set<Constraint> constraints = CONSTRAINTS_SUPPLIER.get();
@@ -431,7 +445,7 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
      * @return the functionalType
      */
     public Boolean getFunctionalType() {
-        if(functionalType==null){
+        if (functionalType == null) {
             return true;
         }
         return functionalType;
@@ -448,7 +462,6 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
         this.functionalType = functionalType;
     }
 
-    
     public String getDefaultValue() {
         return defaultValue;
     }
@@ -456,8 +469,6 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
     public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
     }
-
-
 
     @XmlTransient
     private Map<String, Constraint> constraintsMap;
@@ -481,10 +492,10 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
         return constraintsMap;
     }
 
-   /**
-    * @return the complete list of Constraint (old datatype Constraint instance and new created Constraint instance)
-    */
-
+    /**
+     * @return the complete list of Constraint (old datatype Constraint instance
+     * and new created Constraint instance)
+     */
     private void bootAllConstraints() {
         Set<Class<? extends Constraint>> existingConstraints = constraints.stream().map(c -> c.getClass()).collect(toSet());
         for (Class<? extends Constraint> constraintClass : ALL_CONSTRAINTS.keySet()) {
@@ -497,9 +508,9 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
             }
         }
     }
-    
+
     /**
-     * Complete list of constraint class based 
+     * Complete list of constraint class based
      */
     private static Map<Class<? extends Constraint>, Integer> getAllConstraintsClass() {
         Map<Class<? extends Constraint>, Integer> classes = new HashMap<>();
@@ -518,7 +529,7 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
         classes.put(Digits.class, 13);
         return classes;
     }
-    
+
     /**
      * Filtered constraint class based on data type
      */
@@ -531,7 +542,6 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
         return classes;
     }
 
-        
     /**
      * @return the constraints
      */
@@ -539,18 +549,43 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
         if (constraints == null) {
             constraints = CONSTRAINTS_SUPPLIER.get();
         }
-        if(ALL_CONSTRAINTS.size() != constraints.size()){
+        if (ALL_CONSTRAINTS.size() != constraints.size()) {
             bootAllConstraints();
         }
         return constraints;
     }
-    
+
     /**
      * @param constraints the constraints to set
      */
     public void setConstraints(Set<Constraint> constraints) {
-          this.constraintsMap = null;//reset
+        this.constraintsMap = null;//reset
         this.constraints = constraints;
+    }
+
+    /**
+     * @return the snippets
+     */
+    public List<AttributeSnippet> getSnippets() {
+        if (snippets == null) {
+            snippets = new ArrayList<>();
+        }
+        return snippets;
+    }
+
+    /**
+     * @param snippets the snippets to set
+     */
+    public void setSnippets(List<AttributeSnippet> snippets) {
+        this.snippets = snippets;
+    }
+
+    public boolean addSnippet(AttributeSnippet snippet) {
+        return getSnippets().add(snippet);
+    }
+
+    public boolean removeSnippet(AttributeSnippet snippet) {
+        return getSnippets().remove(snippet);
     }
 
 }

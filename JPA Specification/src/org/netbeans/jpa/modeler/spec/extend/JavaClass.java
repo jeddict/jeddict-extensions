@@ -87,7 +87,7 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
     private Set<ReferenceClass> interfaces;
     
     @XmlElement(name = "snp")
-    private List<Snippet> snippets;
+    private List<ClassSnippet> snippets;
     
     @XmlTransient
     private FileObject fileObject;
@@ -427,7 +427,7 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
     /**
      * @return the snippets
      */
-    public List<Snippet> getSnippets() {
+    public List<ClassSnippet> getSnippets() {
         if(snippets==null){
             snippets = new ArrayList<>();
         }
@@ -437,15 +437,15 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
     /**
      * @param snippets the snippets to set
      */
-    public void setSnippets(List<Snippet> snippets) {
+    public void setSnippets(List<ClassSnippet> snippets) {
         this.snippets = snippets;
     }
 
-     public boolean addSnippet(Snippet snippet) {
+     public boolean addSnippet(ClassSnippet snippet) {
         return getSnippets().add(snippet);
     }
 
-    public boolean removeSnippet(Snippet snippet) {
+    public boolean removeSnippet(ClassSnippet snippet) {
         return getSnippets().remove(snippet);
     }
 

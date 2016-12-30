@@ -197,4 +197,9 @@ public class EmbeddedId extends CompositionAttribute<DefaultClass> {
     public void setConnectedAttribute(Attribute connectedAttribute) {
         this.connectedAttribute = connectedAttribute;
     }
+    
+    @Override
+    public boolean isOptionalReturnType() {
+        return false;
+    }
 }
