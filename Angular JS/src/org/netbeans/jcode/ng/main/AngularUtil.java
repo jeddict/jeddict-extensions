@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,14 +40,13 @@ import org.openide.util.Exceptions;
  */
 public class AngularUtil {
         public static void copyDynamicResource(Consumer<FileTypeStream> parserManager, String inputResource, FileObject webRoot, Function<String, String> pathResolver, ProgressHandler handler) throws IOException {
-        InputStream inputStream = Angular1Generator.class.getClassLoader().getResourceAsStream(inputResource);
+        InputStream inputStream = AngularGenerator.class.getClassLoader().getResourceAsStream(inputResource);
         try (ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
             ZipEntry entry;
             while ((entry = zipInputStream.getNextEntry()) != null) {
                 if (entry.getName().lastIndexOf('.') == -1) {
                     continue;
                 }
-                String fileType = entry.getName().substring(entry.getName().lastIndexOf('.') + 1);
                 String targetPath = pathResolver.apply(entry.getName());
                 if (targetPath == null) {
                     continue;
@@ -55,7 +55,7 @@ public class AngularUtil {
                 FileObject target = org.openide.filesystems.FileUtil.createData(webRoot, targetPath);
                 FileLock lock = target.lock();
                 try (OutputStream outputStream = target.getOutputStream(lock)) {
-                    parserManager.accept(new FileTypeStream(fileType, zipInputStream, outputStream));
+                    parserManager.accept(new FileTypeStream(entry.getName(), zipInputStream, outputStream));
                     zipInputStream.closeEntry();
                 } finally {
                     lock.releaseLock();
@@ -69,17 +69,16 @@ public class AngularUtil {
 
     public static void copyDynamicFile(Consumer<FileTypeStream> parserManager, String inputResource, FileObject webRoot, Function<String, String> pathResolver, ProgressHandler handler) throws IOException {
         try {
-            InputStream inputStream = Angular1Generator.class.getClassLoader().getResourceAsStream(inputResource);
+            InputStream inputStream = AngularGenerator.class.getClassLoader().getResourceAsStream(inputResource);
             String targetPath = pathResolver.apply(inputResource);
             if (targetPath == null) {
                 return;
             }
-            String fileType = inputResource.substring(inputResource.lastIndexOf('.') + 1);
             handler.progress(targetPath);
             FileObject target = org.openide.filesystems.FileUtil.createData(webRoot, targetPath);
             FileLock lock = target.lock();
             try (OutputStream outputStream = target.getOutputStream(lock)) {
-                parserManager.accept(new FileTypeStream(fileType, inputStream, outputStream));
+                parserManager.accept(new FileTypeStream(inputResource, inputStream, outputStream));
             } finally {
                 lock.releaseLock();
             }
@@ -91,7 +90,7 @@ public class AngularUtil {
 
     public static Map<String, String> getResource(String inputResource) {
         Map<String, String> data = new HashMap<>();
-        InputStream inputStream = Angular1Generator.class.getClassLoader().getResourceAsStream(inputResource);
+        InputStream inputStream = AngularGenerator.class.getClassLoader().getResourceAsStream(inputResource);
         try (ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
             ZipEntry entry;
             while ((entry = zipInputStream.getNextEntry()) != null) {

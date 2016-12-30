@@ -20,7 +20,11 @@ Entity Neddle :
                         <%_ } _%>
 
 File: _navbar.controller.js 
-enableProfile filter added
+Add :enableProfile filter added
+Add :
+<%_ if(enableDocs) { _%>
+        vm.swaggerEnabled = true;
+<%_ } _%>
 
 Folder : /user-management
 remove [resetDate: null, resetKey: null]
@@ -72,13 +76,6 @@ add <%_ if (fields[idx].fieldName != 'id') %> for id : null
 File : _metrics.controller.js
 Replace :
 if (key.indexOf('web.rest') !== -1 || key.indexOf('service') !== -1) {
-
-
-File : _navbar.controller.js
-Add :
-<%_ if(enableDocs) { _%>
-        vm.swaggerEnabled = true;
-<%_ } _%>
 
 File : swagger-ui/index.html
 initializeSpringfox -> initializeSwagger

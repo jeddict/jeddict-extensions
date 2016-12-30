@@ -124,7 +124,7 @@ public final class EJSParser {
 
     public String parse(InputStream templateStream, Map<String, String> extTemplate) throws ScriptException, IOException {
         StringWriter writer = new StringWriter();
-        IOUtils.copy(templateStream, writer);
+        IOUtils.copy(templateStream, writer);//, "ISO-8859-1");//, "UTF-8");
         return parse(writer.toString(), extTemplate);
     }
 }

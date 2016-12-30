@@ -65,6 +65,7 @@ import org.netbeans.jpa.modeler.spec.extend.BaseAttribute;
 import org.netbeans.jpa.modeler.spec.extend.EnumTypeHandler;
 import org.netbeans.jpa.modeler.spec.extend.RelationAttribute;
 import org.netbeans.jcode.layer.Generator;
+
 /**
  *
  * @author Gaurav Gupta
@@ -73,7 +74,7 @@ public abstract class AngularGenerator implements Generator {
 
     @ConfigData
     protected EntityMappings entityMapping;
-    
+
     @ConfigData
     protected AngularData ngData;
 
@@ -81,39 +82,62 @@ public abstract class AngularGenerator implements Generator {
     protected RESTData restData;
 
     @ConfigData
-    protected Project project; 
-    
+    protected Project project;
+
     @ConfigData
     protected ProgressHandler handler;
 
+<<<<<<< HEAD
+    protected static final List<String> PARSER_FILE_TYPE = Arrays.asList("html", "js", "css", "scss", "json", "ts", "hbs");
+=======
     protected static final List<String> PARSER_FILE_TYPE = Arrays.asList("html", "js", "css", "scss", "json", "ts");
+>>>>>>> origin/master
 //    private static final List<String> BINARY_FILE_TYPE = Arrays.asList("gif", "ico", "png", "jpeg", "jpg");
 
+<<<<<<< HEAD
+    protected Consumer<FileTypeStream> getParserManager(EJSParser parser) {
+        return getParserManager(parser, null, null);
+    }
+
+    protected Consumer<FileTypeStream> getParserManager(EJSParser parser, Map<String, String> embeddedTemplate, List<String> skipFile) {
+=======
     protected Consumer<FileTypeStream> getParserManager(EJSParser parser, Map<String, String> extTemplate) {
+>>>>>>> origin/master
         return (fileTypeStream) -> {
             try {
-                if (PARSER_FILE_TYPE.contains(fileTypeStream.getFileType())) {
-                    IOUtils.write(parser.parse(fileTypeStream.getInputStream(), extTemplate), fileTypeStream.getOutputStream());
+
+                if (PARSER_FILE_TYPE.contains(fileTypeStream.getFileType()) && (skipFile == null || !skipFile.contains(fileTypeStream.getFileName()))) {
+                    IOUtils.write(parser.parse(fileTypeStream.getInputStream(), embeddedTemplate), fileTypeStream.getOutputStream());
                 } else {
                     IOUtils.copy(fileTypeStream.getInputStream(), fileTypeStream.getOutputStream());
                 }
             } catch (ScriptException | IOException ex) {
                 Exceptions.printStackTrace(ex);
-            } 
+            }
         };
     }
 
     protected List<String> entityScriptFiles;
     protected List<String> scriptFiles;
+<<<<<<< HEAD
+
+=======
     
+>>>>>>> origin/master
     public abstract String getTemplatePath();
-    
+
     @Override
     public void execute() throws IOException {
         entityScriptFiles = new ArrayList<>();
         scriptFiles = new ArrayList<>();
         generateClientSideComponent();
     }
+<<<<<<< HEAD
+
+    protected abstract ApplicationSourceFilter getApplicationSourceFilter(NGApplicationConfig applicationConfig);
+
+    protected abstract void generateClientSideComponent();
+=======
     
     protected abstract ApplicationSourceFilter getApplicationSourceFilter(NGApplicationConfig applicationConfig);
     
@@ -181,6 +205,7 @@ public abstract class AngularGenerator implements Generator {
         };
         copyDynamicResource(getParserManager(parser, templateLib), getTemplatePath() + "entity-resources.zip", webRoot, pathResolver, handler);
     }
+>>>>>>> origin/master
 
     protected void generateNgEntityi18nResource(NGApplicationConfig applicationConfig, ApplicationSourceFilter fileFilter, NGEntity entity) throws IOException {
         FileObject webRoot = getProjectWebRoot(project);
@@ -201,7 +226,7 @@ public abstract class AngularGenerator implements Generator {
             templatePath = String.format("i18n/%s/%s.json", lang, entity.getEntityTranslationKey());
             return templatePath;
         };
-        copyDynamicResource(getParserManager(parser, null), getTemplatePath() + "entity-resource-i18n.zip", webRoot, pathResolver, handler);
+        copyDynamicResource(getParserManager(parser, null, null), getTemplatePath() + "entity-resource-i18n.zip", webRoot, pathResolver, handler);
     }
 
     protected void generateNgApplicationi18nResource(NGApplicationConfig applicationConfig, ApplicationSourceFilter fileFilter) throws IOException {
@@ -214,8 +239,13 @@ public abstract class AngularGenerator implements Generator {
         parser.addContext(data);
 
         Function<String, String> pathResolver = (templatePath) -> {
-            String lang = templatePath.split("/")[1]; //"i18n/en/password.json" 
+            String[] paths = templatePath.split("/");
+            String lang = paths[1]; //"i18n/en/password.json" 
+            String file = paths[2];
             if (!applicationConfig.getLanguages().contains(lang)) { //if lang selected by dev 
+                return null;
+            }
+            if (!fileFilter.isEnable(file)) {
                 return null;
             }
             if (templatePath.contains("/_")) {
@@ -224,27 +254,7 @@ public abstract class AngularGenerator implements Generator {
             //path modification not required
             return templatePath;
         };
-        copyDynamicResource(getParserManager(parser, null), getTemplatePath() + "web-resources-i18n.zip", webRoot, pathResolver, handler);
-    }
-    
-    protected void generateNgLocaleResource(NGApplicationConfig applicationConfig, ApplicationSourceFilter fileFilter) throws IOException {
-        FileObject webRoot = getProjectWebRoot(project);
-
-        Map<String, Object> data = new HashMap();//todo remove
-
-        EJSParser parser = new EJSParser();
-        parser.addContext(applicationConfig);
-        parser.addContext(data);
-
-        Function<String, String> pathResolver = (templatePath) -> {
-            String lang = templatePath.substring(templatePath.indexOf('_')+1, templatePath.lastIndexOf('.')); //angular-locale_en.js 
-            if (!applicationConfig.getLanguages().contains(lang)) { //if lang selected by dev 
-                return null;
-            }
-            //path modification not required
-            return templatePath;
-        };
-        copyDynamicResource(getParserManager(parser, null), getTemplatePath() + "angular-locale.zip", webRoot, pathResolver, handler);
+        copyDynamicResource(getParserManager(parser, null, null), getTemplatePath() + "web-resources-i18n.zip", webRoot, pathResolver, handler);
     }
 
     protected EntityConfig getEntityConfig() {
@@ -253,16 +263,20 @@ public abstract class AngularGenerator implements Generator {
         return entityConfig;
     }
 
+    protected abstract String getClientFramework();
+
     protected NGApplicationConfig getAppConfig() {
         NGApplicationConfig applicationConfig = new NGApplicationConfig();
         applicationConfig.setAngularAppName(ngData.getModule());
         applicationConfig.setEnableTranslation(true);
         applicationConfig.setJhiPrefix("jhi");
+        applicationConfig.setBuildTool("maven");
         applicationConfig.setBaseName(ngData.getApplicationTitle());
         applicationConfig.setApplicationPath(restData.getRestConfigData().getApplicationPath());
         applicationConfig.setEnableMetrics(restData.isMetrics());
         applicationConfig.setRestPackage(restData.getPackage());
         applicationConfig.setEnableDocs(restData.isDocsEnable());
+        applicationConfig.setClientFramework(getClientFramework());
         return applicationConfig;
     }
 
@@ -284,62 +298,61 @@ public abstract class AngularGenerator implements Generator {
 //            return null;
 //        }
 //        attributes.addAll(entitySpec.getSuperclassAttributes());
-        for(Attribute attribute : attributes){
-            if(attribute instanceof Id && ((Id)attribute).isGeneratedValue()){
+        for (Attribute attribute : attributes) {
+            if (attribute instanceof Id && ((Id) attribute).isGeneratedValue()) {
                 continue;
             }
-            if(!attribute.getIncludeInUI()){//system attribute
+            if (!attribute.getIncludeInUI()) {//system attribute
                 continue;
             }
-            
-            if(attribute instanceof RelationAttribute){
-                RelationAttribute relationAttribute = (RelationAttribute)attribute;
+
+            if (attribute instanceof RelationAttribute) {
+                RelationAttribute relationAttribute = (RelationAttribute) attribute;
                 NGRelationship relationship = new NGRelationship(entity, relationAttribute);
                 Entity mappedEntity = relationAttribute.getConnectedEntity();
-                if(mappedEntity.getLabelAttribute()==null || mappedEntity.getLabelAttribute().getName().equals("id")){
+                if (mappedEntity.getLabelAttribute() == null || mappedEntity.getLabelAttribute().getName().equals("id")) {
                     handler.warning(NbBundle.getMessage(AngularGenerator.class, "TITLE_Entity_Label_Missing"),
-                    NbBundle.getMessage(AngularGenerator.class, "MSG_Entity_Label_Missing", ngEntity.getName()));
+                            NbBundle.getMessage(AngularGenerator.class, "MSG_Entity_Label_Missing", ngEntity.getName()));
                 } else {
                     relationship.setOtherEntityField(mappedEntity.getLabelAttribute().getName());
                 }
-                if(entity == mappedEntity){
+                if (entity == mappedEntity) {
                     handler.warning(NbBundle.getMessage(AngularGenerator.class, "TITLE_Self_Relation_Not_Supported"),
-                    NbBundle.getMessage(AngularGenerator.class, "MSG_Self_Relation_Not_Supported", attribute.getName(), ngEntity.getName()));
+                            NbBundle.getMessage(AngularGenerator.class, "MSG_Self_Relation_Not_Supported", attribute.getName(), ngEntity.getName()));
                     continue;
                 }
                 ngEntity.addRelationship(relationship);
-            } else if(attribute instanceof BaseAttribute){
-                if(attribute instanceof EnumTypeHandler && ((EnumTypeHandler)attribute).getEnumerated()!=null){
+            } else if (attribute instanceof BaseAttribute) {
+                if (attribute instanceof EnumTypeHandler && ((EnumTypeHandler) attribute).getEnumerated() != null) {
                     handler.warning(NbBundle.getMessage(AngularGenerator.class, "TITLE_Enum_Type_Not_Supported"),
-                    NbBundle.getMessage(AngularGenerator.class, "MSG_Enum_Type_Not_Supported", attribute.getName(), ngEntity.getName()));
+                            NbBundle.getMessage(AngularGenerator.class, "MSG_Enum_Type_Not_Supported", attribute.getName(), ngEntity.getName()));
                     continue;
                 }
-                if(attribute instanceof Embedded){
+                if (attribute instanceof Embedded) {
                     handler.warning(NbBundle.getMessage(AngularGenerator.class, "TITLE_Embedded_Type_Not_Supported"),
-                    NbBundle.getMessage(AngularGenerator.class, "MSG_Embedded_Type_Not_Supported", attribute.getName(), ngEntity.getName()));
+                            NbBundle.getMessage(AngularGenerator.class, "MSG_Embedded_Type_Not_Supported", attribute.getName(), ngEntity.getName()));
                     continue;
                 }
-                if(attribute instanceof ElementCollection){
+                if (attribute instanceof ElementCollection) {
                     handler.warning(NbBundle.getMessage(AngularGenerator.class, "TITLE_ElementCollection_Type_Not_Supported"),
-                    NbBundle.getMessage(AngularGenerator.class, "MSG_ElementCollection_Type_Not_Supported", attribute.getName(), ngEntity.getName()));
+                            NbBundle.getMessage(AngularGenerator.class, "MSG_ElementCollection_Type_Not_Supported", attribute.getName(), ngEntity.getName()));
                     continue;
                 }
-                if(attribute instanceof Version || attribute instanceof Transient){
+                if (attribute instanceof Version || attribute instanceof Transient) {
                     continue;
                 }
-                NGField field = new NGField((BaseAttribute)attribute);
+                NGField field = new NGField((BaseAttribute) attribute);
                 Class<?> primitiveType = JavaUtil.getPrimitiveType(attribute.getDataTypeLabel());
-                if(primitiveType!=null){
+                if (primitiveType != null) {
                     field.setFieldType(primitiveType.getSimpleName());//todo short, byte, char not supported in ui template
                 } else {
                     field.setFieldType(getSimpleClassName(attribute.getDataTypeLabel()));
                 }
-                
+
                 ngEntity.addField(field);
             }
         }
         return ngEntity;
     }
 
-  
 }

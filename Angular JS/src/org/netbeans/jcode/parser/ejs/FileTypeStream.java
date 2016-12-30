@@ -24,21 +24,29 @@ import java.io.OutputStream;
  */
 public class FileTypeStream {
 
-    private final String fileType;
+    private final String fileName;
     private final InputStream inputStream;
     private final OutputStream outputStream;
 
-    public FileTypeStream(String fileType, InputStream inputStream, OutputStream outputStream) {
-        this.fileType = fileType;
+    public FileTypeStream(String fileName, InputStream inputStream, OutputStream outputStream) {
+        this.fileName = fileName;
         this.inputStream = inputStream;
         this.outputStream = outputStream;
     }
 
     /**
+     * @return the fileName
+     */
+    public String getFileName() {
+        return fileName.substring(fileName.lastIndexOf('/') + 1);
+    }
+    
+    
+    /**
      * @return the fileType
      */
     public String getFileType() {
-        return fileType;
+        return fileName.substring(fileName.lastIndexOf('.') + 1);
     }
 
     /**

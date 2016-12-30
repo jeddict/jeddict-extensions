@@ -49,13 +49,37 @@ public class NGApplicationConfig {
     public static final String H2_DISK_DATABASE_TYPE = "h2Disk";
     public static final String H2_MEMORY_DATABASE_TYPE = "h2Memory";
 
-    private String applicationPath;//rest path
+<<<<<<< HEAD
+    //Path
+    public String MAIN_DIR = "src/main/";
+    public String TEST_DIR = "src/test/";
+    public String CLIENT_MAIN_SRC_DIR = MAIN_DIR + "webapp/";
+    public String CLIENT_TEST_SRC_DIR = TEST_DIR + "javascript/";
+    public String MAIN_SRC_DIR = CLIENT_MAIN_SRC_DIR;
+    public String TEST_SRC_DIR = CLIENT_TEST_SRC_DIR;
+    public String CLIENT_DIST_DIR = "www/";
+    public String ANGULAR_DIR = MAIN_DIR + "webapp/app/";
+    public String BUILD_DIR;
+    public String DIST_DIR;
 
+=======
+>>>>>>> origin/master
+    private String applicationPath;//rest path
+    public String buildTool;
+
+<<<<<<< HEAD
+=======
     public String MAIN_SRC_DIR = "src/main/webapp/";
     public String TEST_SRC_DIR = "src/test/javascript/";
 
+>>>>>>> origin/master
     public String angularAppName;
     public String angular2AppName;
+<<<<<<< HEAD
+    public String applicationType;//gateway , monolith
+    public String serverPort = "8080";
+    public String microserviceAppName;
+=======
 
     public boolean enableTranslation;
     public String nativeLanguage = "en";
@@ -78,24 +102,68 @@ public class NGApplicationConfig {
     public String devDatabaseType;
     public String hibernateCache;//ehcache2
 
+>>>>>>> origin/master
     public String baseName;
     public String capitalizedBaseName;
     public String camelizedBaseName;
     public String dasherizedBaseName;
     public String lowercaseBaseName;
+<<<<<<< HEAD
+=======
 
     public boolean useSass = false;
 
+>>>>>>> origin/master
     public List<NGEntity> entities;
     private String restPackage;
+<<<<<<< HEAD
+    public String authenticationType;
 
+    //i18n
+    public boolean enableTranslation;
+    public String nativeLanguage = "en";
+    private Set<String> languages = new HashSet<>(Arrays.asList("en"));
+
+    public String jhiPrefix;
+    public String jhiPrefixCapitalized;
+
+    //Persistence
+    public String searchEngine;
+    public String databaseType;
+    public String devDatabaseType;
+    public String hibernateCache;//ehcache2
+
+    public String websocket;
+    public String messageBroker;//kafka
+    private String clientFramework;// angular1
+    public boolean useSass;
+
+    //test
+    public String[] testFrameworks = {};//protractor
+    private boolean protractorTests;
+
+    //filter    
+    private boolean enableSocialSignIn;
+    private boolean skipUserManagement;
+=======
+
+>>>>>>> origin/master
     private boolean enableMetrics;
+<<<<<<< HEAD
+    private boolean enableLogs;
+    private boolean enableHealth;
+    private boolean enableConfiguration;
+    private boolean enableAudits;
+    private boolean enableProfile;
+    private boolean enableDocs;
+=======
     private boolean enableLogs = false;
     private boolean enableHealth = false;
     private boolean enableConfiguration = false;
     private boolean enableAudits = false;
     private boolean enableProfile = false;
     private boolean enableDocs = false;
+>>>>>>> origin/master
 
     /**
      * @return the jhiPrefixCapitalized
@@ -280,6 +348,17 @@ public class NGApplicationConfig {
             camelizedBaseName = camelCase(baseName);
         }
         return camelizedBaseName;
+    }
+
+    public String getAngular2AppName() {
+        if (angular2AppName == null) {
+            angular2AppName = firstUpper(getCamelizedBaseName());
+        }
+        return angular2AppName;
+    }
+
+    public boolean isSkipUserManagement() {
+        return skipUserManagement;
     }
 
     public String getAngular2AppName() {
@@ -495,6 +574,68 @@ public class NGApplicationConfig {
      */
     public void setRestPackage(String restPackage) {
         this.restPackage = restPackage;
+    }
+
+    /**
+     * @return the messageBroker
+     */
+    public String getMessageBroker() {
+        return messageBroker;
+    }
+
+    /**
+     * @param messageBroker the messageBroker to set
+     */
+    public void setMessageBroker(String messageBroker) {
+        this.messageBroker = messageBroker;
+    }
+
+    /**
+     * @return the clientFramework
+     */
+    public String getClientFramework() {
+        return clientFramework;
+    }
+
+    /**
+     * @param clientFramework the clientFramework to set
+     */
+    public void setClientFramework(String clientFramework) {
+        this.clientFramework = clientFramework;
+    }
+
+    public String getBuildTool() {
+        return buildTool;
+    }
+
+    public void setBuildTool(String buildTool) {
+        this.buildTool = buildTool;
+    }
+
+    public String getDIST_DIR() {
+        if (DIST_DIR == null) {
+            if ("maven".equals(this.buildTool)) {
+                this.BUILD_DIR = "target/";
+            } else {
+                this.BUILD_DIR = "build/";
+            }
+            DIST_DIR = this.BUILD_DIR + CLIENT_DIST_DIR;
+        }
+        return DIST_DIR;
+    }
+
+    /**
+     * @return the protractorTests
+     */
+    public boolean isProtractorTests() {
+        return protractorTests;
+    }
+
+    /**
+     * @param protractorTests the protractorTests to set
+     */
+    public void setProtractorTests(boolean protractorTests) {
+        this.protractorTests = protractorTests;
     }
 
 }
