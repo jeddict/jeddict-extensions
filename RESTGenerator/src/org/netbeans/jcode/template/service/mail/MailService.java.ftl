@@ -5,20 +5,12 @@ import ${MessageResource_FQN};
 import ${User_FQN};
 
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.util.Properties;
 import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.HtmlEmail;
 import org.apache.deltaspike.core.api.config.ConfigResolver;
@@ -29,7 +21,7 @@ import org.apache.velocity.app.VelocityEngine;
 /**
  * Service for sending e-mails.
  * <p>
- * We use the @Async annotation to send e-mails asynchronously.
+ * @Asynchronous annotation is used to send e-mails asynchronously.
  * </p>
  */
 @Stateless

@@ -37,7 +37,7 @@ public class ${restPrefix}UserJWT${restSuffix} {
     /**
      * POST /authenticate : authenticate the credential.
      * <p>
-     * Atuhenticate the user login and password.
+     * Authenticate the user login and password.
      * </p>
      *
      * @param loginDTO the login details to authenticate
