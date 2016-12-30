@@ -4,6 +4,6 @@ OpenIDE-Module-Localizing-Bundle: org/netbeans/jpa/specification/Bundle.properti
 <<<<<<< HEAD
 OpenIDE-Module-Specification-Version: 2.8
 =======
-OpenIDE-Module-Specification-Version: 2.7.2
+OpenIDE-Module-Specification-Version: 2.8
 
 >>>>>>> origin/master
