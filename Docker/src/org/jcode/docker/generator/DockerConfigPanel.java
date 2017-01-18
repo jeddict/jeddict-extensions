@@ -48,27 +48,30 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
     @Override
     public boolean hasError() {
         warningLabel.setText("");
-        if (getServerType() != null || getServerType() != NONE) {
-            if (StringUtils.isBlank(dbUserTextField.getText())) {
-                warningLabel.setText(getMessage(DockerConfigPanel.class, "DockerConfigPanel.invalidDBUserName.message"));
-                return true;
-            }
-            if (StringUtils.isBlank(dbPasswordTextField.getText())) {
-                warningLabel.setText(getMessage(DockerConfigPanel.class, "DockerConfigPanel.invalidDBPassword.message"));
-                return true;
-            }
-            if (StringUtils.isBlank(dbNameTextField.getText())) {
-                warningLabel.setText(getMessage(DockerConfigPanel.class, "DockerConfigPanel.invalidDBName.message"));
-                return true;
-            }
-            if (StringUtils.isBlank(dsTextField.getText())) {
-                warningLabel.setText(getMessage(DockerConfigPanel.class, "DockerConfigPanel.invalidDataSource.message"));
-                return true;
-            }
-            if (!validateDB()) {
-                return true;
-            }
-        } 
+        if (getServerType() == null || getServerType() == NONE) {
+            warningLabel.setText(getMessage(DockerConfigPanel.class, "DockerConfigPanel.serverRequired.message"));
+            return true;
+        }
+        if (StringUtils.isBlank(dbUserTextField.getText())) {
+            warningLabel.setText(getMessage(DockerConfigPanel.class, "DockerConfigPanel.invalidDBUserName.message"));
+            return true;
+        }
+        if (StringUtils.isBlank(dbPasswordTextField.getText())) {
+            warningLabel.setText(getMessage(DockerConfigPanel.class, "DockerConfigPanel.invalidDBPassword.message"));
+            return true;
+        }
+        if (StringUtils.isBlank(dbNameTextField.getText())) {
+            warningLabel.setText(getMessage(DockerConfigPanel.class, "DockerConfigPanel.invalidDBName.message"));
+            return true;
+        }
+        if (StringUtils.isBlank(dsTextField.getText())) {
+            warningLabel.setText(getMessage(DockerConfigPanel.class, "DockerConfigPanel.invalidDataSource.message"));
+            return true;
+        }
+        if (!validateDB()) {
+            return true;
+        }
+
         return false;
     }
 
@@ -117,9 +120,7 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
         }
         
         serverComboBoxActionPerformed(null);
-        dbComboBoxActionPerformed(null);
         dockerMachineCheckBoxActionPerformed(null);
-
     }
 
     @Override
@@ -411,13 +412,12 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
     private void serverComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverComboBoxActionPerformed
         setVisibility(dockerMachineCheckBox.isSelected());//getServerType() != ServerType.NONE);
         checkDockerStatus();
-        serverVersionComboBox.removeAllItems();
-        serverVersionComboBox.setModel(new DefaultComboBoxModel(getServerType().getVersion().stream().toArray(String[]::new)));
+        loadServerVersionModel();
+        loadDatabaseTypeModel();
     }//GEN-LAST:event_serverComboBoxActionPerformed
 
     private void dbComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dbComboBoxActionPerformed
-        dbVersionComboBox.removeAllItems();
-        dbVersionComboBox.setModel(new DefaultComboBoxModel(getDatabaseType().getVersion().stream().toArray(String[]::new)));
+        loadDatabaseVersionModel();
     }//GEN-LAST:event_dbComboBoxActionPerformed
 
     private void dsTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dsTextFieldActionPerformed
@@ -458,10 +458,25 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
 }
     
     private void loadDatabaseTypeModel(){
-         dbComboBox.setModel(new DefaultComboBoxModel(Stream.of(DatabaseType.values()).filter(type -> type.isDockerSupport() || !dockerMachineCheckBox.isSelected()).toArray(DatabaseType[]::new)));
+        dbComboBox.setModel(
+                new DefaultComboBoxModel(Stream.of(DatabaseType.values())
+                        .filter(type -> type.isDockerSupport() || !dockerMachineCheckBox.isSelected())
+                        .filter(type -> type.isServerSupported(getServerType()))
+                        .toArray(DatabaseType[]::new))
+        );
+        loadDatabaseVersionModel();
     }
     
-
+    private void loadDatabaseVersionModel() {
+        dbVersionComboBox.removeAllItems();
+        dbVersionComboBox.setModel(new DefaultComboBoxModel(getDatabaseType().getVersion().stream().toArray(String[]::new)));
+    }
+    
+    private void loadServerVersionModel() {
+        serverVersionComboBox.removeAllItems();
+        serverVersionComboBox.setModel(new DefaultComboBoxModel(getServerType().getVersion().stream().toArray(String[]::new)));
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private org.netbeans.modules.docker.ui.build2.BuildInstanceVisual buildInstanceVisual;
     private javax.swing.JComboBox<DatabaseType> dbComboBox;

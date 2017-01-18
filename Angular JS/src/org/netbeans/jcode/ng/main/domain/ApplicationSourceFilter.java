@@ -17,6 +17,7 @@ package org.netbeans.jcode.ng.main.domain;
 
 import java.util.Map;
 import java.util.function.Supplier;
+import static org.netbeans.jcode.core.util.FileUtil.getSimpleFileNameWithExt;
 
 public abstract class ApplicationSourceFilter {
 
@@ -27,7 +28,11 @@ public abstract class ApplicationSourceFilter {
     }
     
     public boolean isEnable(String file) {
-        Supplier<Boolean> filter = getGeneratorFilter().get(file);
+        String simpleFileName = getSimpleFileNameWithExt(file);
+        Supplier<Boolean> filter = getGeneratorFilter().get(simpleFileName);
+        if (filter == null) {
+            filter = getGeneratorFilter().get(file);
+        }
         if (filter != null) {
             return filter.get();
         }

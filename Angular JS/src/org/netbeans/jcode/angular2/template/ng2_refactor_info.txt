@@ -1,0 +1,59 @@
+>>>>>> web-resources.zip
+File : _navbar.component.html
+                    enableDocs filter
+                    needle-add-entity-to-menu to
+File : _navbar.component.ts
+                    enableDocs,enableProfile filter
+File : _language.constant,ts
+                    needle-i18n-language-constant  
+File : app/layout/index.ts
+                    enableProfile filter
+File : app/app.module.ts, app/admin/_admin.module.ts, app/admin/_index.ts
+                    enableProfile,enableMetrics,enableAudits,enableLogs,enableDocs,enableConfiguration,enableHealth filter
+File : _language.constants.ts
+                    needle-i18n-language-constant
+File : app/layouts/main/main.component.html
+                    enableProfile filter
+File : index.ejs
+                    <!--<base href="/"/>-->
+File : content/css/main.css
+                    replace image file name 
+File : swagger-ui.js/min
+                    override 'application/json;charset=utf-8,*/*' => 'application/json' by adding param swaggerRequestHeaders: 'application/json' to 'update-swagger-ui'
+File : app/home/_home.component.html
+                    Rebranding, credits to Java Hipster
+                    Replace : css class : hipster -> app
+                    
+File : _metrics.controller.js
+                    Remove : if (key.indexOf('web.rest') !== -1 || key.indexOf('service') !== -1) 
+File : _metrics.controller.html
+                    Update : {{metrics.gauges['jvm.garbage.PS-MarkSweep.count']?metrics.gauges['jvm.garbage.PS-MarkSweep.count'].value:metrics.gauges['jvm.garbage.MarkSweepCompact.count'].value}}
+                    Remove : <a class="hand" (click)="refreshThreadDumpData()" >
+>>>> *.css/scss
+           Replace : css class : .hipster -> .app
+
+
+
+
+________________________________On Force Rebase________________________________
+
+>>>> *
+                    Replace : jhipster-needle -> needle
+                              JHipster will add -> add
+>>>> project-resources.zip
+File : nbactions.xml added
+File : package.json, webpack-common.js
+                    Remove generator-jhipster, packagejs
+File : webpack-common.js
+                    Remove  : exclude: ['node_modules/generator-jhipster']
+                    Add     : plugins->CopyWebpackPlugin->{ from: './src/main/webapp/WEB-INF', to: 'WEB-INF' }
+                    Add     : <% if (enableDocs) { %>
+>>>> entity-resources.zip, web-resources.zip
+                    Replace : api/ -> <%= applicationPath %>/api/
+                    Delete : content/images
+>>>> web-resource-i18n.zip
+                    Rename : jhi text
+>>>> entity-resources.zip
+File : _entity.model.ts
+                    Replace :  const enums = fields ->  var enums = fields
+                        

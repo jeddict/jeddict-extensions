@@ -1,0 +1,5 @@
+[ {
+  "name" : "default",
+  "location" : "/<%= applicationPath %>/api-docs/",
+  "swaggerVersion" : "2.0"
+} ]

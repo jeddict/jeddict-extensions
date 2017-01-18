@@ -44,6 +44,9 @@ public final class EJSParser {
     private ScriptEngine engine;
     private CompiledScript cscript;
     private Bindings bindings;
+    
+    private Character delimiter;
+    private Map<String, String> importTemplate;
 
     public EJSParser() {
 
@@ -63,7 +66,7 @@ public final class EJSParser {
                     + "    }\n"
                     + "    return false;\n"
                     + "}");
-
+            
             Compilable compilingEngine = (Compilable) engine;
             cscript = compilingEngine.compile(new BufferedReader(new InputStreamReader(EJSParser.class.getClassLoader().getResourceAsStream("org/netbeans/jcode/parser/ejs/resources/ejs.js"), "UTF-8")));
             bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
@@ -104,17 +107,23 @@ public final class EJSParser {
         return mappedObject;
     }
 
-    public String parse(InputStream templateStream) throws ScriptException, IOException {
-        return parse(templateStream, null);
-    }
-    public String parse(String template, Map<String, String> extTemplate) throws ScriptException {
+//    public String parse(InputStream templateStream) throws ScriptException, IOException {
+//        return parse(templateStream, null);
+//    }
+    public String parse(String template) throws ScriptException {
         String result = null;
         try {
             Object ejs = cscript.getEngine().eval("ejs");
             Invocable invocable = (Invocable) cscript.getEngine();
             Map<String, Object> options = new HashMap<>();
             options.put("filename", "template");
-            options.put("ext", extTemplate);
+            if (importTemplate != null) {
+                options.put("ext", importTemplate);
+            }
+            if (delimiter != null) {
+                options.put("delimiter", delimiter);
+            }
+            
             result = (String) invocable.invokeMethod(ejs, "render", template, null, options);
         } catch (NoSuchMethodException | ScriptException ex) {
             Exceptions.printStackTrace(ex);
@@ -122,9 +131,45 @@ public final class EJSParser {
         return result;
     }
 
-    public String parse(InputStream templateStream, Map<String, String> extTemplate) throws ScriptException, IOException {
+    public String parse(InputStream templateStream) throws ScriptException, IOException {
         StringWriter writer = new StringWriter();
         IOUtils.copy(templateStream, writer);//, "ISO-8859-1");//, "UTF-8");
-        return parse(writer.toString(), extTemplate);
+        return parse(writer.toString());
+    }
+
+    public void eval(String script){
+        try {
+            engine.eval(script);
+        } catch (ScriptException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+    }
+    /**
+     * @return the delimiter
+     */
+    public Character getDelimiter() {
+        return delimiter;
+    }
+
+    /**
+     * @param delimiter the delimiter to set
+     */
+    public void setDelimiter(Character delimiter) {
+        this.delimiter = delimiter;
+    }
+    
+    
+    /**
+     * @return the importTemplate
+     */
+    public Map<String, String> getImportTemplate() {
+        return importTemplate;
+    }
+
+    /**
+     * @param importTemplate the importTemplate to set
+     */
+    public void setImportTemplate(Map<String, String> importTemplate) {
+        this.importTemplate = importTemplate;
     }
 }

@@ -17,24 +17,32 @@ package org.jcode.docker.generator;
 
 import java.util.Arrays;
 import java.util.List;
+import static org.jcode.docker.generator.ServerType.PAYARA;
 
 /**
  *
  * @author jGauravGupta
  */
 public enum DatabaseType {
+    DERBY("Derby", Arrays.asList("--"), false, Arrays.asList(PAYARA)),
     MYSQL("MySQL", Arrays.asList("latest","5.5","5.6","5.7", "8.0"), true),
-    POSTGRESQL("PostgreSQL", Arrays.asList("latest", "9.6", "9.5", "9.4", "9.3", "9.2"), true),
-    DERBY("Derby", Arrays.asList("--"), false);
+    POSTGRESQL("PostgreSQL", Arrays.asList("latest", "9.6", "9.5", "9.4", "9.3", "9.2"), true);
+
     
-    String displayName;
-    List<String> version;
-    boolean dockerSupport;
+    private String displayName;
+    private List<String> version;
+    private boolean dockerSupport;
+    private List<ServerType> supportedServer;
 
     private DatabaseType(String displayName, List<String> version, boolean dockerSupport) {
         this.displayName = displayName;
         this.version = version;
         this.dockerSupport = dockerSupport;
+    }
+    
+    private DatabaseType(String displayName, List<String> version, boolean dockerSupport, List<ServerType> supportedServer) {
+        this(displayName, version, dockerSupport);
+        this.supportedServer = supportedServer;
     }
     
     public String getDisplayName() {
@@ -47,6 +55,20 @@ public enum DatabaseType {
     
     public boolean isDockerSupport() {
         return dockerSupport;
+    }
+    
+    public List<ServerType> getSupportedServer() {
+        if(supportedServer == null){
+            return Arrays.asList(ServerType.values());
+        }
+        return supportedServer;
+    }
+    
+    public boolean isServerSupported(ServerType server) {
+        if(supportedServer == null){
+            return true;
+        }
+        return supportedServer.contains(server);
     }
 
     @Override

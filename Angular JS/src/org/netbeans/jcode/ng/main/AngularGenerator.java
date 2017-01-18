@@ -15,7 +15,13 @@
  */
 package org.netbeans.jcode.ng.main;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,13 +34,7 @@ import org.apache.commons.io.IOUtils;
 
 import org.netbeans.jpa.modeler.spec.*;
 import org.netbeans.api.project.Project;
-import org.netbeans.jcode.console.Console;
-import static org.netbeans.jcode.console.Console.BOLD;
-import static org.netbeans.jcode.console.Console.FG_RED;
-import static org.netbeans.jcode.console.Console.UNDERLINE;
-import static org.netbeans.jcode.core.util.FileUtil.getFileExt;
 import static org.netbeans.jcode.core.util.FileUtil.getSimpleFileName;
-import static org.netbeans.jcode.core.util.FileUtil.getSimpleFileNameWithExt;
 import static org.netbeans.jcode.core.util.JavaSourceHelper.getSimpleClassName;
 import org.netbeans.jcode.core.util.JavaUtil;
 import static org.netbeans.jcode.core.util.ProjectHelper.getProjectWebRoot;
@@ -87,19 +87,19 @@ public abstract class AngularGenerator implements Generator {
     @ConfigData
     protected ProgressHandler handler;
 
-    protected static final List<String> PARSER_FILE_TYPE = Arrays.asList("html", "js", "css", "scss", "json", "ts", "hbs");
+    protected static final List<String> PARSER_FILE_TYPE = Arrays.asList("html", "js", "css", "scss", "json", "ts", "ejs", "txt");
 //    private static final List<String> BINARY_FILE_TYPE = Arrays.asList("gif", "ico", "png", "jpeg", "jpg");
 
     protected Consumer<FileTypeStream> getParserManager(EJSParser parser) {
-        return getParserManager(parser, null, null);
+        return getParserManager(parser, null);
     }
 
-    protected Consumer<FileTypeStream> getParserManager(EJSParser parser, Map<String, String> embeddedTemplate, List<String> skipFile) {
+    protected Consumer<FileTypeStream> getParserManager(EJSParser parser, List<String> skipFile) {
         return (fileTypeStream) -> {
             try {
 
                 if (PARSER_FILE_TYPE.contains(fileTypeStream.getFileType()) && (skipFile == null || !skipFile.contains(fileTypeStream.getFileName()))) {
-                    IOUtils.write(parser.parse(fileTypeStream.getInputStream(), embeddedTemplate), fileTypeStream.getOutputStream());
+                    IOUtils.write(parser.parse(fileTypeStream.getInputStream()), fileTypeStream.getOutputStream());
                 } else {
                     IOUtils.copy(fileTypeStream.getInputStream(), fileTypeStream.getOutputStream());
                 }
@@ -143,7 +143,7 @@ public abstract class AngularGenerator implements Generator {
             templatePath = String.format("i18n/%s/%s.json", lang, entity.getEntityTranslationKey());
             return templatePath;
         };
-        copyDynamicResource(getParserManager(parser, null, null), getTemplatePath() + "entity-resource-i18n.zip", webRoot, pathResolver, handler);
+        copyDynamicResource(getParserManager(parser), getTemplatePath() + "entity-resource-i18n.zip", webRoot, pathResolver, handler);
     }
 
     protected void generateNgApplicationi18nResource(NGApplicationConfig applicationConfig, ApplicationSourceFilter fileFilter) throws IOException {
@@ -171,7 +171,7 @@ public abstract class AngularGenerator implements Generator {
             //path modification not required
             return templatePath;
         };
-        copyDynamicResource(getParserManager(parser, null, null), getTemplatePath() + "web-resources-i18n.zip", webRoot, pathResolver, handler);
+        copyDynamicResource(getParserManager(parser), getTemplatePath() + "web-resources-i18n.zip", webRoot, pathResolver, handler);
     }
 
     protected EntityConfig getEntityConfig() {
@@ -186,7 +186,7 @@ public abstract class AngularGenerator implements Generator {
         NGApplicationConfig applicationConfig = new NGApplicationConfig();
         applicationConfig.setAngularAppName(ngData.getModule());
         applicationConfig.setEnableTranslation(true);
-        applicationConfig.setJhiPrefix("jhi");
+        applicationConfig.setJhiPrefix("j");
         applicationConfig.setBuildTool("maven");
         applicationConfig.setBaseName(ngData.getApplicationTitle());
         applicationConfig.setApplicationPath(restData.getRestConfigData().getApplicationPath());
@@ -209,8 +209,9 @@ public abstract class AngularGenerator implements Generator {
             return null;
         }
         NGEntity ngEntity = new NGEntity(entity.getClazz(), "");
+        ngEntity.setPkType(entity.getAttributes().getIdField().getDataTypeLabel());
         List<Attribute> attributes = entity.getAttributes().getAllAttribute();
-//Uncomment for inheritance support
+//      Uncomment for inheritance support
 //        if(entitySpec.getSubclassList().size() > 1){
 //            return null;
 //        }
@@ -229,7 +230,7 @@ public abstract class AngularGenerator implements Generator {
                 Entity mappedEntity = relationAttribute.getConnectedEntity();
                 if (mappedEntity.getLabelAttribute() == null || mappedEntity.getLabelAttribute().getName().equals("id")) {
                     handler.warning(NbBundle.getMessage(AngularGenerator.class, "TITLE_Entity_Label_Missing"),
-                            NbBundle.getMessage(AngularGenerator.class, "MSG_Entity_Label_Missing", ngEntity.getName()));
+                            NbBundle.getMessage(AngularGenerator.class, "MSG_Entity_Label_Missing", mappedEntity.getClazz()));
                 } else {
                     relationship.setOtherEntityField(mappedEntity.getLabelAttribute().getName());
                 }

@@ -66,6 +66,8 @@ public class NGEntity {
     public List<String> differentTypes = new ArrayList<>();
     public final List<NGField> fields = new ArrayList<>();
     public final List<NGRelationship> relationships = new ArrayList<>();
+    private final List<NGRelationship> differentRelationships = new ArrayList<>();
+    private String pkType;
 
     public NGEntity(String name, String entityAngularJSSuffix) {
         String entityNameSpinalCased = kebabCase(firstLower(name));
@@ -83,7 +85,7 @@ public class NGEntity {
         this.entityFolderName = entityNameSpinalCased;
         this.entityFileName = entityNameSpinalCased + entityAngularJSSuffix;
         this.entityPluralFileName = entityNamePluralizedAndSpinalCased + entityAngularJSSuffix;
-        this.entityServiceFileName = entityNameSpinalCased;
+        this.entityServiceFileName = entityNameSpinalCased + entityAngularJSSuffix;
         this.entityAngularJSName = this.entityClass + firstUpper(camelCase(entityAngularJSSuffix));
         this.entityStateName = entityNameSpinalCased + entityAngularJSSuffix;
         this.entityUrl = entityNameSpinalCased + entityAngularJSSuffix;
@@ -128,6 +130,7 @@ public class NGEntity {
         String entityType = relationship.getOtherEntityNameCapitalized();
         if (!differentTypes.contains(entityType)) {
             getDifferentTypes().add(entityType);
+            getDifferentRelationships().add(relationship);
         }
     }
 
@@ -584,4 +587,25 @@ public class NGEntity {
         this.differentTypes = differentTypes;
     }
 
+    /**
+     * @return the differentRelationships
+     */
+    public List<NGRelationship> getDifferentRelationships() {
+        return differentRelationships;
+    }
+
+
+    /**
+     * @return the pkType
+     */
+    public String getPkType() {
+        return pkType;
+    }
+
+    /**
+     * @param pkType the pkType to set
+     */
+    public void setPkType(String pkType) {
+        this.pkType = pkType;
+    }
 }

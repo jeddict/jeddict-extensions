@@ -141,7 +141,8 @@ public class Angular1Generator extends AngularGenerator {
             }
             return templatePath;
         };
-        copyDynamicResource(getParserManager(parser, templateLib, null), getTemplatePath() + "entity-resources.zip", webRoot, pathResolver, handler);
+        parser.setImportTemplate(templateLib);
+        copyDynamicResource(getParserManager(parser), getTemplatePath() + "entity-resources.zip", webRoot, pathResolver, handler);
     }
 
     protected void generateNgLocaleResource(NGApplicationConfig applicationConfig, ApplicationSourceFilter fileFilter) throws IOException {
@@ -161,7 +162,7 @@ public class Angular1Generator extends AngularGenerator {
             //path modification not required
             return templatePath;
         };
-        copyDynamicResource(getParserManager(parser, null, null), getTemplatePath() + "angular-locale.zip", webRoot, pathResolver, handler);
+        copyDynamicResource(getParserManager(parser), getTemplatePath() + "angular-locale.zip", webRoot, pathResolver, handler);
     }
 
     private void generateNgHome(NGApplicationConfig applicationConfig, ApplicationSourceFilter fileFilter) throws IOException {
@@ -177,10 +178,8 @@ public class Angular1Generator extends AngularGenerator {
         parser.addContext(applicationConfig);
         parser.addContext(data);
 
-        Function<String, String> pathResolver = templatePath -> templatePath.substring(templatePath.lastIndexOf("/_") + 2);// "_index.html" ->  "index.html";
-
-        copyDynamicFile(getParserManager(parser, null, null), getTemplatePath() + "_index.html", webRoot, pathResolver, handler);
-        copyDynamicFile(getParserManager(parser, null, null), getTemplatePath() + "_bower.json", project.getProjectDirectory(), pathResolver, handler);
+        copyDynamicFile(getParserManager(parser), getTemplatePath() + "_index.html", webRoot, "index.html", handler);
+        copyDynamicFile(getParserManager(parser), getTemplatePath() + "_bower.json", project.getProjectDirectory(), "bower.json", handler);
         handler.append(Console.wrap(AngularGenerator.class, "MSG_Copying_Bower_Lib_Files", FG_RED, BOLD));
         FileUtil.copyStaticResource(getTemplatePath() + "bower_components.zip", webRoot, null, handler);
     }
@@ -211,7 +210,7 @@ public class Angular1Generator extends AngularGenerator {
             }
             return templatePath;
         };
-        copyDynamicResource(getParserManager(parser, null, null), getTemplatePath() + "web-resources.zip", webRoot, pathResolver, handler);
+        copyDynamicResource(getParserManager(parser), getTemplatePath() + "web-resources.zip", webRoot, pathResolver, handler);
     }
 
 }

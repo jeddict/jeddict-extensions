@@ -88,11 +88,17 @@ public class NGField {
             validationRules.add("max");
             fieldValidateRulesMax = String.valueOf(max.getValue());
         }
+        
         if (constraints.get(Size.class.getSimpleName()) != null) {
-            validationRules.add("max");
             Size size = (Size) constraints.get(Size.class.getSimpleName());
-            fieldValidateRulesMaxlength = String.valueOf(size.getMax());
-            fieldValidateRulesMinlength = String.valueOf(size.getMin());
+            if (size.getMax() != null) {
+                fieldValidateRulesMaxlength = String.valueOf(size.getMax());
+                validationRules.add("max");
+            }
+            if (size.getMin() != null) {
+                fieldValidateRulesMinlength = String.valueOf(size.getMin());
+                validationRules.add("min");
+            }
         }
         setFieldValidate(validationRules);
 

@@ -13,12 +13,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.netbeans.jcode.ng.main.domain;
+package org.netbeans.jcode.angular2;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
-import static org.netbeans.jcode.ng.main.domain.NGApplicationConfig.ELASTIC_SEARCH_ENGINE;
+import org.netbeans.jcode.ng.main.domain.ApplicationSourceFilter;
+import org.netbeans.jcode.ng.main.domain.NGApplicationConfig;
 import static org.netbeans.jcode.ng.main.domain.NGApplicationConfig.GATEWAY_APPLICATION_TYPE;
 import static org.netbeans.jcode.ng.main.domain.NGApplicationConfig.JWT_AUTHENTICATION_TYPE;
 import static org.netbeans.jcode.ng.main.domain.NGApplicationConfig.OAUTH2_AUTHENTICATION_TYPE;
@@ -50,6 +51,7 @@ public class NG2SourceFilter extends ApplicationSourceFilter {
             dataFilter.put("_sessions.state.ts", () -> SESSION_AUTHENTICATION_TYPE.equals(config.getAuthenticationType()));
             dataFilter.put("_sessions.component.html", () -> SESSION_AUTHENTICATION_TYPE.equals(config.getAuthenticationType()));
             dataFilter.put("_sessions.component.ts", () -> SESSION_AUTHENTICATION_TYPE.equals(config.getAuthenticationType()));
+            dataFilter.put("sessions.json", () -> SESSION_AUTHENTICATION_TYPE.equals(config.getAuthenticationType()));
 
             //ApplicationType
             dataFilter.put("_gateway.component.html", () -> GATEWAY_APPLICATION_TYPE.equals(config.getAuthenticationType()));
@@ -57,6 +59,7 @@ public class NG2SourceFilter extends ApplicationSourceFilter {
             dataFilter.put("_gateway.state.ts", () -> GATEWAY_APPLICATION_TYPE.equals(config.getAuthenticationType()));
             dataFilter.put("_gateway-route.model.ts", () -> GATEWAY_APPLICATION_TYPE.equals(config.getAuthenticationType()));
             dataFilter.put("_gateway-routes.service.ts", () -> GATEWAY_APPLICATION_TYPE.equals(config.getAuthenticationType()));
+            dataFilter.put("gateway.json", () -> GATEWAY_APPLICATION_TYPE.equals(config.getAuthenticationType()));
 
             //Social Login
             dataFilter.put("_social-register.component.html", () -> config.isEnableSocialSignIn());
@@ -66,12 +69,14 @@ public class NG2SourceFilter extends ApplicationSourceFilter {
             dataFilter.put("_social.service.ts", () -> config.isEnableSocialSignIn());
             dataFilter.put("_social.component.ts", () -> config.isEnableSocialSignIn());
             dataFilter.put("_social.component.html", () -> config.isEnableSocialSignIn());
+            dataFilter.put("social.json", () -> config.isEnableSocialSignIn());  
 
             //WebSocket
             dataFilter.put("_tracker.component.html", () -> SPRING_WEBSOCKET.equals(config.getWebsocket()));//admin
             dataFilter.put("_tracker.component.ts", () -> SPRING_WEBSOCKET.equals(config.getWebsocket()));//admin
             dataFilter.put("_tracker.state.ts", () -> SPRING_WEBSOCKET.equals(config.getWebsocket()));//admin
             dataFilter.put("_tracker.service.ts", () -> SPRING_WEBSOCKET.equals(config.getWebsocket()));//shared
+            dataFilter.put("tracker.json", () -> SPRING_WEBSOCKET.equals(config.getWebsocket()));//shared
 
             //Language
             dataFilter.put("_jhi-translate.directive.ts", () -> config.isEnableTranslation());//shared/language
@@ -92,6 +97,7 @@ public class NG2SourceFilter extends ApplicationSourceFilter {
             dataFilter.put("_metrics.component.html", () -> config.isEnableMetrics());
             dataFilter.put("_metrics-modal.component.html", () -> config.isEnableMetrics());
             dataFilter.put("_metrics.state.ts", () -> config.isEnableMetrics());
+            dataFilter.put("metrics.json", () -> config.isEnableMetrics());
 
             //Logs
             dataFilter.put("_logs.component.ts", () -> config.isEnableLogs());
@@ -99,6 +105,7 @@ public class NG2SourceFilter extends ApplicationSourceFilter {
             dataFilter.put("_logs.service.ts", () -> config.isEnableLogs());
             dataFilter.put("_logs.component.html", () -> config.isEnableLogs());
             dataFilter.put("_logs.state.ts", () -> config.isEnableLogs());
+            dataFilter.put("logs.json", () -> config.isEnableLogs());
 
             //Health
             dataFilter.put("_health.component.ts", () -> config.isEnableHealth());//admin/health
@@ -107,12 +114,17 @@ public class NG2SourceFilter extends ApplicationSourceFilter {
             dataFilter.put("_health.component.html", () -> config.isEnableHealth());//admin/health
             dataFilter.put("_health-modal.component.html", () -> config.isEnableHealth());//admin/health
             dataFilter.put("_health.state.ts", () -> config.isEnableHealth());//admin/health
+            dataFilter.put("_health.json", () -> config.isEnableHealth());//admin/health
+            dataFilter.put("_health.component.spec.ts", () -> config.isEnableHealth());//test
+            
+            
 
             //Configuration
             dataFilter.put("_configuration.component.ts", () -> config.isEnableConfiguration());
             dataFilter.put("_configuration.component.html", () -> config.isEnableConfiguration());
             dataFilter.put("_configuration.state.ts", () -> config.isEnableConfiguration());
             dataFilter.put("_configuration.service.ts", () -> config.isEnableConfiguration());
+            dataFilter.put("configuration.json", () -> config.isEnableConfiguration());
 
             //Audit
             dataFilter.put("_audit-data.model.ts", () -> config.isEnableAudits());//admin/audits/
@@ -121,6 +133,7 @@ public class NG2SourceFilter extends ApplicationSourceFilter {
             dataFilter.put("_audits.component.html", () -> config.isEnableAudits());//admin/audits/
             dataFilter.put("_audits.state.ts", () -> config.isEnableAudits());//admin/audits/
             dataFilter.put("_audits.service.ts", () -> config.isEnableAudits());//admin/audits/
+            dataFilter.put("audits.json", () -> config.isEnableAudits());//admin/audits/
 
             //Docs
             dataFilter.put("_docs.component.ts", () -> config.isEnableDocs());
@@ -128,12 +141,23 @@ public class NG2SourceFilter extends ApplicationSourceFilter {
             dataFilter.put("_docs.state.ts", () -> config.isEnableDocs());
             dataFilter.put("swagger-ui/_index.html", () -> config.isEnableDocs());
             dataFilter.put("swagger-ui/images/throbber.gif", () -> config.isEnableDocs());
-//            dataFilter.put("swagger-ui/config/resource.tson", () -> config.isEnableDocs());
-//            dataFilter.put("swagger-ui/config/ui.tson", () -> config.isEnableDocs());
+            dataFilter.put("swagger-ui/config/resource.tson", () -> config.isEnableDocs());
+            dataFilter.put("swagger-ui/config/ui.tson", () -> config.isEnableDocs());
 
             //SCSS
-            dataFilter.put("scss/_main.scss", () -> config.isUseSass());
-            dataFilter.put("scss/_vendor.scss", () -> config.isUseSass());
+            dataFilter.put("content/scss/_global.scss", () -> config.isUseSass());
+            dataFilter.put("content/scss/_vendor.scss", () -> config.isUseSass());
+            dataFilter.put("app/layouts/profiles/_page-ribbon.scss", () -> config.isEnableProfile() && config.isUseSass());
+            dataFilter.put("app/layouts/navbar/_navbar.scss", () -> config.isUseSass());
+            dataFilter.put("app/home/_home.scss", () -> config.isUseSass());
+
+            //css
+            dataFilter.put("content/css/_documentation.css", () -> !config.isUseSass());
+            dataFilter.put("content/css/_global.css", () -> !config.isUseSass());
+            dataFilter.put("content/css/_vendor.css", () -> !config.isUseSass());
+            dataFilter.put("app/layouts/profiles/_page-ribbon.css", () -> config.isEnableProfile() && !config.isUseSass());
+            dataFilter.put("app/layouts/navbar/_navbar.css", () -> !config.isUseSass());
+            dataFilter.put("app/home/_home.css", () -> !config.isUseSass());
 
             //Profile
             dataFilter.put("_profile.service.ts", () -> config.isEnableProfile());//layouts/profiles
@@ -155,6 +179,7 @@ public class NG2SourceFilter extends ApplicationSourceFilter {
             dataFilter.put("_user-management-detail.component.html", () -> !config.isSkipUserManagement());
             dataFilter.put("_user-management-dialog.component.html", () -> !config.isSkipUserManagement());
             dataFilter.put("_user-management-delete-dialog.component.html", () -> !config.isSkipUserManagement());
+            dataFilter.put("user-management.json", () -> !config.isSkipUserManagement());
         }
         return dataFilter;
     }
