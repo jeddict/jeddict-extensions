@@ -15,13 +15,11 @@
  */
 package org.netbeans.jpa.modeler.spec.extend;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -100,6 +98,9 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
     
     @XmlElement(name = "des")
     protected String description;
+    
+    @XmlElement(name = "ath")
+    private String author;
     
     @Override
     public void load(EntityMappings entityMappings, TypeElement element, boolean fieldAccess) {
@@ -512,6 +513,20 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
      */
     public void setDescription(String value) {
         this.description = value;
+    }
+
+    /**
+     * @return the author
+     */
+    public String getAuthor() {
+        return author;
+    }
+
+    /**
+     * @param author the author to set
+     */
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
 }
