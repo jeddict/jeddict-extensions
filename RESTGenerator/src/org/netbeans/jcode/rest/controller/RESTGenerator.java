@@ -202,7 +202,7 @@ public class RESTGenerator implements Generator {
     @Override
     public void execute() throws IOException {
         testSource = SourceGroupSupport.getTestSourceGroup(project);
-        handler.progress(Console.wrap(RESTGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
+        handler.progress(Console.wrap(RESTGenerator.class, "MSG_Progress_Generating_REST", FG_RED, BOLD, UNDERLINE));
         generateUtil();
         entityPackage = entityMapping.getPackage();
         Map<String, Object> param = generateServerSideComponent();
@@ -335,26 +335,21 @@ public class RESTGenerator implements Generator {
         
         //entity controller test-case
         if (restData.isTestCase()) {
-            Function<Attribute,Map<String,Object>> con = attr -> {
-            Map<String,Object> attrConf = new HashMap<>();
-            attrConf.put("name", attr.getName());
-            attrConf.put("Name", firstUpper(attr.getName()));
-            attrConf.put("NAME", toConstant(attr.getName()));
-            attrConf.put("setter", "set"+ firstUpper(attr.getName()));
-            attrConf.put("getter", (isBoolean(attr.getDataTypeLabel())?"is":"get")+ firstUpper(attr.getName()));
-            
-            attrConf.put("dataType", attr.getDataTypeLabel());
-            ;
-            attrConf.put("defaultValue", getAttributeDefaultValue(attr.getDataTypeLabel(), attr.getConstraintsMap()));
-            attrConf.put("updatedValue", getAttributeUpdateValue(attr.getDataTypeLabel(), attr.getConstraintsMap()));
+            Function<Attribute, Map<String, Object>> con = attr -> {
+                Map<String, Object> attrConf = new HashMap<>();
+                attrConf.put("name", attr.getName());
+                attrConf.put("Name", firstUpper(attr.getName()));
+                attrConf.put("NAME", toConstant(attr.getName()));
+                attrConf.put("setter", "set" + firstUpper(attr.getName()));
+                attrConf.put("getter", (isBoolean(attr.getDataTypeLabel()) ? "is" : "get") + firstUpper(attr.getName()));
+                attrConf.put("dataType", attr.getDataTypeLabel());
+                attrConf.put("defaultValue", getAttributeDefaultValue(attr.getDataTypeLabel(), attr.getConstraintsMap()));
+                attrConf.put("updatedValue", getAttributeUpdateValue(attr.getDataTypeLabel(), attr.getConstraintsMap()));
 //            attrConf.put("array", isArray(attr.getDataTypeLabel()));
 //            attrConf.put("precision", isPrecision(attr.getDataTypeLabel()));
 //            attrConf.put("precisionType", isDouble(attr.getDataTypeLabel())?'d':'f');
-            
-            return attrConf;
-            
-        };
-            
+                return attrConf;
+            };
         
         if (idAttribute instanceof DefaultAttribute) {
                 param.put("pkStrategy","IdClass");
@@ -372,8 +367,6 @@ public class RESTGenerator implements Generator {
             
 //            String matrixParam = allIdAttributes.stream().map(attrConf -> String.format("%s={%s}",attrConf.get("name"),attrConf.get("name"))).collect(Collectors.joining(";"));
 //            param.put("matrixParam", matrixParam);
-//            
-        
        List<Map<String,Object>> basicAttributes = entity.getAttributes().getSuperBasic().stream()
                .filter(attr -> getAttributeDefaultValue(attr.getDataTypeLabel())!=null).map(con).collect(toList());
                 param.put("attributes", basicAttributes);
@@ -381,13 +374,10 @@ public class RESTGenerator implements Generator {
                 Set<String> connectedClasses = entity.getAttributes().getConnectedClass();
                 param.put("connectedClasses", connectedClasses.stream().map(jc -> JavaIdentifiers.unqualify(jc)).collect(toList()));
                 param.put("connectedFQClasses", connectedClasses);
-                
        
             String controllerTestFileName = controllerFileName + "Test";
             handler.progress(controllerTestFileName);
-
             FileObject targetTestFolder = SourceGroupSupport.getFolderForPackage(testSource, entity.getAbsolutePackage(restData.getPackage()), true);
-
             controllerFO = targetTestFolder.getFileObject(controllerTestFileName, JAVA_EXT);
 
             if (controllerFO != null) {

@@ -48,7 +48,6 @@ public class BasicSpecAccessor extends BasicAccessor {
             accessor.setColumn(basic.getColumn().getAccessor());
         }
         return accessor;
-
     }
 
     @Override

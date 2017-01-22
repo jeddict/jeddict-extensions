@@ -167,8 +167,8 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
     protected List<Convert> convert;//REVENG PENDING JPA 2.1
     @XmlElement(name = "neg")//(name = "named-entity-graph")
     protected List<NamedEntityGraph> namedEntityGraph;
-    @XmlAttribute
-    protected String name;
+    @XmlAttribute(name="name")
+    protected String entityName;
     @XmlAttribute
     protected Boolean cacheable;
     
@@ -196,7 +196,7 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
         this.sequenceGenerator = SequenceGenerator.load(element);
 
         if (annotationMirror != null) {
-            this.name = (String) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "name");
+            this.entityName = (String) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "name");
         }
         
         AnnotationMirror cacheableAnnotation = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.Cacheable");
@@ -553,9 +553,9 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
      */
     @Override
     public String getName() {
-        return name;
+        return getClazz();
     }
-
+    
     /**
      * Sets the value of the name property.
      *
@@ -563,8 +563,17 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
      *
      */
     @Override
-    public void setName(String value) {
-        this.name = value;
+    public void setName(String name) {
+        setClazz(name);
+    }
+
+    
+    public String getEntityName() {
+        return entityName;
+    }
+    
+    public void setEntityName(String entityName) {
+        this.entityName = entityName;
     }
 
     /**
@@ -594,7 +603,7 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
 
     @Override
     public String toString() {
-        return "Entity{" + "description=" + description + ", table=" + table + ", secondaryTable=" + secondaryTable + ", primaryKeyJoinColumn=" + primaryKeyJoinColumn + ", idClass=" + idClass + ", inheritance=" + inheritance + ", discriminatorValue=" + discriminatorValue + ", discriminatorColumn=" + discriminatorColumn + ", sequenceGenerator=" + sequenceGenerator + ", tableGenerator=" + tableGenerator + ", namedQuery=" + namedQuery + ", namedNativeQuery=" + namedNativeQuery + ", sqlResultSetMapping=" + sqlResultSetMapping + ", excludeDefaultListeners=" + excludeDefaultListeners + ", excludeSuperclassListeners=" + excludeSuperclassListeners + ", entityListeners=" + entityListeners + ", prePersist=" + prePersist + ", postPersist=" + postPersist + ", preRemove=" + preRemove + ", postRemove=" + postRemove + ", preUpdate=" + preUpdate + ", postUpdate=" + postUpdate + ", postLoad=" + postLoad + ", attributeOverride=" + attributeOverride + ", associationOverride=" + associationOverride + ", attributes=" + attributes + ", name=" + name + ", clazz=" + clazz + ", access=" + access + ", cacheable=" + cacheable + ", metadataComplete=" + metadataComplete + '}';
+        return "Entity{" + "description=" + description + ", table=" + table + ", secondaryTable=" + secondaryTable + ", primaryKeyJoinColumn=" + primaryKeyJoinColumn + ", idClass=" + idClass + ", inheritance=" + inheritance + ", discriminatorValue=" + discriminatorValue + ", discriminatorColumn=" + discriminatorColumn + ", sequenceGenerator=" + sequenceGenerator + ", tableGenerator=" + tableGenerator + ", namedQuery=" + namedQuery + ", namedNativeQuery=" + namedNativeQuery + ", sqlResultSetMapping=" + sqlResultSetMapping + ", excludeDefaultListeners=" + excludeDefaultListeners + ", excludeSuperclassListeners=" + excludeSuperclassListeners + ", entityListeners=" + entityListeners + ", prePersist=" + prePersist + ", postPersist=" + postPersist + ", preRemove=" + preRemove + ", postRemove=" + postRemove + ", preUpdate=" + preUpdate + ", postUpdate=" + postUpdate + ", postLoad=" + postLoad + ", attributeOverride=" + attributeOverride + ", associationOverride=" + associationOverride + ", attributes=" + attributes + ", entityName=" + entityName + ", clazz=" + clazz + ", access=" + access + ", cacheable=" + cacheable + ", metadataComplete=" + metadataComplete + '}';
     }
 
     @Override

@@ -18,6 +18,7 @@ package org.jcode.docker.generator;
 import java.util.Arrays;
 import java.util.List;
 import static org.jcode.docker.generator.ServerType.PAYARA;
+import static org.jcode.docker.generator.ServerType.WILDFLY;
 
 /**
  *
@@ -25,9 +26,9 @@ import static org.jcode.docker.generator.ServerType.PAYARA;
  */
 public enum DatabaseType {
     DERBY("Derby", Arrays.asList("--"), false, Arrays.asList(PAYARA)),
+    H2("H2", Arrays.asList("--"), false, Arrays.asList(WILDFLY)),
     MYSQL("MySQL", Arrays.asList("latest","5.5","5.6","5.7", "8.0"), true),
     POSTGRESQL("PostgreSQL", Arrays.asList("latest", "9.6", "9.5", "9.4", "9.3", "9.2"), true);
-
     
     private String displayName;
     private List<String> version;

@@ -24,6 +24,12 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ElementC
 import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.LobMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
+import org.netbeans.jcode.core.util.AttributeType;
+import static org.netbeans.jcode.core.util.AttributeType.BYTE;
+import static org.netbeans.jcode.core.util.AttributeType.BYTE_WRAPPER;
+import static org.netbeans.jcode.core.util.AttributeType.CHAR;
+import static org.netbeans.jcode.core.util.AttributeType.CHAR_WRAPPER;
+import static org.netbeans.jcode.core.util.AttributeType.isArray;
 import org.netbeans.jpa.modeler.db.accessor.spec.MapKeyAccessor;
 import org.netbeans.jpa.modeler.spec.EnumType;
 import org.netbeans.jpa.modeler.spec.Lob;
@@ -91,18 +97,20 @@ public class AccessorUtil {
         if (lob == null || attributeType == null) {
             return;
         }
-
-        if (attributeType.equals("byte[]") || attributeType.equals("Byte[]")) { //https://github.com/jGauravGupta/jpamodeler/issues/5 , https://github.com/jGauravGupta/jpamodeler/issues/6
-            if (isCollectionType) {
-                ((ElementCollectionAccessor) accessor).setTargetClassName(Blob.class.getName());
-            } else {
-                accessor.setAttributeType(Blob.class.getName());
-            }
-        } else if (attributeType.equals("char[]") || attributeType.equals("Character[]")) {
-            if (isCollectionType) {
-                ((ElementCollectionAccessor) accessor).setTargetClassName(Clob.class.getName());
-            } else {
-                accessor.setAttributeType(Clob.class.getName());
+        if (isArray(attributeType)) {
+            String attributeArrayType = AttributeType.getArrayType(attributeType);
+            if (attributeArrayType.equals(BYTE) || attributeArrayType.equals(BYTE_WRAPPER)) { //https://github.com/jGauravGupta/jpamodeler/issues/5 , https://github.com/jGauravGupta/jpamodeler/issues/6
+                if (isCollectionType) {
+                    ((ElementCollectionAccessor) accessor).setTargetClassName(Blob.class.getName());
+                } else {
+                    accessor.setAttributeType(Blob.class.getName());
+                }
+            } else if (attributeArrayType.equals(CHAR) || attributeArrayType.equals(CHAR_WRAPPER)) {
+                if (isCollectionType) {
+                    ((ElementCollectionAccessor) accessor).setTargetClassName(Clob.class.getName());
+                } else {
+                    accessor.setAttributeType(Clob.class.getName());
+                }
             }
         }
 
