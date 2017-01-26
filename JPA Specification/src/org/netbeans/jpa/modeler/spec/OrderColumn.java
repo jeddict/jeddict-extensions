@@ -6,10 +6,15 @@
 //
 package org.netbeans.jpa.modeler.spec;
 
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.VariableElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
+import static org.netbeans.jcode.jpa.JPAConstants.ORDER_COLUMN_FQN;
+import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
  *
@@ -48,16 +53,30 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "order-column")
 public class OrderColumn {
 
-    @XmlAttribute
+    @XmlAttribute(name = "n")
     protected String name;
-    @XmlAttribute
-    protected Boolean nullable;
-    @XmlAttribute
-    protected Boolean insertable;
-    @XmlAttribute
-    protected Boolean updatable;
-    @XmlAttribute(name = "column-definition")
+    @XmlAttribute(name = "nu")
+    protected Boolean nullable = true;
+    @XmlAttribute(name = "in")
+    protected Boolean insertable = true;
+    @XmlAttribute(name = "up")
+    protected Boolean updatable = true;
+    @XmlAttribute(name = "cd")
     protected String columnDefinition;
+
+    public static OrderColumn load(Element element, VariableElement variableElement) {
+        AnnotationMirror annotationMirror = JavaSourceParserUtil.findAnnotation(element, ORDER_COLUMN_FQN);
+        OrderColumn orderColumn = null;
+        if (annotationMirror != null) {
+            orderColumn = new OrderColumn();
+            orderColumn.name = (String) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "name");
+            orderColumn.nullable = (Boolean) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "nullable");
+            orderColumn.insertable = (Boolean) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "insertable");
+            orderColumn.updatable = (Boolean) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "updatable");
+            orderColumn.columnDefinition = (String) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "columnDefinition");
+        }
+        return orderColumn;
+    }
 
     /**
      * Gets the value of the name property.

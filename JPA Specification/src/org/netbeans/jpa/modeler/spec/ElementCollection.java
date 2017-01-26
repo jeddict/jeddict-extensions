@@ -30,10 +30,7 @@ import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.StringUtils;
 import org.netbeans.jpa.modeler.spec.extend.AssociationOverrideHandler;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
-import org.netbeans.jpa.modeler.spec.extend.AttributeOverrideHandler;
-import static org.netbeans.jcode.core.util.AttributeType.BIGDECIMAL;
 import static org.netbeans.jcode.core.util.AttributeType.STRING;
-import static org.netbeans.jcode.core.util.AttributeType.STRING_FQN;
 import org.netbeans.jcode.core.util.JavaSourceHelper;
 import static org.netbeans.jcode.jpa.JPAConstants.MAP_KEY_COLUMN_FQN;
 import static org.netbeans.jcode.jpa.JPAConstants.MAP_KEY_ENUMERATED_FQN;
@@ -45,6 +42,7 @@ import org.netbeans.jpa.modeler.spec.extend.EnumTypeHandler;
 import org.netbeans.jpa.modeler.spec.extend.FetchTypeHandler;
 import org.netbeans.jpa.modeler.spec.extend.MapKeyHandler;
 import org.netbeans.jpa.modeler.spec.extend.MapKeyType;
+import org.netbeans.jpa.modeler.spec.extend.SortableAttribute;
 import org.netbeans.jpa.modeler.spec.extend.TemporalTypeHandler;
 import org.netbeans.jpa.modeler.spec.jaxb.JaxbVariableType;
 import org.netbeans.jpa.modeler.spec.validator.override.AssociationValidator;
@@ -54,7 +52,6 @@ import static org.netbeans.jpa.source.JavaSourceParserUtil.isEmbeddableClass;
 import static org.netbeans.jpa.source.JavaSourceParserUtil.isEntityClass;
 import static org.netbeans.jpa.source.JavaSourceParserUtil.loadEmbeddableClass;
 import static org.netbeans.jpa.source.JavaSourceParserUtil.loadEntityClass;
-import org.netbeans.modeler.core.NBModelerUtil;
 
 /**
  *
@@ -154,12 +151,12 @@ import org.netbeans.modeler.core.NBModelerUtil;
  * For Basic ElementCollection -> TargetClass<String>
  * For Embeddable ElementCollection -> ConnectedClass<Embeddable>
  */
-public class ElementCollection extends CompositionAttribute<Embeddable> implements FetchTypeHandler, ColumnHandler, AssociationOverrideHandler, CollectionTypeHandler, MapKeyHandler, TemporalTypeHandler, EnumTypeHandler { //CompositionAttribute/BaseAttributes
+public class ElementCollection extends CompositionAttribute<Embeddable> implements SortableAttribute, FetchTypeHandler, ColumnHandler, AssociationOverrideHandler, CollectionTypeHandler, MapKeyHandler, TemporalTypeHandler, EnumTypeHandler { //CompositionAttribute/BaseAttributes
 
-    @XmlElement(name = "order-by")
-    protected String orderBy;
-    @XmlElement(name = "order-column")
-    protected OrderColumn orderColumn;//REVENG PENDING
+    @XmlElement(name = "ob")
+    protected OrderBy orderBy;
+    @XmlElement(name = "oc")
+    protected OrderColumn orderColumn;
     protected Column column;
     protected TemporalType temporal;
     protected EnumType enumerated;
@@ -237,12 +234,8 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
 
         elementCollection.collectionTable = CollectionTable.load(element, variableElement);
 
-        AnnotationMirror orderByMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.OrderBy");
-        if (orderByMirror != null) {
-            Object value = JavaSourceParserUtil.findAnnotationValue(orderByMirror, "value");
-            elementCollection.orderBy = value == null ? StringUtils.EMPTY : value.toString();
-        }
-
+        elementCollection.orderBy = OrderBy.load(element, variableElement);
+        elementCollection.orderColumn = OrderColumn.load(element, variableElement);
         elementCollection.fetch = FetchType.load(element, annotationMirror);
         elementCollection.access = AccessType.load(element);
 
@@ -327,7 +320,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
      * @return possible object is {@link String }
      *
      */
-    public String getOrderBy() {
+    public OrderBy getOrderBy() {
         return orderBy;
     }
 
@@ -337,7 +330,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
      * @param value allowed object is {@link String }
      *
      */
-    public void setOrderBy(String value) {
+    public void setOrderBy(OrderBy value) {
         this.orderBy = value;
     }
 

@@ -49,6 +49,7 @@ import org.netbeans.jpa.modeler.spec.MapKey;
 import org.netbeans.jpa.modeler.spec.MapKeyClass;
 import org.netbeans.jpa.modeler.spec.Column;
 import org.netbeans.jpa.modeler.spec.JoinColumn;
+import org.netbeans.jpa.modeler.spec.OrderBy;
 import org.netbeans.jpa.modeler.spec.OrderColumn;
 import org.netbeans.jpa.modeler.spec.TemporalType;
 import org.netbeans.jpa.modeler.spec.jaxb.JaxbVariableType;
@@ -75,12 +76,12 @@ import static org.netbeans.jpa.source.JavaSourceParserUtil.loadEntityClass;
     "mapKeyJoinColumn",
     "mapKeyForeignKey"
 })
-public abstract class MultiRelationAttribute extends RelationAttribute implements CollectionTypeHandler, MapKeyHandler{
+public abstract class MultiRelationAttribute extends RelationAttribute implements SortableAttribute, CollectionTypeHandler, MapKeyHandler{
 
-    @XmlElement(name = "order-by")
-    protected String orderBy;
-    @XmlElement(name = "order-column")
-    protected OrderColumn orderColumn;//REVENG PENDING
+    @XmlElement(name = "ob")
+    protected OrderBy orderBy;
+    @XmlElement(name = "oc")
+    protected OrderColumn orderColumn;
     @XmlAttribute(name = "own")
     private Boolean owner;
     @XmlTransient//(name = "mapped-by")
@@ -135,13 +136,9 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
     public void loadAttribute(EntityMappings entityMappings, Element element, VariableElement variableElement, ExecutableElement getterElement, AnnotationMirror relationAnnotationMirror) {
         super.loadAttribute(entityMappings, element, variableElement, getterElement, relationAnnotationMirror);
 
-        AnnotationMirror orderByMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.OrderBy");
-        if (orderByMirror != null) {
-            Object value = JavaSourceParserUtil.findAnnotationValue(orderByMirror, "value");
-            this.orderBy = value == null ? StringUtils.EMPTY : value.toString();
-        }
-
         this.mappedBy = (String) JavaSourceParserUtil.findAnnotationValue(relationAnnotationMirror, "mappedBy");
+        this.orderBy = OrderBy.load(element, variableElement);
+        this.orderColumn = OrderColumn.load(element, variableElement);
         this.collectionType = ((DeclaredType) variableElement.asType()).asElement().toString();
         Class collectionTypeClass = null;
         try {
@@ -208,7 +205,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
      * @return possible object is {@link String }
      *
      */
-    public String getOrderBy() {
+    public OrderBy getOrderBy() {
         return orderBy;
     }
 
@@ -218,7 +215,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
      * @param value allowed object is {@link String }
      *
      */
-    public void setOrderBy(String value) {
+    public void setOrderBy(OrderBy value) {
         this.orderBy = value;
     }
 

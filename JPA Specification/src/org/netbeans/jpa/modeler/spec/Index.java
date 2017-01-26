@@ -63,11 +63,7 @@ public class Index {
     protected String description;
     @XmlAttribute(name = "n")
     protected String name;
-//    @XmlAttribute(name = "column-list", required = true)
     @XmlElement(name = "c")
-//    @XmlJavaTypeAdapter(OrderColumnAdapter.class)
-//    @XmlJavaTypeAdapter(MapAdapter.class)
-//@XmlAnyElement;
     protected Set<OrderbyItem> columnList;
     @XmlAttribute(name = "u")
     protected Boolean unique;
@@ -188,7 +184,7 @@ public class Index {
 
     @Override
     public String toString() {
-        return getColumnList().stream().map(c -> c.getColumn()).collect(Collectors.joining(", "));
+        return getColumnList().stream().map(c -> c.getProperty()).collect(Collectors.joining(", "));
     }
 
 }

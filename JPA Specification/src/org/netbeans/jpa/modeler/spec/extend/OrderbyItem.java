@@ -25,30 +25,34 @@ import org.netbeans.jpa.modeler.spec.OrderType;
 public class OrderbyItem {
     
     @XmlAttribute(name="c")
-    private String column;
+    private String property;//column, attribute
     @XmlAttribute(name="o")
     private OrderType orderType;
 
     public OrderbyItem() {
     }
 
-    public OrderbyItem(String column, OrderType orderType) {
-        this.column = column;
+    public OrderbyItem(String property) {
+        this.property = property;
+    }
+
+    public OrderbyItem(String property, OrderType orderType) {
+        this.property = property;
         this.orderType = orderType;
     }
 
     /**
-     * @return the column
+     * @return the property
      */
-    public String getColumn() {
-        return column;
+    public String getProperty() {
+        return property;
     }
 
     /**
-     * @param column the column to set
+     * @param property the property to set
      */
-    public void setColumn(String column) {
-        this.column = column;
+    public void setProperty(String property) {
+        this.property = property;
     }
 
     /**
@@ -68,7 +72,7 @@ public class OrderbyItem {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 67 * hash + Objects.hashCode(this.column);
+        hash = 67 * hash + Objects.hashCode(this.property);
         return hash;
     }
 
@@ -81,7 +85,7 @@ public class OrderbyItem {
             return false;
         }
         final OrderbyItem other = (OrderbyItem) obj;
-        if (!Objects.equals(this.column, other.column)) {
+        if (!Objects.equals(this.property, other.property)) {
             return false;
         }
         return true;

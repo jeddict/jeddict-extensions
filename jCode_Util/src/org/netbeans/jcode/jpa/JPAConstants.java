@@ -139,6 +139,7 @@ public class JPAConstants {
     public static final String ORDER_BY = "OrderBy";
     public static final String ORDER_BY_FQN = PERSISTENCE_PACKAGE_PREFIX + ORDER_BY;
     public static final String ORDER_COLUMN = "OrderColumn";
+    public static final String ORDER_COLUMN_FQN = PERSISTENCE_PACKAGE_PREFIX + ORDER_COLUMN;
     
     public static final String ELEMENT_COLLECTION = "ElementCollection";
     public static final String ELEMENT_COLLECTION_FQN = PERSISTENCE_PACKAGE_PREFIX + ELEMENT_COLLECTION;
