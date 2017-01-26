@@ -223,6 +223,9 @@ public abstract class AngularGenerator implements Generator {
             if (!attribute.getIncludeInUI()) {//system attribute
                 continue;
             }
+            if (attribute.isOptionalReturnType()) {//todo dto
+                continue;
+            }
 
             if (attribute instanceof RelationAttribute) {
                 RelationAttribute relationAttribute = (RelationAttribute) attribute;

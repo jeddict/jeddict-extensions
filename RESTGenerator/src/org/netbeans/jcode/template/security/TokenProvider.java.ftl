@@ -8,12 +8,12 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import io.jsonwebtoken.*;
 
 public class TokenProvider {
 
-    private final Logger log = LoggerFactory.getLogger(TokenProvider.class);
+    @Inject
+    private Logger log;
 
     private static final String AUTHORITIES_KEY = "auth";
 

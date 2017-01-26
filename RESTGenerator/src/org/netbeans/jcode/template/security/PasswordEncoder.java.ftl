@@ -2,12 +2,13 @@
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import javax.inject.Inject;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class PasswordEncoder {
 
-    private static final Logger log = LoggerFactory.getLogger(PasswordEncoder.class);
+    @Inject
+    private Logger log;
 
     public String encode(String passwordToHash) {
         String generatedPassword = null;

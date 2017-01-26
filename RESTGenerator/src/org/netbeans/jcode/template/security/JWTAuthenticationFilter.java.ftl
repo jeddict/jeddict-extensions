@@ -17,7 +17,6 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Context;
 
@@ -26,21 +25,22 @@ import javax.ws.rs.core.Context;
 @Secured
 public class JWTAuthenticationFilter implements ContainerRequestFilter {
 
-    private final Logger log = LoggerFactory.getLogger(JWTAuthenticationFilter.class);
+    @Inject
+    private Logger log;
 
     @Inject
     private TokenProvider tokenProvider;
 
-    @Inject
-    HttpServletRequest httpServletRequest;
-    
+    @Context
+    private HttpServletRequest request;
+
     @Context
     private ResourceInfo resourceInfo;
     
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        String jwt = resolveToken(httpServletRequest);
+        String jwt = resolveToken();
         if (StringUtils.isNotBlank(jwt)) {
             try {
                 if (tokenProvider.validateToken(jwt)) {
@@ -86,7 +86,7 @@ public class JWTAuthenticationFilter implements ContainerRequestFilter {
 
     }
 
-    private String resolveToken(HttpServletRequest request) {
+    private String resolveToken() {
         String bearerToken = request.getHeader(Constants.AUTHORIZATION_HEADER);
         if (StringUtils.isNotEmpty(bearerToken) && bearerToken.startsWith("Bearer ")) {
             String jwt = bearerToken.substring(7, bearerToken.length());

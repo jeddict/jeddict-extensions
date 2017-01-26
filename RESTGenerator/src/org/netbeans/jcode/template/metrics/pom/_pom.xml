@@ -12,7 +12,7 @@
         <version.metrics>3.1.2</version.metrics>
     </properties>
     <dependencies>
-        <dependency>
+<!--        <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-core</artifactId>
             <version>${version.metrics}</version>
@@ -21,7 +21,7 @@
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-annotation</artifactId>
             <version>${version.metrics}</version>
-        </dependency>
+        </dependency>-->
 <!--        <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-ehcache</artifactId>
@@ -32,7 +32,7 @@
             <artifactId>metrics-graphite</artifactId>
             <version>${version.metrics}</version>
         </dependency>-->
-        <dependency>
+<!--        <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-healthchecks</artifactId>
             <version>${version.metrics}</version>
@@ -46,7 +46,7 @@
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-jvm</artifactId>
             <version>${version.metrics}</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-servlet</artifactId>
@@ -56,12 +56,12 @@
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-servlets</artifactId>
             <version>${version.metrics}</version>
-            <exclusions>
+<!--            <exclusions>
                 <exclusion>
                     <artifactId>metrics-healthchecks</artifactId>
                     <groupId>io.dropwizard.metrics</groupId>
                 </exclusion>
-            </exclusions>
+            </exclusions>-->
         </dependency>
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>

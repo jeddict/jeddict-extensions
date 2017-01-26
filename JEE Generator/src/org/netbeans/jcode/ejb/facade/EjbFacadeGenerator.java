@@ -86,6 +86,7 @@ public final class EjbFacadeGenerator implements Generator{
     public void execute() throws IOException {
         handler.progress(Console.wrap(EjbFacadeGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
         generateFacade();
+        generateProducer();
         addMavenDependencies("pom/facade/_pom.xml");
     }
     
@@ -101,7 +102,7 @@ public final class EjbFacadeGenerator implements Generator{
         }
     }
     
-    public Set<FileObject> generateFacade() throws IOException {
+    private Set<FileObject> generateFacade() throws IOException {
         final Set<FileObject> createdFiles = new HashSet<>();
 
         FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, beanData.getPackage(), true);
@@ -114,6 +115,21 @@ public final class EjbFacadeGenerator implements Generator{
 
         return createdFiles;
     }
+    
+    private FileObject generateProducer() throws IOException {
+        String _package = beanData.getPackage()+".producer";
+        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, _package, true);
+        String fileName = "EntityManagerProducer";
+        FileObject afFO = targetFolder.getFileObject(fileName, JAVA_EXT);//skips here
+        if (afFO == null) {
+            Map<String, Object> param = new HashMap<>();
+            param.put("PU", entityMapping.getPersistenceUnitName());
+            param.put("package", _package);
+            afFO = org.netbeans.jcode.core.util.FileUtil.expandTemplate("org/netbeans/jcode/template/service/producer/EntityManagerProducer.java.ftl", targetFolder, fileName+'.'+JAVA_EXT, param);
+        }
+        return afFO;
+    }
+    
 
 
 

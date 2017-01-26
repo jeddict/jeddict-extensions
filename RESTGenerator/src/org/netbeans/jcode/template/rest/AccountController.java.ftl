@@ -12,7 +12,6 @@ import ${UserDTO_FQN};
 import ${HeaderUtil_FQN};
 import ${Secured_FQN};
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -44,7 +43,8 @@ import com.wordnik.swagger.annotations.ApiResponses;</#if>
 @Path("/api")
 public class ${restPrefix}Account${restSuffix} {
 
-    private final Logger log = LoggerFactory.getLogger(${restPrefix}Account${restSuffix}.class);
+    @Inject
+    private Logger log;
 
     @Inject
     private ${UserFacade} ${userFacade};
@@ -61,17 +61,16 @@ public class ${restPrefix}Account${restSuffix} {
     @Inject
     private MailConfig mailConfig;
 
+    @Context
+    private HttpServletRequest request;
+
     /**
      * POST /register : register the user.
      *
      * @param managedUserDTO the managed user DTO
-     * @param request the HTTP request
      * @return the Response with status 201 (Created) if the user is
      * registered or 400 (Bad Request) if the login or e-mail is already in use
      */
-    @Context
-    HttpServletRequest request;
-
     <#if metrics>@Timed</#if>
     <#if docs>@ApiOperation(value = "register the user" )
     @ApiResponses(value = {
@@ -88,7 +87,7 @@ public class ${restPrefix}Account${restSuffix} {
                 .orElseGet(() -> ${userFacade}.findOneByEmail(managedUserDTO.getEmail())
                         .map(user -> Response.status(BAD_REQUEST).type(TEXT_PLAIN).entity("e-mail address already in use").build())
                         .orElseGet(() -> {
-                            User user = userService.createUserInformation(managedUserDTO.getLogin(), managedUserDTO.getPassword(),
+                            User user = userService.createUser(managedUserDTO.getLogin(), managedUserDTO.getPassword(),
                                     managedUserDTO.getFirstName(), managedUserDTO.getLastName(), managedUserDTO.getEmail().toLowerCase(),
                                     managedUserDTO.getLangKey());
                             String baseUrl = request.getScheme()
@@ -139,7 +138,6 @@ public class ${restPrefix}Account${restSuffix} {
      * GET /authenticate : check if the user is authenticated, and return its
      * login.
      *
-     * @param request the HTTP request
      * @return the login if the user is authenticated
      */
     <#if metrics>@Timed</#if>
@@ -148,7 +146,7 @@ public class ${restPrefix}Account${restSuffix} {
     @GET
     @Produces({MediaType.TEXT_PLAIN})
     @Secured
-    public String isAuthenticated(@Context HttpServletRequest request) {
+    public String isAuthenticated() {
         log.debug("REST request to check if the current user is authenticated");
         return request.getRemoteUser();
     }
@@ -201,7 +199,7 @@ public class ${restPrefix}Account${restSuffix} {
         return ${userFacade}
                 .findOneByLogin(securityUtils.getCurrentUserLogin())
                 .map(u -> {
-                    userService.updateUserInformation(userDTO.getFirstName(), userDTO.getLastName(), userDTO.getEmail(),
+                    userService.updateUser(userDTO.getFirstName(), userDTO.getLastName(), userDTO.getEmail(),
                             userDTO.getLangKey());
                     return Response.ok().build();
                 })
@@ -238,7 +236,6 @@ public class ${restPrefix}Account${restSuffix} {
      * of the user
      *
      * @param mail the mail of the user
-     * @param request the HTTP request
      * @return the Response with status 200 (OK) if the e-mail was sent,
      * or status 400 (Bad Request) if the e-mail address is not registred
      */
@@ -251,7 +248,7 @@ public class ${restPrefix}Account${restSuffix} {
     @POST
     @Consumes({MediaType.TEXT_PLAIN})
     @Produces({MediaType.TEXT_PLAIN})
-    public Response requestPasswordReset(String mail, @Context HttpServletRequest request) {
+    public Response requestPasswordReset(String mail) {
         return userService.requestPasswordReset(mail)
                 .map(user -> {
                     String baseUrl = request.getScheme()

@@ -6,7 +6,6 @@ import ${EntityFacade_FQN};
 import ${HeaderUtil_FQN};
 import ${Secured_FQN};
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -38,7 +37,8 @@ import com.wordnik.swagger.annotations.ApiResponses;</#if>
 @Secured
 public class ${controllerClass} {
 
-    private final Logger log = LoggerFactory.getLogger(${controllerClass}.class);
+    @Inject
+    private Logger log;
 
     @Inject
     private ${EntityFacade} ${entityFacade};

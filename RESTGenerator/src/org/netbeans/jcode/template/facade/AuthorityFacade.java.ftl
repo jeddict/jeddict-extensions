@@ -4,13 +4,13 @@ import ${Authority_FQN};
 import javax.ejb.Stateless;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.inject.Inject;
 
 @Stateless
 @Named("authority")
 public class ${AuthorityFacade} extends AbstractFacade<Authority, String> {
 
-    @PersistenceContext(unitName = "${PU}")
+    @Inject
     private EntityManager em;
 
     @Override

@@ -14,7 +14,6 @@ import ${UserDTO_FQN};
 import java.time.Instant;
 import java.time.ZoneId;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.time.ZonedDateTime;
 import javax.inject.Inject;
 import java.util.*;
@@ -27,7 +26,8 @@ import static java.util.stream.Collectors.toSet;
 @Stateless
 public class UserService {
 
-    private final Logger log = LoggerFactory.getLogger(UserService.class);
+    @Inject
+    private Logger log;
 
     @Inject
     private SecurityUtils securityUtils;
@@ -83,7 +83,7 @@ public class UserService {
                 });
     }
 
-    public User createUserInformation(String login, String password, String firstName, String lastName, String email,
+    public User createUser(String login, String password, String firstName, String lastName, String email,
             String langKey) {
 
         User newUser = new User();
@@ -134,7 +134,7 @@ public class UserService {
         return user;
     }
 
-    public void updateUserInformation(String firstName, String lastName, String email, String langKey) {
+    public void updateUser(String firstName, String lastName, String email, String langKey) {
         ${userFacade}.findOneByLogin(securityUtils.getCurrentUserLogin()).ifPresent(u -> {
             u.setFirstName(firstName);
             u.setLastName(lastName);

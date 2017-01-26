@@ -13,7 +13,6 @@ import ${PaginationUtil_FQN};
 import ${Secured_FQN};
 import ${AuthoritiesConstants_FQN};
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -54,7 +53,8 @@ import com.wordnik.swagger.annotations.ApiResponses;</#if>
 @Path("/api")
 public class ${restPrefix}User${restSuffix} {
 
-    private final Logger log = LoggerFactory.getLogger(${restPrefix}User${restSuffix}.class);
+    @Inject
+    private Logger log;
 
     @Inject
     private ${UserFacade} ${userFacade};
@@ -68,6 +68,9 @@ public class ${restPrefix}User${restSuffix} {
     @Inject
     private UserService userService;
 
+    @Context
+    private HttpServletRequest request;
+
     /**
      * POST /users : Creates a new user.
      * <p>
@@ -77,7 +80,6 @@ public class ${restPrefix}User${restSuffix} {
      * </p>
      *
      * @param managedUserDTO the user to create
-     * @param request the HTTP request
      * @return the Response with status 201 (Created) and with body the
      * new user, or with status 400 (Bad Request) if the login or email is
      * already in use
@@ -93,7 +95,7 @@ public class ${restPrefix}User${restSuffix} {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Secured(AuthoritiesConstants.ADMIN)
-    public Response createUser(ManagedUserDTO managedUserDTO, @Context HttpServletRequest request) throws URISyntaxException {
+    public Response createUser(ManagedUserDTO managedUserDTO) throws URISyntaxException {
         log.debug("REST request to save User : {}", managedUserDTO);
 
         //Lowercase the user login before comparing with database

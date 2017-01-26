@@ -3,7 +3,7 @@
 import javax.ejb.Stateless;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.inject.Inject;
 import ${EntityClass_FQN};
 <#if AbstractFacade_FQN!="">import ${AbstractFacade_FQN};</#if>
 <#if EntityPKClass_FQN!="">import ${EntityPKClass_FQN};</#if>
@@ -12,7 +12,7 @@ import ${EntityClass_FQN};
 @Named("${entityInstance}")
 public class ${EntityFacade} extends ${AbstractFacade}<${EntityClass}, ${EntityPKClass}> {
 
-    @PersistenceContext(unitName = "${PU}")
+    @Inject
     private EntityManager em;
 
     @Override

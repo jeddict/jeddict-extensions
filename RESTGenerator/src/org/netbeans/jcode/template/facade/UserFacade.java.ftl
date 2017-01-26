@@ -6,14 +6,14 @@ import java.util.Optional;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Named;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 @Stateless
 @Named("user")
 public class ${UserFacade} extends AbstractFacade<User, Long> {
 
-    @PersistenceContext(unitName = "${PU}")
+    @Inject
     private EntityManager em;
 
     @Override

@@ -2,6 +2,8 @@
 
 import ${HeaderUtil_FQN};
 import ${AbstractFacade_FQN};
+import ${EntityManagerProducer_FQN};
+import ${LoggerProducer_FQN};
 import java.io.File;
 import java.net.URL;
 import java.util.Map;
@@ -39,6 +41,7 @@ public abstract class AbstractTest {
 
         final WebArchive archive = ShrinkWrap.create(WebArchive.class);
         archive.addClass(${AbstractFacade}.class).addPackage(HeaderUtil.class.getPackage())
+                .addClass(EntityManagerProducer.class).addClass(LoggerProducer.class)
                 .addAsLibraries(jacksonFiles).addAsLibraries(deltaspikeFiles).addAsLibraries(deltaspikeImplFiles)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"))
                 .addAsResource("test-persistence.xml", "META-INF/persistence.xml")

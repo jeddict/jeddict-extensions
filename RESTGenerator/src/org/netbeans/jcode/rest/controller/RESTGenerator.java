@@ -90,7 +90,6 @@ import static org.netbeans.jpa.modeler.spec.validation.constraints.ConstraintUti
  */
 @ServiceProvider(service = Generator.class)
 @Technology(type = CONTROLLER, label = "REST", panel = RESTPanel.class, parents = {EjbFacadeGenerator.class})
-
 public class RESTGenerator implements Generator {
 
     private static final String TEMPLATE = "org/netbeans/jcode/template/";
@@ -206,12 +205,14 @@ public class RESTGenerator implements Generator {
         generateUtil();
         entityPackage = entityMapping.getPackage();
         Map<String, Object> param = generateServerSideComponent();
+        generateProducer(param);
 
         for (Entity entity : entityMapping.getConcreteEntity().collect(toList())) {
             generateEntityController(entity, param);
         }
         CDIUtil.createDD(project);
         
+
         addMavenDependencies("rest/pom/_pom.xml");
         if (restData.isMetrics()) {
             addMavenDependencies("metrics/pom/_pom.xml");
@@ -222,7 +223,18 @@ public class RESTGenerator implements Generator {
         if (restData.isTestCase()) {
             addMavenDependencies("arquillian/pom/_pom.xml");
         }
-        
+
+    }
+
+    private FileObject generateProducer(Map<String, Object> appParam) throws IOException {
+        String _package = beanData.getPackage() + ".producer";
+        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, _package, true);
+        String fileName = "LoggerProducer";
+        FileObject afFO = targetFolder.getFileObject(fileName, JAVA_EXT);
+        if (afFO == null) {
+            afFO = org.netbeans.jcode.core.util.FileUtil.expandTemplate("org/netbeans/jcode/template/service/producer/LoggerProducer.java.ftl", targetFolder, fileName + '.' + JAVA_EXT, Collections.singletonMap("package", _package));
+        }
+        return afFO;
     }
 
     private void addMavenDependencies(String pom) {
@@ -332,7 +344,6 @@ public class RESTGenerator implements Generator {
         }
         expandTemplate(TEMPLATE + "rest/entity/" + restTemplate + ".java.ftl", targetFolder, controllerFileName + '.' + JAVA_EXT, param);
 
-        
         //entity controller test-case
         if (restData.isTestCase()) {
             Function<Attribute, Map<String, Object>> con = attr -> {
@@ -350,31 +361,33 @@ public class RESTGenerator implements Generator {
 //            attrConf.put("precisionType", isDouble(attr.getDataTypeLabel())?'d':'f');
                 return attrConf;
             };
-        
-        if (idAttribute instanceof DefaultAttribute) {
-                param.put("pkStrategy","IdClass");
+
+            if (idAttribute instanceof DefaultAttribute) {
+                param.put("pkStrategy", "IdClass");
             } else if (idAttribute instanceof EmbeddedId) {
-                param.put("pkStrategy","EmbeddedId");
+                param.put("pkStrategy", "EmbeddedId");
             } else {
-                param.put("pkStrategy","Id");
+                param.put("pkStrategy", "Id");
             }
-        
-        List<Map<String,Object>> allIdAttributes =  entity.getAttributes().getSuperId().stream()
+
+            List<Map<String, Object>> allIdAttributes = entity.getAttributes().getSuperId().stream()
                     .filter(attr -> getAttributeDefaultValue(attr.getDataTypeLabel()) != null).map(con).collect(toList());
             param.put("allIdAttributes", allIdAttributes);
             param.put("idAttributes", entity.getAttributes().getSuperId().stream().filter(id -> !id.isGeneratedValue())
                     .filter(attr -> getAttributeDefaultValue(attr.getDataTypeLabel()) != null).map(con).collect(toList()));
-            
+
 //            String matrixParam = allIdAttributes.stream().map(attrConf -> String.format("%s={%s}",attrConf.get("name"),attrConf.get("name"))).collect(Collectors.joining(";"));
 //            param.put("matrixParam", matrixParam);
-       List<Map<String,Object>> basicAttributes = entity.getAttributes().getSuperBasic().stream()
-               .filter(attr -> getAttributeDefaultValue(attr.getDataTypeLabel())!=null).map(con).collect(toList());
-                param.put("attributes", basicAttributes);
-                param.put("versionAttributes", entity.getAttributes().getSuperVersion().stream().map(con).collect(toList()));
-                Set<String> connectedClasses = entity.getAttributes().getConnectedClass();
-                param.put("connectedClasses", connectedClasses.stream().map(jc -> JavaIdentifiers.unqualify(jc)).collect(toList()));
-                param.put("connectedFQClasses", connectedClasses);
-       
+            List<Map<String, Object>> basicAttributes = entity.getAttributes().getSuperBasic().stream()
+                    .filter(attr -> getAttributeDefaultValue(attr.getDataTypeLabel()) != null && !attr.isOptionalReturnType())
+                    .map(con)
+                    .collect(toList());
+            param.put("attributes", basicAttributes);
+            param.put("versionAttributes", entity.getAttributes().getSuperVersion().stream().map(con).collect(toList()));
+            Set<String> connectedClasses = entity.getAttributes().getConnectedClass();
+            param.put("connectedClasses", connectedClasses.stream().map(jc -> JavaIdentifiers.unqualify(jc)).collect(toList()));
+            param.put("connectedFQClasses", connectedClasses);
+
             String controllerTestFileName = controllerFileName + "Test";
             handler.progress(controllerTestFileName);
             FileObject targetTestFolder = SourceGroupSupport.getFolderForPackage(testSource, entity.getAbsolutePackage(restData.getPackage()), true);
@@ -401,6 +414,9 @@ public class RESTGenerator implements Generator {
         final String abstractFacade = beanData.getPrefixName() + FACADE_ABSTRACT + beanData.getSuffixName();
         param.put("AbstractFacade", abstractFacade);
         param.put("AbstractFacade_FQN", beanData.getPackage() + '.' + abstractFacade);
+        param.put("EntityManagerProducer_FQN", beanData.getPackage() + ".producer.EntityManagerProducer");
+        param.put("LoggerProducer_FQN", beanData.getPackage() + ".producer.LoggerProducer");
+
         param.put("entityPackage", entityPackage);
         param.put("PU", entityMapping.getPersistenceUnitName());
         param.put("applicationPath", restData.getRestConfigData().getApplicationPath());
@@ -440,14 +456,13 @@ public class RESTGenerator implements Generator {
             expandServerSideComponent(testSource, restData.getPackage(), EMPTY, EMPTY, TEST_CASE_TEMPLATES, param);
             expandServerSideComponent(testSource, restData.getPackage(), restData.getPrefixName(), restData.getSuffixName() + "Test", TEST_CASE_CONTROLLER_TEMPLATES, param);
         }
-        
-        
+
         FileObject configRoot = ProjectHelper.getResourceDirectory(project);
         if (configRoot == null) {//non-maven project
             configRoot = source.getRootFolder();
         }
-        
-        expandTemplate(TEMPLATE + "config/resource/insert.sql.ftl", getFolderForPackage(configRoot, "META-INF.sql", true), "insert.sql", singletonMap("database",dockerConfigData.getDatabaseType()!=null?dockerConfigData.getDatabaseType():"Derby"));
+
+        expandTemplate(TEMPLATE + "config/resource/insert.sql.ftl", getFolderForPackage(configRoot, "META-INF.sql", true), "insert.sql", singletonMap("database", dockerConfigData.getDatabaseType() != null ? dockerConfigData.getDatabaseType() : "Derby"));
         FileUtil.copyStaticResource(TEMPLATE + "config/resource/config-resources.zip", configRoot, null, handler);
         updatePersistenceXml(Arrays.asList(entityPackage + ".User", entityPackage + ".Authority"));
 
@@ -457,34 +472,34 @@ public class RESTGenerator implements Generator {
 //            expandTemplate(TEMPLATE + "arquillian/config/glassfish-resources.xml.ftl", configRoot, "glassfish-resources.xml", EMPTY_MAP);
             expandTemplate(TEMPLATE + "arquillian/config/web.xml.ftl", configRoot, "web.xml", EMPTY_MAP);
             expandTemplate(TEMPLATE + "arquillian/config/test-persistence.xml.ftl", configRoot, "test-persistence.xml", Collections.singletonMap("PU_NAME", entityMapping.getPersistenceUnitName()));
-            expandTemplate(TEMPLATE + "config/resource/insert.sql.ftl", getFolderForPackage(configRoot, "META-INF.sql", true), "insert.sql", singletonMap("database","Derby"));
+            expandTemplate(TEMPLATE + "config/resource/insert.sql.ftl", getFolderForPackage(configRoot, "META-INF.sql", true), "insert.sql", singletonMap("database", "Derby"));
         }
-        
+
         return param;
     }
 
     private void updatePersistenceXml(List<String> classNames) {
-            String puName = entityMapping.getPersistenceUnitName();
-            Optional<PersistenceUnit> punitOptional = getPersistenceUnit(project, puName);
-            if (punitOptional.isPresent()) {
-                PersistenceUnit punit = punitOptional.get();
-                String SCHEMA_GEN_ACTION = "javax.persistence.schema-generation.database.action";
-                String DROP_CREATE = "drop-and-create";
-                String SQL_LOAD_SCRIPT = "javax.persistence.sql-load-script-source";
-                for (Property property : punit.getProperties().getProperty2()) {
-                    if (property.getName() == null) {
-                        punit.getProperties().removeProperty2(property);
-                    }
+        String puName = entityMapping.getPersistenceUnitName();
+        Optional<PersistenceUnit> punitOptional = getPersistenceUnit(project, puName);
+        if (punitOptional.isPresent()) {
+            PersistenceUnit punit = punitOptional.get();
+            String SCHEMA_GEN_ACTION = "javax.persistence.schema-generation.database.action";
+            String DROP_CREATE = "drop-and-create";
+            String SQL_LOAD_SCRIPT = "javax.persistence.sql-load-script-source";
+            for (Property property : punit.getProperties().getProperty2()) {
+                if (property.getName() == null) {
+                    punit.getProperties().removeProperty2(property);
                 }
-                addProperty(punit, SCHEMA_GEN_ACTION, DROP_CREATE);
-                addProperty(punit, SQL_LOAD_SCRIPT, "META-INF/sql/insert.sql");
-
-                addClasses(project, punit, classNames);
-                updatePersistenceUnit(project, punit);
             }
-       
+            addProperty(punit, SCHEMA_GEN_ACTION, DROP_CREATE);
+            addProperty(punit, SQL_LOAD_SCRIPT, "META-INF/sql/insert.sql");
+
+            addClasses(project, punit, classNames);
+            updatePersistenceUnit(project, punit);
+        }
+
     }
- 
+
     private void expandServerSideComponent(SourceGroup targetSourceGroup, String _package, String prefixName, String suffixName, List<Template> templates, Map<String, Object> param) {
         String fileName = null;
         try {
@@ -566,10 +581,10 @@ public class RESTGenerator implements Generator {
             RestUtils.enableRestServicesChangeListner(project);
         }
     }
-    
-        
-    private final static Set<String> AUTO_GEN_ENITY = new HashSet<>( Arrays.asList("User", "Authority", "AbstractAuditingEntity", "AuditListner"));
-    public static boolean isAutoGeneratedEntity(String entity){
+
+    private final static Set<String> AUTO_GEN_ENITY = new HashSet<>(Arrays.asList("User", "Authority", "AbstractAuditingEntity", "AuditListner"));
+
+    public static boolean isAutoGeneratedEntity(String entity) {
         return AUTO_GEN_ENITY.contains(entity);
     }
 

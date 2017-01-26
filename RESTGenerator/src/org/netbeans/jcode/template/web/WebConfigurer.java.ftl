@@ -10,7 +10,6 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRegistration;
 import javax.servlet.annotation.WebListener;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 <#if metrics>import ${MetricsConfigurer_FQN};
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.servlet.InstrumentedFilter;
@@ -28,7 +27,8 @@ import com.wordnik.swagger.reader.ClassReaders;</#if>
 @WebListener
 public class WebConfigurer implements ServletContextListener {
 
-    private final Logger log = LoggerFactory.getLogger(WebConfigurer.class);
+    @Inject
+    private Logger log;
 
     <#if metrics>
     @Inject

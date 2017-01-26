@@ -7,7 +7,6 @@ import ${User_FQN};
 import java.io.StringWriter;
 import java.util.function.Function;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -27,7 +26,8 @@ import org.apache.velocity.app.VelocityEngine;
 @Stateless
 public class MailService {
 
-    private final Logger log = LoggerFactory.getLogger(MailService.class);
+    @Inject
+    private Logger log;
 
     private static final String USER = "user";
     private static final String BASE_URL = "baseUrl";

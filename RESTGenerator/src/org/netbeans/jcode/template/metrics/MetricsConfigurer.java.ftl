@@ -27,7 +27,8 @@ public class MetricsConfigurer {
     private static final String PROP_METRIC_REG_JVM_FILES = "jvm.files";
     private static final String PROP_METRIC_REG_JVM_BUFFERS = "jvm.buffers";
 
-    private final Logger log = LoggerFactory.getLogger(MetricsConfigurer.class);
+    @Inject
+    private Logger log;
     
     @Inject
     private MetricsConfig metricsConfig;
