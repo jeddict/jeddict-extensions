@@ -21,6 +21,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.StringUtils;
+import static org.netbeans.jcode.jpa.JPAConstants.CACHEABLE_FQN;
 import org.netbeans.jpa.modeler.spec.extend.AccessTypeHandler;
 import org.netbeans.jpa.modeler.spec.extend.AssociationOverrideHandler;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
@@ -30,7 +31,6 @@ import org.netbeans.jpa.modeler.spec.validator.override.AssociationValidator;
 import org.netbeans.jpa.modeler.spec.validator.override.AttributeValidator;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 import org.netbeans.jpa.modeler.spec.extend.InheritanceHandler;
-import org.netbeans.jpa.modeler.spec.extend.ReferenceClass;
 
 /**
  *
@@ -199,7 +199,7 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
             this.entityName = (String) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "name");
         }
         
-        AnnotationMirror cacheableAnnotation = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.Cacheable");
+        AnnotationMirror cacheableAnnotation = JavaSourceParserUtil.findAnnotation(element, CACHEABLE_FQN);
         if (cacheableAnnotation != null) {
             Object value =  JavaSourceParserUtil.findAnnotationValue(cacheableAnnotation, "value");
             if(value == null){
