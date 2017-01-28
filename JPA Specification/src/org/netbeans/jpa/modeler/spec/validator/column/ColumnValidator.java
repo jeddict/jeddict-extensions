@@ -32,7 +32,9 @@ public class ColumnValidator<E extends Column> extends MarshalValidator<E> {
     public static boolean isEmpty(Column column) {
         return StringUtils.isBlank(column.getName()) && StringUtils.isBlank(column.getColumnDefinition()) && StringUtils.isBlank(column.getTable())
                 && column.getNullable() && column.getInsertable() && column.getUpdatable() && !column.getUnique()
-                && column.getLength() == 255 && column.getScale() == 0 && column.getPrecision() == 0;
+                && (column.getLength() == null || column.getLength() == 255) 
+                && (column.getScale() == null || column.getScale() == 0 )
+                && (column.getPrecision() == null || column.getPrecision() == 0);
     }
 
 }
