@@ -38,9 +38,7 @@ public class DefaultAttributeSpecAccessor extends BasicAccessor {
         accessor.inherit = inherit;
         accessor.setName(attribute.getName());
         accessor.setAttributeType(attribute.getAttributeType());
-        if (attribute.getColumn() != null) {
-            accessor.setColumn(attribute.getColumn().getAccessor());
-        }
+        accessor.setColumn(attribute.getColumn().getAccessor());
         return accessor;
     }
 

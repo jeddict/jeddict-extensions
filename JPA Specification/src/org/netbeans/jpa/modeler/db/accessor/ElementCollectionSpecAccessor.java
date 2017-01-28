@@ -45,13 +45,13 @@ public class ElementCollectionSpecAccessor extends ElementCollectionAccessor imp
         AccessorUtil.setEnumerated((DirectAccessor)accessor,elementCollection.getEnumerated());
         AccessorUtil.setLob(accessor, elementCollection.getLob(), elementCollection.getAttributeType(), true);
         AccessorUtil.setTemporal((DirectAccessor)accessor, elementCollection.getTemporal());
-        if (elementCollection.getColumn() != null) {
-            accessor.setColumn(elementCollection.getColumn().getAccessor());
-        }
+        accessor.setColumn(elementCollection.getColumn().getAccessor());
         if (elementCollection.getCollectionTable() != null) {
             accessor.setCollectionTable(elementCollection.getCollectionTable().getAccessor());
         }
-
+        if (elementCollection.getOrderColumn() != null) {
+            accessor.setOrderColumn(elementCollection.getOrderColumn().getAccessor());
+        }
         AttributeValidator.filter(elementCollection);
         accessor.setAttributeOverrides(elementCollection.getAttributeOverride().stream().map(AttributeOverrideSpecMetadata::getInstance).collect(toList()));
         AssociationValidator.filter(elementCollection);

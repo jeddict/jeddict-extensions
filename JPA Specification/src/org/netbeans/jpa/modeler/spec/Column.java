@@ -273,9 +273,6 @@ public class Column extends BaseElement implements JAREAnnotationLoader {
      *
      */
     public Integer getLength() {
-        if (length == null) {
-            length = 255;
-        }
         return length;
     }
 
@@ -296,9 +293,6 @@ public class Column extends BaseElement implements JAREAnnotationLoader {
      *
      */
     public Integer getPrecision() {
-        if (precision == null) {
-            precision = 0;
-        }
         return precision;
     }
 
@@ -319,9 +313,6 @@ public class Column extends BaseElement implements JAREAnnotationLoader {
      *
      */
     public Integer getScale() {
-        if (scale == null) {
-            scale = 0;
-        }
         return scale;
     }
 

@@ -92,6 +92,9 @@ public class DefaultAttribute extends Attribute {
      * @return the column
      */
     public Column getColumn() {
+        if (column == null) {
+            column = new Column();
+        }
         return column;
     }
 

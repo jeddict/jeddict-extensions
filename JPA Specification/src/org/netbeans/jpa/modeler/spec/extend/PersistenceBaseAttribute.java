@@ -147,5 +147,5 @@ public abstract class PersistenceBaseAttribute extends BaseAttribute implements 
     public void setColumn(Column value) {
         this.column = value;
     }
-
+    
 }

@@ -44,9 +44,7 @@ public class BasicSpecAccessor extends BasicAccessor {
         AccessorUtil.setTemporal(accessor, basic.getTemporal());
         
         accessor.setName(basic.getName());
-        if (basic.getColumn() != null) {
-            accessor.setColumn(basic.getColumn().getAccessor());
-        }
+        accessor.setColumn(basic.getColumn().getAccessor());
         return accessor;
     }
 

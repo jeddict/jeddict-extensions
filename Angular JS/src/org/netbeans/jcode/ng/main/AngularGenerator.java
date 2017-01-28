@@ -205,7 +205,7 @@ public abstract class AngularGenerator implements Generator {
             return null;
         } else if (!"id".equals(idAttribute.getName())) {
             handler.error(NbBundle.getMessage(AngularGenerator.class, "TITLE_PK_Field_Named_Id_Missing"),
-                    NbBundle.getMessage(AngularGenerator.class, "MSG_PK_Field_Named_Id_Missing", entity.getClazz()));
+                    NbBundle.getMessage(AngularGenerator.class, "MSG_PK_Field_Named_Id_Missing", entity.getClazz(), idAttribute.getName()));
             return null;
         }
         NGEntity ngEntity = new NGEntity(entity.getClazz(), "");

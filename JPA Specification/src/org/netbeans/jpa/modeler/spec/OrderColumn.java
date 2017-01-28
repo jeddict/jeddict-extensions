@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
+import org.eclipse.persistence.internal.jpa.metadata.columns.OrderColumnMetadata;
 import static org.netbeans.jcode.jpa.JPAConstants.ORDER_COLUMN_FQN;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
@@ -176,6 +177,17 @@ public class OrderColumn {
      */
     public void setColumnDefinition(String value) {
         this.columnDefinition = value;
+    }
+
+    public OrderColumnMetadata getAccessor() {
+//        OrderColumnMetadata accessor = new OrderColumnMetadata();
+//        accessor.setName(name);
+//        accessor.setColumnDefinition(columnDefinition);
+//        accessor.setNullable(nullable);
+//        accessor.setInsertable(insertable);
+//        accessor.setUpdatable(updatable);
+//        return accessor;
+            return null;
     }
 
 }

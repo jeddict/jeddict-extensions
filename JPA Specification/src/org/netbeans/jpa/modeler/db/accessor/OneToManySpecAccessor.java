@@ -49,7 +49,9 @@ public class OneToManySpecAccessor extends OneToManyAccessor implements MapKeyAc
         }
         JoinColumnValidator.filter(oneToMany.getJoinColumn());
         accessor.setJoinColumns(oneToMany.getJoinColumn().stream().map(JoinColumn::getAccessor).collect(toList()));
-
+        if (oneToMany.getOrderColumn() != null) {
+            accessor.setOrderColumn(oneToMany.getOrderColumn().getAccessor());
+        }
         MapKeyUtil.load(accessor, oneToMany); 
         return accessor;
 

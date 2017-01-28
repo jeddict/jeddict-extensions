@@ -44,7 +44,9 @@ public class ManyToManySpecAccessor extends ManyToManyAccessor implements MapKey
         if (!JoinTableValidator.isEmpty(manyToMany.getJoinTable())) {
             accessor.setJoinTable(manyToMany.getJoinTable().getAccessor());
         }
-        
+        if (manyToMany.getOrderColumn() != null) {
+            accessor.setOrderColumn(manyToMany.getOrderColumn().getAccessor());
+        }
         MapKeyUtil.load(accessor, manyToMany);
         return accessor;
     }

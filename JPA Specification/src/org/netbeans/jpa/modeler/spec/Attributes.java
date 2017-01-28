@@ -490,22 +490,21 @@ public class Attributes extends BaseAttributes implements IPersistenceAttributes
         this.getManyToOne().stream().filter(attr -> attr.isPrimaryKey()).count() > 1;
     }
     
-    public Attribute getIdField(){
+    public Attribute getIdField() {
         List<Id> superIds = this.getSuperId();
-         if(superIds.size() == 1){
-             return superIds.get(0);
-         } else { // more than 1 or no pk (in case of pk relationshp)
-             EmbeddedId superEmbeddedId = this.getSuperEmbeddedId();
-             if(superEmbeddedId!=null){
-                 return superEmbeddedId;
-             } else {
-                 IdClass idClass = this.getSuperIdClass();//((IdentifiableClass)this.getJavaClass()).getIdClass();
-                 DefaultAttribute pkFindEntity = new DefaultAttribute();
-                 pkFindEntity.setName(idClass.getClazz());
-                 pkFindEntity.setAttributeType(idClass.getClazz());
-                 return pkFindEntity;
-             }
-         }
+        IdClass idClass;EmbeddedId superEmbeddedId;
+        if (superIds.size() == 1) {
+            return superIds.get(0);
+        } else if ((superEmbeddedId = this.getSuperEmbeddedId()) != null) { 
+            return superEmbeddedId;
+        } else if ((idClass = this.getSuperIdClass()) != null) {
+            DefaultAttribute pkFindEntity = new DefaultAttribute();
+            pkFindEntity.setName(idClass.getClazz());
+            pkFindEntity.setAttributeType(idClass.getClazz());
+            return pkFindEntity;
+        } else { //no pk
+            return null;
+        }
     }
     
     public List<Id> getSuperId(){
