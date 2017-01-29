@@ -281,6 +281,7 @@ public abstract class RelationAttribute extends Attribute implements AccessTypeH
         List<JaxbVariableType> jaxbVariableTypeList = new ArrayList<JaxbVariableType>();
         jaxbVariableTypeList.add(JaxbVariableType.XML_ELEMENT);
         jaxbVariableTypeList.add(JaxbVariableType.XML_TRANSIENT);
+        jaxbVariableTypeList.add(JaxbVariableType.XML_INVERSE_REFERENCE);
         return jaxbVariableTypeList;
     }
 
