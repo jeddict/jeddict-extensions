@@ -39,10 +39,15 @@ public final class CodePanel extends javax.swing.JPanel {
         refractorNamedQueryComp = new javax.swing.JCheckBox();
         deleteNamedQueryComp = new javax.swing.JCheckBox();
         generateFluentAPIComp = new javax.swing.JCheckBox();
+        compositePKWrapperPanel = new javax.swing.JLayeredPane();
         compositePrimaryKeyTypeLabel = new javax.swing.JLabel();
         defaultCompositePrimaryKeyTypeComp = new javax.swing.JComboBox<>();
-        optionalReturnTypeStatusComp = new javax.swing.JComboBox<>();
+        optionalReturnTypePanel = new javax.swing.JLayeredPane();
         optionalReturnTypeStatusLabel = new javax.swing.JLabel();
+        optionalReturnTypeStatusComp = new javax.swing.JComboBox<>();
+        javaseWrapperPanel = new javax.swing.JLayeredPane();
+        javaseSupportLabel = new javax.swing.JLabel();
+        javaseSupportComp = new javax.swing.JCheckBox();
 
         org.openide.awt.Mnemonics.setLocalizedText(refractorNamedQueryComp, org.openide.util.NbBundle.getMessage(CodePanel.class, "CodePanel.refractorNamedQueryComp.text")); // NOI18N
 
@@ -54,49 +59,111 @@ public final class CodePanel extends javax.swing.JPanel {
 
         defaultCompositePrimaryKeyTypeComp.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "IdClass", "EmbeddedId" }));
 
-        optionalReturnTypeStatusComp.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Disable", "Enable" }));
+        compositePKWrapperPanel.setLayer(compositePrimaryKeyTypeLabel, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        compositePKWrapperPanel.setLayer(defaultCompositePrimaryKeyTypeComp, javax.swing.JLayeredPane.DEFAULT_LAYER);
+
+        javax.swing.GroupLayout compositePKWrapperPanelLayout = new javax.swing.GroupLayout(compositePKWrapperPanel);
+        compositePKWrapperPanel.setLayout(compositePKWrapperPanelLayout);
+        compositePKWrapperPanelLayout.setHorizontalGroup(
+            compositePKWrapperPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(compositePKWrapperPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(compositePrimaryKeyTypeLabel)
+                .addGap(18, 18, 18)
+                .addComponent(defaultCompositePrimaryKeyTypeComp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        compositePKWrapperPanelLayout.setVerticalGroup(
+            compositePKWrapperPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, compositePKWrapperPanelLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(compositePKWrapperPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(compositePrimaryKeyTypeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(defaultCompositePrimaryKeyTypeComp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+        );
 
         org.openide.awt.Mnemonics.setLocalizedText(optionalReturnTypeStatusLabel, org.openide.util.NbBundle.getMessage(CodePanel.class, "CodePanel.optionalReturnTypeStatusLabel.text")); // NOI18N
+
+        optionalReturnTypeStatusComp.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Disable", "Enable" }));
+
+        optionalReturnTypePanel.setLayer(optionalReturnTypeStatusLabel, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        optionalReturnTypePanel.setLayer(optionalReturnTypeStatusComp, javax.swing.JLayeredPane.DEFAULT_LAYER);
+
+        javax.swing.GroupLayout optionalReturnTypePanelLayout = new javax.swing.GroupLayout(optionalReturnTypePanel);
+        optionalReturnTypePanel.setLayout(optionalReturnTypePanelLayout);
+        optionalReturnTypePanelLayout.setHorizontalGroup(
+            optionalReturnTypePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(optionalReturnTypePanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(optionalReturnTypeStatusLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 223, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(optionalReturnTypeStatusComp, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+        optionalReturnTypePanelLayout.setVerticalGroup(
+            optionalReturnTypePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(optionalReturnTypePanelLayout.createSequentialGroup()
+                .addGroup(optionalReturnTypePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(optionalReturnTypeStatusLabel)
+                    .addComponent(optionalReturnTypeStatusComp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 3, Short.MAX_VALUE))
+        );
+
+        javaseSupportLabel.setForeground(new java.awt.Color(153, 153, 153));
+        org.openide.awt.Mnemonics.setLocalizedText(javaseSupportLabel, org.openide.util.NbBundle.getMessage(CodePanel.class, "CodePanel.javaseSupportLabel.text")); // NOI18N
+
+        org.openide.awt.Mnemonics.setLocalizedText(javaseSupportComp, org.openide.util.NbBundle.getMessage(CodePanel.class, "CodePanel.javaseSupportComp.text")); // NOI18N
+
+        javaseWrapperPanel.setLayer(javaseSupportLabel, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        javaseWrapperPanel.setLayer(javaseSupportComp, javax.swing.JLayeredPane.DEFAULT_LAYER);
+
+        javax.swing.GroupLayout javaseWrapperPanelLayout = new javax.swing.GroupLayout(javaseWrapperPanel);
+        javaseWrapperPanel.setLayout(javaseWrapperPanelLayout);
+        javaseWrapperPanelLayout.setHorizontalGroup(
+            javaseWrapperPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javaseWrapperPanelLayout.createSequentialGroup()
+                .addComponent(javaseSupportComp, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(35, 35, 35)
+                .addComponent(javaseSupportLabel)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        javaseWrapperPanelLayout.setVerticalGroup(
+            javaseWrapperPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javaseWrapperPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(javaseSupportLabel)
+                .addComponent(javaseSupportComp))
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(50, 50, 50)
+                .addGap(43, 43, 43)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(generateFluentAPIComp)
                     .addComponent(deleteNamedQueryComp)
                     .addComponent(refractorNamedQueryComp)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(compositePrimaryKeyTypeLabel)
-                            .addComponent(optionalReturnTypeStatusLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(optionalReturnTypeStatusComp, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(defaultCompositePrimaryKeyTypeComp, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap(51, Short.MAX_VALUE))
+                    .addComponent(generateFluentAPIComp)
+                    .addComponent(javaseWrapperPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(compositePKWrapperPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(optionalReturnTypePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(31, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(16, 16, 16)
                 .addComponent(refractorNamedQueryComp)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(deleteNamedQueryComp)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(generateFluentAPIComp)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(javaseWrapperPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(optionalReturnTypeStatusComp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(optionalReturnTypeStatusLabel))
+                .addComponent(compositePKWrapperPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(compositePrimaryKeyTypeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(defaultCompositePrimaryKeyTypeComp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(optionalReturnTypePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(44, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -104,6 +171,7 @@ public final class CodePanel extends javax.swing.JPanel {
          refractorNamedQueryComp.setSelected(isRefractorQuery());
          deleteNamedQueryComp.setSelected(isDeleteQuery());
          generateFluentAPIComp.setSelected(isGenerateFluentAPI());
+         javaseSupportComp.setSelected(isJavaSESupportEnable());
          optionalReturnTypeStatusComp.setSelectedItem(isOptionalReturnType()?"Enable":"Disable");
          defaultCompositePrimaryKeyTypeComp.setSelectedItem(getDefaultCompositePrimaryKeyType());
     }
@@ -112,11 +180,13 @@ public final class CodePanel extends javax.swing.JPanel {
        pref.putBoolean("refractorNamedQuery", refractorNamedQueryComp.isSelected());
        pref.putBoolean("deleteNamedQuery", deleteNamedQueryComp.isSelected());
        pref.putBoolean("generateFluentAPI", generateFluentAPIComp.isSelected());
+       pref.putBoolean("javaSESupportEnable", javaseSupportComp.isSelected());
        pref.putBoolean("optionalReturnType", "Enable".equals(optionalReturnTypeStatusComp.getSelectedItem()));
        pref.put("defaultCompositePrimaryKeyType", (String)defaultCompositePrimaryKeyTypeComp.getSelectedItem());
         deleteNamedQuery = null;
         refractorNamedQuery = null;
         generateFluentAPI = null;
+        javaSESupportEnable = null;    
         optionalReturnTypeStatus = null;
         defaultCompositePrimaryKeyType = null;
     }
@@ -124,6 +194,7 @@ public final class CodePanel extends javax.swing.JPanel {
     private static Boolean deleteNamedQuery;
     private static Boolean refractorNamedQuery;
     private static Boolean generateFluentAPI;
+    private static Boolean javaSESupportEnable;
     private static Boolean optionalReturnTypeStatus;
     private static String defaultCompositePrimaryKeyType;
     
@@ -139,6 +210,13 @@ public final class CodePanel extends javax.swing.JPanel {
             generateFluentAPI = pref.getBoolean("generateFluentAPI", Boolean.FALSE);
         }
         return generateFluentAPI;
+    }
+    
+    public static boolean isJavaSESupportEnable() {
+        if (javaSESupportEnable == null) {
+            javaSESupportEnable = pref.getBoolean("javaSESupportEnable", Boolean.FALSE);
+        }
+        return javaSESupportEnable;
     }
     
     public static boolean isOptionalReturnType() {
@@ -171,10 +249,15 @@ public final class CodePanel extends javax.swing.JPanel {
     
 private static final Preferences pref = NbPreferences.forModule(CodePanel.class);
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLayeredPane compositePKWrapperPanel;
     private javax.swing.JLabel compositePrimaryKeyTypeLabel;
     private javax.swing.JComboBox<String> defaultCompositePrimaryKeyTypeComp;
     private javax.swing.JCheckBox deleteNamedQueryComp;
     private javax.swing.JCheckBox generateFluentAPIComp;
+    private javax.swing.JCheckBox javaseSupportComp;
+    private javax.swing.JLabel javaseSupportLabel;
+    private javax.swing.JLayeredPane javaseWrapperPanel;
+    private javax.swing.JLayeredPane optionalReturnTypePanel;
     private javax.swing.JComboBox<String> optionalReturnTypeStatusComp;
     private javax.swing.JLabel optionalReturnTypeStatusLabel;
     private javax.swing.JCheckBox refractorNamedQueryComp;

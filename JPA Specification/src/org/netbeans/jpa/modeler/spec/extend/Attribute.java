@@ -116,6 +116,12 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
 
     @XmlElement(name = "snp")
     private List<AttributeSnippet> snippets;
+    
+    @XmlAttribute(name = "pc")
+    private Boolean propertyChangeSupport;
+
+    @XmlAttribute(name = "vc")
+    private Boolean vetoableChangeSupport;
 
     @XmlElementWrapper(name = "bv")
     @XmlElements({
@@ -586,6 +592,43 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
 
     public boolean removeSnippet(AttributeSnippet snippet) {
         return getSnippets().remove(snippet);
+    }
+
+        /**
+     * @return the propertyChangeSupport
+     */
+    public Boolean getPropertyChangeSupport() {
+        if(!CodePanel.isJavaSESupportEnable() && (propertyChangeSupport == null || propertyChangeSupport == false)){
+            return null;
+        }
+//        if (propertyChangeSupport == null) {
+//            return true;
+//        }
+        return propertyChangeSupport;
+    }
+
+    /**
+     * @param propertyChangeSupport the propertyChangeSupport to set
+     */
+    public void setPropertyChangeSupport(Boolean propertyChangeSupport) {
+        this.propertyChangeSupport = propertyChangeSupport;
+    }
+
+    /**
+     * @return the vetoableChangeSupport
+     */
+    public Boolean getVetoableChangeSupport() {
+        if(!CodePanel.isJavaSESupportEnable() && (vetoableChangeSupport == null || vetoableChangeSupport == false)){
+            return null;
+        }
+        return vetoableChangeSupport;
+    }
+
+    /**
+     * @param vetoableChangeSupport the vetoableChangeSupport to set
+     */
+    public void setVetoableChangeSupport(Boolean vetoableChangeSupport) {
+        this.vetoableChangeSupport = vetoableChangeSupport;
     }
 
 }
