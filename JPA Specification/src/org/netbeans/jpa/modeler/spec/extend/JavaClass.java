@@ -18,6 +18,7 @@ package org.netbeans.jpa.modeler.spec.extend;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -529,4 +530,20 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
         this.author = author;
     }
 
+    public void updateArtifact(Attribute removedAttribute){
+        //constructor gc
+        Iterator<Constructor> itr = constructors.iterator();
+        while (itr.hasNext()) {
+            Constructor constructor = itr.next();
+            if (constructor.getAttributes().size() > 0) {
+                constructor.removeAttribute(removedAttribute);
+                if (constructor.getAttributes().isEmpty()) {
+                    itr.remove();
+                }
+            }
+        }
+        equalsMethod.removeAttribute(removedAttribute);
+        hashCodeMethod.removeAttribute(removedAttribute);
+        toStringMethod.removeAttribute(removedAttribute);
+    }
 }
