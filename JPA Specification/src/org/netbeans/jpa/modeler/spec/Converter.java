@@ -6,10 +6,12 @@
 //
 package org.netbeans.jpa.modeler.spec;
 
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
+import org.eclipse.persistence.internal.jpa.metadata.converters.MixedConverterMetadata;
 
 /**
  *
@@ -49,9 +51,13 @@ import javax.xml.bind.annotation.XmlType;
 public class Converter {
 
     protected String description;
-    @XmlAttribute(name = "class", required = true)
+    @XmlAttribute(name = "c", required = true)
     protected String clazz;
-    @XmlAttribute(name = "auto-apply")
+    @XmlAttribute(name = "a", required = true)
+    private String attributeType;
+    @XmlAttribute(name = "f", required = true)
+    private String fieldType;//db
+    @XmlAttribute(name = "au")
     protected Boolean autoApply;
 
     /**
@@ -101,6 +107,9 @@ public class Converter {
      *
      */
     public Boolean isAutoApply() {
+        if(autoApply == null) {
+            return false;
+        }
         return autoApply;
     }
 
@@ -114,4 +123,38 @@ public class Converter {
         this.autoApply = value;
     }
 
+    /**
+     * @return the attributeType
+     */
+    public String getAttributeType() {
+        return attributeType;
+    }
+
+    /**
+     * @param attributeType the attributeType to set
+     */
+    public void setAttributeType(String attributeType) {
+        this.attributeType = attributeType;
+    }
+
+    /**
+     * @return the dbFieldType
+     */
+    public String getFieldType() {
+        return fieldType;
+    }
+
+    /**
+     * @param dbFieldType the dbFieldType to set
+     */
+    public void setFieldType(String dbFieldType) {
+        this.fieldType = dbFieldType;
+    }
+
+    public MixedConverterMetadata getAccessor() {
+        MixedConverterMetadata accessr = new MixedConverterMetadata();
+        accessr.setClassName(getClazz());
+        accessr.setAutoApply(isAutoApply());
+        return accessr;
+    }
 }

@@ -15,9 +15,12 @@
  */
 package org.netbeans.jpa.modeler.spec;
 
+import java.util.HashSet;
+import java.util.Set;
+import static java.util.stream.Collectors.toSet;
 import javax.lang.model.element.TypeElement;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
+import org.apache.commons.lang.StringUtils;
 import org.netbeans.jpa.modeler.spec.extend.IAttributes;
 import org.netbeans.jpa.modeler.spec.extend.JavaClass;
 
@@ -39,6 +42,8 @@ public abstract class ManagedClass extends JavaClass {
         super.load(entityMappings, element, fieldAccess);
         this.getAttributes().load(entityMappings, element, fieldAccess);
         this.access = AccessType.load(element);
+//      this.metadataComplete = (Boolean) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "metadataComplete");
+            
     }
 
     /**
@@ -81,4 +86,7 @@ public abstract class ManagedClass extends JavaClass {
         this.metadataComplete = value;
     }
 
+    public Set<String> getAllConvert(){
+        return getAttributes().getAllConvert();
+    }
 }

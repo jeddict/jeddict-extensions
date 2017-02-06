@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
-import org.apache.commons.lang.StringUtils;
+import static org.netbeans.jcode.jpa.JPAConstants.ID_CLASS_FQN;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
@@ -51,7 +51,7 @@ public class IdClass {
     protected String clazz;
 
     public static IdClass load(Element element) {
-        AnnotationMirror annotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.IdClass");
+        AnnotationMirror annotationMirror = JavaSourceParserUtil.findAnnotation(element, ID_CLASS_FQN);
         IdClass idClass = null;
         if (annotationMirror != null) {
             idClass = new IdClass();

@@ -17,8 +17,6 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
-import javax.persistence.MapKeyColumn;
-import javax.persistence.MapKeyJoinColumn;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -32,14 +30,21 @@ import org.netbeans.jpa.modeler.spec.extend.AssociationOverrideHandler;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import static org.netbeans.jcode.core.util.AttributeType.STRING;
 import org.netbeans.jcode.core.util.JavaSourceHelper;
+import static org.netbeans.jcode.jpa.JPAConstants.ELEMENT_COLLECTION_FQN;
 import static org.netbeans.jcode.jpa.JPAConstants.MAP_KEY_COLUMN_FQN;
 import static org.netbeans.jcode.jpa.JPAConstants.MAP_KEY_ENUMERATED_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.MAP_KEY_JOIN_COLUMNS_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.MAP_KEY_JOIN_COLUMN_FQN;
 import static org.netbeans.jcode.jpa.JPAConstants.MAP_KEY_TEMPORAL_FQN;
 import org.netbeans.jpa.modeler.spec.extend.CollectionTypeHandler;
 import org.netbeans.jpa.modeler.spec.extend.ColumnHandler;
 import org.netbeans.jpa.modeler.spec.extend.CompositionAttribute;
+import org.netbeans.jpa.modeler.spec.extend.ConvertContainerHandler;
+import org.netbeans.jpa.modeler.spec.extend.ConvertHandler;
 import org.netbeans.jpa.modeler.spec.extend.EnumTypeHandler;
 import org.netbeans.jpa.modeler.spec.extend.FetchTypeHandler;
+import org.netbeans.jpa.modeler.spec.extend.MapKeyConvertContainerHandler;
+import org.netbeans.jpa.modeler.spec.extend.MapKeyConvertHandler;
 import org.netbeans.jpa.modeler.spec.extend.MapKeyHandler;
 import org.netbeans.jpa.modeler.spec.extend.MapKeyType;
 import org.netbeans.jpa.modeler.spec.extend.SortableAttribute;
@@ -151,7 +156,12 @@ import static org.netbeans.jpa.source.JavaSourceParserUtil.loadEntityClass;
  * For Basic ElementCollection -> TargetClass<String>
  * For Embeddable ElementCollection -> ConnectedClass<Embeddable>
  */
-public class ElementCollection extends CompositionAttribute<Embeddable> implements SortableAttribute, FetchTypeHandler, ColumnHandler, AssociationOverrideHandler, CollectionTypeHandler, MapKeyHandler, TemporalTypeHandler, EnumTypeHandler { //CompositionAttribute/BaseAttributes
+public class ElementCollection extends CompositionAttribute<Embeddable> implements SortableAttribute, FetchTypeHandler,
+        ColumnHandler, AssociationOverrideHandler,
+        CollectionTypeHandler, MapKeyHandler,
+        TemporalTypeHandler, EnumTypeHandler,
+        ConvertContainerHandler, ConvertHandler,
+        MapKeyConvertContainerHandler, MapKeyConvertHandler { //CompositionAttribute/BaseAttributes
 
     @XmlElement(name = "ob")
     protected OrderBy orderBy;
@@ -165,7 +175,8 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
     protected Set<AttributeOverride> attributeOverride;
     @XmlElement(name = "association-override")
     protected Set<AssociationOverride> associationOverride;
-    protected List<Convert> convert;//REVENG PENDING
+    @XmlElement(name = "cn")
+    protected List<Convert> convert;
     @XmlElement(name = "collection-table")
     protected CollectionTable collectionTable;
 
@@ -179,8 +190,8 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
     @XmlAttribute(name = "collection-type")
     private String collectionType;
 
-    @XmlElement(name = "map-key-convert")
-    protected List<Convert> mapKeyConvert;//REVENG PENDING
+    @XmlElement(name = "mkcn")
+    protected List<Convert> mapKeyConvert;
 
     @XmlAttribute(name = "mkt")
     private MapKeyType mapKeyType;
@@ -221,7 +232,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
     protected Set<AttributeOverride> mapKeyAttributeOverride;
 
     public static ElementCollection load(EntityMappings entityMappings, Element element, VariableElement variableElement, ExecutableElement getterElement) {
-        AnnotationMirror annotationMirror = JavaSourceParserUtil.getAnnotation(element, "javax.persistence.ElementCollection");
+        AnnotationMirror annotationMirror = JavaSourceParserUtil.getAnnotation(element, ELEMENT_COLLECTION_FQN);
         ElementCollection elementCollection = new ElementCollection();
         elementCollection.loadAttribute(element, variableElement, getterElement);
         elementCollection.column = new Column().load(element, null);
@@ -262,8 +273,10 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
             elementCollection.setTargetClass(STRING);
         }
         JavaSourceParserUtil.getBeanValidation(elementCollection, element);
-
+//elementCollection.getName()
+        elementCollection.convert = Convert.load(element, mapKeyExist, false);
         if (mapKeyExist) {
+            elementCollection.mapKeyConvert = Convert.load(element, mapKeyExist, true);
             elementCollection.mapKey = new MapKey().load(element, null);
             elementCollection.mapKeyType = elementCollection.mapKey != null ? MapKeyType.EXT : MapKeyType.NEW;
 
@@ -285,7 +298,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
             elementCollection.mapKeyTemporal = TemporalType.load(element, JavaSourceParserUtil.findAnnotation(element, MAP_KEY_TEMPORAL_FQN));
             elementCollection.mapKeyEnumerated = EnumType.load(element, JavaSourceParserUtil.findAnnotation(element, MAP_KEY_ENUMERATED_FQN));
 
-            AnnotationMirror joinColumnsAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.MapKeyJoinColumns");
+            AnnotationMirror joinColumnsAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, MAP_KEY_JOIN_COLUMNS_FQN);
             if (joinColumnsAnnotationMirror != null) {
                 List joinColumnsAnnot = (List) JavaSourceParserUtil.findAnnotationValue(joinColumnsAnnotationMirror, "value");
                 if (joinColumnsAnnot != null) {
@@ -294,7 +307,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
                     }
                 }
             } else {
-                AnnotationMirror joinColumnAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.MapKeyJoinColumn");
+                AnnotationMirror joinColumnAnnotationMirror = JavaSourceParserUtil.findAnnotation(element,MAP_KEY_JOIN_COLUMN_FQN);
                 if (joinColumnAnnotationMirror != null) {
                     elementCollection.getMapKeyJoinColumn().add(new JoinColumn().load(element, joinColumnAnnotationMirror));
                 }
@@ -463,33 +476,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
         return this.mapKeyAttributeOverride;
     }
 
-    /**
-     * Gets the value of the mapKeyConvert property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list, not a
-     * snapshot. Therefore any modification you make to the returned list will
-     * be present inside the JAXB object. This is why there is not a
-     * <CODE>set</CODE> method for the mapKeyConvert property.
-     *
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getMapKeyConvert().add(newItem);
-     * </pre>
-     *
-     *
-     * <p>
-     * Objects of the following type(s) are allowed in the list {@link Convert }
-     *
-     *
-     */
-    public List<Convert> getMapKeyConvert() {
-        if (mapKeyConvert == null) {
-            mapKeyConvert = new ArrayList<Convert>();
-        }
-        return this.mapKeyConvert;
-    }
+
 
     /**
      * Gets the value of the mapKeyColumn property.
@@ -741,6 +728,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
     }
 
     /**
+     * Used in case of ElementCollection<Embedded>
      * Gets the value of the convert property.
      *
      * <p>
@@ -761,11 +749,92 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
      *
      *
      */
-    public List<Convert> getConvert() {
+    @Override
+    public List<Convert> getConverts() {
         if (convert == null) {
-            convert = new ArrayList<Convert>();
+            convert = new ArrayList<>();
         }
         return this.convert;
+    }
+
+    @Override
+    public void setConverts(List<Convert> converts) {
+        this.convert = converts;
+    }
+
+    /**
+     * Used in case of ElementCollection<Basic>
+     *
+     * @return Convert
+     */
+    @Override
+    public Convert getConvert() {
+        if (getConverts().isEmpty() || getConverts().get(0) == null) {
+            getConverts().add(new Convert());
+        }
+        if (getConverts().size() > 1) {//clear unused
+            getConverts().subList(1, getConverts().size()).clear();
+        }
+        return getConverts().get(0);
+    }
+
+    @Override
+    public void setConvert(Convert convert) {
+        getConverts().set(0, convert);
+    }
+    /**
+     * Gets the value of the mapKeyConvert property.
+     *
+     * <p>
+     * This accessor method returns a reference to the live list, not a
+     * snapshot. Therefore any modification you make to the returned list will
+     * be present inside the JAXB object. This is why there is not a
+     * <CODE>set</CODE> method for the mapKeyConvert property.
+     *
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getMapKeyConvert().add(newItem);
+     * </pre>
+     *
+     *
+     * <p>
+     * Objects of the following type(s) are allowed in the list {@link Convert }
+     *
+     *
+     */
+    @Override
+    public List<Convert> getMapKeyConverts() {
+        if (mapKeyConvert == null) {
+            mapKeyConvert = new ArrayList<Convert>();
+        }
+        return this.mapKeyConvert;
+    }
+
+    @Override
+    public void setMapKeyConverts(List<Convert> converts) {
+        this.mapKeyConvert = converts;
+    }
+
+    /**
+     * Used in case of ElementCollection<Basic>
+     *
+     * @return Convert
+     */
+    @Override
+    public Convert getMapKeyConvert() {
+        if (getMapKeyConverts().isEmpty() || getMapKeyConverts().get(0) == null) {
+            getMapKeyConverts().add(new Convert());
+        }
+        if (getMapKeyConverts().size() > 1) {//clear unused
+            getMapKeyConverts().subList(1, getMapKeyConverts().size()).clear();
+        }
+        return getMapKeyConverts().get(0);
+    }
+
+    @Override
+    public void setMapKeyConvert(Convert convert) {
+        getMapKeyConverts().set(0, convert);
     }
 
     /**

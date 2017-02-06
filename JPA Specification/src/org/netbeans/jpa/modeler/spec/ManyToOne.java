@@ -13,6 +13,7 @@ import javax.lang.model.element.VariableElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
+import static org.netbeans.jcode.jpa.JPAConstants.MANY_TO_ONE_FQN;
 import org.netbeans.jpa.modeler.spec.extend.SingleRelationAttribute;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
@@ -67,7 +68,7 @@ public class ManyToOne extends SingleRelationAttribute {
     @Override
     public ManyToOne load(EntityMappings entityMappings, Element element, VariableElement variableElement, ExecutableElement getterElement, AnnotationMirror annotationMirror) {
         if (annotationMirror == null) {
-            annotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.ManyToOne");
+            annotationMirror = JavaSourceParserUtil.findAnnotation(element, MANY_TO_ONE_FQN);
         }
         super.loadAttribute(entityMappings, element, variableElement, getterElement, annotationMirror);
         return this;

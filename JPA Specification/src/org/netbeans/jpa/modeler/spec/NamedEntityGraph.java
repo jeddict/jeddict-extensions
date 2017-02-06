@@ -15,6 +15,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import static org.netbeans.jcode.jpa.JPAConstants.NAMED_ENTITY_GRAPHS_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.NAMED_ENTITY_GRAPH_FQN;
 import org.netbeans.jpa.modeler.spec.extend.DataMapping;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
@@ -101,7 +103,7 @@ public class NamedEntityGraph extends DataMapping {
     public static List<NamedEntityGraph> load(Element element) {
         List<NamedEntityGraph> namedEntityGraphs = new ArrayList<NamedEntityGraph>();
 
-        AnnotationMirror namedEntityGraphsMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.NamedEntityGraphs");
+        AnnotationMirror namedEntityGraphsMirror = JavaSourceParserUtil.findAnnotation(element, NAMED_ENTITY_GRAPHS_FQN);
         if (namedEntityGraphsMirror != null) {
             List namedEntityGraphMirrorList = (List) JavaSourceParserUtil.findAnnotationValue(namedEntityGraphsMirror, "value");
             if (namedEntityGraphMirrorList != null) {
@@ -110,7 +112,7 @@ public class NamedEntityGraph extends DataMapping {
                 }
             }
         } else {
-            namedEntityGraphsMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.NamedEntityGraph");
+            namedEntityGraphsMirror = JavaSourceParserUtil.findAnnotation(element, NAMED_ENTITY_GRAPH_FQN);
             if (namedEntityGraphsMirror != null) {
                 namedEntityGraphs.add(NamedEntityGraph.loadEntityGraph(element, namedEntityGraphsMirror));
             }

@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 import org.eclipse.persistence.internal.jpa.metadata.columns.DiscriminatorColumnMetadata;
+import static org.netbeans.jcode.jpa.JPAConstants.DISCRIMINATOR_COLUMN_FQN;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
@@ -60,7 +61,7 @@ public class DiscriminatorColumn {
     protected Integer length;
 
     public static DiscriminatorColumn load(Element element) {
-        AnnotationMirror annotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.DiscriminatorColumn");
+        AnnotationMirror annotationMirror = JavaSourceParserUtil.findAnnotation(element, DISCRIMINATOR_COLUMN_FQN);
         DiscriminatorColumn column = null;
         if (annotationMirror != null) {
             column = new DiscriminatorColumn();

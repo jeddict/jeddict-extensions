@@ -181,11 +181,11 @@ public class SourceGroupSupport {
         return null;
     }
 
-    public static SourceGroup findSourceGroupForFile(FileObject folder) {
-        Parameters.notNull("folder", folder); //NOI18N
-        Project project = FileOwnerQuery.getOwner(folder);
+    public static SourceGroup findSourceGroupForFile(FileObject file) {
+        Parameters.notNull("file", file); //NOI18N
+        Project project = FileOwnerQuery.getOwner(file);
         for (SourceGroup sourceGroup : getJavaSourceGroups(project)) {
-            if (FileUtil.isParentOf(sourceGroup.getRootFolder(), folder)) {
+            if (FileUtil.isParentOf(sourceGroup.getRootFolder(), file)) {
                 return sourceGroup;
             }
         }

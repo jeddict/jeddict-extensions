@@ -32,6 +32,7 @@ import org.netbeans.jpa.modeler.spec.validator.override.AssociationValidator;
 import org.netbeans.jpa.modeler.spec.validator.override.AttributeValidator;
 import org.netbeans.jpa.modeler.spec.validator.column.PrimaryKeyJoinColumnValidator;
 import org.netbeans.db.modeler.exception.DBValidationException;
+import org.netbeans.jpa.modeler.spec.Convert;
 import org.netbeans.jpa.modeler.spec.Inheritance;
 
 /**
@@ -85,7 +86,9 @@ public class EntitySpecAccessor extends EntityAccessor {
 
         PrimaryKeyJoinColumnValidator.filter(entity.getPrimaryKeyJoinColumn());
         accessor.setPrimaryKeyJoinColumns(entity.getPrimaryKeyJoinColumn().stream().map(PrimaryKeyJoinColumn::getAccessor).collect(toList()));
-
+        
+        accessor.setConverts(entity.getConverts().stream().map(Convert::getAccessor).collect(toList()));
+        
         return accessor;
 
     }

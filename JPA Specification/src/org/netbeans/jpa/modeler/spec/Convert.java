@@ -6,10 +6,22 @@
 //
 package org.netbeans.jpa.modeler.spec;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
+import javax.lang.model.type.DeclaredType;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import org.eclipse.persistence.internal.jpa.metadata.converters.ConvertMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.ConverterMetadata;
+import static org.netbeans.jcode.jpa.JPAConstants.CONVERTS_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.CONVERT_FQN;
+import org.netbeans.jpa.modeler.spec.validator.ConvertValidator;
+import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
  *
@@ -48,15 +60,62 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "convert", propOrder = {
     "description"
 })
-public class Convert {
+@XmlJavaTypeAdapter(value = ConvertValidator.class)
+public class Convert implements Comparable<Convert> {
 
     protected String description;
-    @XmlAttribute(name = "converter")
+    @XmlAttribute(name = "c")
     protected String converter;
-    @XmlAttribute(name = "attribute-name")
+    @XmlAttribute(name = "a")
     protected String attributeName;
-    @XmlAttribute(name = "disable-conversion")
+    @XmlAttribute(name = "d")
     protected Boolean disableConversion;
+
+    private static Convert loadConvert(AnnotationMirror annotationMirror, boolean mapKeyExist, boolean isMapKeyConvert) {
+        Convert convert = null;
+        if (annotationMirror != null) {
+            convert = new Convert();
+            DeclaredType declaredType = (DeclaredType) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "converter");
+            if (declaredType != null) {
+                convert.converter = declaredType.toString();
+            }
+            convert.attributeName = (String) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "attributeName");
+            convert.disableConversion = (Boolean) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "disableConversion");
+            if (mapKeyExist) {
+                if (isMapKeyConvert && (convert.attributeName == null || !convert.attributeName.startsWith("key"))) {
+                    convert = null;
+                } else if (!isMapKeyConvert && (convert.attributeName != null && convert.attributeName.startsWith("key"))) {
+                    convert = null;
+                }
+            }
+        }
+        return convert;
+    }
+
+    public static List<Convert> load(Element element) {
+        return load(element, false, false);
+    }
+
+    public static List<Convert> load(Element element, boolean mapKeyExist, boolean isMapKeyConvert) {
+        List<Convert> converts = new ArrayList<>();
+
+        AnnotationMirror convertsMirror = JavaSourceParserUtil.findAnnotation(element, CONVERTS_FQN);
+        if (convertsMirror != null) {
+            List convertsMirrorList = (List) JavaSourceParserUtil.findAnnotationValue(convertsMirror, "value");
+            if (convertsMirrorList != null) {
+                for (Object associationOverrideObj : convertsMirrorList) {
+                    converts.add(Convert.loadConvert((AnnotationMirror) associationOverrideObj, mapKeyExist, isMapKeyConvert));
+                }
+            }
+        } else {
+            convertsMirror = JavaSourceParserUtil.findAnnotation(element, CONVERT_FQN);
+            if (convertsMirror != null) {
+                converts.add(Convert.loadConvert(convertsMirror, mapKeyExist, isMapKeyConvert));
+            }
+        }
+
+        return converts;
+    }
 
     /**
      * Gets the value of the description property.
@@ -125,6 +184,9 @@ public class Convert {
      *
      */
     public Boolean isDisableConversion() {
+        if (disableConversion == null) {
+            return false;
+        }
         return disableConversion;
     }
 
@@ -136,6 +198,28 @@ public class Convert {
      */
     public void setDisableConversion(Boolean value) {
         this.disableConversion = value;
+    }
+
+    @Override
+    public int compareTo(Convert convert) {
+        if (this.attributeName == null) {
+            return -1;
+        }
+        return this.attributeName.compareTo(convert.getAttributeName());
+    }
+
+    public ConvertMetadata getAccessor() {
+        ConvertMetadata accessr = new ConvertMetadata();
+        accessr.setConverterClassName(converter);
+        accessr.setAttributeName(attributeName);
+        accessr.setDisableConversion(disableConversion);
+        return accessr;
+    }
+    
+    public ConverterMetadata getConverterAccessor() {
+        ConverterMetadata accessr = new ConverterMetadata();
+        accessr.setClassName(converter);
+        return accessr;
     }
 
 }

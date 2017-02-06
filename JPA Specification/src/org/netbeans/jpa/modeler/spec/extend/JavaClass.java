@@ -112,9 +112,6 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
             this.setAbstract(true);
         }
         for (TypeMirror mirror : element.getInterfaces()) {
-//            if (Serializable.class.getName().equals(mirror.toString())) {
-//                continue;
-//            }
             this.addInterface(new ReferenceClass(mirror.toString()));
         }
         this.setAnnotation(JavaSourceParserUtil.getNonEEAnnotation(element));
@@ -532,18 +529,26 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
 
     public void updateArtifact(Attribute removedAttribute){
         //constructor gc
-        Iterator<Constructor> itr = constructors.iterator();
-        while (itr.hasNext()) {
-            Constructor constructor = itr.next();
-            if (constructor.getAttributes().size() > 0) {
-                constructor.removeAttribute(removedAttribute);
-                if (constructor.getAttributes().isEmpty()) {
-                    itr.remove();
+        if (constructors != null) {
+            Iterator<Constructor> itr = constructors.iterator();
+            while (itr.hasNext()) {
+                Constructor constructor = itr.next();
+                if (constructor.getAttributes().size() > 0) {
+                    constructor.removeAttribute(removedAttribute);
+                    if (constructor.getAttributes().isEmpty()) {
+                        itr.remove();
+                    }
                 }
             }
         }
-        equalsMethod.removeAttribute(removedAttribute);
-        hashCodeMethod.removeAttribute(removedAttribute);
-        toStringMethod.removeAttribute(removedAttribute);
+        if (equalsMethod != null) {
+            equalsMethod.removeAttribute(removedAttribute);
+        }
+        if (hashCodeMethod != null) {
+            hashCodeMethod.removeAttribute(removedAttribute);
+        }
+        if (toStringMethod != null) {
+            toStringMethod.removeAttribute(removedAttribute);
+        }
     }
 }

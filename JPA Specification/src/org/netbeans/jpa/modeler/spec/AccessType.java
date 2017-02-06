@@ -10,6 +10,7 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlType;
+import static org.netbeans.jcode.jpa.JPAConstants.ACCESS_FQN;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
@@ -49,7 +50,7 @@ public enum AccessType {
     }
 
     public static AccessType load(Element element) {
-        AnnotationMirror annotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.Access");
+        AnnotationMirror annotationMirror = JavaSourceParserUtil.findAnnotation(element, ACCESS_FQN);
         AccessType accessType = null;
         if (annotationMirror != null) {
             Object value = JavaSourceParserUtil.findAnnotationValue(annotationMirror, "value");

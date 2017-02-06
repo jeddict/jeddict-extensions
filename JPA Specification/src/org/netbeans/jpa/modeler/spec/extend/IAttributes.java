@@ -230,8 +230,9 @@ public interface IAttributes extends JCRELoader {
 
     List<Attribute> findAllAttribute(String name);
     List<Attribute> findAllAttribute(String name,boolean includeParentClassAttibute);
-
-    //UPDATE ELEMENT
+    List<Attribute> getAllAttribute();
+    List<Attribute> getAllAttribute(boolean includeParentClassAttibute);
+    
     boolean isAttributeExist(String name);
 
     void addBasic(Basic basic);
@@ -268,4 +269,5 @@ public interface IAttributes extends JCRELoader {
     
     public Set<String> getConnectedClass(Set<String> javaClasses);
 
+    public Set<String> getAllConvert();
 }

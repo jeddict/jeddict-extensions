@@ -26,6 +26,15 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import static org.netbeans.jcode.jpa.JPAConstants.ENTITY_LISTENERS_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.EXCLUDE_DEFAULT_LISTENERS_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.EXCLUDE_SUPERCLASS_LISTENERS_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.NAMED_NATIVE_QUERIES_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.NAMED_NATIVE_QUERY_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.NAMED_QUERIES_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.NAMED_QUERY_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.SQL_RESULTSET_MAPPINGS_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.SQL_RESULTSET_MAPPING_FQN;
 import static org.netbeans.jpa.modeler.spec.NamedQuery.FIND_BY;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import org.netbeans.jpa.modeler.spec.extend.CompositePrimaryKeyType;
@@ -94,22 +103,22 @@ public abstract class IdentifiableClass extends ManagedClass implements PrimaryK
             this.setCompositePrimaryKeyType(null);
         }
 
-        AnnotationMirror entityListenersMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.EntityListeners");
+        AnnotationMirror entityListenersMirror = JavaSourceParserUtil.findAnnotation(element, ENTITY_LISTENERS_FQN);
         if (entityListenersMirror != null) {
             this.setEntityListeners(EntityListeners.load(element, entityListenersMirror));
         }
 
-        AnnotationMirror excludeDefaultListenersMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.ExcludeDefaultListeners");
+        AnnotationMirror excludeDefaultListenersMirror = JavaSourceParserUtil.findAnnotation(element, EXCLUDE_DEFAULT_LISTENERS_FQN);
         if (excludeDefaultListenersMirror != null) {
             this.setExcludeDefaultListeners(new EmptyType());
         }
 
-        AnnotationMirror excludeSuperclassListenersMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.ExcludeSuperclassListeners");
+        AnnotationMirror excludeSuperclassListenersMirror = JavaSourceParserUtil.findAnnotation(element, EXCLUDE_SUPERCLASS_LISTENERS_FQN);
         if (excludeSuperclassListenersMirror != null) {
             this.setExcludeSuperclassListeners(new EmptyType());
         }
 
-        AnnotationMirror namedQueriesMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.NamedQueries");
+        AnnotationMirror namedQueriesMirror = JavaSourceParserUtil.findAnnotation(element, NAMED_QUERIES_FQN);
         if (namedQueriesMirror != null) {
             List namedQueriesMirrorList = (List) JavaSourceParserUtil.findAnnotationValue(namedQueriesMirror, "value");
             if (namedQueriesMirrorList != null) {
@@ -118,12 +127,12 @@ public abstract class IdentifiableClass extends ManagedClass implements PrimaryK
                 }
             }
         } else {
-            namedQueriesMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.NamedQuery");
+            namedQueriesMirror = JavaSourceParserUtil.findAnnotation(element, NAMED_QUERY_FQN);
             if (namedQueriesMirror != null) {
                 this.getNamedQuery().add(NamedQuery.load(element, namedQueriesMirror));
             }
         }
-        AnnotationMirror namedNativeQueriesMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.NamedNativeQueries");
+        AnnotationMirror namedNativeQueriesMirror = JavaSourceParserUtil.findAnnotation(element, NAMED_NATIVE_QUERIES_FQN);
         if (namedNativeQueriesMirror != null) {
             List namedNativeQueriesMirrorList = (List) JavaSourceParserUtil.findAnnotationValue(namedNativeQueriesMirror, "value");
             if (namedNativeQueriesMirrorList != null) {
@@ -132,13 +141,13 @@ public abstract class IdentifiableClass extends ManagedClass implements PrimaryK
                 }
             }
         } else {
-            namedNativeQueriesMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.NamedNativeQuery");
+            namedNativeQueriesMirror = JavaSourceParserUtil.findAnnotation(element, NAMED_NATIVE_QUERY_FQN);
             if (namedNativeQueriesMirror != null) {
                 this.getNamedNativeQuery().add(NamedNativeQuery.load(element, namedNativeQueriesMirror));
             }
         }
         
-        AnnotationMirror resultSetMappingsMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.SqlResultSetMappings");
+        AnnotationMirror resultSetMappingsMirror = JavaSourceParserUtil.findAnnotation(element, SQL_RESULTSET_MAPPINGS_FQN);
         if (resultSetMappingsMirror != null) {
             List resultSetMappingsMirrorList = (List) JavaSourceParserUtil.findAnnotationValue(resultSetMappingsMirror, "value");
             if (resultSetMappingsMirrorList != null) {
@@ -149,7 +158,7 @@ public abstract class IdentifiableClass extends ManagedClass implements PrimaryK
                 }
             }
         } else {
-            resultSetMappingsMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.SqlResultSetMapping");
+            resultSetMappingsMirror = JavaSourceParserUtil.findAnnotation(element, SQL_RESULTSET_MAPPING_FQN);
             if (resultSetMappingsMirror != null) {
                 SqlResultSetMapping mapping  = SqlResultSetMapping.load(element, resultSetMappingsMirror);
                 mapping.setIdentifiableClass(this);

@@ -8,16 +8,15 @@ package org.netbeans.jpa.modeler.spec;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.VariableElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ForeignKeyMetadata;
+import static org.netbeans.jcode.jpa.JPAConstants.FOREIGN_KEY_FQN;
 import org.netbeans.jpa.modeler.spec.validator.column.ForeignKeyValidator;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
-import org.netbeans.modeler.core.NBModelerUtil;
 
 /**
  *
@@ -74,7 +73,7 @@ public class ForeignKey {
 
     public static ForeignKey load(Element element, AnnotationMirror annotationMirror) {
         if (annotationMirror == null) {
-            annotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.ForeignKey");
+            annotationMirror = JavaSourceParserUtil.findAnnotation(element, FOREIGN_KEY_FQN);
         }
         ForeignKey foreignKey = null;
         if (annotationMirror != null) {

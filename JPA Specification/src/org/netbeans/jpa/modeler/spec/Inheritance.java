@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 import org.eclipse.persistence.internal.jpa.metadata.inheritance.InheritanceMetadata;
+import static org.netbeans.jcode.jpa.JPAConstants.INHERITANCE_FQN;
 import org.netbeans.jpa.modeler.db.metadata.InheritanceSpecMetadata;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
@@ -54,7 +55,7 @@ public class Inheritance {
     protected InheritanceType strategy;
 
     public static Inheritance load(Element element) {
-        AnnotationMirror annotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.Inheritance");
+        AnnotationMirror annotationMirror = JavaSourceParserUtil.findAnnotation(element, INHERITANCE_FQN);
         Inheritance inheritance = null;
         if (annotationMirror != null) {
             inheritance = new Inheritance();

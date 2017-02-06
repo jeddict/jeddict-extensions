@@ -21,6 +21,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.eclipse.persistence.internal.jpa.metadata.tables.JoinTableMetadata;
+import static org.netbeans.jcode.jpa.JPAConstants.JOIN_TABLE_FQN;
 import org.netbeans.jpa.modeler.spec.validator.column.ForeignKeyValidator;
 import org.netbeans.jpa.modeler.spec.validator.table.JoinTableValidator;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
@@ -104,7 +105,7 @@ public class JoinTable {
     private String generatedName;
 
     public static JoinTable load(Element element) {
-        AnnotationMirror annotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.JoinTable");
+        AnnotationMirror annotationMirror = JavaSourceParserUtil.findAnnotation(element, JOIN_TABLE_FQN);
         return JoinTable.load(element, annotationMirror);
     }
 

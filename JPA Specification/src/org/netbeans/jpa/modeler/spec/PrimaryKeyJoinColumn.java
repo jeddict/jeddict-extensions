@@ -18,6 +18,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
+import static org.netbeans.jcode.jpa.JPAConstants.PRIMARY_KEY_JOIN_COLUMNS_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.PRIMARY_KEY_JOIN_COLUMN_FQN;
 import org.netbeans.jpa.modeler.spec.extend.IJoinColumn;
 import org.netbeans.jpa.modeler.spec.validator.column.ForeignKeyValidator;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
@@ -87,7 +89,7 @@ public class PrimaryKeyJoinColumn implements IJoinColumn {
     public static List<PrimaryKeyJoinColumn> load(Element element) {
         List<PrimaryKeyJoinColumn> primaryKeyJoinColumns = new ArrayList<>();
 
-        AnnotationMirror attributeOverridesMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.PrimaryKeyJoinColumns");
+        AnnotationMirror attributeOverridesMirror = JavaSourceParserUtil.findAnnotation(element, PRIMARY_KEY_JOIN_COLUMNS_FQN);
         if (attributeOverridesMirror != null) {
             List attributeOverridesMirrorList = (List) JavaSourceParserUtil.findAnnotationValue(attributeOverridesMirror, "value");
             if (attributeOverridesMirrorList != null) {
@@ -96,7 +98,7 @@ public class PrimaryKeyJoinColumn implements IJoinColumn {
                 }
             }
         } else {
-            attributeOverridesMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.PrimaryKeyJoinColumn");
+            attributeOverridesMirror = JavaSourceParserUtil.findAnnotation(element, PRIMARY_KEY_JOIN_COLUMN_FQN);
             if (attributeOverridesMirror != null) {
                 primaryKeyJoinColumns.add(PrimaryKeyJoinColumn.loadAttribute(element, attributeOverridesMirror));
             }

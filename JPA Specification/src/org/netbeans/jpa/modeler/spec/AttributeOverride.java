@@ -6,8 +6,9 @@
 //
 package org.netbeans.jpa.modeler.spec;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -15,6 +16,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import static org.netbeans.jcode.jpa.JPAConstants.ATTRIBUTE_OVERRIDES_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.ATTRIBUTE_OVERRIDE_FQN;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
@@ -76,10 +79,10 @@ public class AttributeOverride implements Comparable<AttributeOverride> {
         return attributeOverride;
     }
 
-    public static List<AttributeOverride> load(Element element) {
-        List<AttributeOverride> attributeOverrides = new ArrayList<AttributeOverride>();
+    public static Set<AttributeOverride> load(Element element) {
+        Set<AttributeOverride> attributeOverrides = new TreeSet<>();
 
-        AnnotationMirror attributeOverridesMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.AttributeOverrides");
+        AnnotationMirror attributeOverridesMirror = JavaSourceParserUtil.findAnnotation(element, ATTRIBUTE_OVERRIDES_FQN);
         if (attributeOverridesMirror != null) {
             List attributeOverridesMirrorList = (List) JavaSourceParserUtil.findAnnotationValue(attributeOverridesMirror, "value");
             if (attributeOverridesMirrorList != null) {
@@ -88,7 +91,7 @@ public class AttributeOverride implements Comparable<AttributeOverride> {
                 }
             }
         } else {
-            attributeOverridesMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.AttributeOverride");
+            attributeOverridesMirror = JavaSourceParserUtil.findAnnotation(element, ATTRIBUTE_OVERRIDE_FQN);
             if (attributeOverridesMirror != null) {
                 attributeOverrides.add(AttributeOverride.loadAttribute(element, attributeOverridesMirror));
             }

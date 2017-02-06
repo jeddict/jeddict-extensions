@@ -20,6 +20,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToManyAccessor;
 import org.netbeans.db.modeler.exception.DBValidationException;
 import org.netbeans.jpa.modeler.db.accessor.spec.MapKeyAccessor;
+import org.netbeans.jpa.modeler.spec.Convert;
 import org.netbeans.jpa.modeler.spec.JoinColumn;
 import org.netbeans.jpa.modeler.spec.OneToMany;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
@@ -52,6 +53,7 @@ public class OneToManySpecAccessor extends OneToManyAccessor implements MapKeyAc
         if (oneToMany.getOrderColumn() != null) {
             accessor.setOrderColumn(oneToMany.getOrderColumn().getAccessor());
         }
+        accessor.setMapKeyConverts(oneToMany.getMapKeyConverts().stream().map(Convert::getAccessor).collect(toList()));
         MapKeyUtil.load(accessor, oneToMany); 
         return accessor;
 

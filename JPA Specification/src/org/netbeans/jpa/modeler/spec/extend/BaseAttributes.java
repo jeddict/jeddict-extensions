@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -47,6 +48,7 @@ import org.netbeans.jpa.modeler.db.accessor.ManyToOneSpecAccessor;
 import org.netbeans.jpa.modeler.db.accessor.OneToManySpecAccessor;
 import org.netbeans.jpa.modeler.db.accessor.OneToOneSpecAccessor;
 import org.netbeans.jpa.modeler.spec.Basic;
+import org.netbeans.jpa.modeler.spec.Convert;
 import org.netbeans.jpa.modeler.spec.ElementCollection;
 import org.netbeans.jpa.modeler.spec.Embedded;
 import org.netbeans.jpa.modeler.spec.ManagedClass;
@@ -608,14 +610,21 @@ public abstract class BaseAttributes implements IAttributes {
         }
     }
 
-    public List<Attribute> getAllAttribute() {//#ATTRIBUTE_SEQUENCE_FLOW#
+    public List<Attribute> getAllAttribute(boolean includeParentClassAttibute) {
         List<Attribute> attributes = new ArrayList<>();
+        if(includeParentClassAttibute && this.getJavaClass().getSuperclass()!=null){
+            attributes.addAll(((ManagedClass)this.getJavaClass().getSuperclass()).getAttributes().getAllAttribute(true));
+        }
         attributes.addAll(this.getBasic());
         attributes.addAll(this.getElementCollection());
         attributes.addAll(this.getEmbedded());
         attributes.addAll(this.getRelationAttributes());
         attributes.addAll(this.getTransient());
         return attributes;
+    }
+    
+    public List<Attribute> getAllAttribute() {
+        return getAllAttribute(false);
     }
 
     @Override
@@ -687,7 +696,7 @@ public abstract class BaseAttributes implements IAttributes {
 
         return false;
     }
-
+    
     @Override
     public List<Attribute> findAllAttribute(String name) {
         return findAllAttribute(name,false);
@@ -857,4 +866,27 @@ public abstract class BaseAttributes implements IAttributes {
         return attributes;
     }
 
+    public Set<String> getAllConvert(){
+        Set<String> converts = new HashSet();
+        for (Basic bc : getBasic()) {
+            Convert convert = bc.getConvert();
+            if(StringUtils.isNotBlank(convert.getConverter())){
+                converts.add(convert.getConverter());
+            }
+        }
+        for (ElementCollection ec : getElementCollection()) {
+            converts.addAll(ec.getConverts().stream().filter(con -> StringUtils.isNotBlank(con.getConverter())).map(Convert::getConverter).collect(toSet()));
+            converts.addAll(ec.getMapKeyConverts().stream().filter(con -> StringUtils.isNotBlank(con.getConverter())).map(Convert::getConverter).collect(toSet()));
+        }
+        for (Embedded ec : getEmbedded()) {
+            converts.addAll(ec.getConverts().stream().filter(con -> con.getConverter() != null).map(Convert::getConverter).collect(toSet()));
+        }
+        for (OneToMany otm : getOneToMany()) {
+            converts.addAll(otm.getMapKeyConverts().stream().filter(con -> con.getConverter() != null).map(Convert::getConverter).collect(toSet()));
+        }
+        for (ManyToMany mtm : getManyToMany()) {
+            converts.addAll(mtm.getMapKeyConverts().stream().filter(con -> con.getConverter() != null).map(Convert::getConverter).collect(toSet()));
+        }
+        return converts;
+    }
 }

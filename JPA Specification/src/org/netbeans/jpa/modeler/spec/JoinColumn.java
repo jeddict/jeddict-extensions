@@ -16,6 +16,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
+import static org.netbeans.jcode.jpa.JPAConstants.JOIN_COLUMN_FQN;
 import org.netbeans.jpa.modeler.spec.extend.IJoinColumn;
 import org.netbeans.jpa.modeler.spec.validator.column.ForeignKeyValidator;
 import org.netbeans.jpa.modeler.spec.validator.column.JoinColumnValidator;
@@ -89,7 +90,7 @@ public class JoinColumn implements JAREAnnotationLoader, IJoinColumn {
        @Override
     public JoinColumn load(Element element, AnnotationMirror annotationMirror) {
        if (annotationMirror == null) {
-            annotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.JoinColumn");
+            annotationMirror = JavaSourceParserUtil.findAnnotation(element, JOIN_COLUMN_FQN);
         }
         JoinColumn joinColumn = null;
         if (annotationMirror != null) {

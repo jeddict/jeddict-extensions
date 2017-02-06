@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +51,25 @@ import org.netbeans.api.java.source.CompilationController;
 import org.netbeans.api.java.source.WorkingCopy;
 import static org.netbeans.jcode.core.util.JavaSourceHelper.getSimpleClassName;
 import org.netbeans.jcode.core.util.StringHelper;
+import static org.netbeans.jcode.jpa.JPAConstants.BASIC_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.COLUMN_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.ELEMENT_COLLECTION_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.EMBEDDABLE_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.EMBEDDED_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.EMBEDDED_ID_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.ENTITY_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.GENERATED_VALUE_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.ID_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.JOIN_COLUMNS_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.JOIN_COLUMN_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.MANY_TO_MANY_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.MANY_TO_ONE_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.MAPPED_SUPERCLASS_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.ONE_TO_MANY_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.ONE_TO_ONE_FQN;
 import static org.netbeans.jcode.jpa.JPAConstants.PERSISTENCE_PACKAGE;
+import static org.netbeans.jcode.jpa.JPAConstants.TRANSIENT_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.VERSION_FQN;
 import org.netbeans.jpa.modeler.spec.Embeddable;
 import org.netbeans.jpa.modeler.spec.Entity;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
@@ -120,13 +137,13 @@ public class JavaSourceParserUtil {
         Name qualifiedName = typeElement.getQualifiedName();
         whileloop:
         while (typeElement != null) {
-            if (isAnnotatedWith(typeElement, "javax.persistence.Entity") || isAnnotatedWith(typeElement, "javax.persistence.MappedSuperclass")) { // NOI18N
+            if (isAnnotatedWith(typeElement, ENTITY_FQN) || isAnnotatedWith(typeElement, MAPPED_SUPERCLASS_FQN)) { // NOI18N
                 for (Element element : typeElement.getEnclosedElements()) {
-                    if (isAnnotatedWith(element, "javax.persistence.Id") || isAnnotatedWith(element, "javax.persistence.EmbeddedId") || isAnnotatedWith(element, "javax.persistence.Embedded")
-                            || isAnnotatedWith(element, "javax.persistence.Basic") || isAnnotatedWith(element, "javax.persistence.Transient")
-                            || isAnnotatedWith(element, "javax.persistence.Version") || isAnnotatedWith(element, "javax.persistence.ElementCollection")
-                            || isAnnotatedWith(element, "javax.persistence.OneToMany") || isAnnotatedWith(element, "javax.persistence.ManyToMany")
-                            || isAnnotatedWith(element, "javax.persistence.OneToOne") || isAnnotatedWith(element, "javax.persistence.ManyToOne")) {
+                    if (isAnnotatedWith(element, ID_FQN) || isAnnotatedWith(element, EMBEDDED_ID_FQN) || isAnnotatedWith(element, EMBEDDED_FQN)
+                            || isAnnotatedWith(element, BASIC_FQN) || isAnnotatedWith(element, TRANSIENT_FQN)
+                            || isAnnotatedWith(element, VERSION_FQN) || isAnnotatedWith(element, ELEMENT_COLLECTION_FQN)
+                            || isAnnotatedWith(element, ONE_TO_MANY_FQN) || isAnnotatedWith(element, MANY_TO_MANY_FQN)
+                            || isAnnotatedWith(element, ONE_TO_ONE_FQN) || isAnnotatedWith(element, MANY_TO_ONE_FQN)) {
                         if (ElementKind.FIELD == element.getKind()) {
                             fieldAccess = true;
                         }
@@ -362,7 +379,7 @@ public class JavaSourceParserUtil {
     }
 
     public static boolean isEmbeddableClass(Element typeElement) {//TypeElement
-        if (JavaSourceParserUtil.isAnnotatedWith(typeElement, "javax.persistence.Embeddable")) {
+        if (JavaSourceParserUtil.isAnnotatedWith(typeElement, EMBEDDABLE_FQN)) {
             return true;
         }
         return false;
@@ -384,14 +401,14 @@ public class JavaSourceParserUtil {
     }
 
     public static boolean isMappedSuperClass(Element typeElement) {//TypeElement
-        if (JavaSourceParserUtil.isAnnotatedWith(typeElement, "javax.persistence.MappedSuperclass")) {
+        if (JavaSourceParserUtil.isAnnotatedWith(typeElement, MAPPED_SUPERCLASS_FQN)) {
             return true;
         }
         return false;
     }
 
     public static boolean isEntityClass(Element typeElement) {//TypeElement
-        if (JavaSourceParserUtil.isAnnotatedWith(typeElement, "javax.persistence.Entity")) {
+        if (JavaSourceParserUtil.isAnnotatedWith(typeElement, ENTITY_FQN)) {
             return true;
         }
         return false;
@@ -419,10 +436,10 @@ public class JavaSourceParserUtil {
     public static int isRelationship(ExecutableElement method, boolean isFieldAccess) {
         Element element = isFieldAccess ? JavaSourceParserUtil.guessField(method) : method;
         if (element != null) {
-            if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.OneToOne") || JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.ManyToOne")) {
+            if (JavaSourceParserUtil.isAnnotatedWith(element, ONE_TO_ONE_FQN) || JavaSourceParserUtil.isAnnotatedWith(element, MANY_TO_ONE_FQN)) {
                 return REL_TO_ONE;
             }
-            if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.OneToMany") || JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.ManyToMany")) {
+            if (JavaSourceParserUtil.isAnnotatedWith(element, ONE_TO_MANY_FQN) || JavaSourceParserUtil.isAnnotatedWith(element, MANY_TO_MANY_FQN)) {
                 return REL_TO_MANY;
             }
         }
@@ -444,15 +461,15 @@ public class JavaSourceParserUtil {
         //try to find a mappedBy annotation element on the possiblyAnnotatedElement
         Element possiblyAnnotatedElement = isFieldAccess ? JavaSourceParserUtil.guessField(executableElement) : executableElement;
         String mappedBy = null;
-        AnnotationMirror persistenceAnnotation = JavaSourceParserUtil.findAnnotation(possiblyAnnotatedElement, "javax.persistence.OneToOne");  //NOI18N"
+        AnnotationMirror persistenceAnnotation = JavaSourceParserUtil.findAnnotation(possiblyAnnotatedElement, ONE_TO_ONE_FQN);  //NOI18N"
         if (persistenceAnnotation == null) {
-            persistenceAnnotation = JavaSourceParserUtil.findAnnotation(possiblyAnnotatedElement, "javax.persistence.OneToMany");  //NOI18N"
+            persistenceAnnotation = JavaSourceParserUtil.findAnnotation(possiblyAnnotatedElement, ONE_TO_MANY_FQN);  //NOI18N"
         }
         if (persistenceAnnotation == null) {
-            persistenceAnnotation = JavaSourceParserUtil.findAnnotation(possiblyAnnotatedElement, "javax.persistence.ManyToOne");  //NOI18N"
+            persistenceAnnotation = JavaSourceParserUtil.findAnnotation(possiblyAnnotatedElement, MANY_TO_ONE_FQN);  //NOI18N"
         }
         if (persistenceAnnotation == null) {
-            persistenceAnnotation = JavaSourceParserUtil.findAnnotation(possiblyAnnotatedElement, "javax.persistence.ManyToMany");  //NOI18N"
+            persistenceAnnotation = JavaSourceParserUtil.findAnnotation(possiblyAnnotatedElement, MANY_TO_MANY_FQN);  //NOI18N"
         }
         if (persistenceAnnotation != null) {
             mappedBy = JavaSourceParserUtil.findAnnotationValueAsString(persistenceAnnotation, "mappedBy");  //NOI18N
@@ -509,7 +526,7 @@ public class JavaSourceParserUtil {
         if (fieldElement == null) {
             fieldElement = method;
         }
-        String[] fieldAnnotationFqns = {"javax.persistence.ManyToOne", "javax.persistence.OneToOne", "javax.persistence.Basic"};
+        String[] fieldAnnotationFqns = {MANY_TO_ONE_FQN, ONE_TO_ONE_FQN, BASIC_FQN};
         Boolean isFieldOptionalBoolean = findAnnotationValueAsBoolean(fieldElement, fieldAnnotationFqns, "optional");
         if (isFieldOptionalBoolean != null) {
             isFieldOptional = isFieldOptionalBoolean;
@@ -518,17 +535,16 @@ public class JavaSourceParserUtil {
             return false;
         }
         //field is optional
-        fieldAnnotationFqns = new String[]{"javax.persistence.Column", "javax.persistence.JoinColumn"};
+        fieldAnnotationFqns = new String[]{COLUMN_FQN, JOIN_COLUMN_FQN};
         isFieldNullable = findAnnotationValueAsBoolean(fieldElement, fieldAnnotationFqns, "nullable");
         if (isFieldNullable != null) {
             return isFieldNullable;
         }
-        //new ballgame
         boolean result = true;
-        AnnotationMirror fieldAnnotation = JavaSourceParserUtil.findAnnotation(fieldElement, "javax.persistence.JoinColumns"); //NOI18N
+        AnnotationMirror fieldAnnotation = JavaSourceParserUtil.findAnnotation(fieldElement, JOIN_COLUMNS_FQN); //NOI18N
         if (fieldAnnotation != null) {
             //all joinColumn annotations must indicate nullable = false to return a false result
-            List<AnnotationMirror> joinColumnAnnotations = JavaSourceParserUtil.findNestedAnnotations(fieldAnnotation, "javax.persistence.JoinColumn");
+            List<AnnotationMirror> joinColumnAnnotations = JavaSourceParserUtil.findNestedAnnotations(fieldAnnotation, JOIN_COLUMN_FQN);
             for (AnnotationMirror joinColumnAnnotation : joinColumnAnnotations) {
                 String columnNullableValue = JavaSourceParserUtil.findAnnotationValueAsString(joinColumnAnnotation, "nullable"); //NOI18N
                 if (columnNullableValue != null) {
@@ -572,9 +588,9 @@ public class JavaSourceParserUtil {
         boolean idDetected = false;
         TypeElement typeElement = clazz;
         while (typeElement != null && !idDetected) {
-            if (isAnnotatedWith(typeElement, "javax.persistence.Entity") || isAnnotatedWith(typeElement, "javax.persistence.MappedSuperclass")) { // NOI18N
+            if (isAnnotatedWith(typeElement, ENTITY_FQN) || isAnnotatedWith(typeElement, MAPPED_SUPERCLASS_FQN)) { // NOI18N
                 for (Element element : typeElement.getEnclosedElements()) {
-                    if (isAnnotatedWith(element, "javax.persistence.Id") || isAnnotatedWith(element, "javax.persistence.EmbeddedId")) {
+                    if (isAnnotatedWith(element, ID_FQN) || isAnnotatedWith(element, EMBEDDED_ID_FQN)) {
                         idDetected = true;
                     }
                 }
@@ -595,7 +611,7 @@ public class JavaSourceParserUtil {
             if (methodName.startsWith("get")) { //only getter (for auto-gen pk)
                 Element element = isFieldAccess ? JavaSourceParserUtil.guessField(method) : method;
                 if (element != null) {
-                    if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.Id") || JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.EmbeddedId")) {
+                    if (JavaSourceParserUtil.isAnnotatedWith(element, ID_FQN) || JavaSourceParserUtil.isAnnotatedWith(element, EMBEDDED_ID_FQN)) {
                         return method;
                     }
                 }
@@ -608,7 +624,7 @@ public class JavaSourceParserUtil {
     public static boolean isGenerated(ExecutableElement method, boolean isFieldAccess) {
         Element element = isFieldAccess ? JavaSourceParserUtil.guessField(method) : method;
         if (element != null) {
-            if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.GeneratedValue")) { // NOI18N
+            if (JavaSourceParserUtil.isAnnotatedWith(element, GENERATED_VALUE_FQN)) {
                 return true;
             }
         }
@@ -664,23 +680,8 @@ public class JavaSourceParserUtil {
         return result;
     }
 
-    /**
-     * Returns all methods in class and its super classes which are entity
-     * classes or mapped superclasses.
-     */
-//    public static ExecutableElement[] getEntityMethods(TypeElement entityTypeElement) {
-//        List<ExecutableElement> result = new LinkedList<ExecutableElement>();
-//        TypeElement typeElement = entityTypeElement;
-//        while (typeElement != null) {
-//            if (isAnnotatedWith(typeElement, "javax.persistence.Entity") || isAnnotatedWith(typeElement, "javax.persistence.MappedSuperclass")) { // NOI18N
-//                result.addAll(ElementFilter.methodsIn(typeElement.getEnclosedElements()));
-//            }
-//            typeElement = getSuperclassTypeElement(typeElement);
-//        }
-//        return result.toArray(new ExecutableElement[result.size()]);
-//    }
     public static List<ExecutableElement> getMethods(TypeElement typeElement) {
-        List<ExecutableElement> result = new LinkedList<ExecutableElement>();
+        List<ExecutableElement> result = new LinkedList<>();
         result.addAll(ElementFilter.methodsIn(typeElement.getEnclosedElements()));
         return result;//.toArray(new ExecutableElement[result.size()]);
     }
@@ -830,7 +831,7 @@ public class JavaSourceParserUtil {
 //    static boolean isId(ExecutableElement method, boolean isFieldAccess) {
 //        Element element = isFieldAccess ? JavaSourceParserUtil.guessField(method) : method;
 //        if (element != null) {
-//            if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.Id") || JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.EmbeddedId")) { // NOI18N
+//            if (JavaSourceParserUtil.isAnnotatedWith(element, ID_FQN) || JavaSourceParserUtil.isAnnotatedWith(element, EMBEDDED_ID_FQN)) { // NOI18N
 //                return true;
 //            }
 //        }

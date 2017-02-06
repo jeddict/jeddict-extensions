@@ -27,6 +27,10 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 import static org.netbeans.jcode.core.util.JavaSourceHelper.getSimpleClassName;
+import static org.netbeans.jcode.jpa.JPAConstants.ID_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.JOIN_COLUMNS_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.JOIN_COLUMN_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.MAPS_ID_FQN;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
 import org.netbeans.jpa.modeler.spec.ForeignKey;
 import org.netbeans.jpa.modeler.spec.IdClass;
@@ -60,11 +64,11 @@ public abstract class SingleRelationAttribute extends RelationAttribute implemen
     @Override
     public void loadAttribute(EntityMappings entityMappings, Element element, VariableElement variableElement, ExecutableElement getterElement, AnnotationMirror annotationMirror) {
         super.loadAttribute(entityMappings, element, variableElement, getterElement, annotationMirror);
-        if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.Id")) {
+        if (JavaSourceParserUtil.isAnnotatedWith(element, ID_FQN)) {
             this.setPrimaryKey(Boolean.TRUE);
         }
 
-        AnnotationMirror joinColumnsAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.JoinColumns");
+        AnnotationMirror joinColumnsAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, JOIN_COLUMNS_FQN);
         if (joinColumnsAnnotationMirror != null) {
             List joinColumnsAnnot = (List) JavaSourceParserUtil.findAnnotationValue(joinColumnsAnnotationMirror, "value");
             if (joinColumnsAnnot != null) {
@@ -73,7 +77,7 @@ public abstract class SingleRelationAttribute extends RelationAttribute implemen
                 }
             }
         } else {
-            AnnotationMirror joinColumnAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.JoinColumn");
+            AnnotationMirror joinColumnAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, JOIN_COLUMN_FQN);
             if (joinColumnAnnotationMirror != null) {
                 this.getJoinColumn().add(new JoinColumn().load(element, joinColumnAnnotationMirror));
             }
@@ -81,8 +85,8 @@ public abstract class SingleRelationAttribute extends RelationAttribute implemen
 
         this.optional = (Boolean) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "optional");
         
-        AnnotationMirror mapsIdAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.MapsId");
-        AnnotationMirror idAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.Id");
+        AnnotationMirror mapsIdAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, MAPS_ID_FQN);
+        AnnotationMirror idAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, ID_FQN);
 
         this.primaryKey = mapsIdAnnotationMirror != null || idAnnotationMirror != null;
         if (mapsIdAnnotationMirror != null) {

@@ -67,7 +67,6 @@ public class Transient extends BaseAttribute {
     }
 
     public static Transient load(Element element, VariableElement variableElement, ExecutableElement getterElement) {
-//        AnnotationMirror annotationMirror = JpaControllerUtil.findAnnotation(element, "javax.persistence.Transient");
         Transient _transient = new Transient();
         _transient.loadAttribute(element, variableElement, getterElement);
         _transient.setAttributeType(variableElement.asType().toString());

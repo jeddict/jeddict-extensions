@@ -6,7 +6,6 @@
 //
 package org.netbeans.jpa.modeler.spec;
 
-import java.util.Optional;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -17,6 +16,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 import static org.netbeans.jcode.jpa.JPAConstants.BASIC_FQN;
 import org.netbeans.jpa.modeler.spec.extend.AccessTypeHandler;
+import org.netbeans.jpa.modeler.spec.extend.ConvertHandler;
 import org.netbeans.jpa.modeler.spec.extend.EnumTypeHandler;
 import org.netbeans.jpa.modeler.spec.extend.FetchTypeHandler;
 import org.netbeans.jpa.modeler.spec.extend.PersistenceBaseAttribute;
@@ -67,7 +67,7 @@ import org.netbeans.jpa.source.JavaSourceParserUtil;
     "enumerated",
     "convert"
 })
-public class Basic extends PersistenceBaseAttribute implements AccessTypeHandler, FetchTypeHandler, EnumTypeHandler {
+public class Basic extends PersistenceBaseAttribute implements AccessTypeHandler, FetchTypeHandler, EnumTypeHandler, ConvertHandler {
 
     protected Lob lob;
     protected EnumType enumerated;
@@ -136,7 +136,11 @@ public class Basic extends PersistenceBaseAttribute implements AccessTypeHandler
      * @return possible object is {@link Convert }
      *
      */
+    @Override
     public Convert getConvert() {
+        if(convert==null){
+            convert = new Convert();
+        }
         return convert;
     }
 

@@ -17,9 +17,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import static org.netbeans.jcode.jpa.JPAConstants.JOIN_COLUMNS_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.JOIN_COLUMN_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.ONE_TO_MANY_FQN;
 import org.netbeans.jpa.modeler.spec.extend.JoinColumnHandler;
 import org.netbeans.jpa.modeler.spec.extend.MultiRelationAttribute;
-import org.netbeans.jpa.source.JARELoader;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
@@ -107,11 +109,11 @@ public class OneToMany extends MultiRelationAttribute implements JoinColumnHandl
     @Override
     public OneToMany load(EntityMappings entityMappings,Element element, VariableElement variableElement, ExecutableElement getterElement, AnnotationMirror annotationMirror) {
         if(annotationMirror==null){
-           annotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.OneToMany");
+           annotationMirror = JavaSourceParserUtil.findAnnotation(element, ONE_TO_MANY_FQN);
         }
         super.loadAttribute(entityMappings, element, variableElement, getterElement, annotationMirror);
 
-        AnnotationMirror joinColumnsAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.JoinColumns");
+        AnnotationMirror joinColumnsAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, JOIN_COLUMNS_FQN);
         if (joinColumnsAnnotationMirror != null) {
             List joinColumnsAnnot = (List) JavaSourceParserUtil.findAnnotationValue(joinColumnsAnnotationMirror, "value");
             if (joinColumnsAnnot != null) {
@@ -120,7 +122,7 @@ public class OneToMany extends MultiRelationAttribute implements JoinColumnHandl
                 }
             }
         } else {
-            AnnotationMirror joinColumnAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.JoinColumn");
+            AnnotationMirror joinColumnAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, JOIN_COLUMN_FQN);
             if (joinColumnAnnotationMirror != null) {
                 this.getJoinColumn().add(new JoinColumn().load(element, joinColumnAnnotationMirror));
             }

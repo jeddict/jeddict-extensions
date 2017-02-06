@@ -15,6 +15,7 @@
  */
 package org.netbeans.jpa.modeler.db.accessor;
 
+import java.util.Collections;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicAccessor;
 import org.netbeans.jpa.modeler.spec.Basic;
 import org.netbeans.jpa.modeler.spec.Inheritance;
@@ -26,7 +27,7 @@ import org.netbeans.jpa.modeler.spec.extend.Attribute;
  */
 public class BasicSpecAccessor extends BasicAccessor {
 
-    private Basic basic;
+    private final Basic basic;
     private boolean inherit;
 
     private BasicSpecAccessor(Basic basic) {
@@ -43,6 +44,7 @@ public class BasicSpecAccessor extends BasicAccessor {
         AccessorUtil.setLob(accessor, basic.getLob(), basic.getAttributeType(), false);
         AccessorUtil.setTemporal(accessor, basic.getTemporal());
         
+        accessor.setConverts(Collections.singletonList(basic.getConvert().getAccessor()));
         accessor.setName(basic.getName());
         accessor.setColumn(basic.getColumn().getAccessor());
         return accessor;

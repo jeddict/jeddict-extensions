@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import static java.util.stream.Collectors.toSet;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.TypeElement;
 import javax.xml.bind.Marshaller;
@@ -22,10 +23,13 @@ import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.StringUtils;
 import static org.netbeans.jcode.jpa.JPAConstants.CACHEABLE_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.DISCRIMINATOR_VALUE_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.ENTITY_FQN;
 import org.netbeans.jpa.modeler.spec.extend.AccessTypeHandler;
 import org.netbeans.jpa.modeler.spec.extend.AssociationOverrideHandler;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import org.netbeans.jpa.modeler.spec.extend.AttributeOverrideHandler;
+import org.netbeans.jpa.modeler.spec.extend.ConvertContainerHandler;
 import org.netbeans.jpa.modeler.spec.extend.IAttributes;
 import org.netbeans.jpa.modeler.spec.validator.override.AssociationValidator;
 import org.netbeans.jpa.modeler.spec.validator.override.AttributeValidator;
@@ -138,7 +142,7 @@ import org.netbeans.jpa.modeler.spec.extend.InheritanceHandler;
 //    "attributes",
 //    "interfaces"
 })
-public class Entity extends IdentifiableClass implements AccessTypeHandler, InheritanceHandler, AttributeOverrideHandler, AssociationOverrideHandler {
+public class Entity extends IdentifiableClass implements AccessTypeHandler, InheritanceHandler, AttributeOverrideHandler, AssociationOverrideHandler, ConvertContainerHandler {
 
     protected Table table;
     @XmlElement(name = "st")
@@ -158,14 +162,15 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
     @XmlElement(name = "table-generator")
     protected TableGenerator tableGenerator;
 
-    @XmlElement(name = "nspq")//(name = "named-stored-procedure-query")
+    @XmlElement(name = "nspq")
     protected List<NamedStoredProcedureQuery> namedStoredProcedureQuery;
     @XmlElement(name = "attribute-override")
     protected Set<AttributeOverride> attributeOverride;
     @XmlElement(name = "association-override")
     protected Set<AssociationOverride> associationOverride;
-    protected List<Convert> convert;//REVENG PENDING JPA 2.1
-    @XmlElement(name = "neg")//(name = "named-entity-graph")
+    @XmlElement(name = "cn")
+    protected List<Convert> convert;
+    @XmlElement(name = "neg")
     protected List<NamedEntityGraph> namedEntityGraph;
     @XmlAttribute(name="name")
     protected String entityName;
@@ -179,12 +184,12 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
     @Override
     public void load(EntityMappings entityMappings, TypeElement element, boolean fieldAccess) {
         super.load(entityMappings, element, fieldAccess);
-        AnnotationMirror annotationMirror = JavaSourceParserUtil.getAnnotation(element, "javax.persistence.Entity");
+        AnnotationMirror annotationMirror = JavaSourceParserUtil.getAnnotation(element, ENTITY_FQN);
 
         this.table = Table.load(element);
         this.getSecondaryTable().addAll(SecondaryTable.loadTables(element));
         this.inheritance = Inheritance.load(element);
-        AnnotationMirror annotDiscrValue = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.DiscriminatorValue");
+        AnnotationMirror annotDiscrValue = JavaSourceParserUtil.findAnnotation(element, DISCRIMINATOR_VALUE_FQN);
         if (annotDiscrValue != null) {
             Object value = JavaSourceParserUtil.findAnnotationValue(annotationMirror, "value");
             if (value != null) {
@@ -208,12 +213,16 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
                 this.cacheable = (Boolean) value;
             }
         }
-        
-        this.getPrimaryKeyJoinColumn().addAll(PrimaryKeyJoinColumn.load(element));
-        this.getAttributeOverride().addAll(AttributeOverride.load(element));
-        this.getAssociationOverride().addAll(AssociationOverride.load(element));
-        this.getNamedEntityGraph().addAll(NamedEntityGraph.load(element));
-        this.getNamedStoredProcedureQuery().addAll(NamedStoredProcedureQuery.load(element));
+//        AnnotationMirror primaryKeyForeignKeyValue = (AnnotationMirror) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "primaryKeyForeignKeyValue");
+//            if (primaryKeyForeignKeyValue != null) {
+//                this.primaryKeyForeignKey = ForeignKey.load(element, primaryKeyForeignKeyValue);
+//            }
+        this.convert = Convert.load(element);
+        this.primaryKeyJoinColumn = PrimaryKeyJoinColumn.load(element);
+        this.attributeOverride = AttributeOverride.load(element);
+        this.associationOverride = AssociationOverride.load(element);
+        this.namedEntityGraph = NamedEntityGraph.load(element);
+        this.namedStoredProcedureQuery = NamedStoredProcedureQuery.load(element);
         
     }
 
@@ -322,7 +331,7 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
      */
     public List<PrimaryKeyJoinColumn> getPrimaryKeyJoinColumn() {
         if (primaryKeyJoinColumn == null) {
-            setPrimaryKeyJoinColumn(new ArrayList<PrimaryKeyJoinColumn>());
+            setPrimaryKeyJoinColumn(new ArrayList<>());
         }
         return this.primaryKeyJoinColumn;
     }
@@ -703,13 +712,16 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
      *
      *
      */
-    public List<Convert> getConvert() {
+    public List<Convert> getConverts() {
         if (convert == null) {
             convert = new ArrayList<Convert>();
         }
         return this.convert;
     }
 
+     public void setConverts(List<Convert> converts){
+        this.convert = converts;
+    }
     /**
      * Gets the value of the namedEntityGraph property.
      *
@@ -824,4 +836,10 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
         this.primaryKeyJoinColumn = primaryKeyJoinColumn;
     }
 
+    @Override
+    public Set<String> getAllConvert(){
+        Set<String> converts = getAttributes().getAllConvert();
+        converts.addAll(this.getConverts().stream().filter(con -> StringUtils.isNotBlank(con.getConverter())).map(Convert::getConverter).collect(toSet()));
+        return converts;
+    }
 }

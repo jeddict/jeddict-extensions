@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import static org.netbeans.jcode.jpa.JPAConstants.SEQUENCE_GENERATOR_FQN;
 import org.netbeans.jpa.modeler.spec.validator.SequenceGeneratorValidator;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
@@ -75,7 +76,7 @@ public class SequenceGenerator {
     protected Integer allocationSize;
 
     public static SequenceGenerator load(Element element) {
-        AnnotationMirror annotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.SequenceGenerator");
+        AnnotationMirror annotationMirror = JavaSourceParserUtil.findAnnotation(element, SEQUENCE_GENERATOR_FQN);
         SequenceGenerator sequenceGenerator = null;
         if (annotationMirror != null) {
             sequenceGenerator = new SequenceGenerator();

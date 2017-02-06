@@ -18,6 +18,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import static org.netbeans.jcode.jpa.JPAConstants.TABLE_GENERATOR_FQN;
 import org.netbeans.jpa.modeler.spec.validator.TableGeneratorValidator;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
@@ -98,7 +99,7 @@ public class TableGenerator {
     protected Integer allocationSize;
 
     public static TableGenerator load(Element element) {
-        AnnotationMirror annotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.TableGenerator");
+        AnnotationMirror annotationMirror = JavaSourceParserUtil.findAnnotation(element, TABLE_GENERATOR_FQN);
         TableGenerator tableGenerator = null;
         if (annotationMirror != null) {
             tableGenerator = new TableGenerator();

@@ -19,6 +19,7 @@ import static java.util.stream.Collectors.toList;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.DirectAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ElementCollectionAccessor;
 import org.netbeans.jpa.modeler.db.accessor.spec.MapKeyAccessor;
+import org.netbeans.jpa.modeler.spec.Convert;
 import org.netbeans.jpa.modeler.spec.ElementCollection;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import org.netbeans.jpa.modeler.spec.validator.override.AssociationValidator;
@@ -56,6 +57,9 @@ public class ElementCollectionSpecAccessor extends ElementCollectionAccessor imp
         accessor.setAttributeOverrides(elementCollection.getAttributeOverride().stream().map(AttributeOverrideSpecMetadata::getInstance).collect(toList()));
         AssociationValidator.filter(elementCollection);
         accessor.setAssociationOverrides(elementCollection.getAssociationOverride().stream().map(AssociationOverrideSpecMetadata::getInstance).collect(toList()));
+        
+        accessor.setConverts(elementCollection.getConverts().stream().map(Convert::getAccessor).collect(toList()));
+        accessor.setMapKeyConverts(elementCollection.getMapKeyConverts().stream().map(Convert::getAccessor).collect(toList()));
 
         MapKeyUtil.load(accessor, elementCollection); 
         return accessor;

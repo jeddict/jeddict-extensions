@@ -17,6 +17,7 @@ package org.netbeans.jpa.modeler.db.accessor;
 
 import static java.util.stream.Collectors.toList;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedAccessor;
+import org.netbeans.jpa.modeler.spec.Convert;
 import org.netbeans.jpa.modeler.spec.Embedded;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import org.netbeans.jpa.modeler.spec.validator.override.AssociationValidator;
@@ -42,6 +43,7 @@ public class EmbeddedSpecAccessor extends EmbeddedAccessor {
         accessor.setAttributeOverrides(embedded.getAttributeOverride().stream().map(AttributeOverrideSpecMetadata::getInstance).collect(toList()));
         AssociationValidator.filter(embedded);
         accessor.setAssociationOverrides(embedded.getAssociationOverride().stream().map(AssociationOverrideSpecMetadata::getInstance).collect(toList()));
+        accessor.setConverts(embedded.getConverts().stream().map(Convert::getAccessor).collect(toList()));
         return accessor;
     }
 

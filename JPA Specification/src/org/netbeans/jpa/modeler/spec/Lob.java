@@ -12,6 +12,7 @@ import javax.lang.model.element.VariableElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
+import static org.netbeans.jcode.jpa.JPAConstants.LOB_FQN;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
@@ -44,7 +45,7 @@ import org.netbeans.jpa.source.JavaSourceParserUtil;
 public class Lob {
 
     public static Lob load(Element element, VariableElement variableElement) {
-        AnnotationMirror annotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.Lob");
+        AnnotationMirror annotationMirror = JavaSourceParserUtil.findAnnotation(element, LOB_FQN);
         Lob lob = null;
         if (annotationMirror != null) {
             lob = new Lob();

@@ -7,6 +7,8 @@
 package org.netbeans.jpa.modeler.spec;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -15,6 +17,15 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.XMLAttributes;
+import static org.netbeans.jcode.jpa.JPAConstants.BASIC_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.ELEMENT_COLLECTION_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.EMBEDDED_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.MANY_TO_MANY_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.MANY_TO_ONE_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.ONE_TO_MANY_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.ONE_TO_ONE_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.TRANSIENT_FQN;
+import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import org.netbeans.jpa.modeler.spec.extend.BaseAttributes;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
@@ -79,29 +90,29 @@ public class EmbeddableAttributes extends BaseAttributes {
                     element = method;
                 }
 
-                if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.Basic")) {
+                if (JavaSourceParserUtil.isAnnotatedWith(element, BASIC_FQN)) {
                     this.addBasic(Basic.load(element, variableElement, method));
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.Transient")) {
+                } else if (JavaSourceParserUtil.isAnnotatedWith(element, TRANSIENT_FQN)) {
                     this.addTransient(Transient.load(element, variableElement, method));
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.ElementCollection")) {
+                } else if (JavaSourceParserUtil.isAnnotatedWith(element, ELEMENT_COLLECTION_FQN)) {
                     this.addElementCollection(ElementCollection.load(entityMappings, element, variableElement, method));
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.OneToOne")) {
+                } else if (JavaSourceParserUtil.isAnnotatedWith(element, ONE_TO_ONE_FQN)) {
                     OneToOne oneToOneObj = new OneToOne();
                     this.addOneToOne(oneToOneObj);
                     oneToOneObj.load(entityMappings, element, variableElement, method, null);
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.ManyToOne")) {
+                } else if (JavaSourceParserUtil.isAnnotatedWith(element, MANY_TO_ONE_FQN)) {
                     ManyToOne manyToOneObj = new ManyToOne();
                     this.addManyToOne(manyToOneObj);
                     manyToOneObj.load(entityMappings, element, variableElement, method, null);
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.OneToMany")) {
+                } else if (JavaSourceParserUtil.isAnnotatedWith(element, ONE_TO_MANY_FQN)) {
                     OneToMany oneToManyObj = new OneToMany();
                     this.addOneToMany(oneToManyObj);
                     oneToManyObj.load(entityMappings, element, variableElement, method, null);
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.ManyToMany")) {
+                } else if (JavaSourceParserUtil.isAnnotatedWith(element, MANY_TO_MANY_FQN)) {
                     ManyToMany manyToManyObj = new ManyToMany();
                     this.addManyToMany(manyToManyObj);
                     manyToManyObj.load(entityMappings, element, variableElement, method, null);
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.Embedded")) {
+                } else if (JavaSourceParserUtil.isAnnotatedWith(element, EMBEDDED_FQN)) {
                     this.addEmbedded(Embedded.load(entityMappings, element, variableElement, method));
                 } else {
                     this.addBasic(Basic.load(element, variableElement, method)); //Default Annotation
@@ -124,5 +135,21 @@ public class EmbeddableAttributes extends BaseAttributes {
         super.updateAccessor(attr, false);
         return attr;
     }
-
+    
+    public static List<String> getPaths(String prefix, Embedded embedded, Predicate<Attribute> filter) {
+        final String leafPrefix = prefix.isEmpty() ? embedded.getName() : (prefix + '.' + embedded.getName());
+        List<Attribute> attributes = embedded.getConnectedClass().getAttributes().getAllAttribute(true);
+        List<String> paths = attributes.stream()
+                .filter(attr -> attr instanceof Embedded)
+                .map(attr -> (Embedded) attr)
+                .map(emb -> getPaths(leafPrefix, emb, filter))
+                .collect(ArrayList<String>::new, ArrayList::addAll, ArrayList::addAll);
+        paths.addAll(attributes.stream()
+                .filter(filter)
+                .map(Attribute::getName)
+                .map(leaf -> leafPrefix + '.' + leaf)
+                .collect(ArrayList<String>::new, ArrayList::add, ArrayList::addAll));
+        return paths;
+    }
+    
 }

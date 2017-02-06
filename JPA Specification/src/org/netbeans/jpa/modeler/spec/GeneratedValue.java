@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
+import static org.netbeans.jcode.jpa.JPAConstants.GENERATED_VALUE_FQN;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
@@ -53,7 +54,7 @@ public class GeneratedValue {
     protected String generator;
 
     public static GeneratedValue load(Element element, VariableElement variableElement) {
-        AnnotationMirror annotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.GeneratedValue");
+        AnnotationMirror annotationMirror = JavaSourceParserUtil.findAnnotation(element, GENERATED_VALUE_FQN);
         GeneratedValue generatedValue = null;
         if (annotationMirror != null) {
             generatedValue = new GeneratedValue();

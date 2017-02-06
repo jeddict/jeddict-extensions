@@ -19,8 +19,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.StringUtils;
+import static org.netbeans.jcode.jpa.JPAConstants.ONE_TO_ONE_FQN;
 import org.netbeans.jpa.modeler.spec.extend.SingleRelationAttribute;
-import org.netbeans.jpa.modeler.spec.jaxb.JaxbVariableType;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
@@ -96,7 +96,7 @@ public class OneToOne extends SingleRelationAttribute {
     @Override
     public OneToOne load(EntityMappings entityMappings, Element element, VariableElement variableElement, ExecutableElement getterElement, AnnotationMirror annotationMirror) {
         if(annotationMirror==null){
-          annotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.OneToOne");
+          annotationMirror = JavaSourceParserUtil.findAnnotation(element, ONE_TO_ONE_FQN);
         }
         super.loadAttribute(entityMappings, element, variableElement, getterElement, annotationMirror);
         this.mappedBy = (String) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "mappedBy");

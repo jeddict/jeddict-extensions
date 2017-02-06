@@ -26,8 +26,6 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ErrorType;
-import javax.persistence.MapKeyColumn;
-import javax.persistence.MapKeyJoinColumn;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlIDREF;
@@ -37,6 +35,8 @@ import org.apache.commons.lang.StringUtils;
 import static org.netbeans.jcode.core.util.JavaSourceHelper.getSimpleClassName;
 import static org.netbeans.jcode.jpa.JPAConstants.MAP_KEY_COLUMN_FQN;
 import static org.netbeans.jcode.jpa.JPAConstants.MAP_KEY_ENUMERATED_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.MAP_KEY_JOIN_COLUMNS_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.MAP_KEY_JOIN_COLUMN_FQN;
 import static org.netbeans.jcode.jpa.JPAConstants.MAP_KEY_TEMPORAL_FQN;
 import org.netbeans.jpa.modeler.spec.AttributeOverride;
 import org.netbeans.jpa.modeler.spec.Convert;
@@ -52,7 +52,6 @@ import org.netbeans.jpa.modeler.spec.JoinColumn;
 import org.netbeans.jpa.modeler.spec.OrderBy;
 import org.netbeans.jpa.modeler.spec.OrderColumn;
 import org.netbeans.jpa.modeler.spec.TemporalType;
-import org.netbeans.jpa.modeler.spec.jaxb.JaxbVariableType;
 import org.netbeans.jpa.modeler.spec.validation.constraints.Constraint;
 import org.netbeans.jpa.modeler.spec.validation.constraints.Size;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
@@ -76,7 +75,8 @@ import static org.netbeans.jpa.source.JavaSourceParserUtil.loadEntityClass;
     "mapKeyJoinColumn",
     "mapKeyForeignKey"
 })
-public abstract class MultiRelationAttribute extends RelationAttribute implements SortableAttribute, CollectionTypeHandler, MapKeyHandler{
+public abstract class MultiRelationAttribute extends RelationAttribute implements SortableAttribute, CollectionTypeHandler, 
+                                                                                  MapKeyHandler, MapKeyConvertContainerHandler, MapKeyConvertHandler {
 
     @XmlElement(name = "ob")
     protected OrderBy orderBy;
@@ -89,8 +89,8 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
     @XmlAttribute(name = "collection-type")
     private String collectionType;//custom added
 
-    @XmlElement(name = "map-key-convert")
-    protected List<Convert> mapKeyConvert;//REVENG PENDING
+    @XmlElement(name = "mkcn")
+    protected List<Convert> mapKeyConvert;
 
     @XmlAttribute(name = "mkt")
     private MapKeyType mapKeyType;
@@ -157,6 +157,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
         this.targetEntity = declaredType.asElement().getSimpleName().toString();
         
         if (mapKeyExist) {
+            this.mapKeyConvert = Convert.load(element, mapKeyExist, true);
             this.mapKey = new MapKey().load(element, null);
             this.mapKeyType = this.mapKey!=null?MapKeyType.EXT:MapKeyType.NEW;
             
@@ -178,7 +179,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
             this.mapKeyTemporal = TemporalType.load(element, JavaSourceParserUtil.findAnnotation(element, MAP_KEY_TEMPORAL_FQN));
             this.mapKeyEnumerated = EnumType.load(element, JavaSourceParserUtil.findAnnotation(element, MAP_KEY_ENUMERATED_FQN));
             
-            AnnotationMirror joinColumnsAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.MapKeyJoinColumns");
+            AnnotationMirror joinColumnsAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, MAP_KEY_JOIN_COLUMNS_FQN);
             if (joinColumnsAnnotationMirror != null) {
                 List joinColumnsAnnot = (List) JavaSourceParserUtil.findAnnotationValue(joinColumnsAnnotationMirror, "value");
                 if (joinColumnsAnnot != null) {
@@ -187,7 +188,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
                     }
                 }
             } else {
-                AnnotationMirror joinColumnAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.MapKeyJoinColumn");
+                AnnotationMirror joinColumnAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, MAP_KEY_JOIN_COLUMN_FQN);
                 if (joinColumnAnnotationMirror != null) {
                     this.getMapKeyJoinColumn().add(new JoinColumn().load(element, joinColumnAnnotationMirror));
                 }
@@ -351,11 +352,38 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
      *
      *
      */
-    public List<Convert> getMapKeyConvert() {
+    @Override
+    public List<Convert> getMapKeyConverts() {
         if (mapKeyConvert == null) {
-            mapKeyConvert = new ArrayList<Convert>();
+            mapKeyConvert = new ArrayList<>();
         }
         return this.mapKeyConvert;
+    }
+    
+    @Override
+    public void setMapKeyConverts(List<Convert> converts) {
+        this.mapKeyConvert = converts;
+    }
+    
+    /**
+     * Used in case of Relation<Basic>
+     *
+     * @return Convert
+     */
+    @Override
+    public Convert getMapKeyConvert() {
+        if (getMapKeyConverts().isEmpty() || getMapKeyConverts().get(0) == null) {
+            getMapKeyConverts().add(new Convert());
+        }
+        if (getMapKeyConverts().size() > 1) {//clear unused
+            getMapKeyConverts().subList(1, getMapKeyConverts().size()).clear();
+        }
+        return getMapKeyConverts().get(0);
+    }
+
+    @Override
+    public void setMapKeyConvert(Convert convert) {
+        getMapKeyConverts().set(0, convert);
     }
 
     /**

@@ -9,11 +9,8 @@ package org.netbeans.jpa.modeler.spec;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -26,9 +23,16 @@ import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.XMLAttributes;
 import static org.netbeans.jcode.jpa.JPAConstants.BASIC_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.ELEMENT_COLLECTION_FQN;
 import static org.netbeans.jcode.jpa.JPAConstants.EMBEDDED_FQN;
 import static org.netbeans.jcode.jpa.JPAConstants.EMBEDDED_ID_FQN;
 import static org.netbeans.jcode.jpa.JPAConstants.ID_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.MANY_TO_MANY_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.MANY_TO_ONE_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.ONE_TO_MANY_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.ONE_TO_ONE_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.TRANSIENT_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.VERSION_FQN;
 import org.netbeans.jpa.modeler.db.accessor.EmbeddedIdSpecAccessor;
 import org.netbeans.jpa.modeler.db.accessor.IdSpecAccessor;
 import org.netbeans.jpa.modeler.db.accessor.VersionSpecAccessor;
@@ -149,18 +153,18 @@ public class Attributes extends BaseAttributes implements IPersistenceAttributes
                 }
                  
                 if (JavaSourceParserUtil.isAnnotatedWith(element, ID_FQN)
-                        && !(JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.OneToOne")
-                        || JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.ManyToOne"))) {
+                        && !(JavaSourceParserUtil.isAnnotatedWith(element, ONE_TO_ONE_FQN)
+                        || JavaSourceParserUtil.isAnnotatedWith(element, MANY_TO_ONE_FQN))) {
                     this.addId(Id.load(element, variableElement, getterElement));
                 } else if (JavaSourceParserUtil.isAnnotatedWith(element, BASIC_FQN)) {
                     this.addBasic(Basic.load(element, variableElement, getterElement));
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.Transient")) {
+                } else if (JavaSourceParserUtil.isAnnotatedWith(element, TRANSIENT_FQN)) {
                     this.addTransient(Transient.load(element, variableElement, getterElement));
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.Version")) {
+                } else if (JavaSourceParserUtil.isAnnotatedWith(element, VERSION_FQN)) {
                     this.addVersion(Version.load(element, variableElement, getterElement));
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.ElementCollection")) {
+                } else if (JavaSourceParserUtil.isAnnotatedWith(element, ELEMENT_COLLECTION_FQN)) {
                     this.addElementCollection(ElementCollection.load(entityMappings, element, variableElement, getterElement));
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.OneToOne")) {
+                } else if (JavaSourceParserUtil.isAnnotatedWith(element, ONE_TO_ONE_FQN)) {
                     OneToOne oneToOneObj = new OneToOne().load(entityMappings, element, variableElement, getterElement, null);
                     this.addOneToOne(oneToOneObj);
                     if(StringUtils.isNotBlank(oneToOneObj.getMapsId())){
@@ -168,7 +172,7 @@ public class Attributes extends BaseAttributes implements IPersistenceAttributes
                     } else {
                         mapsId.add(oneToOneObj.getName());
                     }
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.ManyToOne")) {
+                } else if (JavaSourceParserUtil.isAnnotatedWith(element, MANY_TO_ONE_FQN)) {
                     ManyToOne manyToOneObj = new ManyToOne().load(entityMappings, element, variableElement, getterElement, null);
                     this.addManyToOne(manyToOneObj);
                     if(StringUtils.isNotBlank(manyToOneObj.getMapsId())){
@@ -176,10 +180,10 @@ public class Attributes extends BaseAttributes implements IPersistenceAttributes
                     } else {
                         mapsId.add(manyToOneObj.getName());
                     }
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.OneToMany")) {
+                } else if (JavaSourceParserUtil.isAnnotatedWith(element, ONE_TO_MANY_FQN)) {
                     OneToMany oneToManyObj = new OneToMany().load(entityMappings, element, variableElement, getterElement, null);
                     this.addOneToMany(oneToManyObj);
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, "javax.persistence.ManyToMany")) {
+                } else if (JavaSourceParserUtil.isAnnotatedWith(element, MANY_TO_MANY_FQN)) {
                     ManyToMany manyToManyObj = new ManyToMany().load(entityMappings, element, variableElement, getterElement, null);
                     this.addManyToMany(manyToManyObj);
                 } else if (JavaSourceParserUtil.isAnnotatedWith(element, EMBEDDED_ID_FQN)) {
@@ -425,17 +429,21 @@ public class Attributes extends BaseAttributes implements IPersistenceAttributes
         }
         return null;
     }
-
+    
     @Override
-    public List<Attribute> getAllAttribute() {//#ATTRIBUTE_SEQUENCE_FLOW#
-        List<Attribute> attributes = new ArrayList<>();
+    public List<Attribute> getAllAttribute(boolean includeParentClassAttibute) {
+        List<Attribute> attributes = super.getAllAttribute(includeParentClassAttibute);
         if (this.getEmbeddedId() != null) {
             attributes.add(this.getEmbeddedId());
         }
         attributes.addAll(this.getId());
-        attributes.addAll(super.getAllAttribute());
         attributes.addAll(this.getVersion());
         return attributes;
+    }
+    
+    @Override
+    public List<Attribute> getAllAttribute() {
+        return getAllAttribute(false);
     }
 
     @Override

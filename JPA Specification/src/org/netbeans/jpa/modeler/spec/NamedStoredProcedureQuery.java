@@ -15,6 +15,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import static org.netbeans.jcode.jpa.JPAConstants.NAMED_STORED_PROCEDURE_QUERIES_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.NAMED_STORED_PROCEDURE_QUERY_FQN;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
@@ -121,7 +123,7 @@ public class NamedStoredProcedureQuery {//TODO extend to DataMapping and remove 
     public static List<NamedStoredProcedureQuery> load(Element element) {
         List<NamedStoredProcedureQuery> namedStoredProcedureQueries = new ArrayList<NamedStoredProcedureQuery>();
 
-        AnnotationMirror namedStoredProcedureQueriesMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.NamedStoredProcedureQueries");
+        AnnotationMirror namedStoredProcedureQueriesMirror = JavaSourceParserUtil.findAnnotation(element, NAMED_STORED_PROCEDURE_QUERIES_FQN);
         if (namedStoredProcedureQueriesMirror != null) {
             List namedStoredProcedureQueryMirrorList = (List) JavaSourceParserUtil.findAnnotationValue(namedStoredProcedureQueriesMirror, "value");
             if (namedStoredProcedureQueryMirrorList != null) {
@@ -130,7 +132,7 @@ public class NamedStoredProcedureQuery {//TODO extend to DataMapping and remove 
                 }
             }
         } else {
-            namedStoredProcedureQueriesMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.NamedStoredProcedureQuery");
+            namedStoredProcedureQueriesMirror = JavaSourceParserUtil.findAnnotation(element, NAMED_STORED_PROCEDURE_QUERY_FQN);
             if (namedStoredProcedureQueriesMirror != null) {
                 namedStoredProcedureQueries.add(NamedStoredProcedureQuery.loadStoredProcedureQuery(element, namedStoredProcedureQueriesMirror));
             }

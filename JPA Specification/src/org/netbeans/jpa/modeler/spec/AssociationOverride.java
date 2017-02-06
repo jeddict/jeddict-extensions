@@ -8,6 +8,8 @@ package org.netbeans.jpa.modeler.spec;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -15,6 +17,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import static org.netbeans.jcode.jpa.JPAConstants.ASSOCIATION_OVERRIDES_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.ASSOCIATION_OVERRIDE_FQN;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
@@ -102,10 +106,10 @@ public class AssociationOverride implements Comparable<AssociationOverride> {
         return associationOverride;
     }
 
-    public static List<AssociationOverride> load(Element element) {
-        List<AssociationOverride> associationOverrides = new ArrayList<AssociationOverride>();
+    public static Set<AssociationOverride> load(Element element) {
+        Set<AssociationOverride> associationOverrides = new TreeSet<>();
 
-        AnnotationMirror associationOverridesMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.AssociationOverrides");
+        AnnotationMirror associationOverridesMirror = JavaSourceParserUtil.findAnnotation(element, ASSOCIATION_OVERRIDES_FQN);
         if (associationOverridesMirror != null) {
             List associationOverridesMirrorList = (List) JavaSourceParserUtil.findAnnotationValue(associationOverridesMirror, "value");
             if (associationOverridesMirrorList != null) {
@@ -114,7 +118,7 @@ public class AssociationOverride implements Comparable<AssociationOverride> {
                 }
             }
         } else {
-            associationOverridesMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.AssociationOverride");
+            associationOverridesMirror = JavaSourceParserUtil.findAnnotation(element, ASSOCIATION_OVERRIDE_FQN);
             if (associationOverridesMirror != null) {
                 associationOverrides.add(AssociationOverride.loadAssociation(element, associationOverridesMirror));
             }

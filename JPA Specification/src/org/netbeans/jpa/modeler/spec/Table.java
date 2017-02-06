@@ -19,6 +19,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
+import static org.netbeans.jcode.jpa.JPAConstants.TABLE_FQN;
 import org.netbeans.jpa.modeler.spec.validator.table.TableValidator;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
@@ -77,7 +78,7 @@ public class Table {
     protected String schema;
 
     public static Table load(Element element) {
-        AnnotationMirror annotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.Table");
+        AnnotationMirror annotationMirror = JavaSourceParserUtil.findAnnotation(element, TABLE_FQN);
         Table table = null;
         if (annotationMirror != null) {
             table = new Table();

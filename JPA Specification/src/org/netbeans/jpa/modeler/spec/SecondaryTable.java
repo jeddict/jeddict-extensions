@@ -15,6 +15,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 import org.eclipse.persistence.internal.jpa.metadata.tables.SecondaryTableMetadata;
+import static org.netbeans.jcode.jpa.JPAConstants.SECONDARY_TABLES_FQN;
+import static org.netbeans.jcode.jpa.JPAConstants.SECONDARY_TABLE_FQN;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
@@ -101,7 +103,7 @@ public class SecondaryTable extends Table {
     public static List<SecondaryTable> loadTables(Element element) {
         List<SecondaryTable> secondaryTables = new ArrayList<>();
 
-        AnnotationMirror secondaryTablesMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.SecondaryTables");
+        AnnotationMirror secondaryTablesMirror = JavaSourceParserUtil.findAnnotation(element, SECONDARY_TABLES_FQN);
         if (secondaryTablesMirror != null) {
             List secondaryTablesMirrorList = (List) JavaSourceParserUtil.findAnnotationValue(secondaryTablesMirror, "value");
             if (secondaryTablesMirrorList != null) {
@@ -110,7 +112,7 @@ public class SecondaryTable extends Table {
                 }
             }
         } else {
-            secondaryTablesMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.SecondaryTable");
+            secondaryTablesMirror = JavaSourceParserUtil.findAnnotation(element, SECONDARY_TABLE_FQN);
             if (secondaryTablesMirror != null) {
                 secondaryTables.add(SecondaryTable.loadSecondaryTable(element, secondaryTablesMirror));
             }

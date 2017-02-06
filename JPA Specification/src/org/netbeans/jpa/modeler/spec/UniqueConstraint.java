@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import static org.netbeans.jcode.jpa.JPAConstants.UNIQUE_CONSTRAINT_FQN;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
@@ -71,7 +72,7 @@ public class UniqueConstraint {
     
     public static UniqueConstraint load(Element element, AnnotationMirror annotationMirror) {
         if (annotationMirror == null) {
-            annotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.UniqueConstraint");
+            annotationMirror = JavaSourceParserUtil.findAnnotation(element, UNIQUE_CONSTRAINT_FQN);
         }
         UniqueConstraint uniqueConstraint = null;
         if (annotationMirror != null) {

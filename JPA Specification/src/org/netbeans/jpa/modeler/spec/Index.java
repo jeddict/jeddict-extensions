@@ -7,7 +7,6 @@
 package org.netbeans.jpa.modeler.spec;
 
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.lang.model.element.AnnotationMirror;
@@ -18,6 +17,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.StringUtils;
+import static org.netbeans.jcode.jpa.JPAConstants.INDEX_FQN;
 import org.netbeans.jpa.modeler.spec.extend.OrderbyItem;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
@@ -77,7 +77,7 @@ public class Index {
 
     public static Index load(Element element, AnnotationMirror annotationMirror) {
         if (annotationMirror == null) {
-            annotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.Index");
+            annotationMirror = JavaSourceParserUtil.findAnnotation(element, INDEX_FQN);
         }
         Index index = null;
         if (annotationMirror != null) {

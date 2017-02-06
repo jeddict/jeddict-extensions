@@ -24,12 +24,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.StringUtils;
 import org.netbeans.jpa.modeler.spec.extend.AssociationOverrideHandler;
-import org.netbeans.jpa.modeler.spec.extend.AttributeOverrideHandler;
 import org.netbeans.jpa.modeler.spec.extend.CompositionAttribute;
+import org.netbeans.jpa.modeler.spec.extend.ConvertContainerHandler;
 import org.netbeans.jpa.modeler.spec.validator.override.AssociationValidator;
 import org.netbeans.jpa.modeler.spec.validator.override.AttributeValidator;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
-import org.netbeans.modeler.core.NBModelerUtil;
 
 /**
  *
@@ -69,13 +68,14 @@ import org.netbeans.modeler.core.NBModelerUtil;
     "associationOverride",
     "convert"
 })
-public class Embedded extends CompositionAttribute<Embeddable> implements AssociationOverrideHandler {
+public class Embedded extends CompositionAttribute<Embeddable> implements AssociationOverrideHandler, ConvertContainerHandler {
 
     @XmlElement(name = "attribute-override")
     protected Set<AttributeOverride> attributeOverride;
     @XmlElement(name = "association-override")
     protected Set<AssociationOverride> associationOverride;
-    protected List<Convert> convert;//REVENG PENDING
+    @XmlElement(name = "cn")
+    protected List<Convert> convert;
 
     @XmlAttribute(name = "access")
     protected AccessType access;
@@ -114,7 +114,7 @@ public class Embedded extends CompositionAttribute<Embeddable> implements Associ
             embeddableClassSpec = embeddableClassSpecOpt.get();
         }
         embedded.setConnectedClass(embeddableClassSpec);
-
+        embedded.convert = Convert.load(element);
         JavaSourceParserUtil.getBeanValidation(embedded,element);
         return embedded;
     }
@@ -239,11 +239,14 @@ public class Embedded extends CompositionAttribute<Embeddable> implements Associ
      *
      *
      */
-    public List<Convert> getConvert() {
+    public List<Convert> getConverts() {
         if (convert == null) {
             convert = new ArrayList<Convert>();
         }
         return this.convert;
+    }
+     public void setConverts(List<Convert> converts){
+        this.convert = converts;
     }
 
     /**

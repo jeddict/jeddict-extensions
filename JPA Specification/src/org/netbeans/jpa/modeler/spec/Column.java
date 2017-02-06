@@ -8,13 +8,13 @@ package org.netbeans.jpa.modeler.spec;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.VariableElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
+import static org.netbeans.jcode.jpa.JPAConstants.COLUMN_FQN;
 import org.netbeans.jpa.modeler.spec.extend.BaseElement;
 import org.netbeans.jpa.modeler.spec.validator.column.ColumnValidator;
 import org.netbeans.jpa.source.JAREAnnotationLoader;
@@ -89,7 +89,7 @@ public class Column extends BaseElement implements JAREAnnotationLoader {
     @Override
     public Column load(Element element, AnnotationMirror annotationMirror) {
         if (annotationMirror == null) {
-            annotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.Column");
+            annotationMirror = JavaSourceParserUtil.findAnnotation(element, COLUMN_FQN);
         }
         Column column = null;
         if (annotationMirror != null) {
@@ -109,7 +109,7 @@ public class Column extends BaseElement implements JAREAnnotationLoader {
     }
 
     public Column load(Element element) {
-        AnnotationMirror annotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.Column");
+        AnnotationMirror annotationMirror = JavaSourceParserUtil.findAnnotation(element, COLUMN_FQN);
         return load(element, annotationMirror);
     }
 

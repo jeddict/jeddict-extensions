@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
+import static org.netbeans.jcode.jpa.JPAConstants.QUERY_HINT_FQN;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
@@ -59,7 +60,7 @@ public class QueryHint {
 
     public static QueryHint load(Element element, AnnotationMirror annotationMirror) {
         if (annotationMirror == null) {
-            annotationMirror = JavaSourceParserUtil.findAnnotation(element, "javax.persistence.QueryHint");
+            annotationMirror = JavaSourceParserUtil.findAnnotation(element, QUERY_HINT_FQN);
         }
         QueryHint queryHint = null;
         if (annotationMirror != null) {
