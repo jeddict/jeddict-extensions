@@ -17,9 +17,7 @@ package org.netbeans.jpa.modeler.spec.extend.annotation;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import org.netbeans.jpa.modeler.spec.extend.DataMapping;
 
 /**
  *
@@ -30,9 +28,14 @@ public class AnnotationElement { //TODO extend to DataMapping and remove name an
 
     @XmlElement(name = "v")
     private Object value;
-    
- 
 
+    public AnnotationElement() {
+    }
+
+    public AnnotationElement(Object value) {
+        this.value = value;
+    }
+    
     /**
      * @return the value
      */

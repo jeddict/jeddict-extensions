@@ -79,6 +79,9 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
 
     private List<Annotation> annotation;
     
+    @XmlTransient
+    private List<Annotation> runtimeAnnotation;
+    
     @XmlElement(name = "ext")
     private ReferenceClass superclassRef;//if refered from classpath
 
@@ -87,6 +90,9 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
     
     @XmlElement(name = "snp")
     private List<ClassSnippet> snippets;
+    
+    @XmlTransient
+    private List<ClassSnippet> runtimeSnippets;
     
     @XmlTransient
     private FileObject fileObject;
@@ -135,17 +141,36 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
     }
 
     public void addAnnotation(Annotation annotation_In) {
-        if (annotation == null) {
-            annotation = new ArrayList<>();
-        }
-        this.annotation.add(annotation_In);
+        getAnnotation().add(annotation_In);
     }
 
     public void removeAnnotation(Annotation annotation_In) {
-        if (annotation == null) {
-            annotation = new ArrayList<>();
+        getAnnotation().remove(annotation_In);
+    }
+
+    /**
+     * @return the runtimeAnnotation
+     */
+    public List<Annotation> getRuntimeAnnotation() {
+        if (runtimeAnnotation == null) {
+            runtimeAnnotation = new ArrayList<>();
         }
-        this.annotation.remove(annotation_In);
+        return runtimeAnnotation;
+    }
+
+    /**
+     * @param runtimeAnnotation the runtimeAnnotation to set
+     */
+    public void setRuntimeAnnotation(List<Annotation> runtimeAnnotation) {
+        this.runtimeAnnotation = runtimeAnnotation;
+    }
+
+    public void addRuntimeAnnotation(Annotation runtimeAnnotation) {
+        getRuntimeAnnotation().add(runtimeAnnotation);
+    }
+
+    public void removeRuntimeAnnotation(Annotation runtimeAnnotation) {
+        getRuntimeAnnotation().remove(runtimeAnnotation);
     }
 
     /**
@@ -446,6 +471,31 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
 
     public boolean removeSnippet(ClassSnippet snippet) {
         return getSnippets().remove(snippet);
+    }
+    
+    /**
+     * @return the runtimeSnippets
+     */
+    public List<ClassSnippet> getRuntimeSnippets() {
+        if (runtimeSnippets == null) {
+            runtimeSnippets = new ArrayList<>();
+        }
+        return runtimeSnippets;
+    }
+
+    /**
+     * @param runtimeSnippets the runtimeSnippets to set
+     */
+    public void setRuntimeSnippets(List<ClassSnippet> runtimeSnippets) {
+        this.runtimeSnippets = runtimeSnippets;
+    }
+
+    public boolean addRuntimeSnippet(ClassSnippet snippet) {
+        return getRuntimeSnippets().add(snippet);
+    }
+
+    public boolean removeRuntimeSnippet(ClassSnippet snippet) {
+        return getRuntimeSnippets().remove(snippet);
     }
 
     /**

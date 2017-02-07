@@ -15,11 +15,8 @@
  */
 package org.netbeans.jcode.generator;
 
-import java.io.IOException;
-import java.util.Set;
 import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
 import org.netbeans.jcode.task.progress.ProgressHandler;
-import org.openide.filesystems.FileObject;
 
 public abstract class AbstractGenerator {
 
@@ -30,7 +27,10 @@ public abstract class AbstractGenerator {
     public AbstractGenerator() {
     }
 
-    public abstract Set<FileObject> generate(ApplicationConfigData applicationConfigData, ProgressHandler handler) throws IOException;
+    public abstract void initialize(ApplicationConfigData applicationConfigData, ProgressHandler progressHandler);
+    public abstract void preGeneration();
+    public abstract void generate();
+    public abstract void postGeneration();
 
     protected void initProgressReporting(ProgressHandler handler) {
         initProgressReporting(handler, true);

@@ -8,7 +8,6 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import org.netbeans.jpa.modeler.spec.extend.ColumnHandler;
 
-//created by gaurav gupta
 @XmlAccessorType(XmlAccessType.FIELD)
 public class DefaultAttribute extends Attribute {
 

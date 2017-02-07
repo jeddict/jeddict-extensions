@@ -1162,39 +1162,5 @@ public class JavaSourceHelper {
         }
         return author;
     }
-
-    public static void addAnnotation(WorkingCopy working, List<String> siblingsAnnotation, String annotationType, BiFunction<WorkingCopy, VariableElement, List<? extends ExpressionTree>> arguments) {
-        Set<String> siblingsAnnotationSet = new HashSet<>(siblingsAnnotation);
-        TreeMaker maker = working.getTreeMaker();
-        TypeElement entityElement = working.getTopLevelElements().get(0);
-        List<VariableElement> variableElements = ElementFilter.fieldsIn(working.getElements().getAllMembers(entityElement));
-        GenerationUtils genUtils = GenerationUtils.newInstance(working);
-        for (VariableElement variableElement : variableElements) {
-            List<? extends AnnotationMirror> annotationMirrors = working.getElements().getAllAnnotationMirrors(variableElement);
-            boolean hasCustomAnnotation = false, isFormVariable = false;
-            for (AnnotationMirror annotationMirror : annotationMirrors) {
-                DeclaredType type = annotationMirror.getAnnotationType();
-                Element annotationElement = type.asElement();
-                if (annotationElement instanceof TypeElement) {
-                    Name annotationName = ((TypeElement) annotationElement).getQualifiedName();
-                    if (annotationName.contentEquals(annotationType)) {
-                        hasCustomAnnotation = true;
-                    }
-                    if (siblingsAnnotationSet.contains(annotationName.toString())) {
-                        isFormVariable = true;
-                    }
-                }
-            }
-            if (!hasCustomAnnotation && isFormVariable) {
-                VariableTree varTree = (VariableTree) working.getTrees().getTree(variableElement);
-
-                AnnotationTree annotationTree = genUtils.createAnnotation(annotationType,
-                        arguments.apply(working, variableElement));
-                working.rewrite(varTree.getModifiers(), maker.addModifiersAnnotation(varTree.getModifiers(), annotationTree));
-                VariableTree newVarTree = (VariableTree) varTree;
-                newVarTree = genUtils.addAnnotation(newVarTree, annotationTree);
-                working.rewrite(varTree, newVarTree);
-            }
-        }
-    }
+  
 }

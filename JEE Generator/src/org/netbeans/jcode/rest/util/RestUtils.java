@@ -535,30 +535,4 @@ public class RestUtils {
         return false;
     }
 
-    public static boolean hasAopAlliance(Project project) {
-        try {
-            return hasClass(project, "org/aopalliance/aop/Advice.class");   // NOI18N
-        } catch (IOException e) {
-            return false;
-        }
-    }
-
-        public static void addFormParam(final org.netbeans.jpa.modeler.spec.Entity entity) {
-        JavaSource javaSource = entity.getJavaSource();
-        if (javaSource == null) {
-            return;
-        }
-        try {
-            ModificationResult result = javaSource.runModificationTask((final WorkingCopy working) -> {
-                working.toPhase(JavaSource.Phase.RESOLVED);
-                TreeMaker maker = working.getTreeMaker();
-                JavaSourceHelper.addAnnotation(working, Arrays.asList(ID_FQN, BASIC_FQN), FORM_PARAM,
-                        (wc, variableElement) -> Collections.<ExpressionTree>singletonList(wc.getTreeMaker().Literal(variableElement.getSimpleName().toString())));
-
-            });
-            result.commit();
-        } catch (IOException e) {
-            Logger.getLogger(RestUtils.class.getName()).log(Level.SEVERE, null, e);
-        }
-    }
 }

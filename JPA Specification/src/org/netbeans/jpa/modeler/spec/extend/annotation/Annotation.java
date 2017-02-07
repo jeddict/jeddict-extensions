@@ -35,9 +35,15 @@ public class Annotation implements Serializable {
     @XmlAttribute(name = "n", required = true)
     private String name;
     @XmlElement(name="e")
-    private List<AnnotationElement> elements;
-  
+    private List<AnnotationElement> elements;//todo
 
+    public Annotation() {
+    }
+
+    public Annotation(String name) {
+        this.name = name;
+    }
+  
     /**
      * @return the enable
      */

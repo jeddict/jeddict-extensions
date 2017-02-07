@@ -15,12 +15,11 @@
  */
 package org.netbeans.jpa.modeler.spec;
 
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import static java.util.stream.Collectors.toSet;
 import javax.lang.model.element.TypeElement;
 import javax.xml.bind.annotation.XmlAttribute;
-import org.apache.commons.lang.StringUtils;
+import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import org.netbeans.jpa.modeler.spec.extend.IAttributes;
 import org.netbeans.jpa.modeler.spec.extend.JavaClass;
 

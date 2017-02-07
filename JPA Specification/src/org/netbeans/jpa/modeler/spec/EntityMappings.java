@@ -1535,7 +1535,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         return getSnippets().add(snippet);
     }
 
-    public boolean removeSnippet(Snippet snippet) {
+    public boolean removeSnippet(ClassSnippet snippet) {
         return getSnippets().remove(snippet);
     }
 
@@ -1578,4 +1578,22 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         return converts;
     }
 
+    public void cleanRuntimeArtifact(){
+        for (JavaClass javaClass : getJavaClass()) {
+            javaClass.setRuntimeAnnotation(null);
+            javaClass.setRuntimeSnippets(null);
+            List<? extends Attribute> attributes = null;
+            if(javaClass instanceof ManagedClass){
+                attributes = ((ManagedClass)javaClass).getAttributes().getAllAttribute();
+            } else if(javaClass instanceof DefaultClass){
+                attributes = ((DefaultClass)javaClass).getAttributes();
+            }
+            if (attributes != null) {
+                attributes.forEach(attr -> {
+                    attr.setRuntimeAnnotation(null);
+                    attr.setRuntimeSnippets(null);
+                });
+            }
+        }
+    }
 }

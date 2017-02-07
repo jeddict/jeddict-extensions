@@ -30,6 +30,10 @@ import org.openide.util.Lookup;
  */
 public interface Generator {
 
+    default void preExecute() {
+    }
+    default void postExecute() {
+    }
     void execute() throws IOException;
 
     static TechContext get(String className) {
@@ -47,13 +51,13 @@ public interface Generator {
     }
 
     static List<TechContext> getController(TechContext parentCodeGenerator) {
-         return getTechContexts(parentCodeGenerator, Technology.Type.CONTROLLER);
+        return getTechContexts(parentCodeGenerator, Technology.Type.CONTROLLER);
     }
 
     static List<TechContext> getViewer(TechContext parentCodeGenerator) {
         return getTechContexts(parentCodeGenerator, Technology.Type.VIEWER);
     }
-    
+
     static List<TechContext> getSiblingTechContexts(Generator rootCodeGenerator) {
         Technology rootTechnology = rootCodeGenerator.getClass().getAnnotation(Technology.class);
         Set<Class<? extends Generator>> rootCodeGeneratorSibling = Arrays.stream(rootTechnology.sibling()).collect(toSet());
@@ -61,18 +65,18 @@ public interface Generator {
         Lookup.getDefault().lookupAll(Generator.class).stream().forEach((Generator codeGenerator) -> {
             Technology technology = codeGenerator.getClass().getAnnotation(Technology.class);
             //if direct lookup || reverse lookup
-            if (technology!=null && technology.type() == Technology.Type.NONE && (rootCodeGeneratorSibling.contains(codeGenerator.getClass()) ||
-                Arrays.stream(technology.sibling()).filter(sibling -> sibling == rootCodeGenerator.getClass()).findAny().isPresent())) {
+            if (technology != null && technology.type() == Technology.Type.NONE && (rootCodeGeneratorSibling.contains(codeGenerator.getClass())
+                    || Arrays.stream(technology.sibling()).filter(sibling -> sibling == rootCodeGenerator.getClass()).findAny().isPresent())) {
                 siblingCodeGenerators.add(new TechContext(codeGenerator));
-            } 
+            }
         });
         return new ArrayList<>(siblingCodeGenerators);
     }
-    
+
     static List<TechContext> getTechContexts(TechContext parentCodeGenerator, Technology.Type type) {
         List<TechContext> codeGenerators = new ArrayList<>();//default <none> type //LayerConfigPanel
         List<TechContext> customCodeGenerators = new ArrayList<>();
-       
+
         Lookup.getDefault().lookupAll(Generator.class).stream().forEach((Generator codeGenerator) -> {
             Technology technology = codeGenerator.getClass().getAnnotation(Technology.class);
             if (technology.type() == type) {

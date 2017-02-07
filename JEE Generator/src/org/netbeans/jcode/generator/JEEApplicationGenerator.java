@@ -16,10 +16,7 @@
 package org.netbeans.jcode.generator;
 
 import java.io.IOException;
-import org.netbeans.api.project.Project;
 import org.netbeans.jcode.generator.internal.ApplicationGeneratorFactory;
-import org.netbeans.jcode.generator.internal.BaseApplicationGenerator;
-import org.netbeans.jcode.jpa.util.PersistenceHelper;
 import org.netbeans.jcode.stack.config.data.*;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.openide.util.Exceptions;
@@ -30,34 +27,23 @@ import org.openide.util.Exceptions;
  */
 public class JEEApplicationGenerator {
 
-    private static JEEApplicationGenerator INSTANCE;
+    private final AbstractGenerator generator;
 
-    private JEEApplicationGenerator() {
-
+    public JEEApplicationGenerator(ApplicationConfigData applicationConfigData, ProgressHandler progressHandler) {
+        generator = ApplicationGeneratorFactory.newInstance(applicationConfigData.getProject());
+        generator.initialize(applicationConfigData, progressHandler);
     }
 
-    public static JEEApplicationGenerator getInstance() {
-        if (INSTANCE == null) {
-            synchronized (JEEApplicationGenerator.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new JEEApplicationGenerator();
-                }
-            }
-        }
-        return INSTANCE;
+    public void preGeneration() {
+        generator.preGeneration();
     }
 
-    public static void generate(ProgressHandler progressHandler, ApplicationConfigData applicationConfigData) {
-        try {
-            final Project project = applicationConfigData.getProject();
-            final PersistenceHelper.PersistenceUnit pu = (PersistenceHelper.PersistenceUnit) new PersistenceHelper(project).getPersistenceUnit();
-            final BaseApplicationGenerator generator = ApplicationGeneratorFactory.newInstance(project);
-            generator.initialize(project, pu);
-            generator.generate(applicationConfigData, progressHandler);
-        } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
-        }
+    public void generate() {
+        generator.generate();
+    }
 
+    public void postGeneration() {
+        generator.postGeneration();
     }
 
 }

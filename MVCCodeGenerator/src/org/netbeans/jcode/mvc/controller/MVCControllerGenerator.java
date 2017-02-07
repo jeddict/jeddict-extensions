@@ -110,6 +110,7 @@ import org.netbeans.jcode.mvc.auth.controller.AuthMechanismGenerator;
 import org.netbeans.jcode.mvc.auth.controller.LoginControllerGenerator;
 import static org.netbeans.jcode.mvc.controller.ValidationUtilGenerator.VALIDATION_UTIL_CLASS;
 import org.netbeans.jcode.mvc.controller.event.ControllerEventGenerator;
+import static org.netbeans.jcode.rest.RestConstants.FORM_PARAM;
 import static org.netbeans.jcode.security.SecurityConstants.CALLER_NAME;
 import org.netbeans.jcode.rest.converter.ParamConvertorGenerator;
 import static org.netbeans.jcode.security.SecurityConstants.CREDENTIALS;
@@ -121,6 +122,8 @@ import org.netbeans.jpa.modeler.spec.DefaultClass;
 import org.netbeans.jpa.modeler.spec.Entity;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
+import org.netbeans.jpa.modeler.spec.extend.annotation.Annotation;
+import org.netbeans.jpa.modeler.spec.extend.annotation.AnnotationElement;
 import org.netbeans.modules.websvc.rest.spi.RestSupport;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
@@ -168,6 +171,10 @@ public class MVCControllerGenerator implements Generator {
     @ConfigData
     private ProgressHandler handler;
 
+    public void preExecute(){
+        addFormParam();
+    }
+    
     @Override
     public void execute() throws IOException {
         handler.progress(Console.wrap(MVCControllerGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
@@ -175,7 +182,6 @@ public class MVCControllerGenerator implements Generator {
         for (Entity entity : entityMapping.getConcreteEntity().collect(toList())) {
             generate(entity, false, false, true);
         }
-        entityMapping.getEntity().stream().forEach(RestUtils::addFormParam);
         addMavenDependencies();
     }
 
@@ -843,4 +849,13 @@ public class MVCControllerGenerator implements Generator {
         }
     }
 
+    private void addFormParam(){
+        for (Entity entity : entityMapping.getEntity()) {
+            List<Attribute> attributes = new ArrayList<Attribute>(entity.getAttributes().getId());
+            attributes.addAll(entity.getAttributes().getBasic());
+            for (Attribute attribute : attributes) {
+                attribute.addRuntimeAnnotation(new Annotation(String.format("@%s(\"%s\")", FORM_PARAM, attribute.getName())));
+            }
+        }
+    }
 }

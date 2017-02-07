@@ -85,6 +85,8 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
 
     @XmlElement(name = "an")
     private List<Annotation> annotation;
+    @XmlTransient
+    private List<Annotation> runtimeAnnotation;
     @XmlAttribute(name = "v")
     private boolean visibile = true;
     @XmlElement(name = "des")
@@ -116,6 +118,9 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
 
     @XmlElement(name = "snp")
     private List<AttributeSnippet> snippets;
+    
+    @XmlTransient
+    private List<AttributeSnippet> runtimeSnippets;
     
     @XmlAttribute(name = "pc")
     private Boolean propertyChangeSupport;
@@ -190,7 +195,7 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
      */
     public List<Annotation> getAnnotation() {
         if (annotation == null) {
-            annotation = new ArrayList<Annotation>();
+            annotation = new ArrayList<>();
         }
         return annotation;
     }
@@ -202,20 +207,39 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
         this.annotation = annotation;
     }
 
-    public void addAnnotation(Annotation annotation_In) {
-        if (annotation == null) {
-            annotation = new ArrayList<>();
-        }
-        this.annotation.add(annotation_In);
+    public void addAnnotation(Annotation annotation) {
+        getAnnotation().add(annotation);
     }
 
-    public void removeAnnotation(Annotation annotation_In) {
-        if (annotation == null) {
-            annotation = new ArrayList<>();
-        }
-        this.annotation.remove(annotation_In);
+    public void removeAnnotation(Annotation annotation) {
+        getAnnotation().remove(annotation);
     }
 
+    /**
+     * @return the runtimeAnnotation
+     */
+    public List<Annotation> getRuntimeAnnotation() {
+        if (runtimeAnnotation == null) {
+            runtimeAnnotation = new ArrayList<>();
+        }
+        return runtimeAnnotation;
+    }
+
+    /**
+     * @param runtimeAnnotation the runtimeAnnotation to set
+     */
+    public void setRuntimeAnnotation(List<Annotation> runtimeAnnotation) {
+        this.runtimeAnnotation = runtimeAnnotation;
+    }
+
+    public void addRuntimeAnnotation(Annotation runtimeAnnotation) {
+        getRuntimeAnnotation().add(runtimeAnnotation);
+    }
+
+    public void removeRuntimeAnnotation(Annotation runtimeAnnotation) {
+        getRuntimeAnnotation().remove(runtimeAnnotation);
+    }
+    
     /**
      * @return the visibile
      */
@@ -593,8 +617,33 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
     public boolean removeSnippet(AttributeSnippet snippet) {
         return getSnippets().remove(snippet);
     }
+    
+     /**
+     * @return the runtimeSnippets
+     */
+    public List<AttributeSnippet> getRuntimeSnippets() {
+        if (runtimeSnippets == null) {
+            runtimeSnippets = new ArrayList<>();
+        }
+        return runtimeSnippets;
+    }
 
-        /**
+    /**
+     * @param runtimeSnippets the runtimeSnippets to set
+     */
+    public void setRuntimeSnippets(List<AttributeSnippet> runtimeSnippets) {
+        this.runtimeSnippets = runtimeSnippets;
+    }
+
+    public boolean addRuntimeSnippet(AttributeSnippet snippet) {
+        return getRuntimeSnippets().add(snippet);
+    }
+
+    public boolean removeRuntimeSnippet(AttributeSnippet snippet) {
+        return getRuntimeSnippets().remove(snippet);
+    }
+    
+    /**
      * @return the propertyChangeSupport
      */
     public Boolean getPropertyChangeSupport() {
