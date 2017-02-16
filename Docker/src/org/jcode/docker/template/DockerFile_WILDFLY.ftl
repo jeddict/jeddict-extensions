@@ -28,6 +28,17 @@ RUN /bin/sh -c '$JBOSS_HOME/bin/standalone.sh &' && \
   $JBOSS_HOME/bin/jboss-cli.sh --connect --command="module add --name=com.mysql --resources=/tmp/mysql-$MYSQL_VERSION.jar --dependencies=javax.api,javax.transaction.api" && \
   $JBOSS_HOME/bin/jboss-cli.sh --connect --command="/subsystem=datasources/jdbc-driver=mysql:add(driver-name=mysql,driver-module-name=com.mysql,driver-xa-datasource-class-name=com.mysql.jdbc.jdbc2.optional.MysqlXADataSource)" && \
   $JBOSS_HOME/bin/jboss-cli.sh --connect --command="data-source add --name=$DB_DATASOURCE --driver-name=mysql --jndi-name=$DB_JNDI --connection-url=jdbc:mysql://$DB_HOST:$DB_PORT/$DB_NAME --user-name=$DB_USER --password=$DB_PASS --use-ccm=false --max-pool-size=25 --blocking-timeout-wait-millis=5000 --enabled=true" && \
+<#elseif docker.databaseType == "MariaDB">
+ENV MARIADB_VERSION 1.5.7
+# Install mariadb drivers and datasource
+RUN /bin/sh -c '$JBOSS_HOME/bin/standalone.sh &' && \
+  sleep 10 && \
+  cd /tmp && \
+  curl -L -o mariadb-$MARIADB_VERSION.jar http://central.maven.org/maven2/org/mariadb/jdbc/mariadb-java-client/$MARIADB_VERSION/mariadb-java-client-$MARIADB_VERSION.jar && \
+  $JBOSS_HOME/bin/jboss-cli.sh --connect --command="deploy /tmp/mariadb-$MARIADB_VERSION.jar"  && \
+  $JBOSS_HOME/bin/jboss-cli.sh --connect --command="module add --name=com.mariadb --resources=/tmp/mariadb-$MARIADB_VERSION.jar --dependencies=javax.api,javax.transaction.api" && \
+  $JBOSS_HOME/bin/jboss-cli.sh --connect --command="/subsystem=datasources/jdbc-driver=mariadb:add(driver-name=mariadb,driver-module-name=com.mariadb,driver-xa-datasource-class-name=org.mariadb.jdbc.MariaDbDataSource)" && \
+  $JBOSS_HOME/bin/jboss-cli.sh --connect --command="data-source add --name=$DB_DATASOURCE --driver-name=mariadb --jndi-name=$DB_JNDI --connection-url=jdbc:mariadb://$DB_HOST:$DB_PORT/$DB_NAME --user-name=$DB_USER --password=$DB_PASS --use-ccm=false --max-pool-size=25 --blocking-timeout-wait-millis=5000 --enabled=true" && \
 <#elseif docker.databaseType == "PostgreSQL">
 ENV POSTGRESQL_VERSION 9.1-901.jdbc4
 # Install postgres drivers and datasource
@@ -48,6 +59,8 @@ RUN /bin/sh -c '$JBOSS_HOME/bin/standalone.sh &' && \
   rm -rf $JBOSS_HOME/standalone/configuration/standalone_xml_history/ $JBOSS_HOME/standalone/log/* && \ 
 <#if docker.databaseType == "MySQL">
   rm -rf /tmp/mysql-*.jar
+<#elseif docker.databaseType == "MariaDB">
+  rm -rf /tmp/mariadb-*.jar
 <#elseif docker.databaseType == "PostgreSQL">
   rm -rf /tmp/postgresql-*.jar
 </#if>

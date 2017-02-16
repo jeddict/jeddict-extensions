@@ -11,7 +11,7 @@ services:
                 DB_USER: '${docker.dbUserName}'
                 DB_PASS: '${docker.dbPassword}'
                 DB_HOST: 'db'
-<#if docker.databaseType == "MySQL">
+<#if docker.databaseType == "MySQL" || docker.databaseType == "MariaDB">
                 DB_PORT: '3306'
 <#elseif docker.databaseType == "PostgreSQL">
                 DB_PORT: '5432'
@@ -22,8 +22,12 @@ services:
         links:
             - db 
     db:
-<#if docker.databaseType == "MySQL">
+<#if docker.databaseType == "MySQL" || docker.databaseType == "MariaDB">
+        <#if docker.databaseType == "MySQL">
         image: mysql:${docker.databaseVersion}
+        <#elseif docker.databaseType == "MariaDB">
+        image: mariadb:${docker.databaseVersion}
+        </#if>
         ports:
             - "3306:3306"  
         environment:

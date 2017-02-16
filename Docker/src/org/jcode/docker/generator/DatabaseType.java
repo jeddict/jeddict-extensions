@@ -28,6 +28,7 @@ public enum DatabaseType {
     DERBY("Derby", Arrays.asList("--"), false, Arrays.asList(PAYARA)),
     H2("H2", Arrays.asList("--"), false, Arrays.asList(WILDFLY)),
     MYSQL("MySQL", Arrays.asList("latest","5.5","5.6","5.7", "8.0"), true),
+    MARIA_DB("MariaDB", Arrays.asList("latest", "10.1", "10.0", "5.5"), true),
     POSTGRESQL("PostgreSQL", Arrays.asList("latest", "9.6", "9.5", "9.4", "9.3", "9.2"), true);
     
     private String displayName;

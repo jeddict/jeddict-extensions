@@ -466,7 +466,7 @@
     </Container>
     <Component class="org.netbeans.modules.docker.ui.build2.BuildInstanceVisual" name="buildInstanceVisual">
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="Component buildInstanceLabel = buildInstanceVisual.getComponent(0);&#xa;if(buildInstanceLabel instanceof JLabel){&#xa;((JLabel) buildInstanceLabel).setText(&quot;Docker host :&quot;);&#xa;}&#xa;Component buildInstanceCombo = buildInstanceVisual.getComponent(1);&#xa;if(buildInstanceCombo instanceof JComboBox){&#xa;((JComboBox)buildInstanceCombo).addActionListener(e -&gt; checkDockerStatus());&#xa;}"/>
+        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="Component buildInstanceLabel = buildInstanceVisual.getComponent(0);&#xa;if(buildInstanceLabel instanceof JLabel){&#xa;((JLabel) buildInstanceLabel).setText(&quot;Docker host :       &quot;);&#xa;}&#xa;Component buildInstanceCombo = buildInstanceVisual.getComponent(1);&#xa;if(buildInstanceCombo instanceof JComboBox){&#xa;((JComboBox)buildInstanceCombo).addActionListener(e -&gt; checkDockerStatus());&#xa;}"/>
       </AuxValues>
     </Component>
     <Component class="javax.swing.JCheckBox" name="dockerMachineCheckBox">

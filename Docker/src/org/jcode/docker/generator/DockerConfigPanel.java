@@ -346,7 +346,7 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
 
         Component buildInstanceLabel = buildInstanceVisual.getComponent(0);
         if(buildInstanceLabel instanceof JLabel){
-            ((JLabel) buildInstanceLabel).setText("Docker host :");
+            ((JLabel) buildInstanceLabel).setText("Docker host :       ");
         }
         Component buildInstanceCombo = buildInstanceVisual.getComponent(1);
         if(buildInstanceCombo instanceof JComboBox){
@@ -433,9 +433,12 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
 
     private void setVisibility(boolean status) {
         if (dsWrpperPanel.isVisible() != status) {
-//            dbWrapperPanel.setVisible(status);
             dsWrpperPanel.setVisible(status);
             dbCredentialPanel.setVisible(status);
+            serverVersionLabel.setVisible(status);
+            serverVersionComboBox.setVisible(status);
+            dbVersionLabel.setVisible(status);
+            dbVersionComboBox.setVisible(status);
         }
     }
     

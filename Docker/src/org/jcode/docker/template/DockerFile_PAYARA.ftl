@@ -18,6 +18,12 @@ ENV MYSQL_VERSION 5.1.38
 RUN curl -L -o $PAYARA_PATH/glassfish/lib/mysql-$MYSQL_VERSION.jar http://central.maven.org/maven2/mysql/mysql-connector-java/$MYSQL_VERSION/mysql-connector-java-$MYSQL_VERSION.jar && \
     ./asadmin --user=admin start-domain && \
     ./asadmin --user=admin --passwordfile=/tmp/pwdfile create-jdbc-connection-pool --datasourceclassname=com.mysql.jdbc.jdbc2.optional.MysqlXADataSource --restype javax.sql.XADataSource --property password=$DB_PASS:user=$DB_USER:DatabaseName=$DB_NAME:ServerName=$DB_HOST:port=$DB_PORT $DB_DATASOURCE && \
+<#elseif docker.databaseType == "MariaDB">
+ENV MARIADB_VERSION 1.5.7
+# Install mariadb drivers and datasource
+RUN curl -L -o $PAYARA_PATH/glassfish/lib/mariadb-$MARIADB_VERSION.jar http://central.maven.org/maven2/org/mariadb/jdbc/mariadb-java-client/$MARIADB_VERSION/mariadb-java-client-$MARIADB_VERSION.jar && \
+    ./asadmin --user=admin start-domain && \
+    ./asadmin --user=admin --passwordfile=/tmp/pwdfile create-jdbc-connection-pool --datasourceclassname=org.mariadb.jdbc.MariaDbDataSource --restype javax.sql.XADataSource --property password=$DB_PASS:user=$DB_USER:DatabaseName=$DB_NAME:ServerName=$DB_HOST:port=$DB_PORT $DB_DATASOURCE && \
 <#elseif docker.databaseType == "PostgreSQL">
 ENV POSTGRESQL_VERSION 9.1-901.jdbc4
 # Install Postgre drivers and datasource
