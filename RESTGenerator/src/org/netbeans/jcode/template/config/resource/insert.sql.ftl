@@ -1,4 +1,4 @@
-<#if database == "MySQL">
+<#if database == "MySQL" || database == "MariaDB">
     <#assign escape = "`" >
     <#assign bool = "1" >
     <#assign teminator = "" >

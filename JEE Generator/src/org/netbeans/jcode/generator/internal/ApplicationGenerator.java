@@ -270,7 +270,7 @@ public class ApplicationGenerator extends AbstractGenerator {
     protected int getTotalWorkUnits() {
         float unit = 1.5f;
         float webUnit = 5f;
-        float count = applicationConfigData.getEntityMappings().getConcreteEntity().count();
+        float count = applicationConfigData.getEntityMappings().getGeneratedEntity().count();
         if (applicationConfigData.getBussinesTechContext() != null) {
             count = count + count * unit;
         }

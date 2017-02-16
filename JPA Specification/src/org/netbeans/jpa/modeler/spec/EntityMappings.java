@@ -614,6 +614,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
      * Objects of the following type(s) are allowed in the list {@link Entity }
      *
      *
+     * @return 
      */
     public List<Entity> getEntity() {
         if (entity == null) {
@@ -633,7 +634,14 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     public Stream<Entity> getConcreteEntity() {
         return getEntity().stream().filter(e -> Boolean.FALSE.equals(e.getAbstract()));
     }
-
+    
+    public Stream<Entity> getGeneratedEntity() {
+        return getEntity().stream()
+                .filter(e -> Boolean.FALSE.equals(e.getAbstract()))
+                .filter(e -> e.getGenerateSourceCode());
+    }
+    
+    
     public void setEntity(List<Entity> entity) {
         if (this.entity == null) {
             this.entity = new ArrayList<>();

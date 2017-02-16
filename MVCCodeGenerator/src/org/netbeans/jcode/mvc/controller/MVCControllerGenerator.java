@@ -179,7 +179,7 @@ public class MVCControllerGenerator implements Generator {
     public void execute() throws IOException {
         handler.progress(Console.wrap(MVCControllerGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
         generateUtil();
-        for (Entity entity : entityMapping.getConcreteEntity().collect(toList())) {
+        for (Entity entity : entityMapping.getGeneratedEntity().collect(toList())) {
             generate(entity, false, false, true);
         }
         addMavenDependencies();

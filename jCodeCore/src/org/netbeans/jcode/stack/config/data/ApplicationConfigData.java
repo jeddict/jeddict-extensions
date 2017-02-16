@@ -221,7 +221,7 @@ public class ApplicationConfigData implements Serializable {
      */
     public void setEntityMappings(EntityMappings entityMappings) {
         this.entityMappings = entityMappings;
-        entityMappings.getConcreteEntity().filter(e -> e.getGenerateSourceCode()).forEach(entity -> {
+        entityMappings.getGeneratedEntity().forEach(entity -> {
             EntityConfigData entityConfigData = new EntityConfigData(entity.getFileObject());
             entityConfigData.setLabelAttribute(entity.getLabelAttribute() != null ? entity.getLabelAttribute().getName() : null);
             entityConfigData.setSystemAttribute(entity.getAttributes().getAllAttribute().stream().filter(attr -> !attr.getIncludeInUI()).map(attr -> attr.getName()).collect(toSet()));
