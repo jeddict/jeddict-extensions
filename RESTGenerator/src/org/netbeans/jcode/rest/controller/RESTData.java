@@ -1,5 +1,5 @@
 /**
- * Copyright [2016] Gaurav Gupta
+ * Copyright [2017] Gaurav Gupta
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -37,7 +37,9 @@ public class RESTData extends LayerConfigData {
     private ControllerReturnType returnType;
     private List<FilterType> filterTypes;
     private boolean metrics = true;
+    private boolean logger = true;
     private boolean docsEnable = true;
+    private boolean completeApplication = true;
     private boolean testCase = true;
     private boolean pagination;
     
@@ -201,6 +203,34 @@ public class RESTData extends LayerConfigData {
      */
     public void setTestCase(boolean testCase) {
         this.testCase = testCase;
+    }
+
+    /**
+     * @return the logger
+     */
+    public boolean isLogger() {
+        return logger;
+    }
+
+    /**
+     * @param logger the logger to set
+     */
+    public void setLogger(boolean logger) {
+        this.logger = logger;
+    }
+
+    /**
+     * @return the completeApplication
+     */
+    public boolean isCompleteApplication() {
+        return completeApplication;
+    }
+
+    /**
+     * @param completeApplication the completeApplication to set
+     */
+    public void setCompleteApplication(boolean completeApplication) {
+        this.completeApplication = completeApplication;
     }
 
 }

@@ -10,7 +10,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specificmet language governing permissions and limitations under
+ * License for the specific language governing permissions and limitations under
  * the License.
  */
 package org.netbeans.jcode.rest.controller;
@@ -25,6 +25,7 @@ import static javax.lang.model.SourceVersion.isName;
 import javax.swing.ComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.OK_OPTION;
 import javax.swing.text.JTextComponent;
 import static org.apache.commons.lang.StringUtils.isBlank;
@@ -40,16 +41,8 @@ import org.netbeans.jcode.rest.applicationconfig.RestConfigDialog;
 import org.netbeans.jcode.stack.config.panel.*;
 import static org.netbeans.jcode.util.PreferenceUtils.get;
 import static org.netbeans.jcode.util.PreferenceUtils.set;
-import org.netbeans.modules.websvc.rest.model.api.RestApplication;
 import org.netbeans.modules.websvc.rest.spi.RestSupport;
 import org.netbeans.spi.java.project.support.ui.PackageView;
-import static org.openide.util.NbBundle.getMessage;
-import static org.openide.util.NbBundle.getMessage;
-import static org.openide.util.NbBundle.getMessage;
-import static org.openide.util.NbBundle.getMessage;
-import static org.openide.util.NbBundle.getMessage;
-import static org.openide.util.NbBundle.getMessage;
-import static org.openide.util.NbBundle.getMessage;
 import static org.openide.util.NbBundle.getMessage;
 
 /**
@@ -113,9 +106,11 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
             setSuffix(data.getSuffixName());
         }
        
+        setLogger(data.isLogger());
         setMetrics(data.isMetrics());
         setDocsEnable(data.isDocsEnable());
         setTestCase(data.isTestCase());
+        setCompleteApplication(data.isCompleteApplication());
         
         setSelectedEventType(data.getFilterTypes());
     }
@@ -135,8 +130,10 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
 //        data.setReturnType(getReturnType());
         data.setFilterTypes(getSelectedEventType());
         data.setMetrics(isMetrics());
+        data.setLogger(isLogger());
         data.setDocsEnable(isDocsEnable());
         data.setTestCase(isTestCase());
+        data.setCompleteApplication(isCompleteApplication());
         
         set(pref, data);
     }
@@ -221,9 +218,11 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
     public String getPrefix() {
         return prefixField.getText().trim();
     }
+    
     private void setPrefix(String prefix) {
         prefixField.setText(prefix);
     }
+    
     private void setSuffix(String suffix) {
         suffixField.setText(suffix);
     }
@@ -251,6 +250,24 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
     private void setDocsEnable(boolean docsEnable) {
         docsCheckBox.setSelected(docsEnable);
     }
+    
+    private boolean isCompleteApplication() {
+        return completeAppCheckBox.isSelected();
+    }
+
+    private void setCompleteApplication(boolean completeApplication) {
+        completeAppCheckBox.setSelected(completeApplication);
+    }
+    
+    private boolean isLogger() {
+        return loggerCheckBox.isSelected();
+    }
+
+    private void setLogger(boolean loggerEnable) {
+        loggerCheckBox.setSelected(loggerEnable);
+    }
+    
+    
 
     public List<FilterType> getSelectedEventType() {
         List<FilterType> eventTypes = new ArrayList<>();
@@ -293,12 +310,15 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         appPackageLabel = new javax.swing.JLabel();
         appPackageCombo = new javax.swing.JComboBox();
         jLabel1 = new javax.swing.JLabel();
+        appPanel = new javax.swing.JPanel();
+        completeAppCheckBox = new javax.swing.JCheckBox();
+        testcaseCheckBox = new javax.swing.JCheckBox();
         miscPanel = new javax.swing.JPanel();
         applicationConfigButton = new javax.swing.JButton();
         wrapper = new javax.swing.JLayeredPane();
         metricsCheckbox = new javax.swing.JCheckBox();
         docsCheckBox = new javax.swing.JCheckBox();
-        testcaseCheckBox = new javax.swing.JCheckBox();
+        loggerCheckBox = new javax.swing.JCheckBox();
 
         warningPanel.setLayout(new java.awt.BorderLayout(10, 0));
 
@@ -307,7 +327,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         org.openide.awt.Mnemonics.setLocalizedText(warningLabel, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.warningLabel.text")); // NOI18N
         warningPanel.add(warningLabel, java.awt.BorderLayout.CENTER);
 
-        jPanel1.setLayout(new java.awt.GridLayout(5, 0, 0, 10));
+        jPanel1.setLayout(new java.awt.GridLayout(7, 0, 0, 10));
 
         suffixPanel.setPreferredSize(new java.awt.Dimension(200, 27));
         suffixPanel.setLayout(new java.awt.BorderLayout(10, 0));
@@ -397,6 +417,39 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         jLabel1.setAlignmentY(0.0F);
         jPanel1.add(jLabel1);
 
+        completeAppCheckBox.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(completeAppCheckBox, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.completeAppCheckBox.text")); // NOI18N
+        completeAppCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                completeAppCheckBoxActionPerformed(evt);
+            }
+        });
+
+        testcaseCheckBox.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(testcaseCheckBox, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.testcaseCheckBox.text")); // NOI18N
+
+        javax.swing.GroupLayout appPanelLayout = new javax.swing.GroupLayout(appPanel);
+        appPanel.setLayout(appPanelLayout);
+        appPanelLayout.setHorizontalGroup(
+            appPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, appPanelLayout.createSequentialGroup()
+                .addGap(111, 111, 111)
+                .addComponent(completeAppCheckBox, javax.swing.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(testcaseCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(152, 152, 152))
+        );
+        appPanelLayout.setVerticalGroup(
+            appPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(appPanelLayout.createSequentialGroup()
+                .addGap(2, 2, 2)
+                .addGroup(appPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(completeAppCheckBox)
+                    .addComponent(testcaseCheckBox)))
+        );
+
+        jPanel1.add(appPanel);
+
         miscPanel.setLayout(new java.awt.BorderLayout());
 
         org.openide.awt.Mnemonics.setLocalizedText(applicationConfigButton, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.applicationConfigButton.text")); // NOI18N
@@ -418,25 +471,25 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
             }
         });
 
-        testcaseCheckBox.setSelected(true);
-        org.openide.awt.Mnemonics.setLocalizedText(testcaseCheckBox, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.testcaseCheckBox.text")); // NOI18N
+        loggerCheckBox.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(loggerCheckBox, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.loggerCheckBox.text")); // NOI18N
 
         wrapper.setLayer(metricsCheckbox, javax.swing.JLayeredPane.DEFAULT_LAYER);
         wrapper.setLayer(docsCheckBox, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        wrapper.setLayer(testcaseCheckBox, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        wrapper.setLayer(loggerCheckBox, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout wrapperLayout = new javax.swing.GroupLayout(wrapper);
         wrapper.setLayout(wrapperLayout);
         wrapperLayout.setHorizontalGroup(
             wrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(wrapperLayout.createSequentialGroup()
-                .addGap(107, 107, 107)
-                .addComponent(testcaseCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(metricsCheckbox, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(110, 110, 110)
+                .addComponent(metricsCheckbox)
                 .addGap(18, 18, 18)
+                .addComponent(loggerCheckBox)
+                .addGap(13, 13, 13)
                 .addComponent(docsCheckBox)
-                .addGap(60, 60, 60))
+                .addGap(26, 26, 26))
         );
         wrapperLayout.setVerticalGroup(
             wrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -445,7 +498,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
                 .addGroup(wrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(metricsCheckbox)
                     .addComponent(docsCheckBox)
-                    .addComponent(testcaseCheckBox)))
+                    .addComponent(loggerCheckBox)))
         );
 
         miscPanel.add(wrapper, java.awt.BorderLayout.CENTER);
@@ -460,7 +513,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(10, 10, 10)
-                        .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 611, Short.MAX_VALUE))
+                        .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 609, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
@@ -470,8 +523,8 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 134, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 74, Short.MAX_VALUE)
                 .addComponent(warningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -516,6 +569,16 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
     private void docsCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_docsCheckBoxActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_docsCheckBoxActionPerformed
+
+    private void completeAppCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_completeAppCheckBoxActionPerformed
+        boolean status = completeAppCheckBox.isSelected();
+        metricsCheckbox.setEnabled(status);
+        loggerCheckBox.setEnabled(status);
+        docsCheckBox.setEnabled(status);
+        if(!status){
+            JOptionPane.showMessageDialog(this, "Only entity controller/view will be generated");
+        }
+    }//GEN-LAST:event_completeAppCheckBoxActionPerformed
     private void openApplicationConfig() {
         if (configDialog == null) {
             configDialog = new RestConfigDialog();
@@ -538,11 +601,14 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
     private javax.swing.JComboBox appPackageCombo;
     private javax.swing.JLabel appPackageLabel;
     private javax.swing.JPanel appPackagePanel;
+    private javax.swing.JPanel appPanel;
     private javax.swing.JButton applicationConfigButton;
+    private javax.swing.JCheckBox completeAppCheckBox;
     private javax.swing.JCheckBox docsCheckBox;
     private javax.swing.JLabel entityLabel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JCheckBox loggerCheckBox;
     private javax.swing.JCheckBox metricsCheckbox;
     private javax.swing.JPanel miscPanel;
     private javax.swing.JLabel nameLabel;

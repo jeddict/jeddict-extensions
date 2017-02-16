@@ -119,9 +119,11 @@ public class RESTGenerator implements Generator {
     private String entityPackage;
 
     private List<Template> CONFIG_TEMPLATES, ENTITY_TEMPLATES,
-            ENTITY_LISTENER_TEMPLATES, FACADE_TEMPLATES,
-            SERVICE_TEMPLATES, CONTROLLER_TEMPLATES,
-            CONTROLLER_EXT_TEMPLATES, METRICS_TEMPLATES, TEST_CASE_TEMPLATES, TEST_CASE_CONTROLLER_TEMPLATES;
+            ENTITY_LISTENER_TEMPLATES, 
+            FACADE_TEMPLATES, SERVICE_TEMPLATES, 
+            CONTROLLER_TEMPLATES, CONTROLLER_EXT_TEMPLATES, 
+            METRICS_TEMPLATES, LOGGER_TEMPLATES, 
+            TEST_CASE_TEMPLATES, TEST_CASE_CONTROLLER_TEMPLATES;
 
     private void registerTemplates() {
 
@@ -133,6 +135,7 @@ public class RESTGenerator implements Generator {
         CONTROLLER_TEMPLATES = new ArrayList<>();
         CONTROLLER_EXT_TEMPLATES = new ArrayList<>();
         METRICS_TEMPLATES = new ArrayList<>();
+        LOGGER_TEMPLATES = new ArrayList<>();
         TEST_CASE_TEMPLATES = new ArrayList<>();
         TEST_CASE_CONTROLLER_TEMPLATES = new ArrayList<>();
 
@@ -165,7 +168,12 @@ public class RESTGenerator implements Generator {
             METRICS_TEMPLATES.add(new Template("metrics/DiagnosticFilter.java.ftl", "DiagnosticFilter", "metrics"));
             METRICS_TEMPLATES.add(new Template("metrics/MetricsConfigurer.java.ftl", "MetricsConfigurer", "metrics"));//require  import MetricsConfig
         }
-
+        
+        if (restData.isLogger()) {
+            LOGGER_TEMPLATES.add(new Template("logger/LoggerVM.java.ftl", "LoggerVM", "dto"));
+            LOGGER_TEMPLATES.add(new Template("logger/LogsResource.java.ftl", "LogsResource"));
+        }
+        
         SERVICE_TEMPLATES.add(new Template("security/Secured.java.ftl", "Secured", "security"));
         SERVICE_TEMPLATES.add(new Template("security/AuthenticationException.java.ftl", "AuthenticationException", "security"));
         SERVICE_TEMPLATES.add(new Template("security/AuthoritiesConstants.java.ftl", "AuthoritiesConstants", "security"));
@@ -202,28 +210,30 @@ public class RESTGenerator implements Generator {
     public void execute() throws IOException {
         testSource = SourceGroupSupport.getTestSourceGroup(project);
         handler.progress(Console.wrap(RESTGenerator.class, "MSG_Progress_Generating_REST", FG_RED, BOLD, UNDERLINE));
-        generateUtil();
         entityPackage = entityMapping.getPackage();
-        Map<String, Object> param = generateServerSideComponent();
-        generateProducer(param);
-
-        for (Entity entity : entityMapping.getConcreteEntity().collect(toList())) {
+        Map<String, Object> param = new HashMap<>();
+            param.putAll(generateServerSideComponent());
+        if (restData.isCompleteApplication()) {
+            generateUtil();
+            CDIUtil.createDD(project);
+            generateProducer(param);
+            addMavenDependencies("rest/pom/_pom.xml");
+            if (restData.isMetrics()) {
+                addMavenDependencies("metrics/pom/_pom.xml");
+            }
+            if (restData.isLogger()) {
+                addMavenDependencies("logger/pom/_pom.xml");
+            }
+            if (restData.isDocsEnable()) {
+                addMavenDependencies("docs/pom/_pom.xml");
+            }
+            if (restData.isTestCase()) {
+                addMavenDependencies("arquillian/pom/_pom.xml");
+            }
+        }
+        for (Entity entity : entityMapping.getGeneratedEntity().collect(toList())) {
             generateEntityController(entity, param);
         }
-        CDIUtil.createDD(project);
-        
-
-        addMavenDependencies("rest/pom/_pom.xml");
-        if (restData.isMetrics()) {
-            addMavenDependencies("metrics/pom/_pom.xml");
-        }
-        if (restData.isDocsEnable()) {
-            addMavenDependencies("docs/pom/_pom.xml");
-        }
-        if (restData.isTestCase()) {
-            addMavenDependencies("arquillian/pom/_pom.xml");
-        }
-
     }
 
     private FileObject generateProducer(Map<String, Object> appParam) throws IOException {
@@ -325,8 +335,8 @@ public class RESTGenerator implements Generator {
 
         param.put("package", entity.getAbsolutePackage(restData.getPackage()));
         param.put("applicationPath", restData.getRestConfigData().getApplicationPath());
-        param.put("metrics", restData.isMetrics());
-        param.put("docs", restData.isDocsEnable());
+        param.put("metrics", restData.isCompleteApplication() && restData.isMetrics());
+        param.put("docs", restData.isCompleteApplication() && restData.isDocsEnable());
 
         //entity controller 
         handler.progress(controllerFileName);
@@ -444,6 +454,8 @@ public class RESTGenerator implements Generator {
         expandServerSideComponent(source, beanData.getPackage(), beanData.getPrefixName(), beanData.getSuffixName(), FACADE_TEMPLATES, param);
         //metrics
         expandServerSideComponent(source, appPackage, EMPTY, EMPTY, METRICS_TEMPLATES, param);
+        //logger
+        expandServerSideComponent(source, restData.getPackage(), EMPTY, EMPTY, LOGGER_TEMPLATES, param);
         //service
         expandServerSideComponent(source, appPackage, EMPTY, EMPTY, SERVICE_TEMPLATES, param);
         //entity
@@ -457,24 +469,25 @@ public class RESTGenerator implements Generator {
             expandServerSideComponent(testSource, restData.getPackage(), restData.getPrefixName(), restData.getSuffixName() + "Test", TEST_CASE_CONTROLLER_TEMPLATES, param);
         }
 
-        FileObject configRoot = ProjectHelper.getResourceDirectory(project);
-        if (configRoot == null) {//non-maven project
-            configRoot = source.getRootFolder();
-        }
+        if (restData.isCompleteApplication()) {
+            FileObject configRoot = ProjectHelper.getResourceDirectory(project);
+            if (configRoot == null) {//non-maven project
+                configRoot = source.getRootFolder();
+            }
 
-        expandTemplate(TEMPLATE + "config/resource/insert.sql.ftl", getFolderForPackage(configRoot, "META-INF.sql", true), "insert.sql", singletonMap("database", dockerConfigData.getDatabaseType() != null ? dockerConfigData.getDatabaseType() : "Derby"));
-        FileUtil.copyStaticResource(TEMPLATE + "config/resource/config-resources.zip", configRoot, null, handler);
-        updatePersistenceXml(Arrays.asList(entityPackage + ".User", entityPackage + ".Authority"));
+            expandTemplate(TEMPLATE + "config/resource/insert.sql.ftl", getFolderForPackage(configRoot, "META-INF.sql", true), "insert.sql", singletonMap("database", dockerConfigData.getDatabaseType() != null ? dockerConfigData.getDatabaseType() : "Derby"));
+            FileUtil.copyStaticResource(TEMPLATE + "config/resource/config-resources.zip", configRoot, null, handler);
+            updatePersistenceXml(Arrays.asList(entityPackage + ".User", entityPackage + ".Authority"));
 
-        if (restData.isTestCase()) {
-            configRoot = ProjectHelper.getTestResourceDirectory(project);
-            expandTemplate(TEMPLATE + "arquillian/config/arquillian.xml.ftl", configRoot, "arquillian.xml", EMPTY_MAP);
+            if (restData.isTestCase()) {
+                configRoot = ProjectHelper.getTestResourceDirectory(project);
+                expandTemplate(TEMPLATE + "arquillian/config/arquillian.xml.ftl", configRoot, "arquillian.xml", EMPTY_MAP);
 //            expandTemplate(TEMPLATE + "arquillian/config/glassfish-resources.xml.ftl", configRoot, "glassfish-resources.xml", EMPTY_MAP);
-            expandTemplate(TEMPLATE + "arquillian/config/web.xml.ftl", configRoot, "web.xml", EMPTY_MAP);
-            expandTemplate(TEMPLATE + "arquillian/config/test-persistence.xml.ftl", configRoot, "test-persistence.xml", Collections.singletonMap("PU_NAME", entityMapping.getPersistenceUnitName()));
-            expandTemplate(TEMPLATE + "config/resource/insert.sql.ftl", getFolderForPackage(configRoot, "META-INF.sql", true), "insert.sql", singletonMap("database", "Derby"));
+                expandTemplate(TEMPLATE + "arquillian/config/web.xml.ftl", configRoot, "web.xml", EMPTY_MAP);
+                expandTemplate(TEMPLATE + "arquillian/config/test-persistence.xml.ftl", configRoot, "test-persistence.xml", Collections.singletonMap("PU_NAME", entityMapping.getPersistenceUnitName()));
+                expandTemplate(TEMPLATE + "config/resource/insert.sql.ftl", getFolderForPackage(configRoot, "META-INF.sql", true), "insert.sql", singletonMap("database", "Derby"));
+            }
         }
-
         return param;
     }
 
@@ -517,8 +530,10 @@ public class RESTGenerator implements Generator {
                         param.put(firstLower(templateFile), firstLower(fileName));
                     }
                     param.put(templateFile + "_FQN", templatePackage + '.' + fileName);
-                    FileObject targetFolder = SourceGroupSupport.getFolderForPackage(targetSourceGroup, (String) param.get("package"), true);
-                    expandTemplate(TEMPLATE + template.getPath(), targetFolder, fileName + '.' + JAVA_EXT, param);
+                    if (restData.isCompleteApplication()) {
+                        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(targetSourceGroup, (String) param.get("package"), true);
+                        expandTemplate(TEMPLATE + template.getPath(), targetFolder, fileName + '.' + JAVA_EXT, param);
+                    }
                 }
             }
         } catch (Exception ex) {
