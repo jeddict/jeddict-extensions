@@ -26,12 +26,12 @@ import static org.netbeans.jcode.core.util.StringHelper.startCase;
  *
  * @author jGauravGupta
  */
-public class Niddle {
+public class Needle {
 
     private String insertPointer;
     private String template;
 
-    public Niddle(String insertPointer, String template) {
+    public Needle(String insertPointer, String template) {
         this.insertPointer = insertPointer;
         this.template = template;
     }
@@ -63,6 +63,10 @@ public class Niddle {
             param.put("enableTranslation", applicationConfig.isEnableTranslation());
             param.put("camelCase_routerName", camelCase(entity.getEntityStateName()));
             param.put("startCase_routerName", startCase(entity.getEntityStateName()));
+            param.put("entityTranslationKeyMenu", entity.getEntityTranslationKeyMenu());
+            param.put("startCase_entityClass", startCase(entity.getEntityClass()));
+            param.put("appName", applicationConfig.getAngular2AppName());
+            param.put("prefix", applicationConfig.getJhiPrefix());
             
             content.append(expandTemplate(template, param));
         }

@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.netbeans.jcode.ng.main;
+package org.netbeans.jcode.angular2;
 
 import java.util.prefs.Preferences;
 import org.apache.commons.lang.StringUtils;
@@ -21,6 +21,8 @@ import static org.apache.commons.lang.StringUtils.EMPTY;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.SourceGroup;
+import org.netbeans.jcode.ng.main.AngularData;
+import org.netbeans.jcode.ng.main.PaginationType;
 import static org.netbeans.jcode.core.util.StringHelper.firstLower;
 import static org.netbeans.jcode.core.util.StringHelper.kebabCase;
 import static org.netbeans.jcode.core.util.StringHelper.startCase;
@@ -33,11 +35,11 @@ import org.openide.util.NbBundle;
  *
  * @author Gaurav Gupta
  */
-public class AngularPanel extends LayerConfigPanel<AngularData> {
+public class Angular2Panel extends LayerConfigPanel<AngularData> {
 
     private Preferences pref;
 
-    public AngularPanel() {
+    public Angular2Panel() {
         initComponents();
     }
 
@@ -46,11 +48,11 @@ public class AngularPanel extends LayerConfigPanel<AngularData> {
         warningLabel.setText("");
         setModule(getModule().replaceAll("[^a-zA-Z0-9]+", EMPTY));
         if (StringUtils.isBlank(getModule())) {
-            warningLabel.setText(NbBundle.getMessage(AngularPanel.class, "AngularPanel.invalidModule.message"));
+            warningLabel.setText(NbBundle.getMessage(Angular2Panel.class, "AngularPanel.invalidModule.message"));
             return true;
         }
         if (StringUtils.isBlank(getApplicationTitle())) {
-            warningLabel.setText(NbBundle.getMessage(AngularPanel.class, "AngularPanel.invalidTitle.message"));
+            warningLabel.setText(NbBundle.getMessage(Angular2Panel.class, "AngularPanel.invalidTitle.message"));
             return true;
         }
         return false;
@@ -71,6 +73,7 @@ public class AngularPanel extends LayerConfigPanel<AngularData> {
         if (data.getPagination()!=null) {
             setPaginationType(data.getPagination());
         }
+        setProtractorTest(data.isProtractorTest());
     }
 
     @Override
@@ -78,6 +81,7 @@ public class AngularPanel extends LayerConfigPanel<AngularData> {
         this.getConfigData().setModule(getModule());
         this.getConfigData().setApplicationTitle(getApplicationTitle());
         this.getConfigData().setPagination(getPaginationType());
+        this.getConfigData().setProtractorTest(isProtractorTest());
         PreferenceUtils.set(pref, this.getConfigData());
     }
 
@@ -128,6 +132,14 @@ public class AngularPanel extends LayerConfigPanel<AngularData> {
     private void setApplicationTitle(String module) {
         appTitleTextField.setText(module);
     }
+    
+    public boolean isProtractorTest() {
+        return protractorTest_CheckBox.isSelected();
+    }
+    
+    private void setProtractorTest(boolean test) {
+        protractorTest_CheckBox.setSelected(test);
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -144,9 +156,7 @@ public class AngularPanel extends LayerConfigPanel<AngularData> {
         wrapperPanel2 = new javax.swing.JPanel();
         angularModuleLabel = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
         angularModuleTextField = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
         wrapperPanel1 = new javax.swing.JPanel();
         appTitleLabel = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
@@ -157,30 +167,27 @@ public class AngularPanel extends LayerConfigPanel<AngularData> {
         paginationLabel = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         paginationComboBox = new javax.swing.JComboBox();
+        wrapperPanel4 = new javax.swing.JPanel();
+        protractorTest_CheckBox = new javax.swing.JCheckBox();
 
         warningPanel.setLayout(new java.awt.BorderLayout(10, 0));
 
         warningLabel.setForeground(new java.awt.Color(200, 0, 0));
         warningLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        org.openide.awt.Mnemonics.setLocalizedText(warningLabel, org.openide.util.NbBundle.getMessage(AngularPanel.class, "AngularPanel.warningLabel.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(warningLabel, org.openide.util.NbBundle.getMessage(Angular2Panel.class, "Angular2Panel.warningLabel.text")); // NOI18N
         warningPanel.add(warningLabel, java.awt.BorderLayout.CENTER);
 
-        jPanel1.setPreferredSize(new java.awt.Dimension(217, 90));
-        jPanel1.setLayout(new java.awt.GridLayout(3, 0, 0, 15));
+        jPanel1.setPreferredSize(new java.awt.Dimension(217, 120));
+        jPanel1.setLayout(new java.awt.GridLayout(4, 0, 0, 15));
 
         wrapperPanel2.setLayout(new java.awt.BorderLayout(10, 0));
 
-        org.openide.awt.Mnemonics.setLocalizedText(angularModuleLabel, org.openide.util.NbBundle.getMessage(AngularPanel.class, "AngularPanel.angularModuleLabel.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(angularModuleLabel, org.openide.util.NbBundle.getMessage(Angular2Panel.class, "Angular2Panel.angularModuleLabel.text")); // NOI18N
         wrapperPanel2.add(angularModuleLabel, java.awt.BorderLayout.LINE_START);
 
         jPanel3.setLayout(new javax.swing.BoxLayout(jPanel3, javax.swing.BoxLayout.LINE_AXIS));
 
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(AngularPanel.class, "AngularPanel.jLabel1.text")); // NOI18N
-        jLabel1.setPreferredSize(new java.awt.Dimension(100, 14));
-        jPanel3.add(jLabel1);
-
-        angularModuleTextField.setText(org.openide.util.NbBundle.getMessage(AngularPanel.class, "AngularPanel.angularModuleTextField.text")); // NOI18N
+        angularModuleTextField.setText(org.openide.util.NbBundle.getMessage(Angular2Panel.class, "Angular2Panel.angularModuleTextField.text")); // NOI18N
         angularModuleTextField.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
             public void propertyChange(java.beans.PropertyChangeEvent evt) {
                 angularModuleTextFieldPropertyChange(evt);
@@ -188,28 +195,23 @@ public class AngularPanel extends LayerConfigPanel<AngularData> {
         });
         jPanel3.add(angularModuleTextField);
 
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(AngularPanel.class, "AngularPanel.jLabel2.text")); // NOI18N
-        jLabel2.setPreferredSize(new java.awt.Dimension(20, 14));
-        jPanel3.add(jLabel2);
-
         wrapperPanel2.add(jPanel3, java.awt.BorderLayout.CENTER);
 
         jPanel1.add(wrapperPanel2);
 
         wrapperPanel1.setLayout(new java.awt.BorderLayout(10, 0));
 
-        org.openide.awt.Mnemonics.setLocalizedText(appTitleLabel, org.openide.util.NbBundle.getMessage(AngularPanel.class, "AngularPanel.appTitleLabel.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(appTitleLabel, org.openide.util.NbBundle.getMessage(Angular2Panel.class, "Angular2Panel.appTitleLabel.text")); // NOI18N
         wrapperPanel1.add(appTitleLabel, java.awt.BorderLayout.LINE_START);
 
         jPanel2.setLayout(new javax.swing.BoxLayout(jPanel2, javax.swing.BoxLayout.LINE_AXIS));
 
         titleStartLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        org.openide.awt.Mnemonics.setLocalizedText(titleStartLabel, org.openide.util.NbBundle.getMessage(AngularPanel.class, "AngularPanel.titleStartLabel.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(titleStartLabel, org.openide.util.NbBundle.getMessage(Angular2Panel.class, "Angular2Panel.titleStartLabel.text")); // NOI18N
         titleStartLabel.setPreferredSize(new java.awt.Dimension(45, 14));
         jPanel2.add(titleStartLabel);
 
-        appTitleTextField.setText(org.openide.util.NbBundle.getMessage(AngularPanel.class, "AngularPanel.appTitleTextField.text")); // NOI18N
+        appTitleTextField.setText(org.openide.util.NbBundle.getMessage(Angular2Panel.class, "Angular2Panel.appTitleTextField.text")); // NOI18N
         appTitleTextField.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
             public void propertyChange(java.beans.PropertyChangeEvent evt) {
                 appTitleTextFieldPropertyChange(evt);
@@ -218,7 +220,7 @@ public class AngularPanel extends LayerConfigPanel<AngularData> {
         jPanel2.add(appTitleTextField);
 
         titleEndLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        org.openide.awt.Mnemonics.setLocalizedText(titleEndLabel, org.openide.util.NbBundle.getMessage(AngularPanel.class, "AngularPanel.titleEndLabel.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(titleEndLabel, org.openide.util.NbBundle.getMessage(Angular2Panel.class, "Angular2Panel.titleEndLabel.text")); // NOI18N
         titleEndLabel.setPreferredSize(new java.awt.Dimension(45, 14));
         jPanel2.add(titleEndLabel);
 
@@ -228,7 +230,7 @@ public class AngularPanel extends LayerConfigPanel<AngularData> {
 
         wrapperPanel3.setLayout(new java.awt.BorderLayout(10, 0));
 
-        org.openide.awt.Mnemonics.setLocalizedText(paginationLabel, org.openide.util.NbBundle.getMessage(AngularPanel.class, "AngularPanel.paginationLabel.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(paginationLabel, org.openide.util.NbBundle.getMessage(Angular2Panel.class, "Angular2Panel.paginationLabel.text")); // NOI18N
         paginationLabel.setPreferredSize(new java.awt.Dimension(80, 14));
         wrapperPanel3.add(paginationLabel, java.awt.BorderLayout.LINE_START);
 
@@ -240,18 +242,36 @@ public class AngularPanel extends LayerConfigPanel<AngularData> {
 
         jPanel1.add(wrapperPanel3);
 
+        org.openide.awt.Mnemonics.setLocalizedText(protractorTest_CheckBox, org.openide.util.NbBundle.getMessage(Angular2Panel.class, "Angular2Panel.protractorTest_CheckBox.text")); // NOI18N
+
+        javax.swing.GroupLayout wrapperPanel4Layout = new javax.swing.GroupLayout(wrapperPanel4);
+        wrapperPanel4.setLayout(wrapperPanel4Layout);
+        wrapperPanel4Layout.setHorizontalGroup(
+            wrapperPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, wrapperPanel4Layout.createSequentialGroup()
+                .addGap(86, 86, 86)
+                .addComponent(protractorTest_CheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(294, 294, 294))
+        );
+        wrapperPanel4Layout.setVerticalGroup(
+            wrapperPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(protractorTest_CheckBox, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+
+        jPanel1.add(wrapperPanel4);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 518, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 530, Short.MAX_VALUE)
                 .addContainerGap())
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 518, Short.MAX_VALUE)
+                    .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 530, Short.MAX_VALUE)
                     .addContainerGap()))
         );
         layout.setVerticalGroup(
@@ -259,7 +279,7 @@ public class AngularPanel extends LayerConfigPanel<AngularData> {
             .addGroup(layout.createSequentialGroup()
                 .addGap(19, 19, 19)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(213, Short.MAX_VALUE))
+                .addContainerGap(183, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                     .addContainerGap(289, Short.MAX_VALUE)
@@ -281,14 +301,13 @@ public class AngularPanel extends LayerConfigPanel<AngularData> {
     private javax.swing.JTextField angularModuleTextField;
     private javax.swing.JLabel appTitleLabel;
     private javax.swing.JTextField appTitleTextField;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JComboBox paginationComboBox;
     private javax.swing.JLabel paginationLabel;
+    private javax.swing.JCheckBox protractorTest_CheckBox;
     private javax.swing.JLabel titleEndLabel;
     private javax.swing.JLabel titleStartLabel;
     private javax.swing.JLabel warningLabel;
@@ -296,6 +315,7 @@ public class AngularPanel extends LayerConfigPanel<AngularData> {
     private javax.swing.JPanel wrapperPanel1;
     private javax.swing.JPanel wrapperPanel2;
     private javax.swing.JPanel wrapperPanel3;
+    private javax.swing.JPanel wrapperPanel4;
     // End of variables declaration//GEN-END:variables
 
 

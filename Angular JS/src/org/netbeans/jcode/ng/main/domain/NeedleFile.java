@@ -22,12 +22,12 @@ import java.util.List;
  *
  * @author jGauravGupta
  */
-public class NiddleFile {
+public class NeedleFile {
 
     private List<String> file;
-    private List<Niddle> niddles;
+    private List<Needle> needles;
 
-    public NiddleFile(String... files) {
+    public NeedleFile(String... files) {
         if(files==null){
             throw new IllegalStateException("File can not be empty");
         }
@@ -42,16 +42,16 @@ public class NiddleFile {
     }
 
     /**
-     * @return the niddles
+     * @return the needles
      */
-    public List<Niddle> getNiddles() {
-        return niddles;
+    public List<Needle> getNeedles() {
+        return needles;
     }
 
     /**
-     * @param niddles the niddles to set
+     * @param needles the needles to set
      */
-    public void setNiddles(List<Niddle> niddles) {
-        this.niddles = niddles;
+    public void setNeedles(List<Needle> needles) {
+        this.needles = needles;
     }
 }

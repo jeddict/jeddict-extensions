@@ -14,8 +14,8 @@ File : _language.constants.ts
                     needle-i18n-language-constant
 File : app/layouts/main/main.component.html
                     enableProfile filter
-File : index.ejs
-                    <!--<base href="/"/>-->
+File : index.html
+                    Remove : <base href="/"/>
 File : content/css/main.css
                     replace image file name 
 File : swagger-ui.js/min
@@ -49,11 +49,20 @@ File : webpack-common.js
                     Add     : plugins->CopyWebpackPlugin->{ from: './src/main/webapp/WEB-INF', to: 'WEB-INF' }
                     Add     : <% if (enableDocs) { %>
 >>>> entity-resources.zip, web-resources.zip
-                    Replace : api/ -> <%= applicationPath %>/api/
+                    Replace : 
+                                api/ -> <%= applicationPath %>/api/
+                                management/logs -> <%= applicationPath %>/management/logs
                     Delete : content/images
 >>>> web-resource-i18n.zip
-                    Rename : jhi text
+                    Rename : jhip text
 >>>> entity-resources.zip
+                    Replace :  for(var rel of differentRelationships) -> for (var i in differentRelationships) { var rel = differentRelationships[i];
+File : entity-management.component.ts
+                    Replace :  let eventCallBack -> var eventCallBack
 File : _entity.model.ts
                     Replace :  const enums = fields ->  var enums = fields
-                        
+
+>>>> entity-protractor-test.zip, protractor-test.zip
+                    Replace :  
+                                let elementGetter -> var elementGetter
+                                `   ->  "

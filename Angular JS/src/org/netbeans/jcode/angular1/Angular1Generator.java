@@ -36,7 +36,7 @@ import org.netbeans.jcode.rest.controller.RESTGenerator;
 import org.openide.util.lookup.ServiceProvider;
 import org.netbeans.jcode.layer.Generator;
 import org.netbeans.jcode.ng.main.AngularGenerator;
-import org.netbeans.jcode.ng.main.AngularPanel;
+import org.netbeans.jcode.angular2.Angular2Panel;
 import static org.netbeans.jcode.ng.main.AngularUtil.copyDynamicFile;
 import static org.netbeans.jcode.ng.main.AngularUtil.copyDynamicResource;
 import static org.netbeans.jcode.ng.main.AngularUtil.getResource;
@@ -54,7 +54,7 @@ import org.openide.util.Exceptions;
  * @author Gaurav Gupta
  */
 @ServiceProvider(service = Generator.class)
-@Technology(type = VIEWER, label = "Angular JS 1", panel = AngularPanel.class, parents = {RESTGenerator.class})
+@Technology(type = VIEWER, label = "Angular JS 1", panel = Angular1Panel.class, parents = {RESTGenerator.class})
 public class Angular1Generator extends AngularGenerator {
 
     private static final String TEMPLATE = "org/netbeans/jcode/angular1/template/";
@@ -90,7 +90,7 @@ public class Angular1Generator extends AngularGenerator {
             handler.append(Console.wrap(AngularGenerator.class, "MSG_Copying_Entity_Files", FG_RED, BOLD, UNDERLINE));
             Map<String, String> templateLib = getResource(getTemplatePath() + "entity-include-resources.zip");
             List<NGEntity> entities = new ArrayList<>();
-            for (Entity entity : entityMapping.getConcreteEntity().collect(toList())) {
+            for (Entity entity : entityMapping.getGeneratedEntity().collect(toList())) {
                 NGEntity ngEntity = getEntity(entity);
                 if (ngEntity != null) {
                     entities.add(ngEntity);
@@ -100,11 +100,12 @@ public class Angular1Generator extends AngularGenerator {
             }
             applicationConfig.setEntities(entities);
 
-            generateNgApplication(applicationConfig, fileFilter);
-            generateNgApplicationi18nResource(applicationConfig, fileFilter);
-            generateNgLocaleResource(applicationConfig, fileFilter);
-            generateNgHome(applicationConfig, fileFilter);
-
+            if (restData.isCompleteApplication()) {
+                generateNgApplication(applicationConfig, fileFilter);
+                generateNgApplicationi18nResource(applicationConfig, fileFilter);
+                generateNgLocaleResource(applicationConfig, fileFilter);
+                generateNgHome(applicationConfig, fileFilter);
+            }
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
         }

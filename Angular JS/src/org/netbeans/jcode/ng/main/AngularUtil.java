@@ -77,43 +77,55 @@ public class AngularUtil {
         }
     }
         
-       public static void insertNiddle(FileObject webRoot, String source, String niddlePointer, String niddleContent, ProgressHandler handler) {
+       public static void insertNeedle(FileObject webRoot, String source, String needlePointer, String needleContent, ProgressHandler handler) {
            FileInputStream fis = null;
+           if(source.endsWith("json")){
+               needlePointer = "\"" + needlePointer + "\"";
+           } else {
+               needlePointer = " " + needlePointer + " ";
+           } 
             try {
                 // temp file
-                File outFile = new File("$$$$$$$$.tmp");
+                File outFile = File.createTempFile("$$$$$$$", "tmp");
                 // input
                 FileObject sourceFileObject = webRoot.getFileObject(source);
                 if(sourceFileObject==null){
-                     handler.error("Niddle file", String.format("niddle file '%s' not found ", source));
+                    handler.error("Needle file", String.format("needle file '%s' not found ", source));
                     return;
                 }
                 File sourceFile = FileUtil.toFile(sourceFileObject);
                 fis = new FileInputStream(sourceFile);
                 BufferedReader in = new BufferedReader(new InputStreamReader(fis));
                 // output
-                FileOutputStream fos = new FileOutputStream(outFile);
-                PrintWriter out = new PrintWriter(fos);
+                PrintWriter out = new PrintWriter(new FileOutputStream(outFile));
+                boolean contentUpdated = false;
                 String thisLine;
                 while ((thisLine = in.readLine()) != null) {
-                    if (thisLine.contains(niddlePointer)) {
-                        out.println(niddleContent);
+                    if(thisLine.contains(needlePointer)) {
+                        out.println(needleContent);
+                        contentUpdated = true;
+                        System.out.println("needlePointer : " + needlePointer );            
+                        System.out.println("needleContent : " + needleContent );            
                     } 
                     out.println(thisLine);
                 }
                 out.flush();
                 out.close();
                 in.close();
-                sourceFile.delete();
-                outFile.renameTo(sourceFile);
+                if (contentUpdated) {
+                    sourceFile.delete();
+                    outFile.renameTo(sourceFile);
+                } else {
+                    outFile.delete();
+                }
             } catch (FileNotFoundException ex) {
                 Exceptions.printStackTrace(ex);
             } catch (IOException ex) {
                 Exceptions.printStackTrace(ex);
             } finally {
                 try {
-                    fis.close();
-                } catch (Exception ex) {
+                    if(fis!=null)  fis.close();
+                } catch (IOException ex) {
                     Exceptions.printStackTrace(ex);
                 }
             }

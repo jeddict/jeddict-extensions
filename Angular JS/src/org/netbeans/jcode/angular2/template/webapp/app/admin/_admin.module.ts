@@ -1,15 +1,21 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { UIRouterModule } from 'ui-router-ng2';
+import { RouterModule } from '@angular/router';
 import { ParseLinks } from 'ng-jhipster';
+<%_ if (websocket === 'spring-websocket') { _%>
+import { <%=jhiPrefixCapitalized%>TrackerService } from './../shared/tracker/tracker.service';
+<%_ } _%>
 
 import { <%=angular2AppName%>SharedModule } from '../shared';
 
 import {
+    adminState,
     <%_ if (enableAudits) { _%>
     AuditsComponent,
     <%_ } _%>
     <%_ if (!skipUserManagement) { _%>
     UserMgmtComponent,
+    UserDialogComponent,
+    UserDeleteDialogComponent,
     UserMgmtDetailComponent,
     UserMgmtDialogComponent,
     UserMgmtDeleteDialogComponent,
@@ -34,7 +40,6 @@ import {
 <%_ if (enableAudits) { _%>
     AuditsService,
 <%_ } _%>
-    UserService,
 <%_ if (enableConfiguration) { _%>
     <%=jhiPrefixCapitalized%>ConfigurationService,
 <%_ } _%>
@@ -47,88 +52,31 @@ import {
     <%_ if (applicationType === 'gateway') { _%>
     GatewayRoutesService,
     <%=jhiPrefixCapitalized%>GatewayComponent,
-    gatewayState,
     <%_ } _%>
     <%_ if (websocket === 'spring-websocket') { _%>
     <%=jhiPrefixCapitalized%>TrackerComponent,
-    trackerState,
     <%_ } _%>
 <%_ if (enableLogs) { _%>
     LogsService,
 <%_ } _%>
-<%_ if (enableAudits) { _%>
-    auditState,
-<%_ } _%>
-<%_ if (enableConfiguration) { _%>
-    configState,
-<%_ } _%>
-<%_ if (enableDocs) { _%>
-    docsState,
-<%_ } _%>
-<%_ if (enableHealth) { _%>
-    healthState,
-<%_ } _%>
-<%_ if (enableLogs) { _%>
-    logsState,
-<%_ } _%>
     <%_ if (!skipUserManagement) { _%>
-    userMgmtState,
-    userMgmtDetailState,
-    userMgmtNewState,
-    userMgmtEditState,
-    userMgmtDeleteState,
+    UserResolvePagingParams,
+    UserResolve,
+    UserModalService
     <%_ } _%>
-<%_ if (enableMetrics) { _%>
-    metricsState,
-<%_ } _%>
-    adminState
 } from './';
 
-let ADMIN_STATES = [
-    <%_ if (enableAudits) { _%>
-    auditState,
-    <%_ } _%>
-    <%_ if (enableConfiguration) { _%>
-    configState,
-    <%_ } _%>
-    <%_ if (enableDocs) { _%>
-    docsState,
-    <%_ } _%>
-    <%_ if (enableHealth) { _%>
-    healthState,
-    <%_ } _%>
-    <%_ if (enableLogs) { _%>
-    logsState,
-    <%_ } _%>
-    <%_ if (applicationType === 'gateway') { _%>
-    gatewayState,
-    <%_ } _%>
-    <%_ if (websocket === 'spring-websocket') { _%>
-    trackerState,
-    <%_ } _%>
-    <%_ if (!skipUserManagement) { _%>
-    userMgmtState,
-    userMgmtDetailState,
-    userMgmtNewState,
-    userMgmtEditState,
-    userMgmtDeleteState,
-    <%_ } _%>
-    <%_ if (enableMetrics) { _%>
-    metricsState,
-    <%_ } _%>
-    adminState
-
-];
 
 @NgModule({
     imports: [
         <%=angular2AppName%>SharedModule,
-        UIRouterModule.forChild({ states: ADMIN_STATES })
+        RouterModule.forRoot(adminState, { useHash: true })
     ],
     declarations: [
 <%_ if (enableAudits) { _%>
         AuditsComponent,
 <%_ } _%>
+
 <%_ if (enableLogs) { _%>
         LogsComponent,
 <%_ } _%>
@@ -154,6 +102,8 @@ let ADMIN_STATES = [
 <%_ } _%>
         <%_ if (!skipUserManagement) { _%>
         UserMgmtComponent,
+        UserDialogComponent,
+        UserDeleteDialogComponent,
         UserMgmtDetailComponent,
         UserMgmtDialogComponent,
         UserMgmtDeleteDialogComponent
@@ -190,7 +140,14 @@ let ADMIN_STATES = [
 <%_ if (enableLogs) { _%>
         LogsService,
 <%_ } _%>
-        UserService
+        <%_ if (websocket === 'spring-websocket') { _%>
+        <%=jhiPrefixCapitalized%>TrackerService,
+        <%_ } _%>
+        <%_ if (!skipUserManagement) { _%>
+        UserResolvePagingParams,
+        UserResolve,
+        UserModalService
+        <%_ } _%>
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

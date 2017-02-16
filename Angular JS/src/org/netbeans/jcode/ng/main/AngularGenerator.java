@@ -186,14 +186,17 @@ public abstract class AngularGenerator implements Generator {
         NGApplicationConfig applicationConfig = new NGApplicationConfig();
         applicationConfig.setAngularAppName(ngData.getModule());
         applicationConfig.setEnableTranslation(true);
-        applicationConfig.setJhiPrefix("j");
+        applicationConfig.setJhiPrefix("jhi");
         applicationConfig.setBuildTool("maven");
         applicationConfig.setBaseName(ngData.getApplicationTitle());
         applicationConfig.setApplicationPath(restData.getRestConfigData().getApplicationPath());
         applicationConfig.setEnableMetrics(restData.isMetrics());
+        applicationConfig.setEnableLogs(restData.isLogger());
         applicationConfig.setRestPackage(restData.getPackage());
         applicationConfig.setEnableDocs(restData.isDocsEnable());
         applicationConfig.setClientFramework(getClientFramework());
+        applicationConfig.setSkipClient(false);
+        applicationConfig.setSkipServer(false);
         return applicationConfig;
     }
 

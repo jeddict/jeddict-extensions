@@ -63,6 +63,7 @@ public class NGApplicationConfig {
 
     private String applicationPath;//rest path
     public String buildTool;
+    private String clientPackageManager;
 
     public String angularAppName;
     public String angular2AppName;
@@ -104,6 +105,8 @@ public class NGApplicationConfig {
     //filter    
     private boolean enableSocialSignIn;
     private boolean skipUserManagement;
+    private boolean skipClient;
+    private boolean skipServer;
 
     private boolean enableMetrics;
     private boolean enableLogs;
@@ -571,6 +574,48 @@ public class NGApplicationConfig {
      */
     public void setProtractorTests(boolean protractorTests) {
         this.protractorTests = protractorTests;
+    }
+
+    /**
+     * @return the clientPackageManager
+     */
+    public String getClientPackageManager() {
+        return clientPackageManager;
+    }
+
+    /**
+     * @param clientPackageManager the clientPackageManager to set
+     */
+    public void setClientPackageManager(String clientPackageManager) {
+        this.clientPackageManager = clientPackageManager;
+    }
+
+    /**
+     * @return the skipClient
+     */
+    public boolean isSkipClient() {
+        return skipClient;
+    }
+
+    /**
+     * @param skipClient the skipClient to set
+     */
+    public void setSkipClient(boolean skipClient) {
+        this.skipClient = skipClient;
+    }
+
+    /**
+     * @return the skipServer
+     */
+    public boolean isSkipServer() {
+        return skipServer;
+    }
+
+    /**
+     * @param skipServer the skipServer to set
+     */
+    public void setSkipServer(boolean skipServer) {
+        this.skipServer = skipServer;
     }
 
 }

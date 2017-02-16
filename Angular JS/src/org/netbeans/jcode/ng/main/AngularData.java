@@ -28,7 +28,8 @@ public class AngularData extends LayerConfigData<RESTData> {
     private String module;
     private String applicationTitle;
     private EntityConfig applicationConfig;
-    private PaginationType pagination;   
+    private PaginationType pagination; 
+    private boolean protractorTest;
 
     /**
      * @return the applicationConfig
@@ -92,5 +93,19 @@ public class AngularData extends LayerConfigData<RESTData> {
      */
     public void setPagination(PaginationType pagination) {
         this.pagination = pagination;
+    }
+
+    /**
+     * @return the protractorTest
+     */
+    public boolean isProtractorTest() {
+        return protractorTest;
+    }
+
+    /**
+     * @param protractorTest the protractorTest to set
+     */
+    public void setProtractorTest(boolean protractorTest) {
+        this.protractorTest = protractorTest;
     }
 }
