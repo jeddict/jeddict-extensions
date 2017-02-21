@@ -35,18 +35,18 @@ import static org.netbeans.jcode.core.util.AttributeType.SHORT_WRAPPER;
 import static org.netbeans.jcode.core.util.AttributeType.STRING;
 import static org.netbeans.jcode.core.util.AttributeType.isArray;
 import org.netbeans.jpa.modeler.spec.jaxb.JaxbVariableType;
-import org.netbeans.jpa.modeler.spec.validation.constraints.AssertFalse;
-import org.netbeans.jpa.modeler.spec.validation.constraints.AssertTrue;
-import org.netbeans.jpa.modeler.spec.validation.constraints.Constraint;
-import org.netbeans.jpa.modeler.spec.validation.constraints.DecimalMax;
-import org.netbeans.jpa.modeler.spec.validation.constraints.DecimalMin;
-import org.netbeans.jpa.modeler.spec.validation.constraints.Digits;
-import org.netbeans.jpa.modeler.spec.validation.constraints.Future;
-import org.netbeans.jpa.modeler.spec.validation.constraints.Max;
-import org.netbeans.jpa.modeler.spec.validation.constraints.Min;
-import org.netbeans.jpa.modeler.spec.validation.constraints.Past;
-import org.netbeans.jpa.modeler.spec.validation.constraints.Pattern;
-import org.netbeans.jpa.modeler.spec.validation.constraints.Size;
+import org.netbeans.bean.validation.constraints.AssertFalse;
+import org.netbeans.bean.validation.constraints.AssertTrue;
+import org.netbeans.bean.validation.constraints.Constraint;
+import org.netbeans.bean.validation.constraints.DecimalMax;
+import org.netbeans.bean.validation.constraints.DecimalMin;
+import org.netbeans.bean.validation.constraints.Digits;
+import org.netbeans.bean.validation.constraints.Future;
+import org.netbeans.bean.validation.constraints.Max;
+import org.netbeans.bean.validation.constraints.Min;
+import org.netbeans.bean.validation.constraints.Past;
+import org.netbeans.bean.validation.constraints.Pattern;
+import org.netbeans.bean.validation.constraints.Size;
 
 /**
  *

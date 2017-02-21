@@ -16,199 +16,205 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
-              <EmptySpace min="43" pref="43" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="deleteNamedQueryComp" min="-2" max="-2" attributes="0"/>
-                  <Component id="refractorNamedQueryComp" min="-2" max="-2" attributes="0"/>
-                  <Component id="generateFluentAPIComp" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="javaseWrapperPanel" min="-2" max="-2" attributes="0"/>
-                  <Component id="compositePKWrapperPanel" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="optionalReturnTypePanel" alignment="0" min="-2" max="-2" attributes="0"/>
+          <EmptySpace min="0" pref="494" max="32767" attributes="0"/>
+          <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="rootLayeredPane" min="-2" pref="437" max="-2" attributes="0"/>
+                  <EmptySpace pref="47" max="32767" attributes="0"/>
               </Group>
-              <EmptySpace pref="31" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" attributes="0">
-              <EmptySpace min="16" pref="16" max="-2" attributes="0"/>
-              <Component id="refractorNamedQueryComp" min="-2" max="-2" attributes="0"/>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="deleteNamedQueryComp" min="-2" max="-2" attributes="0"/>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="generateFluentAPIComp" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="javaseWrapperPanel" min="-2" max="-2" attributes="0"/>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="compositePKWrapperPanel" min="-2" max="-2" attributes="0"/>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="optionalReturnTypePanel" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="44" max="32767" attributes="0"/>
+          <EmptySpace min="0" pref="311" max="32767" attributes="0"/>
+          <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="rootLayeredPane" min="-2" pref="209" max="-2" attributes="0"/>
+                  <EmptySpace pref="91" max="32767" attributes="0"/>
+              </Group>
           </Group>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="javax.swing.JCheckBox" name="refractorNamedQueryComp">
-      <Properties>
-        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/netbeans/jpa/modeler/settings/code/Bundle.properties" key="CodePanel.refractorNamedQueryComp.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
-        </Property>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JCheckBox" name="deleteNamedQueryComp">
-      <Properties>
-        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/netbeans/jpa/modeler/settings/code/Bundle.properties" key="CodePanel.deleteNamedQueryComp.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
-        </Property>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JCheckBox" name="generateFluentAPIComp">
-      <Properties>
-        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/netbeans/jpa/modeler/settings/code/Bundle.properties" key="CodePanel.generateFluentAPIComp.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
-        </Property>
-      </Properties>
-    </Component>
-    <Container class="javax.swing.JLayeredPane" name="compositePKWrapperPanel">
+    <Container class="javax.swing.JLayeredPane" name="rootLayeredPane">
 
-      <Layout>
-        <DimensionLayout dim="0">
-          <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Component id="compositePrimaryKeyTypeLabel" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace type="separate" max="-2" attributes="0"/>
-                  <Component id="defaultCompositePrimaryKeyTypeComp" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="32767" attributes="0"/>
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+        <Property name="columns" type="int" value="1"/>
+        <Property name="rows" type="int" value="7"/>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JCheckBox" name="refractorNamedQueryComp">
+          <Properties>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+              <ResourceString bundle="org/netbeans/jpa/modeler/settings/code/Bundle.properties" key="CodePanel.refractorNamedQueryComp.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+            </Property>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="deleteNamedQueryComp">
+          <Properties>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+              <ResourceString bundle="org/netbeans/jpa/modeler/settings/code/Bundle.properties" key="CodePanel.deleteNamedQueryComp.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+            </Property>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="generateFluentAPIComp">
+          <Properties>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+              <ResourceString bundle="org/netbeans/jpa/modeler/settings/code/Bundle.properties" key="CodePanel.generateFluentAPIComp.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+            </Property>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="generateDefaultValueComp">
+          <Properties>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+              <ResourceString bundle="org/netbeans/jpa/modeler/settings/code/Bundle.properties" key="CodePanel.generateDefaultValueComp.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+            </Property>
+          </Properties>
+        </Component>
+        <Container class="javax.swing.JLayeredPane" name="javaseWrapperPanel">
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="javaseSupportComp" min="-2" pref="113" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
+                      <Component id="javaseSupportLabel" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
+                  </Group>
               </Group>
-          </Group>
-        </DimensionLayout>
-        <DimensionLayout dim="1">
-          <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" alignment="1" attributes="0">
-                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="compositePrimaryKeyTypeLabel" alignment="3" min="-2" pref="20" max="-2" attributes="0"/>
-                      <Component id="defaultCompositePrimaryKeyTypeComp" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="javaseSupportLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="javaseSupportComp" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
-          </Group>
-        </DimensionLayout>
-      </Layout>
-      <SubComponents>
-        <Component class="javax.swing.JLabel" name="compositePrimaryKeyTypeLabel">
-          <Properties>
-            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="org/netbeans/jpa/modeler/settings/code/Bundle.properties" key="CodePanel.compositePrimaryKeyTypeLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
-            </Property>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JComboBox" name="defaultCompositePrimaryKeyTypeComp">
-          <Properties>
-            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="2">
-                <StringItem index="0" value="IdClass"/>
-                <StringItem index="1" value="EmbeddedId"/>
-              </StringArray>
-            </Property>
-          </Properties>
-          <AuxValues>
-            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
-          </AuxValues>
-        </Component>
-      </SubComponents>
-    </Container>
-    <Container class="javax.swing.JLayeredPane" name="optionalReturnTypePanel">
+            </DimensionLayout>
+          </Layout>
+          <SubComponents>
+            <Component class="javax.swing.JLabel" name="javaseSupportLabel">
+              <Properties>
+                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="99" green="99" red="99" type="rgb"/>
+                </Property>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="org/netbeans/jpa/modeler/settings/code/Bundle.properties" key="CodePanel.javaseSupportLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                </Property>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="javaseSupportComp">
+              <Properties>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="org/netbeans/jpa/modeler/settings/code/Bundle.properties" key="CodePanel.javaseSupportComp.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                </Property>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JLayeredPane" name="optionalReturnTypePanel">
 
-      <Layout>
-        <DimensionLayout dim="0">
-          <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Component id="optionalReturnTypeStatusLabel" pref="223" max="32767" attributes="0"/>
-                  <EmptySpace type="separate" max="-2" attributes="0"/>
-                  <Component id="optionalReturnTypeStatusComp" min="-2" pref="85" max="-2" attributes="0"/>
-              </Group>
-          </Group>
-        </DimensionLayout>
-        <DimensionLayout dim="1">
-          <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" attributes="0">
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="optionalReturnTypeStatusLabel" min="-2" max="-2" attributes="0"/>
-                      <Component id="optionalReturnTypeStatusComp" min="-2" max="-2" attributes="0"/>
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="optionalReturnTypeStatusLabel" min="-2" pref="230" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="optionalReturnTypeStatusComp" min="-2" pref="85" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace min="0" pref="3" max="32767" attributes="0"/>
               </Group>
-          </Group>
-        </DimensionLayout>
-      </Layout>
-      <SubComponents>
-        <Component class="javax.swing.JLabel" name="optionalReturnTypeStatusLabel">
-          <Properties>
-            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="org/netbeans/jpa/modeler/settings/code/Bundle.properties" key="CodePanel.optionalReturnTypeStatusLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
-            </Property>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JComboBox" name="optionalReturnTypeStatusComp">
-          <Properties>
-            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="2">
-                <StringItem index="0" value="Disable"/>
-                <StringItem index="1" value="Enable"/>
-              </StringArray>
-            </Property>
-          </Properties>
-          <AuxValues>
-            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
-          </AuxValues>
-        </Component>
-      </SubComponents>
-    </Container>
-    <Container class="javax.swing.JLayeredPane" name="javaseWrapperPanel">
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="optionalReturnTypeStatusLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="optionalReturnTypeStatusComp" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="0" pref="9" max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+          <SubComponents>
+            <Component class="javax.swing.JLabel" name="optionalReturnTypeStatusLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="org/netbeans/jpa/modeler/settings/code/Bundle.properties" key="CodePanel.optionalReturnTypeStatusLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                </Property>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JComboBox" name="optionalReturnTypeStatusComp">
+              <Properties>
+                <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="Disable"/>
+                    <StringItem index="1" value="Enable"/>
+                  </StringArray>
+                </Property>
+              </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+              </AuxValues>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JLayeredPane" name="compositePKWrapperPanel">
 
-      <Layout>
-        <DimensionLayout dim="0">
-          <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" alignment="0" attributes="0">
-                  <Component id="javaseSupportComp" min="-2" pref="113" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
-                  <Component id="javaseSupportLabel" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="32767" attributes="0"/>
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="compositePrimaryKeyTypeLabel" min="-2" pref="230" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="defaultCompositePrimaryKeyTypeComp" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace pref="102" max="32767" attributes="0"/>
+                  </Group>
               </Group>
-          </Group>
-        </DimensionLayout>
-        <DimensionLayout dim="1">
-          <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="javaseSupportLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="javaseSupportComp" alignment="3" min="-2" max="-2" attributes="0"/>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="compositePrimaryKeyTypeLabel" alignment="3" min="-2" pref="20" max="-2" attributes="0"/>
+                          <Component id="defaultCompositePrimaryKeyTypeComp" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="0" pref="9" max="32767" attributes="0"/>
+                  </Group>
               </Group>
-          </Group>
-        </DimensionLayout>
-      </Layout>
-      <SubComponents>
-        <Component class="javax.swing.JLabel" name="javaseSupportLabel">
-          <Properties>
-            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-              <Color blue="99" green="99" red="99" type="rgb"/>
-            </Property>
-            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="org/netbeans/jpa/modeler/settings/code/Bundle.properties" key="CodePanel.javaseSupportLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
-            </Property>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JCheckBox" name="javaseSupportComp">
-          <Properties>
-            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="org/netbeans/jpa/modeler/settings/code/Bundle.properties" key="CodePanel.javaseSupportComp.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
-            </Property>
-          </Properties>
-        </Component>
+            </DimensionLayout>
+          </Layout>
+          <SubComponents>
+            <Component class="javax.swing.JLabel" name="compositePrimaryKeyTypeLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="org/netbeans/jpa/modeler/settings/code/Bundle.properties" key="CodePanel.compositePrimaryKeyTypeLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                </Property>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JComboBox" name="defaultCompositePrimaryKeyTypeComp">
+              <Properties>
+                <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="IdClass"/>
+                    <StringItem index="1" value="EmbeddedId"/>
+                  </StringArray>
+                </Property>
+              </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+              </AuxValues>
+            </Component>
+          </SubComponents>
+        </Container>
       </SubComponents>
     </Container>
   </SubComponents>

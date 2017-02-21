@@ -180,14 +180,13 @@ public class OrderColumn {
     }
 
     public OrderColumnMetadata getAccessor() {
-//        OrderColumnMetadata accessor = new OrderColumnMetadata();
-//        accessor.setName(name);
-//        accessor.setColumnDefinition(columnDefinition);
-//        accessor.setNullable(nullable);
-//        accessor.setInsertable(insertable);
-//        accessor.setUpdatable(updatable);
-//        return accessor;
-            return null;
+        OrderColumnMetadata accessor = new OrderColumnMetadata();
+        accessor.setName(name);
+        accessor.setColumnDefinition(columnDefinition);
+        accessor.setNullable(nullable);
+        accessor.setInsertable(insertable);
+        accessor.setUpdatable(updatable);
+        return null;
     }
 
 }

@@ -19,16 +19,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import static org.apache.commons.lang.StringUtils.EMPTY;
+import org.netbeans.bean.validation.constraints.Constraint;
+import org.netbeans.bean.validation.constraints.Max;
+import org.netbeans.bean.validation.constraints.Min;
+import org.netbeans.bean.validation.constraints.NotNull;
+import org.netbeans.bean.validation.constraints.Pattern;
+import org.netbeans.bean.validation.constraints.Size;
 import static org.netbeans.jcode.core.util.StringHelper.firstUpper;
 import static org.netbeans.jcode.core.util.StringHelper.snakeCase;
 import static org.netbeans.jcode.core.util.StringHelper.startCase;
 import org.netbeans.jpa.modeler.spec.extend.BaseAttribute;
-import org.netbeans.jpa.modeler.spec.validation.constraints.Constraint;
-import org.netbeans.jpa.modeler.spec.validation.constraints.Max;
-import org.netbeans.jpa.modeler.spec.validation.constraints.Min;
-import org.netbeans.jpa.modeler.spec.validation.constraints.NotNull;
-import org.netbeans.jpa.modeler.spec.validation.constraints.Pattern;
-import org.netbeans.jpa.modeler.spec.validation.constraints.Size;
 
 public class NGField {
 

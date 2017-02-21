@@ -194,6 +194,7 @@
             <public-packages>
                 <package>org.eclipse.persistence.descriptors</package>
                 <package>org.eclipse.persistence.internal.jpa.metadata</package>
+                <package>org.netbeans.bean.validation.constraints</package>
                 <package>org.netbeans.db.modeler.exception</package>
                 <package>org.netbeans.db.modeler.manager</package>
                 <package>org.netbeans.jpa.modeler._import.javaclass</package>
@@ -212,6 +213,7 @@
                 <package>org.netbeans.jpa.modeler.spec.validator.column</package>
                 <package>org.netbeans.jpa.modeler.spec.validator.override</package>
                 <package>org.netbeans.jpa.modeler.spec.validator.table</package>
+                <package>org.netbeans.jpa.modeler.spec.workspace</package>
                 <package>org.netbeans.jpa.source</package>
             </public-packages>
         </data>

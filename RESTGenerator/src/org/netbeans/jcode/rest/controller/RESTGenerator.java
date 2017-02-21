@@ -34,6 +34,8 @@ import static org.apache.commons.lang.StringUtils.EMPTY;
 import org.jcode.docker.generator.DockerConfigData;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
+import static org.netbeans.bean.validation.constraints.ConstraintUtil.getAttributeDefaultValue;
+import static org.netbeans.bean.validation.constraints.ConstraintUtil.getAttributeUpdateValue;
 import org.netbeans.jcode.cdi.logger.LoggerProducerGenerator;
 import org.netbeans.jcode.cdi.util.CDIUtil;
 import org.netbeans.jcode.console.Console;
@@ -81,8 +83,6 @@ import org.openide.util.lookup.ServiceProvider;
 import org.netbeans.jpa.modeler.spec.*;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import org.netbeans.jcode.layer.Generator;
-import static org.netbeans.jpa.modeler.spec.validation.constraints.ConstraintUtil.getAttributeDefaultValue;
-import static org.netbeans.jpa.modeler.spec.validation.constraints.ConstraintUtil.getAttributeUpdateValue;
 
 /**
  *

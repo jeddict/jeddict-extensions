@@ -13,45 +13,27 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.netbeans.jpa.modeler.spec.validation.constraints;
+package org.netbeans.bean.validation.constraints;
 
-import javax.lang.model.element.AnnotationMirror;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import org.apache.commons.lang.StringUtils;
-import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
  *
  * @author Gaurav Gupta
  */
-@XmlRootElement(name="dmi")
-public class DecimalMin extends Constraint {
+@XmlRootElement(name="af")
+public class AssertFalse extends Constraint {
 
-    @XmlAttribute(name="v")
-    private String value;
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
+    public AssertFalse() {
     }
     
-     @Override
-    public void load(AnnotationMirror annotationMirror) {
-        super.load(annotationMirror);
-        this.value = JavaSourceParserUtil.findAnnotationValueAsString(annotationMirror, "value");
-    }
-
     @Override
     public boolean isEmpty(){
-        return StringUtils.isBlank(value);
+        return false;
     }
     
     @Override
     protected void clearConstraint(){
-        value = null;
+        
     }
 }

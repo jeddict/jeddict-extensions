@@ -1,5 +1,5 @@
 /**
- * Copyright [2014] Gaurav Gupta
+ * Copyright [2017] Gaurav Gupta
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,27 +13,20 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.netbeans.jpa.modeler.spec.validation.constraints;
-
-import javax.xml.bind.annotation.XmlRootElement;
+package org.netbeans.jpa.modeler.spec.workspace;
 
 /**
  *
- * @author Gaurav Gupta
+ * @author jGauravGupta
  */
-@XmlRootElement(name="af")
-public class AssertFalse extends Constraint {
+public enum WorkSpaceType {
+    
+    MASTER("M"), PARTITION("P"), COM("C");
+    
+    private final String type;
 
-    public AssertFalse() {
+    private WorkSpaceType(String type) {
+        this.type = type;
     }
     
-    @Override
-    public boolean isEmpty(){
-        return false;
-    }
-    
-    @Override
-    protected void clearConstraint(){
-        
-    }
 }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.netbeans.jpa.modeler.spec.validation.constraints;
+package org.netbeans.bean.validation.constraints;
 
 import java.util.Collections;
 import java.util.HashMap;

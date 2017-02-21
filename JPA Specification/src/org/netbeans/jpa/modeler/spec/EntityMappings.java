@@ -21,6 +21,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
@@ -36,11 +38,12 @@ import org.netbeans.jpa.modeler.spec.extend.MapKeyHandler;
 import org.netbeans.jpa.modeler.spec.extend.MultiRelationAttribute;
 import org.netbeans.jpa.modeler.spec.extend.ReferenceClass;
 import org.netbeans.jpa.modeler.spec.extend.RelationAttribute;
-import org.netbeans.jpa.modeler.spec.extend.Snippet;
 import org.netbeans.jpa.modeler.spec.extend.ClassSnippetLocationType;
 import org.netbeans.jpa.modeler.spec.extend.MapKeyType;
 import org.netbeans.modeler.specification.version.SoftwareVersion;
 import org.netbeans.jpa.modeler.spec.extend.cache.Cache;
+import org.netbeans.jpa.modeler.spec.workspace.WorkSpace;
+import org.netbeans.jpa.modeler.spec.workspace.WorkSpaceItem;
 import org.netbeans.modeler.core.NBModelerUtil;
 import org.netbeans.modeler.core.exception.InvalidElmentException;
 import org.netbeans.modeler.specification.model.document.IDefinitionElement;
@@ -135,7 +138,8 @@ import org.openide.windows.InputOutput;
     "snippets",
     "interfaces",
     "cache",
-    "jpaDiagram"
+    "jpaDiagram",
+    "workSpaces"
 })
 @XmlRootElement(name = "entity-mappings")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -179,6 +183,20 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     private String diagramVersion;
     @XmlElement(name = "diagram")
     private Diagram jpaDiagram;//Custom Added
+    
+    @XmlAttribute(name = "rws")
+    @XmlIDREF
+    private WorkSpace rootWorkSpace;
+    @XmlAttribute(name = "cws")
+    @XmlIDREF
+    private WorkSpace currentWorkSpace;
+    @XmlAttribute(name = "nws")
+    @XmlIDREF
+    private WorkSpace nextWorkSpace;
+    @XmlElementWrapper(name = "wsl")
+    @XmlElement(name = "ws")
+    private List<WorkSpace> workSpaces;
+    
     @XmlAttribute
     private String status;//GENERATED (DBRE,JCRE)
     @XmlAttribute(name = "thm")
@@ -594,6 +612,12 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         return null;
     }
 
+    public void setMappedSuperclass(List<MappedSuperclass> mappedSuperclass) {
+        if (this.mappedSuperclass == null) {
+            this.mappedSuperclass = new ArrayList<>();
+        }
+        this.mappedSuperclass = mappedSuperclass;
+    }
     /**
      * Gets the value of the entity property.
      *
@@ -678,6 +702,13 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         return this.embeddable;
     }
 
+    public void setEmbeddable(List<Embeddable> embeddable) {
+        if (this.embeddable == null) {
+            this.embeddable = new ArrayList<>();
+        }
+        this.embeddable = embeddable;
+    }
+    
     /**
      * Gets the value of the converter property.
      *
@@ -763,12 +794,16 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
 
     @Override
     public void removeBaseElement(IBaseElement baseElement_In) {
-        if (baseElement_In instanceof Entity) {
-            this.removeEntity((Entity) baseElement_In);
-        } else if (baseElement_In instanceof MappedSuperclass) {
-            this.removeMappedSuperclass((MappedSuperclass) baseElement_In);
-        } else if (baseElement_In instanceof Embeddable) {
-            this.removeEmbeddable((Embeddable) baseElement_In);
+        if (baseElement_In instanceof JavaClass) {
+            if (baseElement_In instanceof Entity) {
+                this.removeEntity((Entity) baseElement_In);
+            } else if (baseElement_In instanceof MappedSuperclass) {
+                this.removeMappedSuperclass((MappedSuperclass) baseElement_In);
+            } else if (baseElement_In instanceof Embeddable) {
+                this.removeEmbeddable((Embeddable) baseElement_In);
+            } else {
+                throw new InvalidElmentException("Invalid JPA Element");
+            }
         } else {
             throw new InvalidElmentException("Invalid JPA Element");
         }
@@ -776,16 +811,20 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
 
     @Override
     public void addBaseElement(IBaseElement baseElement_In) {
-        if (baseElement_In instanceof Entity) {
-            this.addEntity((Entity) baseElement_In);
-        } else if (baseElement_In instanceof MappedSuperclass) {
-            this.addMappedSuperclass((MappedSuperclass) baseElement_In);
-        } else if (baseElement_In instanceof Embeddable) {
-            this.addEmbeddable((Embeddable) baseElement_In);
+        if (baseElement_In instanceof JavaClass) {
+            if (baseElement_In instanceof Entity) {
+                this.addEntity((Entity) baseElement_In);
+            } else if (baseElement_In instanceof MappedSuperclass) {
+                this.addMappedSuperclass((MappedSuperclass) baseElement_In);
+            } else if (baseElement_In instanceof Embeddable) {
+                this.addEmbeddable((Embeddable) baseElement_In);
+            } else {
+                throw new InvalidElmentException("Invalid JPA Element");
+            }
+            getCurrentWorkSpace().addItem(new WorkSpaceItem((JavaClass) baseElement_In));
         } else {
             throw new InvalidElmentException("Invalid JPA Element");
         }
-
     }
 
     public void removeEntity(Entity entity_In) {
@@ -933,6 +972,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     /**
      * @return the jpaDiagram
      */
+    @Deprecated
     public Diagram getJPADiagram() {
         return jpaDiagram;
     }
@@ -940,6 +980,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     /**
      * @param jpaDiagram the jpaDiagram to set
      */
+    @Deprecated
     public void setJPADiagram(Diagram jpaDiagram) {
         this.jpaDiagram = jpaDiagram;
     }
@@ -1301,10 +1342,15 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         this.theme = theme;
     }
 
+    public List<ManagedClass> getManagedClass() {
+        List<ManagedClass> managedClassList = new ArrayList<>(this.getEntity());
+        managedClassList.addAll(this.getMappedSuperclass());
+        managedClassList.addAll(this.getEmbeddable());
+        return managedClassList;
+    }
+        
     public List<JavaClass> getJavaClass() {
-        List<JavaClass> javaClassList = new ArrayList<>(this.getEntity());
-        javaClassList.addAll(this.getMappedSuperclass());
-        javaClassList.addAll(this.getEmbeddable());
+        List<JavaClass> javaClassList = new ArrayList<>(this.getManagedClass());
         return javaClassList;
     }
 
@@ -1604,4 +1650,106 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
             }
         }
     }
+
+    /**
+     * @return the rootWorkSpace
+     */
+    public WorkSpace getRootWorkSpace() {
+        if(rootWorkSpace == null){
+            rootWorkSpace = new WorkSpace();
+            rootWorkSpace.setId(NBModelerUtil.getAutoGeneratedStringId());
+            rootWorkSpace.setName("Main");
+            getWorkSpaces().add(rootWorkSpace);
+        }
+        return rootWorkSpace;
+    }
+
+    /**
+     * @param rootWorkSpace the rootWorkSpace to set
+     */
+    public void setRootWorkSpace(WorkSpace rootWorkSpace) {
+        this.rootWorkSpace = rootWorkSpace;
+    }
+    
+    public boolean isRootWorkSpace() {
+        return getCurrentWorkSpace() == getRootWorkSpace();
+    }
+
+    /**
+     * @return the currentWorkSpace
+     */
+    public WorkSpace getCurrentWorkSpace() {
+        if(currentWorkSpace == null){
+            return getRootWorkSpace();
+        }
+        return currentWorkSpace;
+    }
+
+    /**
+     * @param currentWorkSpace the currentWorkSpace to set
+     */
+    public void setCurrentWorkSpace(WorkSpace currentWorkSpace) {
+        this.currentWorkSpace = currentWorkSpace;
+    }
+    
+    public void setCurrentWorkSpace(String currentWorkSpaceId) {
+        Optional<WorkSpace> wsOptional = findWorkSpace(currentWorkSpaceId);
+        if(wsOptional.isPresent()){
+            this.currentWorkSpace = wsOptional.get();
+        }
+    }
+
+    /**
+     * @return the nextWorkSpace
+     */
+    public WorkSpace getNextWorkSpace() {
+        if(nextWorkSpace == null){
+            return getCurrentWorkSpace();
+        }
+        return nextWorkSpace;
+    }
+
+    /**
+     * @param nextWorkSpace the nextWorkSpace to set
+     */
+    public void setNextWorkSpace(WorkSpace nextWorkSpace) {
+        this.nextWorkSpace = nextWorkSpace;
+    }
+
+    /**
+     * @return the workSpaces
+     */
+    public List<WorkSpace> getWorkSpaces() {
+        if(workSpaces == null) {
+            workSpaces = new ArrayList<>();
+        }
+        return workSpaces;
+    }
+
+    /**
+     * @param workSpaces the workSpaces to set
+     */
+    public void setWorkSpaces(List<WorkSpace> workSpaces) {
+        this.workSpaces = workSpaces;
+    }
+    
+    public void addWorkSpace(WorkSpace workSpace) {
+        getWorkSpaces().add(workSpace);
+    }
+    
+    public void removeWorkSpace(WorkSpace workSpace) {
+        getWorkSpaces().remove(workSpace);
+    }
+    
+    public void removeAllWorkSpace() {
+        getWorkSpaces().clear();
+        getWorkSpaces().add(getRootWorkSpace());
+        setCurrentWorkSpace((WorkSpace)null);
+        setNextWorkSpace(getRootWorkSpace());
+    }
+    
+    public Optional<WorkSpace> findWorkSpace(String workSpaceId) {
+       return getWorkSpaces().stream().filter(ws -> ws.getId().equals(workSpaceId)).findAny();
+    }
+    
 }

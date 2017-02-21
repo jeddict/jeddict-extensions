@@ -23,9 +23,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
+import static java.util.function.Function.identity;
 import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -51,6 +52,7 @@ import org.netbeans.jpa.modeler.spec.Basic;
 import org.netbeans.jpa.modeler.spec.Convert;
 import org.netbeans.jpa.modeler.spec.ElementCollection;
 import org.netbeans.jpa.modeler.spec.Embedded;
+import org.netbeans.jpa.modeler.spec.Entity;
 import org.netbeans.jpa.modeler.spec.ManagedClass;
 import org.netbeans.jpa.modeler.spec.ManyToMany;
 import org.netbeans.jpa.modeler.spec.ManyToOne;
@@ -491,59 +493,87 @@ public abstract class BaseAttributes implements IAttributes {
     
     @Override
     public Set<String> getConnectedClass(){
-        return getConnectedClass(new HashSet<>());
-    }
-    
-    @Override
-    public Set<String> getConnectedClass(Set<String> javaClasses){
+        Set<String> javaClasses = new HashSet<>();
         javaClasses.add(getJavaClass().getFQN());
         if(getJavaClass().getSuperclass()!=null && getJavaClass().getSuperclass() instanceof ManagedClass){
-            javaClasses.addAll(((ManagedClass)getJavaClass().getSuperclass()).getAttributes().getConnectedClass(javaClasses));
+            javaClasses.addAll(((ManagedClass)getJavaClass().getSuperclass()).getAttributes().getConnectedClass());
         }
-        javaClasses.addAll(getBasicConnectedClass(javaClasses));        
-        javaClasses.addAll(getRelationConnectedClass(javaClasses));
-        javaClasses.addAll(getEmbeddedConnectedClass(javaClasses));
-        javaClasses.addAll(getElementCollectionConnectedClass(javaClasses));
+        javaClasses.addAll(getBasicConnectedClass());        
+        javaClasses.addAll(getRelationConnectedClass());
+        javaClasses.addAll(getEmbeddedConnectedClass());
+        javaClasses.addAll(getElementCollectionConnectedClass());
         return javaClasses;
     }
     
-    public Set<String> getRelationConnectedClass(Set<String> javaClasses){
-        Map<ManagedClass, String> releationClasses = getRelationAttributes().stream().map(RelationAttribute::getConnectedEntity).distinct().filter(jc -> !javaClasses.contains(jc.getFQN())).collect(Collectors.toMap(Function.identity(), jc -> jc.getFQN()));
+    public Set<String> getRelationConnectedClass(){
+        Set<String> javaClasses = new HashSet<>();
+        Map<ManagedClass, String> releationClasses = getRelationAttributes().stream()
+                .map(RelationAttribute::getConnectedEntity)
+                .distinct()
+                .filter(jc -> !javaClasses.contains(jc.getFQN()))
+                .collect(toMap(identity(), JavaClass::getFQN));
         javaClasses.addAll(releationClasses.values());
         for (ManagedClass releationClass : releationClasses.keySet()) {
-            javaClasses.addAll(releationClass.getAttributes().getConnectedClass(javaClasses));
+            javaClasses.addAll(releationClass.getAttributes().getConnectedClass());
         }
         return javaClasses;
     }
-    public Set<String> getEmbeddedConnectedClass(Set<String> javaClasses){
-        Map<ManagedClass, String> releationClasses = getEmbedded().stream().map(Embedded::getConnectedClass).distinct().filter(jc -> !javaClasses.contains(jc.getFQN())).collect(Collectors.toMap(Function.identity(), jc -> jc.getFQN()));
+    
+    public Set<Entity> getRelationConnectedClassRef() {
+        Set<Entity> javaClasses = getRelationAttributes().stream()
+                .map(RelationAttribute::getConnectedEntity)
+                .collect(toSet());
+        javaClasses.addAll(getEmbedded().stream()
+                .map(Embedded::getConnectedClass)
+                .flatMap(c -> c.getAttributes().getRelationConnectedClassRef().stream())
+                .collect(toSet()));
+        return javaClasses;
+    }
+    
+    public Set<String> getEmbeddedConnectedClass(){
+        Set<String> javaClasses = new HashSet<>();
+        Map<ManagedClass, String> releationClasses = getEmbedded().stream()
+                .map(Embedded::getConnectedClass)
+                .distinct()
+                .filter(jc -> !javaClasses.contains(jc.getFQN()))
+                .collect(toMap(identity(), JavaClass::getFQN));
         javaClasses.addAll(releationClasses.values());
         for (ManagedClass releationClass : releationClasses.keySet()) {
-            javaClasses.addAll(releationClass.getAttributes().getConnectedClass(javaClasses));
+            javaClasses.addAll(releationClass.getAttributes().getConnectedClass());
         }
         return javaClasses;
     }
-        public Set<String> getElementCollectionConnectedClass(Set<String> javaClasses){
-        Map<ManagedClass, String> releationClasses = getElementCollection().stream().filter(ec -> ec.getConnectedClass()!=null).map(ElementCollection::getConnectedClass).distinct().filter(jc -> !javaClasses.contains(jc.getFQN())).collect(Collectors.toMap(Function.identity(), jc -> jc.getFQN()));
-        javaClasses.addAll(releationClasses.values());
-        for (ManagedClass releationClass : releationClasses.keySet()) {
-            javaClasses.addAll(releationClass.getAttributes().getConnectedClass(javaClasses));
+    public Set<String> getElementCollectionConnectedClass() {
+        Set<String> javaClasses = new HashSet<>();
+        Map<ManagedClass, String> elementCollectionClasses = getElementCollection().stream()
+                .filter(ec -> ec.getConnectedClass() != null)
+                .map(ElementCollection::getConnectedClass)
+                .distinct()
+                .filter(jc -> !javaClasses.contains(jc.getFQN()))
+                .collect(toMap(identity(), JavaClass::getFQN));
+        javaClasses.addAll(elementCollectionClasses.values());
+        for (ManagedClass elementCollectionClass : elementCollectionClasses.keySet()) {
+            javaClasses.addAll(elementCollectionClass.getAttributes().getConnectedClass());
         }
         return javaClasses;
     }
 
-    public Set<String> getBasicConnectedClass(Set<String> javaClasses) {
-        List<String> basicClasses = getBasic().stream().map(Basic::getDataTypeLabel).filter(dataType -> {
-            if(StringUtils.isNotEmpty(dataType)){
-                dataType = isArray(dataType) ? getArrayType(dataType) : dataType;
-                Type type = getType(dataType);
-                if(type == OTHER){
-                    return !JavaIdentifiers.getPackageName(dataType).startsWith("java");
-                }
-            }
-            return false;
-            
-        }).distinct().collect(Collectors.toList());
+    public Set<String> getBasicConnectedClass() {
+        Set<String> javaClasses = new HashSet<>();
+        List<String> basicClasses = getBasic().stream()
+                .map(Basic::getDataTypeLabel)
+                .filter(dataType -> {
+                    if (StringUtils.isNotEmpty(dataType)) {
+                        dataType = isArray(dataType) ? getArrayType(dataType) : dataType;
+                        Type type = getType(dataType);
+                        if (type == OTHER) {
+                            return !JavaIdentifiers.getPackageName(dataType).startsWith("java");
+                        }
+                    }
+                    return false;
+                })
+                .distinct()
+                .collect(Collectors.toList());
         javaClasses.addAll(basicClasses);
         return javaClasses;
     }

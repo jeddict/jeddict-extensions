@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlType;
  *
  *
  */
+@Deprecated
 @XmlRootElement(name = "diagram")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "diagram", propOrder = {

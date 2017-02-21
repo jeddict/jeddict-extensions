@@ -83,6 +83,7 @@ public interface IAttributes extends JCRELoader {
      *
      */
     List<ElementCollection> getElementCollection();
+    void setElementCollection(List<ElementCollection> elementCollection);
 
     /**
      * Gets the value of the embedded property.
@@ -107,6 +108,7 @@ public interface IAttributes extends JCRELoader {
      *
      */
     List<Embedded> getEmbedded();
+    void setEmbedded(List<Embedded> embedded);
 
     /**
      * Gets the value of the manyToMany property.
@@ -131,6 +133,7 @@ public interface IAttributes extends JCRELoader {
      *
      */
     List<ManyToMany> getManyToMany();
+    void setManyToMany(List<ManyToMany> manyToMany);
 
     /**
      * Gets the value of the manyToOne property.
@@ -155,6 +158,7 @@ public interface IAttributes extends JCRELoader {
      *
      */
     List<ManyToOne> getManyToOne();
+    void setManyToOne(List<ManyToOne> manyToOne);
 
     /**
      * Gets the value of the oneToMany property.
@@ -179,6 +183,7 @@ public interface IAttributes extends JCRELoader {
      *
      */
     List<OneToMany> getOneToMany();
+    void setOneToMany(List<OneToMany> oneToMany);
 
     /**
      * Gets the value of the oneToOne property.
@@ -203,6 +208,7 @@ public interface IAttributes extends JCRELoader {
      *
      */
     List<OneToOne> getOneToOne();
+    void setOneToOne(List<OneToOne> oneToOne);
 
     /**
      * Gets the value of the transient property.
@@ -266,8 +272,6 @@ public interface IAttributes extends JCRELoader {
     public List<RelationAttribute> getRelationAttributes();
     
     public Set<String> getConnectedClass();
-    
-    public Set<String> getConnectedClass(Set<String> javaClasses);
 
     public Set<String> getAllConvert();
 }

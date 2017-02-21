@@ -1,5 +1,5 @@
 /**
- * Copyright [2014] Gaurav Gupta
+ * Copyright [2016] Gaurav Gupta
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,28 +13,22 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.netbeans.jpa.modeler.spec.validation.constraints;
+package org.netbeans.bean.validation.constraints;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import org.netbeans.jpa.modeler.spec.validator.MarshalValidator;
 
-/**
- *
- * @author Gaurav Gupta
- */
-@XmlRootElement(name = "at")
-public class AssertTrue extends Constraint {
-
-    public AssertTrue() {
-    }
+public class ConstraintsValidator extends MarshalValidator<Constraint> {
 
     @Override
-    public boolean isEmpty() {
-        return false;
+    public Constraint marshal(Constraint constraint) throws Exception {
+        if (constraint != null && isEmpty(constraint)) {
+            return null;
+        }
+        return constraint;
     }
 
-    @Override
-    protected void clearConstraint() {
-
+    public static boolean isEmpty(Constraint constraint) {
+        return !constraint.getSelected() || constraint.isEmpty();
     }
 
 }

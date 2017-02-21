@@ -556,8 +556,9 @@ public class Attributes extends BaseAttributes implements IPersistenceAttributes
         return null;
     }
    
-       public Set<String> getConnectedClass(final Set<String> javaClasses){
-        super.getConnectedClass(javaClasses);
+    @Override
+    public Set<String> getConnectedClass(){
+        Set<String> javaClasses = new HashSet<>(super.getConnectedClass());
         getCompositeKeyConnectedClass().ifPresent(jc -> javaClasses.add(jc));
         return javaClasses;
     }

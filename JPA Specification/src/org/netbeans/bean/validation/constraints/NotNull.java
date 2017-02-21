@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.netbeans.jpa.modeler.spec.validation.constraints;
+package org.netbeans.bean.validation.constraints;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -21,19 +21,22 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author Gaurav Gupta
  */
-@XmlRootElement(name = "nu")
-public class Null extends Constraint {
+@XmlRootElement(name="nn")
+public class NotNull extends Constraint {
 
-    public Null() {
+    public NotNull() {
     }
-
+ 
+//    public NotNull(Attribute attribute, Boolean selected) {
+//        super( attribute, selected);
+//    }
     @Override
-    public boolean isEmpty() {
+    public boolean isEmpty(){
         return false;
     }
-
+    
     @Override
-    protected void clearConstraint() {
-
+    protected void clearConstraint(){
+        
     }
 }

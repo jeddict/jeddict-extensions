@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.Modifier;
@@ -194,6 +195,19 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
         return superclass;
     }
     
+    public List<JavaClass> getAllSuperclass() {
+        List<JavaClass> superclassList = new LinkedList<>();
+        JavaClass parentClass = this.getSuperclass();
+        while (true) {
+            if (parentClass == null) {
+                break;
+            }
+            superclassList.add(parentClass);
+            parentClass = parentClass.getSuperclass();
+        }
+        return superclassList;
+    }
+    
     public List<Attribute> getSuperclassAttributes() {
          List<Attribute> attributes = Collections.EMPTY_LIST;
         if(superclass !=null && superclass instanceof IdentifiableClass){
@@ -248,21 +262,21 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
      */
     public void setSubclassList(Set<JavaClass> subclassList) {
         if (this.subclassList == null) {
-            this.subclassList = new HashSet<JavaClass>();
+            this.subclassList = new HashSet<>();
         }
         this.subclassList = subclassList;
     }
 
     public void addSubclass(JavaClass subclass) {
         if (this.subclassList == null) {
-            this.subclassList = new HashSet<JavaClass>();
+            this.subclassList = new HashSet<>();
         }
         this.subclassList.add(subclass);
     }
 
     public void removeSubclass(JavaClass subclass) {
         if (this.subclassList == null) {
-            this.subclassList = new HashSet<JavaClass>();
+            this.subclassList = new HashSet<>();
         }
         this.subclassList.remove(subclass);
     }

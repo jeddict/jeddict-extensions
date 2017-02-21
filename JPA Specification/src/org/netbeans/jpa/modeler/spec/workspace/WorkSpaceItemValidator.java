@@ -1,5 +1,5 @@
 /**
- * Copyright [2016] Gaurav Gupta
+ * Copyright [2017] Gaurav Gupta
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,31 +13,34 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.netbeans.jpa.modeler.spec.validator;
+package org.netbeans.jpa.modeler.spec.workspace;
 
-import org.apache.commons.lang.StringUtils;
-import org.netbeans.jpa.modeler.spec.Convert;
+import org.netbeans.jpa.modeler.spec.validator.MarshalValidator;
 
-public class ConvertValidator extends MarshalValidator<Convert> {
+/**
+ *
+ * @author jGauravGupta
+ */
+public class WorkSpaceItemValidator  extends MarshalValidator<WorkSpaceItem> {
 
     @Override
-    public Convert marshal(Convert convert) throws Exception {
-        if (convert != null && isEmpty(convert)) {
+    public WorkSpaceItem marshal(WorkSpaceItem item) throws Exception {
+        if (item != null && isEmpty(item)) {
             return null;
         }
-        return convert;
+        return item;
     }
 
-    public static boolean isEmpty(Convert convert) {
+    public static boolean isEmpty(WorkSpaceItem item) {
         boolean empty = false;
-        if (StringUtils.isBlank(convert.getConverter()) && !convert.isDisableConversion()){
+        if (item.getJavaClass() == null || item.getJavaClass().getRootElement()== null){
             empty = true;
         }
         return empty;
     }
 
-    public static boolean isNotEmpty(Convert convert) {
-        return !isEmpty(convert);
+    public static boolean isNotEmpty(WorkSpaceItem item) {
+        return !isEmpty(item);
     }
 
 }
