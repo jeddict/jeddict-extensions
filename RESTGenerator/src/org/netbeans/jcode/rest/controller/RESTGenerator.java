@@ -83,6 +83,7 @@ import org.openide.util.lookup.ServiceProvider;
 import org.netbeans.jpa.modeler.spec.*;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import org.netbeans.jcode.layer.Generator;
+import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
 
 /**
  *
@@ -111,6 +112,9 @@ public class RESTGenerator implements Generator {
 
     @ConfigData
     private EntityMappings entityMapping;
+    
+    @ConfigData
+    private ApplicationConfigData appConfigData;
 
     @ConfigData
     private ProgressHandler handler;
@@ -213,7 +217,7 @@ public class RESTGenerator implements Generator {
         entityPackage = entityMapping.getPackage();
         Map<String, Object> param = new HashMap<>();
             param.putAll(generateServerSideComponent());
-        if (restData.isCompleteApplication()) {
+        if (appConfigData.isCompleteApplication()) {
             generateUtil();
             CDIUtil.createDD(project);
             generateProducer(param);
@@ -242,6 +246,7 @@ public class RESTGenerator implements Generator {
         String fileName = "LoggerProducer";
         FileObject afFO = targetFolder.getFileObject(fileName, JAVA_EXT);
         if (afFO == null) {
+            handler.progress(fileName);
             afFO = org.netbeans.jcode.core.util.FileUtil.expandTemplate("org/netbeans/jcode/template/service/producer/LoggerProducer.java.ftl", targetFolder, fileName + '.' + JAVA_EXT, Collections.singletonMap("package", _package));
         }
         return afFO;
@@ -335,16 +340,12 @@ public class RESTGenerator implements Generator {
 
         param.put("package", entity.getAbsolutePackage(restData.getPackage()));
         param.put("applicationPath", restData.getRestConfigData().getApplicationPath());
-        param.put("metrics", restData.isCompleteApplication() && restData.isMetrics());
-        param.put("docs", restData.isCompleteApplication() && restData.isDocsEnable());
-
-        //entity controller 
-        handler.progress(controllerFileName);
+        param.put("metrics", appConfigData.isCompleteApplication() && restData.isMetrics());
+        param.put("docs", appConfigData.isCompleteApplication() && restData.isDocsEnable());
 
         FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, entity.getAbsolutePackage(restData.getPackage()), true);
 
         controllerFO = targetFolder.getFileObject(controllerFileName, JAVA_EXT);
-
         if (controllerFO != null) {
             if (overrideExisting) {
                 controllerFO.delete();
@@ -352,6 +353,8 @@ public class RESTGenerator implements Generator {
                 throw new IOException("File already exists exception: " + controllerFO.getPath());
             }
         }
+        //entity controller 
+        handler.progress(controllerFileName);
         expandTemplate(TEMPLATE + "rest/entity/" + restTemplate + ".java.ftl", targetFolder, controllerFileName + '.' + JAVA_EXT, param);
 
         //entity controller test-case
@@ -399,7 +402,6 @@ public class RESTGenerator implements Generator {
             param.put("connectedFQClasses", connectedClasses);
 
             String controllerTestFileName = controllerFileName + "Test";
-            handler.progress(controllerTestFileName);
             FileObject targetTestFolder = SourceGroupSupport.getFolderForPackage(testSource, entity.getAbsolutePackage(restData.getPackage()), true);
             controllerFO = targetTestFolder.getFileObject(controllerTestFileName, JAVA_EXT);
 
@@ -410,6 +412,7 @@ public class RESTGenerator implements Generator {
                     throw new IOException("File already exists exception: " + controllerFO.getPath());
                 }
             }
+            handler.progress(controllerTestFileName);
             expandTemplate(TEMPLATE + "arquillian/EntityControllerTest.java.ftl", targetTestFolder, controllerTestFileName + '.' + JAVA_EXT, param);
         }
         return controllerFO;
@@ -469,12 +472,11 @@ public class RESTGenerator implements Generator {
             expandServerSideComponent(testSource, restData.getPackage(), restData.getPrefixName(), restData.getSuffixName() + "Test", TEST_CASE_CONTROLLER_TEMPLATES, param);
         }
 
-        if (restData.isCompleteApplication()) {
+        if (appConfigData.isCompleteApplication()) {
             FileObject configRoot = ProjectHelper.getResourceDirectory(project);
             if (configRoot == null) {//non-maven project
                 configRoot = source.getRootFolder();
             }
-
             expandTemplate(TEMPLATE + "config/resource/insert.sql.ftl", getFolderForPackage(configRoot, "META-INF.sql", true), "insert.sql", singletonMap("database", dockerConfigData.getDatabaseType() != null ? dockerConfigData.getDatabaseType() : "Derby"));
             FileUtil.copyStaticResource(TEMPLATE + "config/resource/config-resources.zip", configRoot, null, handler);
             updatePersistenceXml(Arrays.asList(entityPackage + ".User", entityPackage + ".Authority"));
@@ -482,7 +484,7 @@ public class RESTGenerator implements Generator {
             if (restData.isTestCase()) {
                 configRoot = ProjectHelper.getTestResourceDirectory(project);
                 expandTemplate(TEMPLATE + "arquillian/config/arquillian.xml.ftl", configRoot, "arquillian.xml", EMPTY_MAP);
-//            expandTemplate(TEMPLATE + "arquillian/config/glassfish-resources.xml.ftl", configRoot, "glassfish-resources.xml", EMPTY_MAP);
+//              expandTemplate(TEMPLATE + "arquillian/config/glassfish-resources.xml.ftl", configRoot, "glassfish-resources.xml", EMPTY_MAP);
                 expandTemplate(TEMPLATE + "arquillian/config/web.xml.ftl", configRoot, "web.xml", EMPTY_MAP);
                 expandTemplate(TEMPLATE + "arquillian/config/test-persistence.xml.ftl", configRoot, "test-persistence.xml", Collections.singletonMap("PU_NAME", entityMapping.getPersistenceUnitName()));
                 expandTemplate(TEMPLATE + "config/resource/insert.sql.ftl", getFolderForPackage(configRoot, "META-INF.sql", true), "insert.sql", singletonMap("database", "Derby"));
@@ -530,13 +532,14 @@ public class RESTGenerator implements Generator {
                         param.put(firstLower(templateFile), firstLower(fileName));
                     }
                     param.put(templateFile + "_FQN", templatePackage + '.' + fileName);
-                    if (restData.isCompleteApplication()) {
+                    if (appConfigData.isCompleteApplication()) {
                         FileObject targetFolder = SourceGroupSupport.getFolderForPackage(targetSourceGroup, (String) param.get("package"), true);
+                        handler.progress(fileName);
                         expandTemplate(TEMPLATE + template.getPath(), targetFolder, fileName + '.' + JAVA_EXT, param);
                     }
                 }
             }
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
             System.out.println("InputResource : " + _package + '.' + fileName);
         }

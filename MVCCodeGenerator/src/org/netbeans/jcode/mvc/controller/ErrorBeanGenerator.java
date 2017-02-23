@@ -48,12 +48,12 @@ public class ErrorBeanGenerator {
             return configFO;
         }
 
+        handler.progress(ERROR_BEAN_CLASS);
         FileObject appClass = GenerationUtils.createClass(packageFolder, ERROR_BEAN_CLASS, null);
         JavaSource javaSource = JavaSource.forFileObject(appClass);
         if (javaSource == null) {
             return null;
         }
-        handler.progress(ERROR_BEAN_CLASS);
         javaSource.runModificationTask((WorkingCopy workingCopy) -> {
             workingCopy.toPhase(JavaSource.Phase.RESOLVED);
             GenerationUtils genUtils = GenerationUtils.newInstance(workingCopy);

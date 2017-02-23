@@ -110,7 +110,6 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         setMetrics(data.isMetrics());
         setDocsEnable(data.isDocsEnable());
         setTestCase(data.isTestCase());
-        setCompleteApplication(data.isCompleteApplication());
         
         setSelectedEventType(data.getFilterTypes());
     }
@@ -133,7 +132,6 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         data.setLogger(isLogger());
         data.setDocsEnable(isDocsEnable());
         data.setTestCase(isTestCase());
-        data.setCompleteApplication(isCompleteApplication());
         
         set(pref, data);
     }
@@ -250,15 +248,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
     private void setDocsEnable(boolean docsEnable) {
         docsCheckBox.setSelected(docsEnable);
     }
-    
-    private boolean isCompleteApplication() {
-        return completeAppCheckBox.isSelected();
-    }
-
-    private void setCompleteApplication(boolean completeApplication) {
-        completeAppCheckBox.setSelected(completeApplication);
-    }
-    
+   
     private boolean isLogger() {
         return loggerCheckBox.isSelected();
     }
@@ -311,10 +301,9 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         appPackageCombo = new javax.swing.JComboBox();
         jLabel1 = new javax.swing.JLabel();
         appPanel = new javax.swing.JPanel();
-        completeAppCheckBox = new javax.swing.JCheckBox();
         testcaseCheckBox = new javax.swing.JCheckBox();
-        miscPanel = new javax.swing.JPanel();
         applicationConfigButton = new javax.swing.JButton();
+        miscPanel = new javax.swing.JPanel();
         wrapper = new javax.swing.JLayeredPane();
         metricsCheckbox = new javax.swing.JCheckBox();
         docsCheckBox = new javax.swing.JCheckBox();
@@ -394,6 +383,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
 
         appPackageLabel.setLabelFor(packageCombo);
         org.openide.awt.Mnemonics.setLocalizedText(appPackageLabel, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.appPackageLabel.text")); // NOI18N
+        appPackageLabel.setToolTipText(org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.appPackageLabel.toolTipText")); // NOI18N
         appPackageLabel.setPreferredSize(new java.awt.Dimension(100, 17));
         appPackagePanel.add(appPackageLabel, java.awt.BorderLayout.LINE_START);
 
@@ -417,40 +407,8 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         jLabel1.setAlignmentY(0.0F);
         jPanel1.add(jLabel1);
 
-        completeAppCheckBox.setSelected(true);
-        org.openide.awt.Mnemonics.setLocalizedText(completeAppCheckBox, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.completeAppCheckBox.text")); // NOI18N
-        completeAppCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                completeAppCheckBoxActionPerformed(evt);
-            }
-        });
-
         testcaseCheckBox.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(testcaseCheckBox, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.testcaseCheckBox.text")); // NOI18N
-
-        javax.swing.GroupLayout appPanelLayout = new javax.swing.GroupLayout(appPanel);
-        appPanel.setLayout(appPanelLayout);
-        appPanelLayout.setHorizontalGroup(
-            appPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, appPanelLayout.createSequentialGroup()
-                .addGap(111, 111, 111)
-                .addComponent(completeAppCheckBox, javax.swing.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(testcaseCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(152, 152, 152))
-        );
-        appPanelLayout.setVerticalGroup(
-            appPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(appPanelLayout.createSequentialGroup()
-                .addGap(2, 2, 2)
-                .addGroup(appPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(completeAppCheckBox)
-                    .addComponent(testcaseCheckBox)))
-        );
-
-        jPanel1.add(appPanel);
-
-        miscPanel.setLayout(new java.awt.BorderLayout());
 
         org.openide.awt.Mnemonics.setLocalizedText(applicationConfigButton, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.applicationConfigButton.text")); // NOI18N
         applicationConfigButton.addActionListener(new java.awt.event.ActionListener() {
@@ -458,7 +416,30 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
                 applicationConfigButtonActionPerformed(evt);
             }
         });
-        miscPanel.add(applicationConfigButton, java.awt.BorderLayout.EAST);
+
+        javax.swing.GroupLayout appPanelLayout = new javax.swing.GroupLayout(appPanel);
+        appPanel.setLayout(appPanelLayout);
+        appPanelLayout.setHorizontalGroup(
+            appPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(appPanelLayout.createSequentialGroup()
+                .addGap(325, 325, 325)
+                .addComponent(testcaseCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
+                .addComponent(applicationConfigButton)
+                .addContainerGap())
+        );
+        appPanelLayout.setVerticalGroup(
+            appPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(appPanelLayout.createSequentialGroup()
+                .addGroup(appPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(testcaseCheckBox)
+                    .addComponent(applicationConfigButton, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        jPanel1.add(appPanel);
+
+        miscPanel.setLayout(new java.awt.BorderLayout());
 
         metricsCheckbox.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(metricsCheckbox, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.metricsCheckbox.text")); // NOI18N
@@ -484,12 +465,12 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
             wrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(wrapperLayout.createSequentialGroup()
                 .addGap(110, 110, 110)
-                .addComponent(metricsCheckbox)
-                .addGap(18, 18, 18)
+                .addComponent(metricsCheckbox, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(69, 69, 69)
                 .addComponent(loggerCheckBox)
-                .addGap(13, 13, 13)
+                .addGap(80, 80, 80)
                 .addComponent(docsCheckBox)
-                .addGap(26, 26, 26))
+                .addContainerGap())
         );
         wrapperLayout.setVerticalGroup(
             wrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -510,13 +491,10 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 609, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 629, Short.MAX_VALUE)
+                    .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -569,16 +547,6 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
     private void docsCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_docsCheckBoxActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_docsCheckBoxActionPerformed
-
-    private void completeAppCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_completeAppCheckBoxActionPerformed
-        boolean status = completeAppCheckBox.isSelected();
-        metricsCheckbox.setEnabled(status);
-        loggerCheckBox.setEnabled(status);
-        docsCheckBox.setEnabled(status);
-        if(!status){
-            JOptionPane.showMessageDialog(this, "Only entity controller/view will be generated");
-        }
-    }//GEN-LAST:event_completeAppCheckBoxActionPerformed
     private void openApplicationConfig() {
         if (configDialog == null) {
             configDialog = new RestConfigDialog();
@@ -603,7 +571,6 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
     private javax.swing.JPanel appPackagePanel;
     private javax.swing.JPanel appPanel;
     private javax.swing.JButton applicationConfigButton;
-    private javax.swing.JCheckBox completeAppCheckBox;
     private javax.swing.JCheckBox docsCheckBox;
     private javax.swing.JLabel entityLabel;
     private javax.swing.JLabel jLabel1;

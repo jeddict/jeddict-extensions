@@ -39,7 +39,6 @@ public class RESTData extends LayerConfigData {
     private boolean metrics = true;
     private boolean logger = true;
     private boolean docsEnable = true;
-    private boolean completeApplication = true;
     private boolean testCase = true;
     private boolean pagination;
     
@@ -217,20 +216,6 @@ public class RESTData extends LayerConfigData {
      */
     public void setLogger(boolean logger) {
         this.logger = logger;
-    }
-
-    /**
-     * @return the completeApplication
-     */
-    public boolean isCompleteApplication() {
-        return completeApplication;
-    }
-
-    /**
-     * @param completeApplication the completeApplication to set
-     */
-    public void setCompleteApplication(boolean completeApplication) {
-        this.completeApplication = completeApplication;
     }
 
 }

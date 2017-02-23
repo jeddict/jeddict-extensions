@@ -20,7 +20,6 @@ import java.util.*;
 import static java.util.stream.Collectors.toSet;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
-import org.netbeans.jcode.layer.Generator;
 import org.netbeans.jcode.layer.TechContext;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
 
@@ -32,15 +31,8 @@ public class ApplicationConfigData implements Serializable {
 
     private Project project;
     private SourceGroup sourceGroup;
+    private boolean completeApplication;
     private EntityMappings entityMappings;
-    private Map<String, EntityConfigData> entities;
-
-//    private LayerConfigData bussinesLayerConfig;
-//    private LayerConfigData controllerLayerConfig;
-//    private LayerConfigData viewerLayerConfig;
-//    private Generator bussinesLayerGenerator;
-//    private Generator controllerLayerGenerator;
-//    private Generator viewerLayerGenerator;
     
     private TechContext bussinesTechContext;
     private TechContext controllerTechContext;
@@ -70,50 +62,6 @@ public class ApplicationConfigData implements Serializable {
         this.viewerTechContext = viewerLayerTechContext;
     }
     
-    
-//
-//    /**
-//     * @return the bussinesLayerConfig
-//     */
-//    public LayerConfigData getBussinesLayerConfig() {
-//        return bussinesLayerConfig;
-//    }
-//
-//    /**
-//     * @param bussinesLayerConfig the bussinesLayerConfig to set
-//     */
-//    public void setBussinesLayerConfig(LayerConfigData bussinesLayerConfig) {
-//        this.bussinesLayerConfig = bussinesLayerConfig;
-//    }
-//
-//    /**
-//     * @return the controllerLayerConfig
-//     */
-//    public LayerConfigData getControllerLayerConfig() {
-//        return controllerLayerConfig;
-//    }
-//
-//    /**
-//     * @param controllerLayerConfig the controllerLayerConfig to set
-//     */
-//    public void setControllerLayerConfig(LayerConfigData controllerLayerConfig) {
-//        this.controllerLayerConfig = controllerLayerConfig;
-//    }
-//
-//    /**
-//     * @return the viewerLayerConfig
-//     */
-//    public LayerConfigData getViewerLayerConfig() {
-//        return viewerLayerConfig;
-//    }
-//
-//    /**
-//     * @param viewerLayerConfig the viewerLayerConfig to set
-//     */
-//    public void setViewerLayerConfig(LayerConfigData viewerLayerConfig) {
-//        this.viewerLayerConfig = viewerLayerConfig;
-//    }
-
     /**
      * @return the project
      */
@@ -143,73 +91,6 @@ public class ApplicationConfigData implements Serializable {
     }
 
     /**
-     * @return the entities
-     */
-    public Map<String, EntityConfigData> getEntities() {
-        if (entities == null) {
-            entities = new HashMap<>();
-        }
-        return entities;
-    }
-
-    /**
-     * @param entities the entities to set
-     */
-    public void setEntities(Map<String, EntityConfigData> entities) {
-        this.entities = entities;
-    }
-
-    public EntityConfigData getEntity(String key) {
-        return getEntities().get(key);
-    }
-
-    public EntityConfigData putEntity(String key, EntityConfigData value) {
-        return getEntities().put(key, value);
-    }
-
-//    /**
-//     * @return the bussinesLayerGenerator
-//     */
-//    public Generator getBussinesLayerGenerator() {
-//        return bussinesLayerGenerator;
-//    }
-//
-//    /**
-//     * @param bussinesLayerGenerator the bussinesLayerGenerator to set
-//     */
-//    public void setBussinesLayerGenerator(Generator bussinesLayerGenerator) {
-//        this.bussinesLayerGenerator = bussinesLayerGenerator;
-//    }
-//
-//    /**
-//     * @return the controllerLayerGenerator
-//     */
-//    public Generator getControllerLayerGenerator() {
-//        return controllerLayerGenerator;
-//    }
-//
-//    /**
-//     * @param controllerLayerGenerator the controllerLayerGenerator to set
-//     */
-//    public void setControllerLayerGenerator(Generator controllerLayerGenerator) {
-//        this.controllerLayerGenerator = controllerLayerGenerator;
-//    }
-//
-//    /**
-//     * @return the viewerLayerGenerator
-//     */
-//    public Generator getViewerLayerGenerator() {
-//        return viewerLayerGenerator;
-//    }
-//
-//    /**
-//     * @param viewerLayerGenerator the viewerLayerGenerator to set
-//     */
-//    public void setViewerLayerGenerator(Generator viewerLayerGenerator) {
-//        this.viewerLayerGenerator = viewerLayerGenerator;
-//    }
-
-    /**
      * @return the entityMappings
      */
     public EntityMappings getEntityMappings() {
@@ -221,12 +102,20 @@ public class ApplicationConfigData implements Serializable {
      */
     public void setEntityMappings(EntityMappings entityMappings) {
         this.entityMappings = entityMappings;
-        entityMappings.getGeneratedEntity().forEach(entity -> {
-            EntityConfigData entityConfigData = new EntityConfigData(entity.getFileObject());
-            entityConfigData.setLabelAttribute(entity.getLabelAttribute() != null ? entity.getLabelAttribute().getName() : null);
-            entityConfigData.setSystemAttribute(entity.getAttributes().getAllAttribute().stream().filter(attr -> !attr.getIncludeInUI()).map(attr -> attr.getName()).collect(toSet()));
-            this.putEntity(entity.getFQN(), entityConfigData);
-        });
+    }
+
+    /**
+     * @return the completeApplication
+     */
+    public boolean isCompleteApplication() {
+        return completeApplication;
+    }
+
+    /**
+     * @param completeApplication the completeApplication to set
+     */
+    public void setCompleteApplication(boolean completeApplication) {
+        this.completeApplication = completeApplication;
     }
 
 }

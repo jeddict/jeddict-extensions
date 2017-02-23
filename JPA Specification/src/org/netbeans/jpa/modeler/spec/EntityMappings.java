@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import java.util.stream.Stream;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -187,6 +188,9 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     @XmlAttribute(name = "rws")
     @XmlIDREF
     private WorkSpace rootWorkSpace;
+    @XmlAttribute(name = "Pws")
+    @XmlIDREF
+    private WorkSpace previousWorkSpace;
     @XmlAttribute(name = "cws")
     @XmlIDREF
     private WorkSpace currentWorkSpace;
@@ -1675,6 +1679,21 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         return getCurrentWorkSpace() == getRootWorkSpace();
     }
 
+    
+    /**
+     * @return the previousWorkSpace
+     */
+    public WorkSpace getPreviousWorkSpace() {
+        return previousWorkSpace;
+    }
+
+    /**
+     * @param previousWorkSpace the previousWorkSpace to set
+     */
+    private void setPreviousWorkSpace(WorkSpace previousWorkSpace) {
+        this.previousWorkSpace = previousWorkSpace;
+    }
+
     /**
      * @return the currentWorkSpace
      */
@@ -1684,11 +1703,42 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         }
         return currentWorkSpace;
     }
+    
+    public void setGenerateWorkSpaceClass(WorkSpace workspace) {
+        assert(workspace!=null);
+        getAllJavaClass()
+                .forEach(jc -> jc.setGenerateSourceCode(false));
+        getAllJavaClass()
+                .stream()
+                .filter(jc -> workspace.hasItem(jc))
+                .forEach(jc -> jc.setGenerateSourceCode(true));
+    }
+        
+    public Optional<WorkSpace> findGeneratedWorkSpace() {
+        Set<WorkSpaceItem> selectedWorkSpaceItems = getAllJavaClass()
+                .stream()
+                .filter(c -> c.getGenerateSourceCode())
+                .map(WorkSpaceItem::new)
+                .collect(toSet());
+        Optional<WorkSpace> optionalWorkSpace = getWorkSpaces()
+                .stream()
+                .filter(ws -> ws.getItems().equals(selectedWorkSpaceItems))
+                .findAny();
+        return optionalWorkSpace;
+    }
+    
+    public List<JavaClass> findGeneratedClass() {
+        return getAllJavaClass()
+                .stream()
+                .filter(c -> c.getGenerateSourceCode())
+                .collect(toList());
+    }
 
     /**
      * @param currentWorkSpace the currentWorkSpace to set
      */
     public void setCurrentWorkSpace(WorkSpace currentWorkSpace) {
+        setPreviousWorkSpace(this.currentWorkSpace);
         this.currentWorkSpace = currentWorkSpace;
     }
     

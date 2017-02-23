@@ -65,6 +65,7 @@ import org.netbeans.jpa.modeler.spec.extend.BaseAttribute;
 import org.netbeans.jpa.modeler.spec.extend.EnumTypeHandler;
 import org.netbeans.jpa.modeler.spec.extend.RelationAttribute;
 import org.netbeans.jcode.layer.Generator;
+import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
 
 /**
  *
@@ -84,6 +85,9 @@ public abstract class AngularGenerator implements Generator {
     @ConfigData
     protected Project project;
 
+    @ConfigData
+    protected ApplicationConfigData appConfigData;
+    
     @ConfigData
     protected ProgressHandler handler;
 

@@ -103,7 +103,7 @@ public class Angular2Generator extends AngularGenerator {
             }
             applicationConfig.setEntities(ngEntities);
 
-            if (restData.isCompleteApplication()) {
+            if (appConfigData.isCompleteApplication()) {
                 EJSParser parser = new EJSParser();
                 parser.addContext(applicationConfig);
                 generateNgApplication(parser);

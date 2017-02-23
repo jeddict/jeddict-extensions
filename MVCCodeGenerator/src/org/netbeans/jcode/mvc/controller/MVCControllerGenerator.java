@@ -116,6 +116,7 @@ import org.netbeans.jcode.rest.converter.ParamConvertorGenerator;
 import static org.netbeans.jcode.security.SecurityConstants.CREDENTIALS;
 import static org.netbeans.jcode.security.SecurityConstants.DEFAULT_CREDENTIALS;
 import static org.netbeans.jcode.security.SecurityConstants.EMBEDDED_IDENTITY_STORE_DEFINITION;
+import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.jpa.modeler.spec.DefaultAttribute;
 import org.netbeans.jpa.modeler.spec.DefaultClass;
@@ -170,7 +171,11 @@ public class MVCControllerGenerator implements Generator {
 
     @ConfigData
     private ProgressHandler handler;
+        
+    @ConfigData
+    private ApplicationConfigData appConfigData;
 
+    @Override
     public void preExecute(){
         addFormParam();
     }
@@ -178,11 +183,13 @@ public class MVCControllerGenerator implements Generator {
     @Override
     public void execute() throws IOException {
         handler.progress(Console.wrap(MVCControllerGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
-        generateUtil();
+        if (appConfigData.isCompleteApplication()) {
+            generateUtil();
+            addMavenDependencies();
+        }
         for (Entity entity : entityMapping.getGeneratedEntity().collect(toList())) {
             generate(entity, false, false, true);
         }
-        addMavenDependencies();
     }
 
     public Set<FileObject> generate(Entity entity, final boolean hasRemote, final boolean hasLocal, boolean overrideExisting) throws IOException {
@@ -599,7 +606,7 @@ public class MVCControllerGenerator implements Generator {
         }
     }
 
-    public void generateApplicationConfig(final Project project, final SourceGroup sourceGroup, ProgressHandler handler) throws IOException {
+    private void generateApplicationConfig(final Project project, final SourceGroup sourceGroup, ProgressHandler handler) throws IOException {
 
         if (mvcData.getRestConfigData() == null) {
             return;

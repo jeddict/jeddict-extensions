@@ -39,6 +39,14 @@ public class WorkSpace extends BaseElement {
     
     @XmlElement(name="i")
     private Set<WorkSpaceItem> items;
+
+    public WorkSpace() {
+    }
+
+    public WorkSpace(Set<WorkSpaceItem> items) {
+        this.items = items;
+    }
+    
     
     /**
      * @return the name
@@ -96,6 +104,28 @@ public class WorkSpace extends BaseElement {
     public boolean hasItem(JavaClass javaClass){
         return getItems().contains(new WorkSpaceItem(javaClass));
     }
-    
-    
+
+    @Override
+    public int hashCode() {
+        return getItems().size();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final WorkSpace other = (WorkSpace) obj;
+        if (!getItems().equals(other.getItems())) {
+            return false;
+        }
+        return true;
+    }
+        
 }

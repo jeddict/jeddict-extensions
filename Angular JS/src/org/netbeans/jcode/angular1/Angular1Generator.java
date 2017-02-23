@@ -100,7 +100,7 @@ public class Angular1Generator extends AngularGenerator {
             }
             applicationConfig.setEntities(entities);
 
-            if (restData.isCompleteApplication()) {
+            if (appConfigData.isCompleteApplication()) {
                 generateNgApplication(applicationConfig, fileFilter);
                 generateNgApplicationi18nResource(applicationConfig, fileFilter);
                 generateNgLocaleResource(applicationConfig, fileFilter);

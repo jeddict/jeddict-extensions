@@ -44,7 +44,9 @@ import org.netbeans.jcode.mvc.controller.MVCData;
 import org.netbeans.jcode.mvc.viewer.dto.FromEntityBase;
 import org.netbeans.jcode.mvc.controller.Operation;
 import org.netbeans.jcode.servlet.util.ServletUtil;
+import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
 import org.netbeans.jcode.task.progress.ProgressHandler;
+import org.netbeans.jpa.modeler.spec.Entity;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
 import org.netbeans.modules.web.api.webmodule.WebProjectConstants;
 import org.openide.filesystems.FileObject;
@@ -114,16 +116,23 @@ public class JSPViewerGenerator implements Generator{
     
     @ConfigData
     private ProgressHandler handler;
+    
+    @ConfigData
+    private ApplicationConfigData appConfigData;
         
     private static final String WEB_XML_DD = "/org/netbeans/jcode/mvc/template/dd/welcomefile/_web.xml";
 
     @Override
     public void execute() throws IOException {
-       Set<String> entities = entityMappings.getFQEntity().collect(toSet());
+        Set<String> entities = entityMappings.getGeneratedEntity()
+                .map(Entity::getFQN)
+                .collect(toSet());
         generateCRUD(entities, true);
         generateHome(entities);
-        generateWelcomeFileDD();
-        generateStaticResources(project, handler);
+        if (appConfigData.isCompleteApplication()) {
+            generateWelcomeFileDD();
+            generateStaticResources(project, handler);
+        }
     }
 
     
@@ -134,8 +143,8 @@ public class JSPViewerGenerator implements Generator{
         } else {
             welcomeFile = '/' + jspData.getFolder() + "/home.jsp";
         }
-        boolean sucess = ServletUtil.setWelcomeFiles(project, welcomeFile);
-        if (!sucess) { // NetBeans API bug resolution
+        boolean success = ServletUtil.setWelcomeFiles(project, welcomeFile);
+        if (!success) { // NetBeans API bug resolution
             handler.progress(Console.wrap(NbBundle.getMessage(ServletUtil.class, "MSG_Init_WelcomeFile", jspData.getFolder()), FG_MAGENTA, BOLD, UNDERLINE));
             Map<String, Object> params = new HashMap<>();
             params.put("WELCOME_FILE", welcomeFile);

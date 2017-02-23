@@ -116,7 +116,9 @@ public class WorkSpaceItem {
     @Override
     public int hashCode() {
         Integer hash = 7;
-        hash = 37 * hash + Objects.hashCode(this.javaClass.getId());
+        if(this.javaClass!=null){
+            hash = 37 * hash + Objects.hashCode(this.javaClass.getId());
+        }
         return hash;
     }
 
@@ -132,6 +134,9 @@ public class WorkSpaceItem {
             return false;
         }
         final WorkSpaceItem other = (WorkSpaceItem) obj;
+        if(this.javaClass == null || other.javaClass == null){
+            return false;
+        }
         if (!Objects.equals(this.javaClass.getId(), other.javaClass.getId())) {
             return false;
         }
