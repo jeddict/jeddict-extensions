@@ -164,13 +164,11 @@ public class OneToOne extends SingleRelationAttribute {
             if (mappedBy != null) {
                 return mappedBy;
             }
-            if(getConnectedAttribute()==null){
-                return null;
+            if (getConnectedAttribute() != null) {
+                return getConnectedAttribute().getName();
             }
-            return getConnectedAttribute().getName();
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**

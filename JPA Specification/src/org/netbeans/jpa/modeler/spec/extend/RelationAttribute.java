@@ -276,14 +276,16 @@ public abstract class RelationAttribute extends Attribute implements AccessTypeH
         this.connectedAttribute = connectedAttribute;
     }
 
+    public String getConnectedAttributeName() {
+        return connectedAttribute!=null?connectedAttribute.getName():null;
+    }
+
     @Override
     public List<JaxbVariableType> getJaxbVariableList() {
         List<JaxbVariableType> jaxbVariableTypeList = new ArrayList<JaxbVariableType>();
         jaxbVariableTypeList.add(JaxbVariableType.XML_ELEMENT);
         jaxbVariableTypeList.add(JaxbVariableType.XML_TRANSIENT);
-        if(!isOwner()){
-            jaxbVariableTypeList.add(JaxbVariableType.XML_INVERSE_REFERENCE);
-        }
+        jaxbVariableTypeList.add(JaxbVariableType.XML_INVERSE_REFERENCE);//both side are applicable
         return jaxbVariableTypeList;
     }
 
