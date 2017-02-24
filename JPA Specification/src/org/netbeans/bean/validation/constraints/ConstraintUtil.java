@@ -37,9 +37,6 @@ import static org.netbeans.jcode.core.util.AttributeType.LONG;
 import static org.netbeans.jcode.core.util.AttributeType.LONG_WRAPPER;
 import static org.netbeans.jcode.core.util.AttributeType.SHORT;
 import static org.netbeans.jcode.core.util.AttributeType.SHORT_WRAPPER;
-import static org.netbeans.jcode.core.util.AttributeType.SQL_DATE;
-import static org.netbeans.jcode.core.util.AttributeType.SQL_TIME;
-import static org.netbeans.jcode.core.util.AttributeType.SQL_TIMESTAMP;
 import static org.netbeans.jcode.core.util.AttributeType.STRING;
 import static org.netbeans.jcode.core.util.AttributeType.STRING_FQN;
 import static org.netbeans.jcode.core.util.AttributeType.UUID;
@@ -59,11 +56,15 @@ public class ConstraintUtil {
         int min, max;
         if (size != null) {
             min = size.getMin() != null ? size.getMin() : 0;
-            max = size.getMax() != null ? size.getMax() : (size.getMin() != null ? min + MAX_LIMIT : MAX_LIMIT);
+            max = size.getMax() != null ? size.getMax() : (min + MAX_LIMIT);
         } else {
+            min = 0;
             max = MAX_LIMIT;
         }
-        return Stream.generate(() -> packet).limit(max).collect(Collectors.joining("", "\"", "\""));
+        if(min < max){
+            ++min;
+        }
+        return Stream.generate(() -> packet).limit(min).collect(Collectors.joining("", "\"", "\""));
     };
 
     private static final BiFunction<Map<String, Constraint>, Long, String> NUMBER_VALUE = (cm, packet) -> {

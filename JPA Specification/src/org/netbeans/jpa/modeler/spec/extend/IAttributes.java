@@ -272,6 +272,8 @@ public interface IAttributes extends JCRELoader {
     public List<RelationAttribute> getRelationAttributes();
     
     public Set<String> getConnectedClass();
+    
+    public Set<String> getConnectedClass(Set<String> javaClasses);
 
     public Set<String> getAllConvert();
 }
