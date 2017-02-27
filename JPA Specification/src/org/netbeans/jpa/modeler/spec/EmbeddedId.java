@@ -10,22 +10,19 @@ import java.util.Set;
 import java.util.TreeSet;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.DeclaredType;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedIdAccessor;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
-import org.netbeans.jpa.modeler.spec.extend.AttributeOverrideHandler;
 import org.netbeans.jpa.modeler.spec.extend.CompositionAttribute;
+import org.netbeans.jpa.modeler.spec.validator.EmbeddedIdValidator;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
-import org.netbeans.modeler.core.NBModelerUtil;
 
 /**
  *
@@ -61,6 +58,7 @@ import org.netbeans.modeler.core.NBModelerUtil;
 @XmlType(name = "embedded-id", propOrder = {
     "attributeOverride"
 })
+@XmlJavaTypeAdapter(value = EmbeddedIdValidator.class)
 public class EmbeddedId extends CompositionAttribute<DefaultClass> {
 
     @XmlElement(name = "attribute-override")
@@ -69,7 +67,7 @@ public class EmbeddedId extends CompositionAttribute<DefaultClass> {
     protected AccessType access;
     @XmlTransient
     private Attribute connectedAttribute;// To connect with relation attribute in case of derived entity Ex.5.b
-//No need to set connectedClassId cause is mapped to virtual(hidden) Embeddable not Visual Embaddable
+    //No need to set connectedClassId because it is mapped to virtual(hidden) Embeddable not Visual Embaddable
 
     public static EmbeddedId load(EntityMappings entityMappings, Element element, VariableElement variableElement, ExecutableElement getterElement) {
         EmbeddedId embeddedId = new EmbeddedId();

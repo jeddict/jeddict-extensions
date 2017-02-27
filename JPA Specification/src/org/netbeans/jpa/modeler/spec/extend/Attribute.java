@@ -506,7 +506,7 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
     private String constraintsDataTypeBinding;
 
     public Map<String, Constraint> getConstraintsMap() {
-        if (constraintsMap == null || !getDataTypeLabel().equals(constraintsDataTypeBinding)) {
+        if (constraintsMap == null || !Objects.equals(getDataTypeLabel(),constraintsDataTypeBinding)) {//Objects.equals used -> getDataTypeLabel() could be null incase of EmbeddedId
             Map<String, Constraint> completeConstraintsMap = getConstraints().stream().collect(Collectors.toMap(c -> c.getClass().getSimpleName(), c -> c, (c1, c2) -> c1));
             Set<Class<? extends Constraint>> allConstraintsClass = getAllConstraintsClass().keySet();
             Set<Class<? extends Constraint>> allowedConstraintsClass = getConstraintsClass();
