@@ -1455,7 +1455,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         plane.setElementRef(entityMappingsSpec.getId());
         entityMappingsSpec.setJPADiagram(diagram);
         entityMappingsSpec.getSnippets().add(DEAFULT_SNIPPET);
-        entityMappingsSpec.getInterfaces().add(DEAFULT_INTERFACE);
+//        entityMappingsSpec.getInterfaces().add(DEAFULT_INTERFACE);
 
         return entityMappingsSpec;
     }
