@@ -194,12 +194,12 @@ public abstract class RelationAttribute extends Attribute implements AccessTypeH
         }
     }
 
-//    /**
-//     * Sets the value of the targetEntity property.
-//     *
-//     * @param value allowed object is {@link String }
-//     *
-//     */
+    /**
+     * Sets the value of the targetEntity property.
+     *
+     * @param value allowed object is {@link String }
+     *
+     */
     public void setTargetEntity(String value) {
         this.targetEntity = value;
     }
@@ -282,7 +282,7 @@ public abstract class RelationAttribute extends Attribute implements AccessTypeH
 
     @Override
     public List<JaxbVariableType> getJaxbVariableList() {
-        List<JaxbVariableType> jaxbVariableTypeList = new ArrayList<JaxbVariableType>();
+        List<JaxbVariableType> jaxbVariableTypeList = new ArrayList<>();
         jaxbVariableTypeList.add(JaxbVariableType.XML_ELEMENT);
         jaxbVariableTypeList.add(JaxbVariableType.XML_TRANSIENT);
         jaxbVariableTypeList.add(JaxbVariableType.XML_INVERSE_REFERENCE);//both side are applicable

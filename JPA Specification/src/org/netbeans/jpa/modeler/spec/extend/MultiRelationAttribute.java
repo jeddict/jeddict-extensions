@@ -516,6 +516,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
     /**
      * @return the owner
      */
+    @Override
     public boolean isOwner() {
         if (owner == null) {
             return Boolean.FALSE;
@@ -526,6 +527,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
     /**
      * @param owner the owner to set
      */
+    @Override
     public void setOwner(boolean owner) {
         this.owner = owner;
         if (owner) {
