@@ -56,7 +56,7 @@ import org.netbeans.jpa.source.JavaSourceParserUtil;
 @XmlType(name = "embeddable", propOrder = {
     "attributes"
 })
-public class Embeddable extends ManagedClass {
+public class Embeddable extends ManagedClass<EmbeddableAttributes> {
 
     protected EmbeddableAttributes attributes;
 
@@ -104,11 +104,6 @@ public class Embeddable extends ManagedClass {
     @Override
     public void setName(String name) {
         setClazz(name);
-    }
-
-    @Override
-    public void setAttributes(IAttributes attributes) {
-        this.attributes = (EmbeddableAttributes) attributes;
     }
 
 }

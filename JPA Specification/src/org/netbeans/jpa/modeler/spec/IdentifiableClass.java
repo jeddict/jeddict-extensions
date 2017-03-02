@@ -41,17 +41,18 @@ import org.netbeans.jpa.modeler.spec.extend.CompositePrimaryKeyType;
 import org.netbeans.jpa.modeler.spec.extend.PrimaryKeyContainer;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 import org.netbeans.jpa.modeler.settings.code.CodePanel;
+import org.netbeans.jpa.modeler.spec.extend.IPrimaryKeyAttributes;
 import org.netbeans.jpa.modeler.spec.extend.ReferenceClass;
 import org.netbeans.jpa.modeler.spec.validation.adapter.CompositePrimaryKeyAdapter;
 
-public abstract class IdentifiableClass extends ManagedClass implements PrimaryKeyContainer {
+public abstract class IdentifiableClass extends ManagedClass<IPrimaryKeyAttributes> implements PrimaryKeyContainer {
 
     @XmlAttribute(name = "xre")//(name = "jaxb-root-element")//
     private Boolean xmlRootElement = false;
 
     @XmlTransient
     protected IdClass idClass;
-    protected Attributes attributes;
+    protected PrimaryKeyAttributes attributes;
 
     @XmlElement(name = "nq")//(name = "named-query")
     protected List<NamedQuery> namedQuery;
@@ -189,6 +190,28 @@ public abstract class IdentifiableClass extends ManagedClass implements PrimaryK
             }
         }
     }
+    
+    /**
+     * Gets the value of the name property.
+     *
+     * @return possible object is {@link String }
+     *
+     */
+    @Override
+    public String getName() {
+        return getClazz();
+    }
+    
+    /**
+     * Sets the value of the name property.
+     *
+     * @param value allowed object is {@link String }
+     *
+     */
+    @Override
+    public void setName(String name) {
+        setClazz(name);
+    }
 
     /**
      * @return the xmlRootElement
@@ -230,13 +253,13 @@ public abstract class IdentifiableClass extends ManagedClass implements PrimaryK
     /**
      * Gets the value of the attributes property.
      *
-     * @return possible object is {@link Attributes }
+     * @return possible object is {@link PrimaryKeyAttributes }
      *
      */
     @Override
-    public Attributes getAttributes() {
+    public IPrimaryKeyAttributes getAttributes() {
         if (attributes == null) {
-            attributes = new Attributes();
+            attributes = new PrimaryKeyAttributes();
             attributes.setJavaClass(this);
         }
         return attributes;
@@ -245,11 +268,14 @@ public abstract class IdentifiableClass extends ManagedClass implements PrimaryK
     /**
      * Sets the value of the attributes property.
      *
-     * @param value allowed object is {@link Attributes }
+     * @param attributes allowed object is {@link PrimaryKeyAttributes }
      *
      */
-    public void setAttributes(Attributes value) {
-        this.attributes = value;
+    @Override
+    public void setAttributes(IPrimaryKeyAttributes attributes) {
+        if (attributes instanceof PrimaryKeyAttributes) {
+            this.attributes = (PrimaryKeyAttributes) attributes;
+        }
     }
 
     /**

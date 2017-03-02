@@ -18,6 +18,7 @@ package org.netbeans.jpa.modeler.spec.extend;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +66,7 @@ import org.netbeans.jpa.modeler.spec.Transient;
  * @author Shiwani Gupta <jShiwaniGupta@gmail.com>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-public abstract class BaseAttributes implements IAttributes {
+public abstract class PersistenceAttributes<T extends ManagedClass> extends Attributes<T> implements IPersistenceAttributes {
 
     @XmlElement(name = "basic")
     private List<Basic> basic;
@@ -83,21 +84,6 @@ public abstract class BaseAttributes implements IAttributes {
     private List<Embedded> embedded;
     @XmlElement(name = "transient")
     private List<Transient> _transient;
-
-    @XmlTransient
-    private ManagedClass _class;
-
-    public ManagedClass getJavaClass() {
-        return _class;
-    }
-
-    public void setJavaClass(ManagedClass _class) {
-        this._class = _class;
-    }
-
-    void afterUnmarshal(Unmarshaller u, Object parent) {
-        setJavaClass((ManagedClass) parent);
-    }
 
     /**
      * Gets the value of the basic property.
@@ -123,21 +109,21 @@ public abstract class BaseAttributes implements IAttributes {
     @Override
     public List<Basic> getBasic() {
         if (basic == null) {
-            setBasic(new ArrayList<Basic>());
+            setBasic(new ArrayList<>());
         }
         return this.basic;
     }
     
     public List<Basic> getSuperBasic(){
         List<Basic> superVersion = new ArrayList();
-        JavaClass currentManagedClass = getJavaClass();
+        JavaClass currentClass = getJavaClass();
         do {
-            if(currentManagedClass instanceof ManagedClass){
-               ManagedClass identifiableClass = (ManagedClass)currentManagedClass;
-               superVersion.addAll(identifiableClass.getAttributes().getBasic());
+            if(currentClass instanceof ManagedClass){
+               ManagedClass<IPersistenceAttributes> managedClass = (ManagedClass)currentClass;
+               superVersion.addAll(managedClass.getAttributes().getBasic());
             }
-            currentManagedClass = currentManagedClass.getSuperclass();
-        } while(currentManagedClass != null);
+            currentClass = currentClass.getSuperclass();
+        } while(currentClass != null);
         return superVersion;
     }
 
@@ -186,7 +172,7 @@ public abstract class BaseAttributes implements IAttributes {
     @Override
     public List<ManyToOne> getManyToOne() {
         if (manyToOne == null) {
-            setManyToOne(new ArrayList<ManyToOne>());
+            setManyToOne(new ArrayList<>());
         }
         return this.manyToOne;
     }
@@ -232,7 +218,7 @@ public abstract class BaseAttributes implements IAttributes {
     @Override
     public List<OneToMany> getOneToMany() {
         if (oneToMany == null) {
-            setOneToMany(new ArrayList<OneToMany>());
+            setOneToMany(new ArrayList<>());
         }
         return this.oneToMany;
     }
@@ -274,7 +260,7 @@ public abstract class BaseAttributes implements IAttributes {
     @Override
     public List<OneToOne> getOneToOne() {
         if (oneToOne == null) {
-            setOneToOne(new ArrayList<OneToOne>());
+            setOneToOne(new ArrayList<>());
         }
         return this.oneToOne;
     }
@@ -316,7 +302,7 @@ public abstract class BaseAttributes implements IAttributes {
     @Override
     public List<ManyToMany> getManyToMany() {
         if (manyToMany == null) {
-            setManyToMany(new ArrayList<ManyToMany>());
+            setManyToMany(new ArrayList<>());
         }
         return this.manyToMany;
     }
@@ -358,7 +344,7 @@ public abstract class BaseAttributes implements IAttributes {
     @Override
     public List<ElementCollection> getElementCollection() {
         if (elementCollection == null) {
-            setElementCollection(new ArrayList<ElementCollection>());
+            setElementCollection(new ArrayList<>());
         }
         return this.elementCollection;
     }
@@ -408,7 +394,7 @@ public abstract class BaseAttributes implements IAttributes {
     @Override
     public List<Embedded> getEmbedded() {
         if (embedded == null) {
-            setEmbedded(new ArrayList<Embedded>());
+            setEmbedded(new ArrayList<>());
         }
         return this.embedded;
     }
@@ -458,7 +444,7 @@ public abstract class BaseAttributes implements IAttributes {
     @Override
     public List<Transient> getTransient() {
         if (_transient == null) {
-            setTransient(new ArrayList<Transient>());
+            setTransient(new ArrayList<>());
         }
         return this._transient;
     }
@@ -484,17 +470,12 @@ public abstract class BaseAttributes implements IAttributes {
     }
 
     @Override
-    public List<RelationAttribute> getRelationAttributes() { //#ATTRIBUTE_SEQUENCE_FLOW#
+    public List<RelationAttribute> getRelationAttributes() { 
         List<RelationAttribute> relationAttributes = new ArrayList<>(this.getOneToOne());
         relationAttributes.addAll(this.getManyToOne());
         relationAttributes.addAll(this.getOneToMany());
         relationAttributes.addAll(this.getManyToMany());
         return relationAttributes;
-    }
-    
-    @Override
-    public Set<String> getConnectedClass(){
-        return getConnectedClass(new HashSet<>());
     }
     
     @Override
@@ -523,6 +504,7 @@ public abstract class BaseAttributes implements IAttributes {
         return javaClasses;
     }
     
+    @Override
     public Set<Entity> getRelationConnectedClassRef() {
         Set<Entity> javaClasses = getRelationAttributes().stream()
                 .map(RelationAttribute::getConnectedEntity)
@@ -585,25 +567,6 @@ public abstract class BaseAttributes implements IAttributes {
         return getRelationAttributes().stream().filter(a -> a.getId().equals(id)).findFirst();
     }
 
-    //does not need to extends BaseElement (id field hide)
-    private transient List<PropertyChangeListener> listener = new ArrayList<>();
-
-    @Override
-    public void notifyListeners(Object object, String property, String oldValue, String newValue) {
-        for (PropertyChangeListener propertyChangeListener : listener) {
-            propertyChangeListener.propertyChange(new PropertyChangeEvent(object, property, oldValue, newValue));
-        }
-    }
-
-    @Override
-    public void addChangeListener(PropertyChangeListener newListener) {
-        listener.add(newListener);
-    }
-
-    @Override
-    public void removeChangeListener(PropertyChangeListener newListener) {
-        listener.remove(newListener);
-    }
 
     @Override
     public void removeRelationAttribute(RelationAttribute relationAttribute) {
@@ -643,11 +606,9 @@ public abstract class BaseAttributes implements IAttributes {
         }
     }
 
+    @Override
     public List<Attribute> getAllAttribute(boolean includeParentClassAttibute) {
-        List<Attribute> attributes = new ArrayList<>();
-        if(includeParentClassAttibute && this.getJavaClass().getSuperclass()!=null){
-            attributes.addAll(((ManagedClass)this.getJavaClass().getSuperclass()).getAttributes().getAllAttribute(true));
-        }
+        List<Attribute> attributes = super.getAllAttribute(includeParentClassAttibute);
         attributes.addAll(this.getBasic());
         attributes.addAll(this.getElementCollection());
         attributes.addAll(this.getEmbedded());
@@ -656,17 +617,10 @@ public abstract class BaseAttributes implements IAttributes {
         return attributes;
     }
     
-    public List<Attribute> getAllAttribute() {
-        return getAllAttribute(false);
-    }
-
     @Override
     public boolean isAttributeExist(String name) {
-        //check from parent entities
-        if(this.getJavaClass().getSuperclass()!=null){
-            if(((ManagedClass)this.getJavaClass().getSuperclass()).getAttributes().isAttributeExist(name)){
-                return true;
-            }
+        if (super.isAttributeExist(name)) {
+            return true;
         }
         
         if (basic != null) {
@@ -730,18 +684,10 @@ public abstract class BaseAttributes implements IAttributes {
         return false;
     }
     
-    @Override
-    public List<Attribute> findAllAttribute(String name) {
-        return findAllAttribute(name,false);
-    }
     
     @Override
     public List<Attribute> findAllAttribute(String name,boolean includeParentClassAttibute) {
-        List<Attribute> attributes = new ArrayList<>();
-        
-        if(includeParentClassAttibute && this.getJavaClass().getSuperclass()!=null){
-            attributes.addAll(((ManagedClass)this.getJavaClass().getSuperclass()).getAttributes().findAllAttribute(name,true));
-        }
+        List<Attribute> attributes = super.findAllAttribute(name,includeParentClassAttibute);
 
         if (basic != null) {
             for (Basic basic_TMP : basic) {
@@ -847,6 +793,7 @@ public abstract class BaseAttributes implements IAttributes {
     /**
      * @param manyToOne the manyToOne to set
      */
+    @Override
     public void setManyToOne(List<ManyToOne> manyToOne) {
         this.manyToOne = manyToOne;
     }
@@ -854,6 +801,7 @@ public abstract class BaseAttributes implements IAttributes {
     /**
      * @param oneToMany the oneToMany to set
      */
+    @Override
     public void setOneToMany(List<OneToMany> oneToMany) {
         this.oneToMany = oneToMany;
     }
@@ -861,6 +809,7 @@ public abstract class BaseAttributes implements IAttributes {
     /**
      * @param oneToOne the oneToOne to set
      */
+    @Override
     public void setOneToOne(List<OneToOne> oneToOne) {
         this.oneToOne = oneToOne;
     }
@@ -868,6 +817,7 @@ public abstract class BaseAttributes implements IAttributes {
     /**
      * @param manyToMany the manyToMany to set
      */
+    @Override
     public void setManyToMany(List<ManyToMany> manyToMany) {
         this.manyToMany = manyToMany;
     }
@@ -875,6 +825,7 @@ public abstract class BaseAttributes implements IAttributes {
     /**
      * @param elementCollection the elementCollection to set
      */
+    @Override
     public void setElementCollection(List<ElementCollection> elementCollection) {
         this.elementCollection = elementCollection;
     }

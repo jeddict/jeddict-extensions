@@ -86,19 +86,4 @@ public class MappedSuperclass extends IdentifiableClass {
         }
     }
 
-    @Override
-    public String getName() {
-        return getClazz();
-    }
-
-    @Override
-    public void setName(String name) {
-        setClazz(name);
-    }
-
-    @Override
-    public void setAttributes(IAttributes attributes) {
-        this.attributes = (Attributes) attributes;
-    }
-
 }

@@ -318,38 +318,25 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
         this.jaxbXmlElementList = jaxbXmlElementList;
     }
 
-//    /**
-//     * @return the jaxbXmlList
-//     */
-//    public Boolean getJaxbXmlList() {
-//        return jaxbXmlList;
-//    }
-//
-//    /**
-//     * @param jaxbXmlList the jaxbXmlList to set
-//     */
-//    public void setJaxbXmlList(Boolean jaxbXmlList) {
-//        this.jaxbXmlList = jaxbXmlList;
-//    }
     @Override
     public List<JaxbVariableType> getJaxbVariableList() {
         return Arrays.asList(JaxbVariableType.values());
     }
 
     @XmlTransient
-    private BaseAttributes attributes;
+    private Attributes attributes;
 
     public JavaClass getJavaClass() {
         return attributes.getJavaClass();
     }
 
-    public void setAttributes(BaseAttributes attributes) {
+    public void setAttributes(Attributes attributes) {
         this.attributes = attributes;
     }
 
     void afterUnmarshal(Unmarshaller u, Object parent) {
-        if (parent instanceof BaseAttributes) {
-            setAttributes((BaseAttributes) parent);
+        if (parent instanceof Attributes) {
+            setAttributes((Attributes) parent);
         }
     }
 

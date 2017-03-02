@@ -20,8 +20,8 @@ public class DefaultAttribute extends Attribute {
     @XmlAttribute(name = "derived")
     private boolean derived;
 
-    @XmlTransient
-    private DefaultClass _class;
+//    @XmlTransient
+//    private DefaultClass _class;
     
     private Column column;
 
@@ -35,17 +35,17 @@ public class DefaultAttribute extends Attribute {
         }
     }
     
-    public DefaultClass getJavaClass() {
-        return _class;
-    }
+//    public DefaultClass getJavaClass() {
+//        return _class;
+//    }
+//
+//    public void setJavaClass(DefaultClass _class) {
+//        this._class = _class;
+//    }
 
-    public void setJavaClass(DefaultClass _class) {
-        this._class = _class;
-    }
-
-    void afterUnmarshal(Unmarshaller u, Object parent) {
-        setJavaClass((DefaultClass) parent);
-    }
+//    void afterUnmarshal(Unmarshaller u, Object parent) {
+//        setJavaClass((DefaultClass) parent);
+//    }
 
     /**
      * @return the attributeType

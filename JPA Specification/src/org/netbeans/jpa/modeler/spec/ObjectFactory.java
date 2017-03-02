@@ -367,11 +367,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Attributes }
+     * Create an instance of {@link PrimaryKeyAttributes }
      *
      */
-    public Attributes createAttributes() {
-        return new Attributes();
+    public PrimaryKeyAttributes createAttributes() {
+        return new PrimaryKeyAttributes();
     }
 
     /**

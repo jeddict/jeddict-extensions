@@ -553,30 +553,7 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
         }
         return this.associationOverride;
     }
-
-    /**
-     * Gets the value of the name property.
-     *
-     * @return possible object is {@link String }
-     *
-     */
-    @Override
-    public String getName() {
-        return getClazz();
-    }
-    
-    /**
-     * Sets the value of the name property.
-     *
-     * @param value allowed object is {@link String }
-     *
-     */
-    @Override
-    public void setName(String name) {
-        setClazz(name);
-    }
-
-    
+   
     public String getEntityName() {
         return entityName;
     }
@@ -603,11 +580,6 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
      */
     public void setCacheable(Boolean value) {
         this.cacheable = value;
-    }
-
-    @Override
-    public void setAttributes(IAttributes attributes) {
-        this.attributes = (Attributes) attributes;
     }
 
     @Override

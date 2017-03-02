@@ -321,7 +321,7 @@ public class RESTGenerator implements Generator {
             } else if (idAttribute instanceof DefaultAttribute) {
                 defaultClass = entityMapping.findDefaultClass(((DefaultAttribute) idAttribute).getAttributeType()).orElse(null);
             }
-            List<DefaultAttribute> attributes = defaultClass.getAttributes();
+            List<DefaultAttribute> attributes = defaultClass.getAttributes().getDefaultAttributes();
             StringBuilder restParamList = new StringBuilder();
             StringBuilder restParamNameList = new StringBuilder();
             StringBuilder restDocList = new StringBuilder();

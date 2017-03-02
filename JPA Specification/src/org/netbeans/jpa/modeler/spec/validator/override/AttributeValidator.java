@@ -27,6 +27,7 @@ import org.netbeans.jpa.modeler.spec.EmbeddedId;
 import org.netbeans.jpa.modeler.spec.Entity;
 import org.netbeans.jpa.modeler.spec.ManagedClass;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
+import org.netbeans.jpa.modeler.spec.extend.IPersistenceAttributes;
 import org.netbeans.jpa.modeler.spec.extend.MapKeyHandler;
 import org.netbeans.jpa.modeler.spec.validator.MarshalValidator;
 import org.netbeans.jpa.modeler.spec.validator.column.ColumnValidator;
@@ -61,18 +62,21 @@ public class AttributeValidator extends MarshalValidator<AttributeOverride> {
      * Used to remove all stale AttributeOverride by nested scanning
      *
      * @param key key of AttributeOverride
-     * @param javaClass parent class of entity to search AttributeOverride's key
+     * @param managedClass parent class of entity to search AttributeOverride's key
      * @return
      */
-    private static boolean isExist(String key, ManagedClass javaClass) {
-        if (javaClass == null) {
+    private static boolean isExist(String key, ManagedClass<IPersistenceAttributes> managedClass) {
+        if (managedClass == null) {
             return false;
         }
-        Optional<Attribute> attrOptional = javaClass.getAttributes().getNonRelationAttributes().stream().filter(e -> e.getName().equalsIgnoreCase(key)).findAny();
+        Optional<Attribute> attrOptional = managedClass.getAttributes().getNonRelationAttributes()
+                .stream()
+                .filter(e -> e.getName().equalsIgnoreCase(key))
+                .findAny();
         if (attrOptional.isPresent()) {
             return true;
-        } else if (javaClass.getSuperclass() instanceof ManagedClass) {
-            return isExist(key, (ManagedClass) javaClass.getSuperclass());
+        } else if (managedClass.getSuperclass() instanceof ManagedClass) {
+            return isExist(key, (ManagedClass) managedClass.getSuperclass());
         } else {
             return false;
         }
@@ -156,14 +160,22 @@ public class AttributeValidator extends MarshalValidator<AttributeOverride> {
      */
         private static boolean isExist(String[] keys, DefaultClass defaultClass) {
         if (keys.length > 1) {
-            Optional<DefaultAttribute> embeddedOptional = defaultClass.getAttributes().stream().filter(e -> e.getName().equalsIgnoreCase(keys[0])).findAny();
+            Optional<DefaultAttribute> embeddedOptional = defaultClass.getAttributes()
+                    .getDefaultAttributes()
+                    .stream()
+                    .filter(e -> e.getName().equalsIgnoreCase(keys[0]))
+                    .findAny();
             if (embeddedOptional.isPresent()) {
                 return true;// TODO defaultattribute connected class => nested => isExist(Arrays.copyOfRange(keys, 1, keys.length), embeddedOptional.get().getConnectedClass());
             } else {
                 return false;
             }
         } else {
-            Optional<DefaultAttribute> attrOptional = defaultClass.getAttributes().stream().filter(e -> e.getName().equalsIgnoreCase(keys[0])).findAny();
+            Optional<DefaultAttribute> attrOptional = defaultClass.getAttributes()
+                    .getDefaultAttributes()
+                    .stream()
+                    .filter(e -> e.getName().equalsIgnoreCase(keys[0]))
+                    .findAny();
             return attrOptional.isPresent();
         }
     }

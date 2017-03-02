@@ -15,26 +15,19 @@
  */
 package org.netbeans.jpa.modeler.spec;
 
-import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.TypeElement;
 import javax.xml.bind.annotation.XmlAttribute;
-import org.netbeans.jpa.modeler.spec.extend.Attribute;
-import org.netbeans.jpa.modeler.spec.extend.IAttributes;
+import org.netbeans.jpa.modeler.spec.extend.IPersistenceAttributes;
 import org.netbeans.jpa.modeler.spec.extend.JavaClass;
 
-public abstract class ManagedClass extends JavaClass {
+public abstract class ManagedClass<T extends IPersistenceAttributes> extends JavaClass<T> {
 
     @XmlAttribute
     protected AccessType access;
 
     @XmlAttribute(name = "metadata-complete")
     protected Boolean metadataComplete;//REVENG PENDING
-
-
-    public abstract IAttributes getAttributes();
-
-    public abstract void setAttributes(IAttributes attributes);
 
     @Override
     public void load(EntityMappings entityMappings, TypeElement element, boolean fieldAccess) {

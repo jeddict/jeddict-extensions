@@ -40,6 +40,7 @@ import org.netbeans.jpa.modeler.spec.extend.MultiRelationAttribute;
 import org.netbeans.jpa.modeler.spec.extend.ReferenceClass;
 import org.netbeans.jpa.modeler.spec.extend.RelationAttribute;
 import org.netbeans.jpa.modeler.spec.extend.ClassSnippetLocationType;
+import org.netbeans.jpa.modeler.spec.extend.IPersistenceAttributes;
 import org.netbeans.jpa.modeler.spec.extend.MapKeyType;
 import org.netbeans.modeler.specification.version.SoftwareVersion;
 import org.netbeans.jpa.modeler.spec.extend.cache.Cache;
@@ -218,7 +219,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     private String staticMetamodelPackage;
 
     /**
-     * JAXB Attributes Start *
+     * JAXB PrimaryKeyAttributes Start *
      */
     @XmlAttribute(name = "xs")
     private Boolean jaxbSupport = false;
@@ -226,7 +227,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     private String jaxbNameSpace;
 
     /**
-     * JAXB Attributes End *
+     * JAXB PrimaryKeyAttributes End *
      */
     @XmlElement(name = "snp")
     private List<ClassSnippet> snippets;
@@ -1092,10 +1093,11 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         classes.addAll(entityMappingsSpec.getMappedSuperclass());
         classes.addAll(entityMappingsSpec.getEmbeddable());
 
-        for (ManagedClass managedClass : classes) {
+        for (ManagedClass<? extends IPersistenceAttributes> managedClass : classes) {
 
             if (managedClass instanceof Entity) {
-                ((Entity) managedClass).getNamedStoredProcedureQuery().forEach(q -> manageStoredProcedureQuery(q));
+                ((Entity) managedClass).getNamedStoredProcedureQuery()
+                        .forEach(q -> manageStoredProcedureQuery(q));
             }
 
             for (ManyToMany manyToMany : new ArrayList<>(managedClass.getAttributes().getManyToMany())) {
@@ -1267,7 +1269,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
      */
     public void repairDefinition(InputOutput IO, boolean manageSiblingAttribute) {
 
-        for (ManagedClass managedClass : this.getAllManagedClass()) {
+        for (ManagedClass<IPersistenceAttributes> managedClass : this.getAllManagedClass()) {
             for (RelationAttribute attribute : managedClass.getAttributes().getRelationAttributes()) {
                 //if no connected-entity-id exist
                 if (attribute.getConnectedEntity() == null) {
@@ -1287,7 +1289,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
                             IO.getErr().print(message.toString());
                         }
                         //remove the connected attribute from its owning class
-                        ((ManagedClass) attribute.getConnectedAttribute().getJavaClass()).getAttributes().removeRelationAttribute(attribute.getConnectedAttribute());
+                        ((ManagedClass<IPersistenceAttributes>) attribute.getConnectedAttribute().getJavaClass()).getAttributes().removeRelationAttribute(attribute.getConnectedAttribute());
                     }
                     //remove to self from owning class
                     managedClass.getAttributes().removeRelationAttribute(attribute);
@@ -1644,7 +1646,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
             if(javaClass instanceof ManagedClass){
                 attributes = ((ManagedClass)javaClass).getAttributes().getAllAttribute();
             } else if(javaClass instanceof DefaultClass){
-                attributes = ((DefaultClass)javaClass).getAttributes();
+                attributes = ((DefaultClass)javaClass).getAttributes().getDefaultAttributes();
             }
             if (attributes != null) {
                 attributes.forEach(attr -> {

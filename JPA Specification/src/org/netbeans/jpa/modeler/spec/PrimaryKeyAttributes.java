@@ -37,10 +37,10 @@ import org.netbeans.jpa.modeler.db.accessor.EmbeddedIdSpecAccessor;
 import org.netbeans.jpa.modeler.db.accessor.IdSpecAccessor;
 import org.netbeans.jpa.modeler.db.accessor.VersionSpecAccessor;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
-import org.netbeans.jpa.modeler.spec.extend.BaseAttributes;
-import org.netbeans.jpa.modeler.spec.extend.IPersistenceAttributes;
+import org.netbeans.jpa.modeler.spec.extend.PersistenceAttributes;
 import org.netbeans.jpa.modeler.spec.extend.JavaClass;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
+import org.netbeans.jpa.modeler.spec.extend.IPrimaryKeyAttributes;
 
 /**
  *
@@ -87,13 +87,13 @@ import org.netbeans.jpa.source.JavaSourceParserUtil;
  *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "attributes", propOrder = {
+@XmlType(name = "primaryKeyAttributes", propOrder = {
     "description",
     "id",
     "embeddedId",
     "version"
 })
-public class Attributes extends BaseAttributes implements IPersistenceAttributes {
+public class PrimaryKeyAttributes extends PersistenceAttributes<IdentifiableClass> implements IPrimaryKeyAttributes {
 
     protected String description;
     protected List<Id> id;
@@ -209,11 +209,7 @@ public class Attributes extends BaseAttributes implements IPersistenceAttributes
 
     }
 
-    @Override
-    public List<Attribute> findAllAttribute(String name) {
-        return findAllAttribute(name,false);
-    }
-    
+   
     @Override
     public List<Attribute> findAllAttribute(String name,boolean includeParentClassAttibute) {
        List<Attribute> attributes = super.findAllAttribute(name,includeParentClassAttibute);
@@ -441,11 +437,6 @@ public class Attributes extends BaseAttributes implements IPersistenceAttributes
         return attributes;
     }
     
-    @Override
-    public List<Attribute> getAllAttribute() {
-        return getAllAttribute(false);
-    }
-
     @Override
     public XMLAttributes getAccessor() {
         return getAccessor(false);

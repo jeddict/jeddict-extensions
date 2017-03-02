@@ -44,9 +44,10 @@ import org.openide.filesystems.FileObject;
 /**
  *
  * @author Gaurav Gupta
+ * @param <T>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-public abstract class JavaClass extends FlowNode implements JCRELoader {
+public abstract class JavaClass<T extends IAttributes> extends FlowNode implements JCRELoader {
 
     @XmlElement(name = "ts")
     private ClassMembers toStringMethod;
@@ -123,6 +124,11 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
         }
         this.setAnnotation(JavaSourceParserUtil.getNonEEAnnotation(element));
     }
+    
+    public abstract T getAttributes();
+
+    public abstract void setAttributes(T attributes);
+
 
     /**
      * @return the annotation
@@ -191,13 +197,13 @@ public abstract class JavaClass extends FlowNode implements JCRELoader {
     /**
      * @return the superclassRef
      */
-    public JavaClass getSuperclass() {
+    public JavaClass<? extends IAttributes> getSuperclass() {
         return superclass;
     }
     
-    public List<JavaClass> getAllSuperclass() {
-        List<JavaClass> superclassList = new LinkedList<>();
-        JavaClass parentClass = this.getSuperclass();
+    public List<JavaClass<? extends IAttributes>> getAllSuperclass() {
+        List<JavaClass<? extends IAttributes>> superclassList = new LinkedList<>();
+        JavaClass<? extends IAttributes> parentClass = this.getSuperclass();
         while (true) {
             if (parentClass == null) {
                 break;

@@ -1,5 +1,5 @@
 /**
- * Copyright [2014] Gaurav Gupta
+ * Copyright [2017] Gaurav Gupta
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,264 +16,40 @@
 package org.netbeans.jpa.modeler.spec.extend;
 
 import java.beans.PropertyChangeListener;
-import java.nio.file.FileSystems;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
-import org.netbeans.jpa.modeler.spec.Basic;
-import org.netbeans.jpa.modeler.spec.ElementCollection;
-import org.netbeans.jpa.modeler.spec.Embedded;
-import org.netbeans.jpa.modeler.spec.ManagedClass;
-import org.netbeans.jpa.modeler.spec.ManyToMany;
-import org.netbeans.jpa.modeler.spec.ManyToOne;
-import org.netbeans.jpa.modeler.spec.OneToMany;
-import org.netbeans.jpa.modeler.spec.OneToOne;
-import org.netbeans.jpa.modeler.spec.Transient;
 import org.netbeans.jpa.source.JCRELoader;
 
 /**
  *
- * @author Gaurav_Gupta
+ * @author jGauravGupta
  */
 public interface IAttributes extends JCRELoader {
 
-    /**
-     * Gets the value of the basic property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list, not a
-     * snapshot. Therefore any modification you make to the returned list will
-     * be present inside the JAXB object. This is why there is not a
-     * <CODE>set</CODE> method for the basic property.
-     *
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    addBasic(newItem);
-     * </pre>
-     *
-     *
-     * <p>
-     * Objects of the following type(s) are allowed in the list {@link Basic }
-     *
-     *
-     */
-    List<Basic> getBasic();
-
-    /**
-     * Gets the value of the elementCollection property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list, not a
-     * snapshot. Therefore any modification you make to the returned list will
-     * be present inside the JAXB object. This is why there is not a
-     * <CODE>set</CODE> method for the elementCollection property.
-     *
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getElementCollection().add(newItem);
-     * </pre>
-     *
-     *
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link ElementCollection }
-     *
-     *
-     */
-    List<ElementCollection> getElementCollection();
-    void setElementCollection(List<ElementCollection> elementCollection);
-
-    /**
-     * Gets the value of the embedded property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list, not a
-     * snapshot. Therefore any modification you make to the returned list will
-     * be present inside the JAXB object. This is why there is not a
-     * <CODE>set</CODE> method for the embedded property.
-     *
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getEmbedded().add(newItem);
-     * </pre>
-     *
-     *
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Embedded }
-     *
-     *
-     */
-    List<Embedded> getEmbedded();
-    void setEmbedded(List<Embedded> embedded);
-
-    /**
-     * Gets the value of the manyToMany property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list, not a
-     * snapshot. Therefore any modification you make to the returned list will
-     * be present inside the JAXB object. This is why there is not a
-     * <CODE>set</CODE> method for the manyToMany property.
-     *
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getManyToMany().add(newItem);
-     * </pre>
-     *
-     *
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link ManyToMany }
-     *
-     *
-     */
-    List<ManyToMany> getManyToMany();
-    void setManyToMany(List<ManyToMany> manyToMany);
-
-    /**
-     * Gets the value of the manyToOne property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list, not a
-     * snapshot. Therefore any modification you make to the returned list will
-     * be present inside the JAXB object. This is why there is not a
-     * <CODE>set</CODE> method for the manyToOne property.
-     *
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    addManyToOne(newItem);
-     * </pre>
-     *
-     *
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link ManyToOne }
-     *
-     *
-     */
-    List<ManyToOne> getManyToOne();
-    void setManyToOne(List<ManyToOne> manyToOne);
-
-    /**
-     * Gets the value of the oneToMany property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list, not a
-     * snapshot. Therefore any modification you make to the returned list will
-     * be present inside the JAXB object. This is why there is not a
-     * <CODE>set</CODE> method for the oneToMany property.
-     *
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getOneToMany().add(newItem);
-     * </pre>
-     *
-     *
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link OneToMany }
-     *
-     *
-     */
-    List<OneToMany> getOneToMany();
-    void setOneToMany(List<OneToMany> oneToMany);
-
-    /**
-     * Gets the value of the oneToOne property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list, not a
-     * snapshot. Therefore any modification you make to the returned list will
-     * be present inside the JAXB object. This is why there is not a
-     * <CODE>set</CODE> method for the oneToOne property.
-     *
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getOneToOne().add(newItem);
-     * </pre>
-     *
-     *
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link OneToOne }
-     *
-     *
-     */
-    List<OneToOne> getOneToOne();
-    void setOneToOne(List<OneToOne> oneToOne);
-
-    /**
-     * Gets the value of the transient property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list, not a
-     * snapshot. Therefore any modification you make to the returned list will
-     * be present inside the JAXB object. This is why there is not a
-     * <CODE>set</CODE> method for the transient property.
-     *
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getTransient().add(newItem);
-     * </pre>
-     *
-     *
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Transient }
-     *
-     *
-     */
-    List<Transient> getTransient();
-
     List<Attribute> findAllAttribute(String name);
+    
     List<Attribute> findAllAttribute(String name,boolean includeParentClassAttibute);
+    
     List<Attribute> getAllAttribute();
+    
     List<Attribute> getAllAttribute(boolean includeParentClassAttibute);
     
     boolean isAttributeExist(String name);
 
-    void addBasic(Basic basic);
-
-    void removeBasic(Basic basic);
-
-    void addTransient(Transient _transient);
-
-    void removeTransient(Transient _transient);
-
-    void addEmbedded(Embedded embedded);
-
-    void removeEmbedded(Embedded embedded);
-
-    void addElementCollection(ElementCollection elementCollection);
-
-    void removeElementCollection(ElementCollection elementCollection);
-
-    void removeRelationAttribute(RelationAttribute relationAttribute);
-
-    void addRelationAttribute(RelationAttribute relationAttribute);
+    Set<String> getConnectedClass();
+    
+    Set<String> getConnectedClass(Set<String> javaClasses);
 
     void notifyListeners(Object source, String property, String oldValue, String newValue);
 
     void addChangeListener(PropertyChangeListener newListener);
 
     void removeChangeListener(PropertyChangeListener newListener);
+            
+    JavaClass getJavaClass();
 
-    public List<Attribute> getNonRelationAttributes();
-
-    public List<RelationAttribute> getRelationAttributes();
+    List<Attribute> getAllSortedAttribute();
     
-    public Set<String> getConnectedClass();
-    
-    public Set<String> getConnectedClass(Set<String> javaClasses);
+    List<Attribute> getAllSortedAttribute(boolean includeParentClassAttibute);
 
-    public Set<String> getAllConvert();
 }

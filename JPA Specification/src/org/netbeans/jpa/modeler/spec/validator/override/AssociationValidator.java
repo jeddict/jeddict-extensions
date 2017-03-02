@@ -24,6 +24,7 @@ import org.netbeans.jpa.modeler.spec.Embedded;
 import org.netbeans.jpa.modeler.spec.Entity;
 import org.netbeans.jpa.modeler.spec.ManagedClass;
 import org.netbeans.jpa.modeler.spec.OneToMany;
+import org.netbeans.jpa.modeler.spec.extend.IPersistenceAttributes;
 import org.netbeans.jpa.modeler.spec.extend.MultiRelationAttribute;
 import org.netbeans.jpa.modeler.spec.extend.RelationAttribute;
 import org.netbeans.jpa.modeler.spec.extend.SingleRelationAttribute;
@@ -65,18 +66,22 @@ public class AssociationValidator extends MarshalValidator<AssociationOverride> 
     /**
      *
      * @param key key of AttributeOverride
-     * @param javaClass parent class of entity to search AttributeOverride's key
+     * @param managedClass parent class of entity to search AttributeOverride's key
      * @return
      */
-    private static boolean isExist(String key, ManagedClass javaClass) {
-        if (javaClass == null) {
+    private static boolean isExist(String key, ManagedClass<IPersistenceAttributes> managedClass) {
+        if (managedClass == null) {
             return false;
         }
-        Optional<RelationAttribute> attrOptional = javaClass.getAttributes().getRelationAttributes().stream().filter(e -> e.getName().equalsIgnoreCase(key)).findAny();
+        Optional<RelationAttribute> attrOptional = managedClass.getAttributes()
+                .getRelationAttributes()
+                .stream()
+                .filter(e -> e.getName().equalsIgnoreCase(key))
+                .findAny();
         if (attrOptional.isPresent()) {
             return true;
-        } else if (javaClass.getSuperclass() instanceof ManagedClass) {
-            return isExist(key, (ManagedClass) javaClass.getSuperclass());
+        } else if (managedClass.getSuperclass() instanceof ManagedClass) {
+            return isExist(key, (ManagedClass) managedClass.getSuperclass());
         } else {
             return false;
         }

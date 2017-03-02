@@ -26,7 +26,7 @@ import static org.netbeans.jcode.jpa.JPAConstants.ONE_TO_MANY_FQN;
 import static org.netbeans.jcode.jpa.JPAConstants.ONE_TO_ONE_FQN;
 import static org.netbeans.jcode.jpa.JPAConstants.TRANSIENT_FQN;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
-import org.netbeans.jpa.modeler.spec.extend.BaseAttributes;
+import org.netbeans.jpa.modeler.spec.extend.PersistenceAttributes;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
@@ -60,7 +60,7 @@ import org.netbeans.jpa.source.JavaSourceParserUtil;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "embeddable-attributes", propOrder = {})
-public class EmbeddableAttributes extends BaseAttributes {
+public class EmbeddableAttributes extends PersistenceAttributes<Embeddable> {
 
     @Override
     public void load(EntityMappings entityMappings, TypeElement typeElement, boolean fieldAccess) {
@@ -129,6 +129,11 @@ public class EmbeddableAttributes extends BaseAttributes {
         attr.setIds(new ArrayList<>());
         attr.setVersions(new ArrayList<>());
         return updateAccessor(attr);
+    }
+    
+    public XMLAttributes getAccessor(boolean inherit) {//inherit not supported
+        XMLAttributes attr = super.getAccessor();
+        return attr;
     }
 
     public XMLAttributes updateAccessor(XMLAttributes attr) {

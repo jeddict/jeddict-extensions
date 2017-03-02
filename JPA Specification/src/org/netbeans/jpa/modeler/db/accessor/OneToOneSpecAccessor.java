@@ -19,7 +19,7 @@ import static java.util.stream.Collectors.toList;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToOneAccessor;
 import org.netbeans.db.modeler.exception.DBValidationException;
-import org.netbeans.jpa.modeler.spec.Attributes;
+import org.netbeans.jpa.modeler.spec.PrimaryKeyAttributes;
 import org.netbeans.jpa.modeler.spec.IdClass;
 import org.netbeans.jpa.modeler.spec.JoinColumn;
 import org.netbeans.jpa.modeler.spec.ManagedClass;
@@ -51,7 +51,7 @@ public class OneToOneSpecAccessor extends OneToOneAccessor {
                 accessor.setId(Boolean.TRUE);
             } else {
                 IAttributes attributes = ((ManagedClass) oneToOne.getJavaClass()).getAttributes();
-                if (attributes instanceof Attributes && !((Attributes) attributes).hasCompositePrimaryKey()) { //Ex 4.a Derived Identity
+                if (attributes instanceof PrimaryKeyAttributes && !((PrimaryKeyAttributes) attributes).hasCompositePrimaryKey()) { //Ex 4.a Derived Identity
                     accessor.setId(Boolean.TRUE);
                 } else {
                     accessor.setMapsId("");//oneToOne.getName());

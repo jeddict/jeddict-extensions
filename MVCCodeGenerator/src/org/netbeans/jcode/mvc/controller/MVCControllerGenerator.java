@@ -489,7 +489,7 @@ public class MVCControllerGenerator implements Generator {
                     builder.append("and any associated matrix parameters.\n");    // NOI18N
                     builder.append(" * URI path part is supposed to be in ");     // NOI18N
                     builder.append("form of 'somePath");
-                    List<DefaultAttribute> fieldInfos = javaClass.getAttributes();
+                    List<DefaultAttribute> fieldInfos = javaClass.getAttributes().getDefaultAttributes();
                     for (Attribute fieldInfo : fieldInfos) {
                         String name = fieldInfo.getName();
                         builder.append(';');
