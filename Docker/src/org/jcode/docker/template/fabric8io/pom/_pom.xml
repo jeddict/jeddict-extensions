@@ -4,19 +4,17 @@
     <groupId>org.netbeans.jpamodeler</groupId>
     <artifactId>docker_pom</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>war</packaging>
-    <name>docker_pom</name>
 
     <profiles>
         <profile>
             <id>docker</id>
             <properties>
-                <build_name>${project.artifactId}</build_name>
+                <build.name>${project.artifactId}</build.name>
                 <version.fabric8>0.17.2</version.fabric8>
                 <docker.machine>default</docker.machine>
             </properties>
             <build>
-                <finalName>${build_name}</finalName>
+                <finalName>${build.name}</finalName>
                 <plugins>
                     <plugin>
                         <groupId>io.fabric8</groupId>

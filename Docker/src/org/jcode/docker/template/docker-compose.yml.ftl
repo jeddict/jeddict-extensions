@@ -5,17 +5,15 @@ services:
             context: .
             dockerfile: DockerFile
             args:
-                BINARY: maven/${r"${build_name}"}.war
+                BINARY: maven/${r"${build.name}"}.war
+                <#if docker.serverType != "Payara Micro">
                 DB_DATASOURCE: '${docker.dataSource}'
-                DB_NAME: '${docker.dbName}'
-                DB_USER: '${docker.dbUserName}'
-                DB_PASS: '${docker.dbPassword}'
-                DB_HOST: 'db'
-<#if docker.databaseType == "MySQL" || docker.databaseType == "MariaDB">
-                DB_PORT: '3306'
-<#elseif docker.databaseType == "PostgreSQL">
-                DB_PORT: '5432'
-</#if>
+                DB_NAME: '${r"${db.name}"}'
+                DB_USER: '${r"${db.user}"}'
+                DB_PASS: '${r"${db.password}"}'
+                DB_HOST: '${r"${db.host}"}'
+                DB_PORT: '${r"${db.port}"}'
+                </#if>
         ports:
             - "8080:8080" 
             - "8081:8081"
@@ -29,12 +27,12 @@ services:
         image: mariadb:${docker.databaseVersion}
         </#if>
         ports:
-            - "3306:3306"  
+            - "${r"${db.port}"}:3306"  
         environment:
-            MYSQL_ROOT_PASSWORD: '${docker.dbPassword}'
-            MYSQL_USER: '${docker.dbUserName}'
-            MYSQL_PASSWORD: '${docker.dbPassword}'
-            MYSQL_DATABASE: '${docker.dbName}'
+            MYSQL_ROOT_PASSWORD: '${r"${db.password}"}'
+            MYSQL_USER: '${r"${db.user}"}'
+            MYSQL_PASSWORD: '${r"${db.password}"}'
+            MYSQL_DATABASE: '${r"${db.name}"}'
 #        volumes:
 #            - data-mysql:/var/lib/mysql
 #volumes:  
@@ -43,11 +41,11 @@ services:
 <#elseif docker.databaseType == "PostgreSQL">
         image: postgres:${docker.databaseVersion}
         ports:
-            - "5432:5432"  
+            - "${r"${db.port}"}:5432"  
         environment:
-            POSTGRES_USER: '${docker.dbUserName}'
-            POSTGRES_PASSWORD: '${docker.dbPassword}'
-            POSTGRES_DB: '${docker.dbName}'
+            POSTGRES_USER: '${r"${db.user}"}'
+            POSTGRES_PASSWORD: '${r"${db.password}"}'
+            POSTGRES_DB: '${r"${db.name}"}'
 #        volumes:
 #           - data-postgres:/var/lib/postgresql/data
 #volumes:  

@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import static org.jcode.docker.generator.ServerType.NONE;
-import static org.jcode.docker.generator.ServerType.PAYARA;
+import static org.jcode.docker.generator.ServerType.PAYARA_MICRO;
 import static org.jcode.docker.generator.ServerType.WILDFLY;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
@@ -34,7 +34,8 @@ import org.netbeans.jcode.core.util.POMManager;
 import org.netbeans.jcode.core.util.PersistenceUtil;
 import static org.netbeans.jcode.core.util.PersistenceUtil.removeProperty;
 import static org.netbeans.jcode.core.util.ProjectHelper.getDockerDirectory;
-import static org.netbeans.jcode.jpa.JPAConstants.JBOSS_DATASOURCE_PREFIX;
+import static org.netbeans.jcode.jpa.JPAConstants.JAVA_DATASOURCE_PREFIX;
+import static org.netbeans.jcode.jpa.JPAConstants.JAVA_GLOBAL_DATASOURCE_PREFIX;
 import static org.netbeans.jcode.jpa.JPAConstants.JDBC_DRIVER;
 import static org.netbeans.jcode.jpa.JPAConstants.JDBC_PASSWORD;
 import static org.netbeans.jcode.jpa.JPAConstants.JDBC_URL;
@@ -43,6 +44,7 @@ import org.netbeans.jcode.layer.ConfigData;
 import org.netbeans.jcode.layer.Generator;
 import org.netbeans.jcode.layer.Technology;
 import org.netbeans.jcode.task.progress.ProgressHandler;
+import org.netbeans.jcode.web.dd.util.WebDDUtil;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
 import org.openide.filesystems.FileObject;
 import org.openide.util.lookup.ServiceProvider;
@@ -60,6 +62,11 @@ public final class DockerGenerator implements Generator {
 
     private static final String TEMPLATE = "org/jcode/docker/template/";
     private static final String DOCKER_MACHINE_PROPERTY = "docker.machine";
+    private static final String DB_NAME = "db.name";
+    private static final String DB_USER = "db.user";
+    private static final String DB_PASSWORD = "db.password";
+    private static final String DB_HOST = "db.host";
+    private static final String DB_PORT = "db.port";
     private static final String DOCKER_PROFILE = "docker";
 
     @ConfigData
@@ -85,12 +92,6 @@ public final class DockerGenerator implements Generator {
         if (dockerConfig.isDockerEnable() && dockerConfig.getServerType() != NONE) {
             handler.progress(Console.wrap(DockerGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
             
-//             handler.help(NbBundle.getMessage(DockerGenerator.class, "DOCKER_MACHINE_GUIDE_TITLE"),
-//                    NbBundle.getMessage(DockerGenerator.class, "DOCKER_MACHINE_GUIDE"));
-//             
-//             handler.help(NbBundle.getMessage(DockerGenerator.class, "DOCKER_GUIDE_TITLE"),
-//                    NbBundle.getMessage(DockerGenerator.class, "DOCKER_GUIDE"));
-           
             FileObject targetFolder = getDockerDirectory(source);
             Map<String, Object> params = new HashMap<>();
             params.put("docker", dockerConfig);
@@ -98,10 +99,33 @@ public final class DockerGenerator implements Generator {
             handler.progress(DOCKER_FILE);
             expandTemplate(TEMPLATE + "docker-compose.yml.ftl", targetFolder, DOCKER_COMPOSE, params);
             handler.progress(DOCKER_COMPOSE);
-            addMavenDependencies("fabric8io/pom/_pom.xml");
-            
+            addMavenDependencies();
             updatePersistenceXml();
+            
+            if (dockerConfig.getServerType() == ServerType.PAYARA_MICRO) {
+                if (POMManager.isMavenProject(project)) {
+                    POMManager pomManager = new POMManager(TEMPLATE + "web/xml/filter/pom/_pom.xml", project);
+                    pomManager.commit();
+                    pomManager = new POMManager(TEMPLATE + "payara/uber/pom/_pom.xml", project);
+                    pomManager.commit();
+                    handler.info("Profile","Use \"uber-jar\" profile to create Payara uber jar");
+                }
+                generateDataSourceDD();
+            }
         }
+        
+        
+        if(dockerConfig.getServerType() == ServerType.PAYARA_MICRO){
+            addDatabaseDriverDependency(dockerConfig.getDatabaseType());
+        }
+    }
+    
+     private void generateDataSourceDD() throws IOException {
+            handler.progress("web.xml <data-source>");
+            Map<String, Object> params = new HashMap<>();
+            params.put("jndi", getJNDI(dockerConfig.getServerType(), dockerConfig.getDataSource()));
+            params.put("driverClass", dockerConfig.getDatabaseType().getDriver().getClassName());
+            WebDDUtil.createDD(project, "/org/jcode/docker/template/web/xml/datasource/_web.xml.ftl", params);
     }
 
     private void updatePersistenceXml() {
@@ -122,33 +146,55 @@ public final class DockerGenerator implements Generator {
     
     public static String getJNDI(ServerType server, String dataSource) {
         if (server == WILDFLY) {
-            return JBOSS_DATASOURCE_PREFIX + "jdbc/" + dataSource;
+            return JAVA_DATASOURCE_PREFIX + "jdbc/" + dataSource;
+        } else if (server == PAYARA_MICRO) {
+            return JAVA_GLOBAL_DATASOURCE_PREFIX + "jdbc/" + dataSource;
         } else {
             return "jdbc/" + dataSource;
         }
     }
     
     public static String getProvider(ServerType server, String existingProvider) {
-        if (server == WILDFLY) {
-            return "org.hibernate.ejb.HibernatePersistence";
-        } else if (server == PAYARA) {
-            return "org.eclipse.persistence.jpa.PersistenceProvider";
+        if (server != NONE || server != null) {
+            return server.getPersistenceProvider();
         } else {
             return existingProvider;
         }
     }
 
-    private void addMavenDependencies(String pom) {
+    private void addMavenDependencies() {
         if (POMManager.isMavenProject(project)) {
-            POMManager pomManager = new POMManager(TEMPLATE + pom, project);
+            POMManager pomManager = new POMManager(TEMPLATE + "fabric8io/pom/_pom.xml", project);
             pomManager.fixDistributionProperties();
             pomManager.commit();
+            handler.info("Profile","Use \"docker\" profile to create and run Docker image");
+            
             Properties properties = new Properties();
             properties.put(DOCKER_MACHINE_PROPERTY, dockerConfig.getDockerMachine());
+            properties.put(DB_NAME, dockerConfig.getDbName());
+            properties.put(DB_USER, dockerConfig.getDbUserName());
+            properties.put(DB_PASSWORD, dockerConfig.getDbPassword());
+            properties.put(DB_HOST, "db");
+            properties.put(DB_PORT, dockerConfig.getDatabaseType().getDefaultPort());
             pomManager.addProperties(DOCKER_PROFILE, properties);
+            
         } else {
             handler.warning(NbBundle.getMessage(DockerGenerator.class, "TITLE_Maven_Project_Not_Found"),
                     NbBundle.getMessage(DockerGenerator.class, "MSG_Maven_Project_Not_Found"));
+        }
+        
+    }
+    
+    private void addDatabaseDriverDependency(DatabaseType databaseType){
+        if (POMManager.isMavenProject(project) && databaseType.getDriver()!=null) {
+            POMManager pomManager = new POMManager(project);
+            DatabaseDriver driver = databaseType.getDriver();
+            String versionRef = "version." + driver.getGroupId();
+            pomManager.registerDependency(driver.getGroupId(), driver.getArtifactId(), "${"+versionRef+'}', null, null, null);
+            Properties properties = new Properties();
+            properties.put(versionRef, driver.getVersion());
+            pomManager.addProperties(properties);
+            pomManager.commit();
         }
     }
 }

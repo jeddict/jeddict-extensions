@@ -25,28 +25,44 @@ import static org.jcode.docker.generator.ServerType.WILDFLY;
  * @author jGauravGupta
  */
 public enum DatabaseType {
-    DERBY("Derby", Arrays.asList("--"), false, Arrays.asList(PAYARA)),
-    H2("H2", Arrays.asList("--"), false, Arrays.asList(WILDFLY)),
-    MYSQL("MySQL", Arrays.asList("latest","5.5","5.6","5.7", "8.0"), true),
-    MARIA_DB("MariaDB", Arrays.asList("latest", "10.1", "10.0", "5.5"), true, Arrays.asList(PAYARA)),
-    POSTGRESQL("PostgreSQL", Arrays.asList("latest", "9.6", "9.5", "9.4", "9.3", "9.2"), true);
-    
+    DERBY("Derby", "1527",
+            new DatabaseDriver("org.apache.derby", "derby", "10.13.1.1", "org.apache.derby.jdbc.ClientDriver"),
+            Arrays.asList("--"), false, Arrays.asList(PAYARA)),
+    H2("H2", "test",
+            new DatabaseDriver("com.h2database", "h2", "1.4.193", "org.h2.Driver"),
+            Arrays.asList("--"), false, Arrays.asList(WILDFLY)),
+    MYSQL("MySQL", "3306",
+            new DatabaseDriver("mysql", "mysql-connector-java", "5.1.38", "com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"),
+            Arrays.asList("latest", "5.5", "5.6", "5.7", "8.0"), true),
+    MARIA_DB("MariaDB", "3306",
+            new DatabaseDriver("org.mariadb.jdbc", "mariadb-java-client", "1.5.8", "org.mariadb.jdbc.MariaDbDataSource"),
+            Arrays.asList("latest", "10.1", "10.0", "5.5"), true),
+    POSTGRESQL("PostgreSQL", "5432",
+            new DatabaseDriver("postgresql", "postgresql", "9.1-901.jdbc4", "org.postgresql.xa.PGXADataSource"),
+            Arrays.asList("latest", "9.6", "9.5", "9.4", "9.3", "9.2"), true);
+
     private String displayName;
+    private final String defaultPort;
+    private DatabaseDriver driver;
     private List<String> version;
     private boolean dockerSupport;
     private List<ServerType> supportedServer;
 
-    private DatabaseType(String displayName, List<String> version, boolean dockerSupport) {
+    private DatabaseType(String displayName, String defaultPort, DatabaseDriver driver,
+            List<String> version, boolean dockerSupport) {
         this.displayName = displayName;
+        this.defaultPort = defaultPort;
+        this.driver = driver;
         this.version = version;
         this.dockerSupport = dockerSupport;
     }
-    
-    private DatabaseType(String displayName, List<String> version, boolean dockerSupport, List<ServerType> supportedServer) {
-        this(displayName, version, dockerSupport);
+
+    private DatabaseType(String displayName, String defaultPort, DatabaseDriver driver,
+            List<String> version, boolean dockerSupport, List<ServerType> supportedServer) {
+        this(displayName, defaultPort, driver, version, dockerSupport);
         this.supportedServer = supportedServer;
     }
-    
+
     public String getDisplayName() {
         return displayName;
     }
@@ -54,23 +70,37 @@ public enum DatabaseType {
     public List<String> getVersion() {
         return version;
     }
-    
+
     public boolean isDockerSupport() {
         return dockerSupport;
     }
-    
+
     public List<ServerType> getSupportedServer() {
-        if(supportedServer == null){
+        if (supportedServer == null) {
             return Arrays.asList(ServerType.values());
         }
         return supportedServer;
     }
-    
+
     public boolean isServerSupported(ServerType server) {
-        if(supportedServer == null){
+        if (supportedServer == null) {
             return true;
         }
         return supportedServer.contains(server);
+    }
+
+    /**
+     * @return the defaultPort
+     */
+    public String getDefaultPort() {
+        return defaultPort;
+    }
+
+    /**
+     * @return the driver
+     */
+    public DatabaseDriver getDriver() {
+        return driver;
     }
 
     @Override
