@@ -18,7 +18,9 @@ package org.netbeans.jcode.core.util;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import static java.util.stream.Collectors.toSet;
 import javax.xml.namespace.QName;
@@ -54,6 +56,8 @@ import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
 import org.openide.util.RequestProcessor;
 import javax.swing.SwingUtilities;
+import org.apache.commons.lang.StringUtils;
+import org.netbeans.modules.maven.model.pom.spi.POMExtensibilityElementBase;
 import static org.openide.filesystems.FileUtil.toFileObject;
 
 /**
@@ -70,44 +74,50 @@ public class POMManager {
     private Model sourceModel;
     private List<ModelOperation<POMModel>> operations;
 
+    public POMManager(Project project) {
+        //target    
+        this.project = project;
+        mavenProject = project.getLookup().lookup(NbMavenProjectImpl.class);
+        pomFileObject = toFileObject(mavenProject.getPOMFile());
+        pomModel = POMModelFactory.getDefault().createFreshModel(Utilities.createModelSource(pomFileObject));
+        operations = new ArrayList<>();
+        pomModel.startTransaction();
+    }
+
     public POMManager(String inputResource, Project project) {
+        this(project);
         try {
-            //target
-            this.project = project;
-            mavenProject = project.getLookup().lookup(NbMavenProjectImpl.class);
-            pomFileObject = toFileObject(mavenProject.getPOMFile());
-            pomModel = POMModelFactory.getDefault().createFreshModel(Utilities.createModelSource(pomFileObject));
             //source
-            operations = new ArrayList<>();
             ModelReader reader = EmbedderFactory.getProjectEmbedder().lookupComponent(ModelReader.class);
             sourceModel = reader.read(FileUtil.loadResource(inputResource), Collections.singletonMap(ModelReader.IS_STRICT, false));
-
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
         }
     }
 
     public void fixDistributionProperties() {
-        try {
-            pomModel.startTransaction();
-            org.netbeans.modules.maven.model.pom.Project pomProject = pomModel.getProject();
-            if (pomProject.getGroupId() != null) {
-                pomProject.setGroupId(pomProject.getGroupId().toLowerCase());
-            }
-            if (pomProject.getArtifactId() != null) {
-                pomProject.setArtifactId(pomProject.getArtifactId().toLowerCase());
-            }
-            if (pomProject.getVersion() != null) {
-                pomProject.setVersion(pomProject.getVersion().toLowerCase());
-            }
-        } finally {
-            pomModel.endTransaction();
+        org.netbeans.modules.maven.model.pom.Project pomProject = pomModel.getProject();
+        if (pomProject.getGroupId() != null) {
+            pomProject.setGroupId(pomProject.getGroupId().toLowerCase());
+        }
+        if (pomProject.getArtifactId() != null) {
+            pomProject.setArtifactId(pomProject.getArtifactId().toLowerCase());
+        }
+        if (pomProject.getVersion() != null) {
+            pomProject.setVersion(pomProject.getVersion().toLowerCase());
         }
     }
 
+    public void addProperties(java.util.Properties prop) {
+        addProperties(null, prop);
+    }
+
     public void addProperties(String profile, java.util.Properties prop) {
+        boolean tx = pomModel.isIntransaction();
         try {
-            pomModel.startTransaction();
+            if (!tx) {
+                pomModel.startTransaction();
+            }
             org.netbeans.modules.maven.model.pom.Project pomProject = pomModel.getProject();
             if (profile != null) {
                 Profile targetProfile = pomProject.findProfileById(profile);
@@ -119,7 +129,9 @@ public class POMManager {
                 registerProperties(prop, pomProject.getProperties());
             }
         } finally {
-            pomModel.endTransaction();
+            if (!tx) {
+                pomModel.endTransaction();
+            }
         }
     }
 
@@ -148,8 +160,7 @@ public class POMManager {
     }
 
     private void execute() {
-        try {
-            pomModel.startTransaction();
+        if (sourceModel != null) {
             org.netbeans.modules.maven.model.pom.Project pomProject = pomModel.getProject();
             if (pomProject.getProperties() == null) {
                 pomProject.setProperties(pomModel.getFactory().createProperties());
@@ -160,9 +171,8 @@ public class POMManager {
             registerRepository();
             registerBuild();
             registerProfile();
-        } finally {
-            pomModel.endTransaction();
         }
+        pomModel.endTransaction();
     }
 
     private Properties registerProperties(java.util.Properties source, Properties target) {
@@ -204,21 +214,25 @@ public class POMManager {
                     targetPlugin = pomModel.getFactory().createPlugin();
                     targetPlugin.setGroupId(sourcePlugin.getGroupId());
                     targetPlugin.setArtifactId(sourcePlugin.getArtifactId());
-                    if (sourcePlugin.getExtensions() != null) {
-                        targetPlugin.setExtensions(Boolean.TRUE);
-                    }
                     targetBuild.addPlugin(targetPlugin);
-                    targetPlugin.setConfiguration(registerConfiguration(sourcePlugin.getConfiguration(), targetPlugin.getConfiguration()));
-
-                    if (sourcePlugin.getExecutions() != null && !sourcePlugin.getExecutions().isEmpty()) {
-                        for (org.apache.maven.model.PluginExecution sourceExecution : sourcePlugin.getExecutions()) {
-                            PluginExecution targetExecution = pomModel.getFactory().createExecution();
+                }
+                if (sourcePlugin.getExtensions() != null) {
+                    targetPlugin.setExtensions(Boolean.TRUE);
+                }
+                registerDependency(sourcePlugin.getDependencies(), targetPlugin);
+                targetPlugin.setConfiguration(registerConfiguration(sourcePlugin.getConfiguration(), targetPlugin.getConfiguration()));
+                if (sourcePlugin.getExecutions() != null && !sourcePlugin.getExecutions().isEmpty()) {
+                    for (org.apache.maven.model.PluginExecution sourceExecution : sourcePlugin.getExecutions()) {
+                        PluginExecution targetExecution = targetPlugin.findExecutionById(sourceExecution.getId());
+                        if (targetExecution == null) {
+                            targetExecution = pomModel.getFactory().createExecution();
                             targetExecution.setId(sourceExecution.getId());
-                            targetExecution.setPhase(sourceExecution.getPhase());
-                            targetExecution.setConfiguration(registerConfiguration(sourceExecution.getConfiguration(), targetExecution.getConfiguration()));
                             sourceExecution.getGoals().forEach(targetExecution::addGoal);
                             targetPlugin.addExecution(targetExecution);
                         }
+                        targetExecution.setPhase(sourceExecution.getPhase());
+                        targetExecution.setConfiguration(registerConfiguration(sourceExecution.getConfiguration(), targetExecution.getConfiguration()));
+
                     }
                 }
                 targetPlugin.setVersion(sourcePlugin.getVersion());
@@ -239,16 +253,43 @@ public class POMManager {
     }
 
     private void loadDom(Xpp3Dom source, POMComponent target) {
+
         for (Xpp3Dom childDOM : source.getChildren()) {
             if (childDOM.getValue() != null) {
                 if (target instanceof Configuration) {
                     ((Configuration) target).setSimpleParameter(childDOM.getName(), childDOM.getValue());
+                } else if (target instanceof POMExtensibilityElementBase) {
+                    Optional<POMComponent> targetComponentOptioal = ((POMExtensibilityElementBase) target).getChildren()
+                            .stream()
+                            .filter(targetElement -> {
+                                String nodeName = targetElement.getPeer().getNodeName();
+                                nodeName = nodeName.substring(nodeName.lastIndexOf(':') + 1);
+                                String nodeValue = targetElement.getPeer().getChildNodes().item(0).getNodeValue();
+                                return StringUtils.equals(nodeName, childDOM.getName())
+                                        && StringUtils.equals(nodeValue, childDOM.getValue());
+                            })
+                            .findAny();
+                    if (!targetComponentOptioal.isPresent()) {
+//                        target.setChildElementText(childDOM.getValue(), childDOM.getValue(), new QName(childDOM.getName()));
+                        POMExtensibilityElement element = pomModel.getFactory().createPOMExtensibilityElement(new QName(childDOM.getName()));
+                        element.setElementText(childDOM.getValue());
+                        target.addExtensibilityElement(element);
+                    }
                 } else {
-                    target.setChildElementText("ree", childDOM.getValue(), new QName(childDOM.getName()));
+                    target.setChildElementText("propertyName", childDOM.getValue(), new QName(childDOM.getName()));
                 }
             } else {
-                POMExtensibilityElement element = pomModel.getFactory().createPOMExtensibilityElement(new QName(childDOM.getName()));
-                target.addExtensibilityElement(element);
+                Optional<POMExtensibilityElement> targetElementOptioal = target.getExtensibilityElements()
+                        .stream()
+                        .filter(targetElement -> StringUtils.equals(targetElement.getQName().getLocalPart(), childDOM.getName()))
+                        .findAny();
+                POMExtensibilityElement element;
+                if (targetElementOptioal.isPresent()) {
+                    element = targetElementOptioal.get();
+                } else {
+                    element = pomModel.getFactory().createPOMExtensibilityElement(new QName(childDOM.getName()));
+                    target.addExtensibilityElement(element);
+                }
                 loadDom(childDOM, element);
             }
         }
@@ -305,6 +346,17 @@ public class POMManager {
             }
             updateDependency(sourceDependency, targetDependency);
         });
+    }
+
+    public void registerDependency(String groupId, String artifactId, String version, String type, String classifier, String scope) {
+        org.apache.maven.model.Dependency dependency = new org.apache.maven.model.Dependency();
+        dependency.setGroupId(groupId);
+        dependency.setArtifactId(artifactId);
+        dependency.setVersion(version);
+        dependency.setType(type);
+        dependency.setClassifier(classifier);
+        dependency.setScope(scope);
+        registerDependency(Collections.singletonList(dependency), pomModel.getProject());
     }
 
     private Dependency createDependency(org.apache.maven.model.Dependency source) {
@@ -373,7 +425,6 @@ public class POMManager {
             Utilities.performPOMModelOperations(pomFileObject, operations);
         }
 //        downloadDependency();
-
     }
 //    
 //    public static void reloadProject(Project project){

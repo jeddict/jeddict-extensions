@@ -28,3 +28,5 @@
 /JPA RI/build/
 /Docker/nbproject/private/
 /Docker/build/
+/Infra/build/
+/Infra/nbproject/private/

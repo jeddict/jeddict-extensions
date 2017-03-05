@@ -48,7 +48,7 @@
                 </plugins>
             </build>
             <properties>
-                <version.payara.micro>4.1.1.171.0.1</version.payara.micro>
+                <version.payara.micro>4.1.1.162</version.payara.micro>
             </properties>
         </profile>
     </profiles>

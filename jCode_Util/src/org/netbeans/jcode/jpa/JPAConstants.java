@@ -269,6 +269,7 @@ public class JPAConstants {
     public static final String JDBC_PASSWORD = "javax.persistence.jdbc.password";
     public static final String JDBC_DRIVER = "javax.persistence.jdbc.driver";
     public static final String JDBC_USER = "javax.persistence.jdbc.user";
-    public static final String JBOSS_DATASOURCE_PREFIX = "java:/";
+    public static final String JAVA_DATASOURCE_PREFIX = "java:/";
+    public static final String JAVA_GLOBAL_DATASOURCE_PREFIX = "java:global/";
 
 }

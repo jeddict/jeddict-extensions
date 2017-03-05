@@ -72,12 +72,12 @@ public class DefaultAttributes extends Attributes<DefaultClass> {
 
     public void addDefaultAttribute(DefaultAttribute attribute) {
         getDefaultAttributes().add(attribute);
-//        attribute.setJavaClass(this.getJavaClass());
+        attribute.setAttributes(this);
     }
 
     public void removeDefaultAttribute(DefaultAttribute attribute) {
         getDefaultAttributes().remove(attribute);
-//        attribute.setJavaClass(null);
+        attribute.setAttributes(null);
     }
 
     @Override
