@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +30,6 @@ import org.netbeans.api.project.Project;
 import org.netbeans.jcode.core.util.POMManager;
 import org.netbeans.jcode.generator.AbstractGenerator;
 import org.netbeans.jcode.jpa.util.PersistenceHelper;
-import org.netbeans.jcode.jpa.util.PersistenceHelper.PersistenceUnit;
 import org.netbeans.jcode.layer.ConfigData;
 import org.netbeans.jcode.layer.Generator;
 import org.netbeans.jcode.layer.TechContext;
@@ -41,7 +39,6 @@ import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
 import org.netbeans.jcode.stack.config.data.LayerConfigData;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
-import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
 
 /**

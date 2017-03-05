@@ -445,7 +445,8 @@ public class RESTGenerator implements Generator {
         param.put("restSuffix", restData.getSuffixName());
         param.put("metrics", restData.isMetrics());
         param.put("docs", restData.isDocsEnable());
-        param.put("serverType", dockerConfigData.getServerType());
+        param.put("serverType", dockerConfigData.getServerType().name());
+        param.put("serverFamily", dockerConfigData.getServerType().getFamily().name());
 
         //config
         expandServerSideComponent(source, appPackage, EMPTY, EMPTY, CONFIG_TEMPLATES, param);

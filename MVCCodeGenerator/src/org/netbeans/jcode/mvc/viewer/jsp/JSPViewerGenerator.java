@@ -43,7 +43,7 @@ import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
 import org.netbeans.jcode.mvc.controller.MVCData;
 import org.netbeans.jcode.mvc.viewer.dto.FromEntityBase;
 import org.netbeans.jcode.mvc.controller.Operation;
-import org.netbeans.jcode.servlet.util.ServletUtil;
+import org.netbeans.jcode.web.dd.util.WebDDUtil;
 import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.jpa.modeler.spec.Entity;
@@ -143,14 +143,14 @@ public class JSPViewerGenerator implements Generator{
         } else {
             welcomeFile = '/' + jspData.getFolder() + "/home.jsp";
         }
-        boolean success = ServletUtil.setWelcomeFiles(project, welcomeFile);
+        boolean success = WebDDUtil.setWelcomeFiles(project, welcomeFile);
         if (!success) { // NetBeans API bug resolution
-            handler.progress(Console.wrap(NbBundle.getMessage(ServletUtil.class, "MSG_Init_WelcomeFile", jspData.getFolder()), FG_MAGENTA, BOLD, UNDERLINE));
+            handler.progress(Console.wrap(NbBundle.getMessage(WebDDUtil.class, "MSG_Init_WelcomeFile", jspData.getFolder()), FG_MAGENTA, BOLD, UNDERLINE));
             Map<String, Object> params = new HashMap<>();
             params.put("WELCOME_FILE", welcomeFile);
-            ServletUtil.createDD(project, WEB_XML_DD, params);
+            WebDDUtil.createDD(project, WEB_XML_DD, params);
         }
-        handler.progress(Console.wrap(NbBundle.getMessage(ServletUtil.class, "MSG_Progress_WelcomeFile", jspData.getFolder()), FG_MAGENTA, BOLD, UNDERLINE));
+        handler.progress(Console.wrap(NbBundle.getMessage(WebDDUtil.class, "MSG_Progress_WelcomeFile", jspData.getFolder()), FG_MAGENTA, BOLD, UNDERLINE));
     }
 
     public void generateStaticResources(Project project, ProgressHandler handler) throws IOException {

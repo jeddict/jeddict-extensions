@@ -11,7 +11,7 @@ import ${SecurityUtils_FQN};
  */
 public class AuditListner {
 
-    <#assign wf = serverType == "Wildfly" >
+    <#assign wf = serverFamily == "WILDFLY_FAMILY" >
     <#if wf>//Issue : https://issues.jboss.org/browse/WFLY-2387</#if>
     <#if wf>//</#if>@Inject
     <#if wf>//</#if>private SecurityUtils securityUtils;
