@@ -127,5 +127,10 @@ public class WorkSpace extends BaseElement {
         }
         return true;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
         
 }

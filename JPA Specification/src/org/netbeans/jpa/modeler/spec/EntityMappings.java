@@ -1800,6 +1800,24 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         setNextWorkSpace(getRootWorkSpace());
     }
     
+    /**
+     * Remove the selected workspace
+     * @param workSpace
+     * @return true if current workspace is also removed
+     */
+    public boolean removeAllWorkSpace(List<WorkSpace> workSpace) {
+        getWorkSpaces().removeAll(workSpace);
+        if (!getWorkSpaces().contains(getRootWorkSpace())) {
+            getWorkSpaces().add(getRootWorkSpace());
+        }
+        boolean currentWorkSpaceDeleted = !getWorkSpaces().contains(getCurrentWorkSpace());
+        if (currentWorkSpaceDeleted) {
+            setCurrentWorkSpace((WorkSpace) null);
+            setNextWorkSpace(getRootWorkSpace());
+        }
+        return currentWorkSpaceDeleted;
+    }
+    
     public Optional<WorkSpace> findWorkSpace(String workSpaceId) {
        return getWorkSpaces().stream().filter(ws -> ws.getId().equals(workSpaceId)).findAny();
     }
