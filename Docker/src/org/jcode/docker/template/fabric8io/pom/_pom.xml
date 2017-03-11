@@ -8,11 +8,6 @@
     <profiles>
         <profile>
             <id>docker</id>
-            <properties>
-                <build.name>${project.artifactId}</build.name>
-                <version.fabric8>0.17.2</version.fabric8>
-                <docker.machine>default</docker.machine>
-            </properties>
             <build>
                 <finalName>${build.name}</finalName>
                 <plugins>
@@ -20,11 +15,27 @@
                         <groupId>io.fabric8</groupId>
                         <artifactId>docker-maven-plugin</artifactId>
                         <version>${version.fabric8}</version>
+                        <executions>
+                            <execution>
+                                <id>docker:build</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>docker:start</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                         <configuration>
                             <images>
                                 <image>
                                     <alias>web</alias>
-                                    <name>${project.groupId}/${project.artifactId}:${project.version}</name>
+                                    <name>${docker.image}</name>
                                     <build>
                                         <!--<args>
                                             <BINARY>maven/${project.build.finalName}.war</BINARY>
@@ -35,8 +46,16 @@
                                         </args>
                                         <dockerFileDir>${project.basedir}/src/main/docker</dockerFileDir>-->
                                         <assembly>
-                                            <descriptorRef>artifact</descriptorRef>
-                                            <basedir>/</basedir>
+                                            <!--<descriptorRef>artifact</descriptorRef>
+                                            <basedir>/</basedir>-->
+                                            <inline>
+                                                <files>
+                                                    <file>                                                   
+                                                        <source>${project.binary}</source>
+                                                        <!--<outputDirectory>/myfolder</outputDirectory>-->
+                                                    </file>
+                                                </files>
+                                            </inline>
                                         </assembly>
                                     </build>
                                      <external> 
@@ -73,25 +92,19 @@
                              <name>${docker.machine}</name>
                            </machine>
                         </configuration>
-                        <executions>
-                            <execution>
-                                <id>docker:build</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>build</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>docker:start</id>
-                                <phase>install</phase>
-                                <goals>
-                                    <goal>start</goal>
-                                </goals>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>
+            <properties>
+                <version.fabric8>0.20.0</version.fabric8>
+
+                <build.name>${project.artifactId}</build.name>
+                <project.binary>${project.build.directory}/${binary}</project.binary>
+                <docker.binary>maven/${binary}</docker.binary>
+                <docker.image>${project.groupId}/${project.artifactId}:${project.version}</docker.image>
+                
+                <docker.machine>default</docker.machine>
+            </properties>
         </profile>
     </profiles>
 </project>

@@ -1,0 +1,8 @@
+FROM java:openjdk-8-jdk
+
+ENV APPLICATION /opt/appliaction.jar 
+ARG BINARY
+ADD $BINARY $APPLICATION
+
+EXPOSE 8080
+CMD java -jar $APPLICATION

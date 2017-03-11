@@ -15,6 +15,7 @@
  */
 package org.jcode.docker.generator;
 
+import org.apache.commons.lang.StringUtils;
 import org.netbeans.jcode.stack.config.data.LayerConfigData;
 
 /**
@@ -24,13 +25,15 @@ import org.netbeans.jcode.stack.config.data.LayerConfigData;
 public class DockerConfigData extends LayerConfigData {
 
     private ServerType serverType;
-    private String serverVersion;
     private DatabaseType databaseType;
     private String databaseVersion;
     private String dbUserName = "myuser";
     private String dbPassword = "secret";
     private String dataSource = "SampleDS";
     private String dbName = "sample";
+    private String dbHost = "localhost";
+    private String dbPort;
+    
     private String dockerMachine;
     private boolean dockerEnable;
     private boolean dockerActivated;//checkbox
@@ -42,14 +45,6 @@ public class DockerConfigData extends LayerConfigData {
 
     public void setServerType(ServerType serverType) {
         this.serverType = serverType;
-    }
-
-    public String getServerVersion() {
-        return serverVersion;
-    }
-
-    public void setServerVersion(String serverVersion) {
-        this.serverVersion = serverVersion;
     }
 
     public DatabaseType getDatabaseType() {
@@ -102,7 +97,10 @@ public class DockerConfigData extends LayerConfigData {
     public void setDbName(String dbName) {
         this.dbName = dbName;
     }
-
+    
+    public boolean isDbInfoExist() {
+        return StringUtils.isNotBlank(this.dbName);
+    }
     /**
      * @return the dockerMachine
      */
@@ -143,5 +141,33 @@ public class DockerConfigData extends LayerConfigData {
      */
     public void setDockerActivated(boolean dockerActivated) {
         this.dockerActivated = dockerActivated;
+    }
+
+    /**
+     * @return the dbHost
+     */
+    public String getDbHost() {
+        return dbHost;
+    }
+
+    /**
+     * @param dbHost the dbHost to set
+     */
+    public void setDbHost(String dbHost) {
+        this.dbHost = dbHost;
+    }
+
+    /**
+     * @return the dbPort
+     */
+    public String getDbPort() {
+        return dbPort;
+    }
+
+    /**
+     * @param dbPort the dbPort to set
+     */
+    public void setDbPort(String dbPort) {
+        this.dbPort = dbPort;
     }
 }

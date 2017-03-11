@@ -27,20 +27,28 @@ import static org.jcode.docker.generator.ServerFamily.WILDFLY_FAMILY;
  */
 public enum ServerType {
     
-    NONE(null, "<No Server Selected>", null, EMPTY_LIST),
-    PAYARA(PAYARA_FAMILY, "Payara", "org.eclipse.persistence.jpa.PersistenceProvider", Arrays.asList("latest", "161", "161.1")),
-    PAYARA_MICRO(PAYARA_FAMILY, "Payara Micro", "org.eclipse.persistence.jpa.PersistenceProvider", Arrays.asList("latest", "161", "161.1")),
-    WILDFLY(WILDFLY_FAMILY, "Wildfly", "org.hibernate.ejb.HibernatePersistence", Arrays.asList("latest", "8.1.0.Final", "8.2.1.Final", "8.2.0.Final", "9.0.0.Final", "10.1.0.Final", "9.0.1.Final", "9.0.2.Final", "10.0.0.Final"));
+    NONE(null, "<No Server Selected>", null, null, EMPTY_LIST),
+    PAYARA(PAYARA_FAMILY, "Payara", "org.eclipse.persistence.jpa.PersistenceProvider",
+           "${build.name}.war", Arrays.asList("latest", "161", "161.1")),
+    PAYARA_MICRO(PAYARA_FAMILY, "Payara Micro", "org.eclipse.persistence.jpa.PersistenceProvider",
+           "${build.name}.jar", EMPTY_LIST),
+    WILDFLY(WILDFLY_FAMILY, "Wildfly", "org.hibernate.ejb.HibernatePersistence",
+           "${build.name}.war", Arrays.asList("latest", "8.1.0.Final", "8.2.1.Final", "8.2.0.Final", "9.0.0.Final", "10.1.0.Final", "9.0.1.Final", "9.0.2.Final", "10.0.0.Final")),
+    WILDFLY_SWARM(WILDFLY_FAMILY, "Wildfly Swarm", "org.hibernate.ejb.HibernatePersistence",
+          "${build.name}-swarm.jar", EMPTY_LIST);
 //    GLASSFISH("Glassfish", Arrays.asList("4.1.1","4.1.1-web")),
 
     private final ServerFamily family;
     private final String displayName;
+    private final String binary;
     private final List<String> version;
     private final String persistenceProvider;
 
-    private ServerType(ServerFamily family, String displayName, String persistenceProvider, List<String> version) {
+    private ServerType(ServerFamily family, String displayName, String persistenceProvider, 
+            String binary, List<String> version) {
         this.family = family;
         this.displayName = displayName;
+        this.binary = binary;
         this.version = version;
         this.persistenceProvider = persistenceProvider;
     }
@@ -70,6 +78,13 @@ public enum ServerType {
      */
     public ServerFamily getFamily() {
         return family;
+    }
+
+    /**
+     * @return the binary
+     */
+    public String getBinary() {
+        return binary;
     }
 
 }

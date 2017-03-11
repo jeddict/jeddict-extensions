@@ -72,7 +72,7 @@ public class DBConnectionUtil {
     /**
      * Load combobox with DB connection
      *
-     * @param entityMappings
+     * @param file
      * @param dbConComboBox
      */
     public static void loadConnection(ModelerFile file, JComboBox dbConComboBox) {

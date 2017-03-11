@@ -17,8 +17,12 @@ package org.jcode.docker.generator;
 
 import java.util.Arrays;
 import java.util.List;
+import org.apache.commons.lang.StringUtils;
 import static org.jcode.docker.generator.ServerType.PAYARA;
+import static org.jcode.docker.generator.ServerType.PAYARA_MICRO;
 import static org.jcode.docker.generator.ServerType.WILDFLY;
+import static org.jcode.docker.generator.ServerType.WILDFLY_SWARM;
+import org.netbeans.api.db.explorer.DatabaseConnection;
 
 /**
  *
@@ -27,10 +31,10 @@ import static org.jcode.docker.generator.ServerType.WILDFLY;
 public enum DatabaseType {
     DERBY("Derby", "1527",
             new DatabaseDriver("org.apache.derby", "derby", "10.13.1.1", "org.apache.derby.jdbc.ClientDriver"),
-            Arrays.asList("--"), false, Arrays.asList(PAYARA)),
+            Arrays.asList("--"), false, Arrays.asList(PAYARA, PAYARA_MICRO)),
     H2("H2", "test",
             new DatabaseDriver("com.h2database", "h2", "1.4.193", "org.h2.Driver"),
-            Arrays.asList("--"), false, Arrays.asList(WILDFLY)),
+            Arrays.asList("--"), false, Arrays.asList(WILDFLY, WILDFLY_SWARM)),
     MYSQL("MySQL", "3306",
             new DatabaseDriver("mysql", "mysql-connector-java", "5.1.38", "com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"),
             Arrays.asList("latest", "5.5", "5.6", "5.7", "8.0"), true),
@@ -101,6 +105,19 @@ public enum DatabaseType {
      */
     public DatabaseDriver getDriver() {
         return driver;
+    }
+    
+    public boolean isMatchingDatabase(DatabaseConnection databaseConnection){
+        if (databaseConnection != null) {
+            if (StringUtils.containsIgnoreCase(databaseConnection.getDriverClass(), this.name())) {
+                return true;
+            }
+            if (StringUtils.containsIgnoreCase(databaseConnection.getDatabaseURL(), this.name())) {
+                return true;
+            }
+        }
+        return false;
+        
     }
 
     @Override

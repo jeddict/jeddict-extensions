@@ -5,8 +5,8 @@ services:
             context: .
             dockerfile: DockerFile
             args:
-                BINARY: maven/${r"${build.name}"}.war
-                <#if docker.serverType != "Payara Micro">
+                BINARY: ${r"${docker.binary}"}
+                <#if docker.serverType.name() != "PAYARA_MICRO" && docker.serverType.name() != "WILDFLY_SWARM">
                 DB_DATASOURCE: '${docker.dataSource}'
                 DB_NAME: '${r"${db.name}"}'
                 DB_USER: '${r"${db.user}"}'
