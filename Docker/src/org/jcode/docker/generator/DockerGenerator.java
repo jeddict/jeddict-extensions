@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import org.apache.commons.lang.StringUtils;
 import static org.jcode.docker.generator.ServerFamily.WILDFLY_FAMILY;
 import static org.jcode.docker.generator.ServerType.NONE;
 import static org.jcode.docker.generator.ServerType.PAYARA;
@@ -198,7 +199,13 @@ public final class DockerGenerator implements Generator {
             handler.info("Profile", "Use \"docker\" profile to create and run Docker image");
 
             Properties properties = new Properties();
-            properties.put(DOCKER_MACHINE_PROPERTY, dockerConfig.getDockerMachine());
+            if(StringUtils.isBlank(dockerConfig.getDockerMachine())){
+                handler.warning(NbBundle.getMessage(DockerGenerator.class, "TITLE_Docker_Machine_Not_Found"),
+                    NbBundle.getMessage(DockerGenerator.class, "MSG_Docker_Machine_Not_Found"));
+                properties.put(DOCKER_MACHINE_PROPERTY, "local");
+            } else {
+                properties.put(DOCKER_MACHINE_PROPERTY, dockerConfig.getDockerMachine());
+            }
             properties.put(BINARY, dockerConfig.getServerType().getBinary());
             pomManager.addProperties(DOCKER_PROFILE, properties);
 
