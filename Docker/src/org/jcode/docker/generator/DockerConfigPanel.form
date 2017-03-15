@@ -216,7 +216,6 @@
             </Component>
             <Component class="javax.swing.JComboBox" name="dbComboBox">
               <Properties>
-                <Property name="model" postCode="loadDatabaseTypeModel();"/>
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[115, 35]"/>
                 </Property>

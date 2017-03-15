@@ -81,7 +81,7 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
                 }
             }
         }
-        
+
         if (StringUtils.isBlank(dsTextField.getText())) {
             warningLabel.setText(getMessage(DockerConfigPanel.class, "DockerConfigPanel.invalidDataSource.message"));
             return true;
@@ -92,10 +92,10 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
 
         return false;
     }
-    
-    private Optional<DatabaseConnection> getDatabaseConnection(){
+
+    private Optional<DatabaseConnection> getDatabaseConnection() {
         if (dbConnectionComboBox.getSelectedItem() instanceof org.netbeans.api.db.explorer.DatabaseConnection) {
-               return Optional.of((DatabaseConnection) dbConnectionComboBox.getSelectedItem());
+            return Optional.of((DatabaseConnection) dbConnectionComboBox.getSelectedItem());
         }
         return Optional.empty();
     }
@@ -135,12 +135,12 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
         if (StringUtils.isNotBlank(data.getDataSource())) {
             dsTextField.setText(data.getDataSource());
         }
-        
+
         dockerMachineCheckBox.setSelected(data.isDockerActivated());
         if (data.isDockerActivated() && StringUtils.isNotEmpty(data.getDockerMachine())) {
             setDockerMachine(data.getDockerMachine());
         }
-        
+
         serverComboBoxActionPerformed(null);
         dockerMachineCheckBoxActionPerformed(null);
     }
@@ -156,6 +156,8 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
             data.setDbName(dbNameTextField.getText());
             data.setDbUserName(dbUserTextField.getText());
             data.setDbPassword(dbPasswordTextField.getText());
+            data.setDbHost("db");
+            data.setDbPort(getDatabaseType().getDefaultPort());
         } else {
             Optional<DatabaseConnection> databaseConnection = getDatabaseConnection();
             if (databaseConnection.isPresent()) {
@@ -168,7 +170,7 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
         }
         data.setDataSource(dsTextField.getText());
         DockerInstance dockerInstance = buildInstanceVisual.getInstance();
-        if (dockerInstance!=null && dockerInstance.getKeyFile() != null) {
+        if (dockerInstance != null && dockerInstance.getKeyFile() != null) {
             data.setDockerMachine(dockerInstance.getKeyFile().getParentFile().getName());
         }
         data.setDockerActivated(dockerMachineCheckBox.isSelected());
@@ -291,7 +293,6 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
         dbLabel.setPreferredSize(new java.awt.Dimension(78, 17));
         dbWrapperPanel.add(dbLabel, java.awt.BorderLayout.WEST);
 
-        loadDatabaseTypeModel();
         dbComboBox.setPreferredSize(new java.awt.Dimension(115, 35));
         dbComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -492,68 +493,68 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
 
     private void dbComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dbComboBoxActionPerformed
         loadDatabaseVersionModel();
+        boolean embedded = getDatabaseType().isEmbeddedDB();
+        dbDataPanel.setVisible(!embedded);
+        dsWrpperPanel.setVisible(!embedded);
     }//GEN-LAST:event_dbComboBoxActionPerformed
 
     private void dockerMachineCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dockerMachineCheckBoxActionPerformed
-       checkDockerStatus();
-       loadDatabaseTypeModel();
-       setVisibility(dockerMachineCheckBox.isSelected());
-       Arrays.stream(buildInstanceVisual.getComponents())
-               .forEach(c-> c.setEnabled(dockerMachineCheckBox.isSelected()));//Docker Machine
+        checkDockerStatus();
+        loadDatabaseTypeModel();
+        setVisibility(dockerMachineCheckBox.isSelected());
+        Arrays.stream(buildInstanceVisual.getComponents())
+                .forEach(c -> c.setEnabled(dockerMachineCheckBox.isSelected()));//Docker Machine
     }//GEN-LAST:event_dockerMachineCheckBoxActionPerformed
 
     private void reloadConnectionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reloadConnectionButtonActionPerformed
-       dbConnectionComboBox.setSelectedItem(null);
-       dbConnectionComboBox.updateUI();
+        dbConnectionComboBox.setSelectedItem(null);
+        dbConnectionComboBox.updateUI();
     }//GEN-LAST:event_reloadConnectionButtonActionPerformed
 
     private void setVisibility(boolean status) {
         if (dbNamePanel.isVisible() != status) {
             dbVersionComboBox.setEnabled(status);
             dbNamePanel.setVisible(status);
-//            dsWrpperPanel.setVisible(status);
-            
             CardLayout dbDataPanelLayout = (CardLayout) dbDataPanel.getLayout();
             dbDataPanelLayout.show(dbDataPanel, status ? "DB_MANUAL" : "DB_AUTO");//uncomment for db connection - non-docker
-//            dbDataPanelLayout.show(dbDataPanel, "DB_MANUAL");
-//            dbCredentialPanel.setVisible(status);
         }
     }
-    
-    private boolean checkDockerStatus(){
-        if(!dockerMachineCheckBox.isSelected()){
-             infoLabel.setText(getMessage(DockerConfigPanel.class, "DOCKER_DISABLED_MESSAGE"));
-        } else if(buildInstanceVisual.getInstance()==null){
-             infoLabel.setText(getMessage(DockerConfigPanel.class, "DOCKER_DISABLED", getMessage(DockerConfigPanel.class, "DOKER_MACHINE_REQUIRED")));
-        } else if(getServerType()==null || getServerType()==NONE){
-             infoLabel.setText(getMessage(DockerConfigPanel.class, "DOCKER_DISABLED", getMessage(DockerConfigPanel.class, "SERVER_REQUIRED")));
+
+    private boolean checkDockerStatus() {
+        if (!dockerMachineCheckBox.isSelected()) {
+            infoLabel.setText(getMessage(DockerConfigPanel.class, "DOCKER_DISABLED_MESSAGE"));
+        } else if (buildInstanceVisual.getInstance() == null) {
+            infoLabel.setText(getMessage(DockerConfigPanel.class, "DOCKER_DISABLED", getMessage(DockerConfigPanel.class, "DOKER_MACHINE_REQUIRED")));
+        } else if (getServerType() == null || getServerType() == NONE) {
+            infoLabel.setText(getMessage(DockerConfigPanel.class, "DOCKER_DISABLED", getMessage(DockerConfigPanel.class, "SERVER_REQUIRED")));
         } else {
             infoLabel.setText("");
             return true;
         }
         return false;
     }
-    
-    private void loadServerTypeModel(){
+
+    private void loadServerTypeModel() {
         serverComboBox.setModel(new DefaultComboBoxModel(Stream.of(ServerType.values()).toArray(ServerType[]::new)));
-}
-    
-    private void loadDatabaseTypeModel(){
+    }
+
+    private void loadDatabaseTypeModel() {
         dbComboBox.setModel(
                 new DefaultComboBoxModel(Stream.of(DatabaseType.values())
                         .filter(type -> type.isDockerSupport() || !dockerMachineCheckBox.isSelected())
-                        .filter(type -> type.isServerSupported(getServerType()))
+                        .filter(type -> !type.isEmbeddedDB() || (type.isEmbeddedDB() && getServerType().getEmbeddedDB() == type))
+                        //                        .sorted((t1,t2)-> getServerType().getEmbeddedDB() == t1?-1:(getServerType().getEmbeddedDB() == t2?1:0))
                         .toArray(DatabaseType[]::new))
         );
-        loadDatabaseVersionModel();
+        dbComboBoxActionPerformed(null);
     }
-    
+
     private void loadDatabaseVersionModel() {
         dbVersionComboBox.removeAllItems();
         dbVersionComboBox.setModel(new DefaultComboBoxModel(getDatabaseType().getVersion().stream().toArray(String[]::new)));
     }
-    
-    
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private org.netbeans.modules.docker.ui.build2.BuildInstanceVisual buildInstanceVisual;
     private javax.swing.JComboBox<DatabaseType> dbComboBox;

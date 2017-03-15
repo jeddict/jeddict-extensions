@@ -18,10 +18,6 @@ package org.jcode.docker.generator;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
-import static org.jcode.docker.generator.ServerType.PAYARA;
-import static org.jcode.docker.generator.ServerType.PAYARA_MICRO;
-import static org.jcode.docker.generator.ServerType.WILDFLY;
-import static org.jcode.docker.generator.ServerType.WILDFLY_SWARM;
 import org.netbeans.api.db.explorer.DatabaseConnection;
 
 /**
@@ -29,43 +25,45 @@ import org.netbeans.api.db.explorer.DatabaseConnection;
  * @author jGauravGupta
  */
 public enum DatabaseType {
-    DERBY("Derby", "1527",
+    DERBY("Derby", "1527", true,
             new DatabaseDriver("org.apache.derby", "derby", "10.13.1.1", "org.apache.derby.jdbc.ClientDriver"),
-            Arrays.asList("--"), false, Arrays.asList(PAYARA, PAYARA_MICRO)),
-    H2("H2", "test",
+            Arrays.asList("--"), false),//, Arrays.asList(PAYARA, PAYARA_MICRO)),
+    H2("H2", "test", true,
             new DatabaseDriver("com.h2database", "h2", "1.4.193", "org.h2.Driver"),
-            Arrays.asList("--"), false, Arrays.asList(WILDFLY, WILDFLY_SWARM)),
-    MYSQL("MySQL", "3306",
+            Arrays.asList("--"), false),//, Arrays.asList(WILDFLY, WILDFLY_SWARM)),
+    MYSQL("MySQL", "3306", false,
             new DatabaseDriver("mysql", "mysql-connector-java", "5.1.38", "com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"),
             Arrays.asList("latest", "5.5", "5.6", "5.7", "8.0"), true),
-    MARIA_DB("MariaDB", "3306",
+    MARIA_DB("MariaDB", "3306", false,
             new DatabaseDriver("org.mariadb.jdbc", "mariadb-java-client", "1.5.8", "org.mariadb.jdbc.MariaDbDataSource"),
             Arrays.asList("latest", "10.1", "10.0", "5.5"), true),
-    POSTGRESQL("PostgreSQL", "5432",
+    POSTGRESQL("PostgreSQL", "5432", false,
             new DatabaseDriver("postgresql", "postgresql", "9.1-901.jdbc4", "org.postgresql.xa.PGXADataSource"),
             Arrays.asList("latest", "9.6", "9.5", "9.4", "9.3", "9.2"), true);
 
-    private String displayName;
+    private final String displayName;
     private final String defaultPort;
-    private DatabaseDriver driver;
-    private List<String> version;
-    private boolean dockerSupport;
-    private List<ServerType> supportedServer;
+    private final DatabaseDriver driver;
+    private final boolean embeddedDB;
+    private final List<String> version;
+    private final boolean dockerSupport;
+//    private List<ServerType> supportedServer;
 
-    private DatabaseType(String displayName, String defaultPort, DatabaseDriver driver,
+    private DatabaseType(String displayName, String defaultPort, boolean embeddedDB, DatabaseDriver driver,
             List<String> version, boolean dockerSupport) {
         this.displayName = displayName;
         this.defaultPort = defaultPort;
         this.driver = driver;
         this.version = version;
+        this.embeddedDB = embeddedDB;
         this.dockerSupport = dockerSupport;
     }
 
-    private DatabaseType(String displayName, String defaultPort, DatabaseDriver driver,
-            List<String> version, boolean dockerSupport, List<ServerType> supportedServer) {
-        this(displayName, defaultPort, driver, version, dockerSupport);
-        this.supportedServer = supportedServer;
-    }
+//    private DatabaseType(String displayName, String defaultPort, DatabaseDriver driver,
+//            List<String> version, boolean dockerSupport, List<ServerType> supportedServer) {
+//        this(displayName, defaultPort, driver, version, dockerSupport);
+//        this.supportedServer = supportedServer;
+//    }
 
     public String getDisplayName() {
         return displayName;
@@ -79,19 +77,19 @@ public enum DatabaseType {
         return dockerSupport;
     }
 
-    public List<ServerType> getSupportedServer() {
-        if (supportedServer == null) {
-            return Arrays.asList(ServerType.values());
-        }
-        return supportedServer;
-    }
-
-    public boolean isServerSupported(ServerType server) {
-        if (supportedServer == null) {
-            return true;
-        }
-        return supportedServer.contains(server);
-    }
+//    public List<ServerType> getSupportedServer() {
+//        if (supportedServer == null) {
+//            return Arrays.asList(ServerType.values());
+//        }
+//        return supportedServer;
+//    }
+//
+//    public boolean isServerSupported(ServerType server) {
+//        if (supportedServer == null) {
+//            return true;
+//        }
+//        return supportedServer.contains(server);
+//    }
 
     /**
      * @return the defaultPort
@@ -123,5 +121,12 @@ public enum DatabaseType {
     @Override
     public String toString() {
         return displayName;
+    }
+
+    /**
+     * @return the embeddedDB
+     */
+    public boolean isEmbeddedDB() {
+        return embeddedDB;
     }
 }
