@@ -478,6 +478,21 @@ public abstract class PersistenceAttributes<T extends ManagedClass> extends Attr
         return relationAttributes;
     }
     
+    public List<SingleRelationAttribute> getDerivedRelationAttributes() {
+        List<SingleRelationAttribute> relationAttributeWidget = new ArrayList<>();
+        relationAttributeWidget.addAll(
+                getOneToOne().stream()
+                        .filter(SingleRelationAttribute::isPrimaryKey)
+                        .collect(toList())
+        );
+        relationAttributeWidget.addAll(
+                getManyToOne().stream()
+                        .filter(SingleRelationAttribute::isPrimaryKey)
+                        .collect(toList())
+        );
+        return relationAttributeWidget;
+    }
+    
     @Override
     public Set<String> getConnectedClass(Set<String> javaClasses){
         javaClasses.add(getJavaClass().getFQN());

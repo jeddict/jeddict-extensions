@@ -264,6 +264,8 @@ public interface IPersistenceAttributes extends IAttributes {
 
     List<RelationAttribute> getRelationAttributes();
     
+    List<SingleRelationAttribute> getDerivedRelationAttributes();
+    
     Optional<RelationAttribute> getRelationAttribute(String id);
     
     Optional<ManyToMany> getManyToMany(String id);

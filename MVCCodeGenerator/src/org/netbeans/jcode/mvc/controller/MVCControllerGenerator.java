@@ -150,8 +150,8 @@ public class MVCControllerGenerator implements Generator {
     private final static String MODEL_VAR_DECLARATION = "model";
     private final static String SESSION_BEAN_VAR_DECLARATION = "facade";
     private final static String VALIDATION_FILTER = "       if (validationResult.isFailed()) {\n"
-            + "            return ValidationUtil.getResponse(validationResult, error);\n"
-            + "        }\n\n";
+                                                  + "            return ValidationUtil.getResponse(validationResult, error);\n"
+                                                  + "        }\n\n";
 
     @ConfigData
     private SessionBeanData beanData;

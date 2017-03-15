@@ -114,4 +114,6 @@ public class DefaultClass extends JavaClass<DefaultAttributes> {
         }
         return attr;
     }
+    
+    
 }

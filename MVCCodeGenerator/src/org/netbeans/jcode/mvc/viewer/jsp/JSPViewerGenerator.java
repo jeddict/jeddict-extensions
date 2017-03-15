@@ -142,6 +142,7 @@ public class JSPViewerGenerator implements Generator{
             welcomeFile = "/index.jsp";
         } else {
             welcomeFile = '/' + jspData.getFolder() + "/home.jsp";
+//            welcomeFile = "/home.jsp";
         }
         boolean success = WebDDUtil.setWelcomeFiles(project, welcomeFile);
         if (!success) { // NetBeans API bug resolution
@@ -242,14 +243,15 @@ public class JSPViewerGenerator implements Generator{
                 getJSPFileName(null, jspEntityIncludeFolder, "home") + JSP_EXT,
                 webRoot, params, handler);
         
-        expandSingleJSPTemplate(TEMPLATE_PATH + CRUD_HOME_PATH + "login.ftl",
-                getJSPFileName(null, jspEntityIncludeFolder, "login") + JSP_EXT,
-                webRoot, params, handler);
-        
         if(mvcData.isAuthentication()){
-        expandSingleJSPTemplate(TEMPLATE_PATH + CRUD_HOME_PATH + "index.ftl",
-                "index" + JSP_EXT,
-                webRoot, params, handler);
+            expandSingleJSPTemplate(TEMPLATE_PATH + CRUD_HOME_PATH + "login.ftl",
+                    getJSPFileName(null, jspEntityIncludeFolder, "login") + JSP_EXT,
+                    webRoot, params, handler);
+
+
+            expandSingleJSPTemplate(TEMPLATE_PATH + CRUD_HOME_PATH + "index.ftl",
+                    "index" + JSP_EXT,
+                    webRoot, params, handler);
         }
 
     }

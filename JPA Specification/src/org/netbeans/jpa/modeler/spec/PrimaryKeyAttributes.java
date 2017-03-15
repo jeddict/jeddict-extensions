@@ -519,6 +519,20 @@ public class PrimaryKeyAttributes extends PersistenceAttributes<IdentifiableClas
         return superIds;
     }
     
+    public List<Attribute> getPrimaryKeyAttributes(){
+        List<Attribute> superPrimaryKeys = new ArrayList();
+        JavaClass currentManagedClass = getJavaClass();
+        do {
+            if(currentManagedClass instanceof IdentifiableClass){
+               IdentifiableClass identifiableClass = (IdentifiableClass)currentManagedClass;
+               superPrimaryKeys.addAll(identifiableClass.getAttributes().getId());
+               superPrimaryKeys.addAll(identifiableClass.getAttributes().getDerivedRelationAttributes());
+            }
+            currentManagedClass = currentManagedClass.getSuperclass();
+        } while(currentManagedClass != null);
+        return superPrimaryKeys;
+    }
+    
     public EmbeddedId getSuperEmbeddedId(){
         JavaClass currentManagedClass = getJavaClass();
         do {

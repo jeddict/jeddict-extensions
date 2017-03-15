@@ -116,5 +116,7 @@ public interface IPrimaryKeyAttributes extends IPersistenceAttributes {
     
     List<Id> getSuperId();
     
+    List<Attribute> getPrimaryKeyAttributes();
+    
     List<Version> getSuperVersion();
 }

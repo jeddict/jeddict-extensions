@@ -43,6 +43,7 @@ import org.netbeans.jpa.source.JavaSourceParserUtil;
 import org.netbeans.jpa.modeler.settings.code.CodePanel;
 import org.netbeans.jpa.modeler.spec.extend.IPrimaryKeyAttributes;
 import org.netbeans.jpa.modeler.spec.extend.ReferenceClass;
+import org.netbeans.jpa.modeler.spec.extend.SingleRelationAttribute;
 import org.netbeans.jpa.modeler.spec.validation.adapter.CompositePrimaryKeyAdapter;
 
 public abstract class IdentifiableClass extends ManagedClass<IPrimaryKeyAttributes> implements PrimaryKeyContainer {
@@ -147,13 +148,13 @@ public abstract class IdentifiableClass extends ManagedClass<IPrimaryKeyAttribut
                 this.getNamedNativeQuery().add(NamedNativeQuery.load(element, namedNativeQueriesMirror));
             }
         }
-        
+
         AnnotationMirror resultSetMappingsMirror = JavaSourceParserUtil.findAnnotation(element, SQL_RESULTSET_MAPPINGS_FQN);
         if (resultSetMappingsMirror != null) {
             List resultSetMappingsMirrorList = (List) JavaSourceParserUtil.findAnnotationValue(resultSetMappingsMirror, "value");
             if (resultSetMappingsMirrorList != null) {
                 for (Object resultSetMappingObj : resultSetMappingsMirrorList) {
-                    SqlResultSetMapping mapping  = SqlResultSetMapping.load(element, (AnnotationMirror) resultSetMappingObj);
+                    SqlResultSetMapping mapping = SqlResultSetMapping.load(element, (AnnotationMirror) resultSetMappingObj);
                     mapping.setIdentifiableClass(this);
                     this.getSqlResultSetMapping().add(mapping);
                 }
@@ -161,12 +162,12 @@ public abstract class IdentifiableClass extends ManagedClass<IPrimaryKeyAttribut
         } else {
             resultSetMappingsMirror = JavaSourceParserUtil.findAnnotation(element, SQL_RESULTSET_MAPPING_FQN);
             if (resultSetMappingsMirror != null) {
-                SqlResultSetMapping mapping  = SqlResultSetMapping.load(element, resultSetMappingsMirror);
+                SqlResultSetMapping mapping = SqlResultSetMapping.load(element, resultSetMappingsMirror);
                 mapping.setIdentifiableClass(this);
                 this.getSqlResultSetMapping().add(mapping);
             }
         }
-        
+
         TypeElement superClassElement = JavaSourceParserUtil.getSuperclassTypeElement(element);
         if (!superClassElement.getQualifiedName().toString().equals("java.lang.Object")) {
             if (JavaSourceParserUtil.isEntityClass(superClassElement)) {
@@ -180,17 +181,17 @@ public abstract class IdentifiableClass extends ManagedClass<IPrimaryKeyAttribut
             } else if (JavaSourceParserUtil.isMappedSuperClass(superClassElement)) {
                 org.netbeans.jpa.modeler.spec.MappedSuperclass mappedSuperclassSpec = entityMappings.findMappedSuperclass(superClassElement.getSimpleName().toString()).orElseGet(() -> {
                     org.netbeans.jpa.modeler.spec.MappedSuperclass mappedSpec = new org.netbeans.jpa.modeler.spec.MappedSuperclass();
-                   mappedSpec.load(entityMappings, superClassElement, fieldAccess);
+                    mappedSpec.load(entityMappings, superClassElement, fieldAccess);
                     entityMappings.addMappedSuperclass(mappedSpec);
                     return mappedSpec;
-               });
+                });
                 super.addSuperclass(mappedSuperclassSpec);
             } else {
                 this.setSuperclassRef(new ReferenceClass(superClassElement.toString()));
             }
         }
     }
-    
+
     /**
      * Gets the value of the name property.
      *
@@ -201,7 +202,7 @@ public abstract class IdentifiableClass extends ManagedClass<IPrimaryKeyAttribut
     public String getName() {
         return getClazz();
     }
-    
+
     /**
      * Sets the value of the name property.
      *
@@ -325,7 +326,7 @@ public abstract class IdentifiableClass extends ManagedClass<IPrimaryKeyAttribut
      *
      */
     public EntityListeners getEntityListeners() {
-        if(entityListeners==null){
+        if (entityListeners == null) {
             entityListeners = new EntityListeners();
         }
         return entityListeners;
@@ -509,20 +510,20 @@ public abstract class IdentifiableClass extends ManagedClass<IPrimaryKeyAttribut
         }
         return this.namedQuery;
     }
-    
+
     public void addNamedQuery(NamedQuery namedQuery) {
-        if(namedQuery!=null){
+        if (namedQuery != null) {
             this.getNamedQuery().add(namedQuery);
         }
     }
-    
+
     public void removeNamedQuery(NamedQuery namedQuery) {
-        if(namedQuery!=null){
+        if (namedQuery != null) {
             this.getNamedQuery().remove(namedQuery);
         }
     }
-    
-    public Optional<NamedQuery> findNamedQuery(Attribute attribute){
+
+    public Optional<NamedQuery> findNamedQuery(Attribute attribute) {
         return this.getNamedQuery().stream().filter(q -> q.getName().equalsIgnoreCase(this.getClazz() + '.' + FIND_BY + attribute.getName())).findAny();
     }
 
@@ -591,18 +592,17 @@ public abstract class IdentifiableClass extends ManagedClass<IPrimaryKeyAttribut
     public CompositePrimaryKeyType getCompositePrimaryKeyType() {
         return compositePrimaryKeyType;
     }
-    
-    
+
     @Override
-    public boolean isIdClassType(){
-        return compositePrimaryKeyType == CompositePrimaryKeyType.IDCLASS || 
-                        (compositePrimaryKeyType == CompositePrimaryKeyType.DEFAULT && !CodePanel.isEmbeddedIdDefaultType()) ;
+    public boolean isIdClassType() {
+        return compositePrimaryKeyType == CompositePrimaryKeyType.IDCLASS
+                || (compositePrimaryKeyType == CompositePrimaryKeyType.DEFAULT && !CodePanel.isEmbeddedIdDefaultType());
     }
-    
+
     @Override
-    public boolean isEmbeddedIdType(){
-        return compositePrimaryKeyType == CompositePrimaryKeyType.EMBEDDEDID || 
-                        (compositePrimaryKeyType == CompositePrimaryKeyType.DEFAULT && CodePanel.isEmbeddedIdDefaultType()) ;
+    public boolean isEmbeddedIdType() {
+        return compositePrimaryKeyType == CompositePrimaryKeyType.EMBEDDEDID
+                || (compositePrimaryKeyType == CompositePrimaryKeyType.DEFAULT && CodePanel.isEmbeddedIdDefaultType());
     }
 
     /**
@@ -638,13 +638,13 @@ public abstract class IdentifiableClass extends ManagedClass<IPrimaryKeyAttribut
 
     private void manageCompositePrimaryKeyType() {
         if (null != compositePrimaryKeyType) {
-            CompositePrimaryKeyType type = compositePrimaryKeyType == CompositePrimaryKeyType.DEFAULT?(CodePanel.isEmbeddedIdDefaultType()?CompositePrimaryKeyType.EMBEDDEDID:CompositePrimaryKeyType.IDCLASS):compositePrimaryKeyType;
+            CompositePrimaryKeyType type = compositePrimaryKeyType == CompositePrimaryKeyType.DEFAULT ? (CodePanel.isEmbeddedIdDefaultType() ? CompositePrimaryKeyType.EMBEDDEDID : CompositePrimaryKeyType.IDCLASS) : compositePrimaryKeyType;
             switch (type) {
                 case EMBEDDEDID:
                     this.idClass = null;
                     break;
                 case IDCLASS:
-                    if(this.idClass!=null){
+                    if (this.idClass != null) {
                         this.idClass.setClazz(compositePrimaryKeyClass);
                     } else {
                         this.idClass = new IdClass(compositePrimaryKeyClass);
@@ -668,6 +668,64 @@ public abstract class IdentifiableClass extends ManagedClass<IPrimaryKeyAttribut
         this.idClass = null;
         this.compositePrimaryKeyClass = null;
         this.compositePrimaryKeyType = null;
+    }
+
+    public DefaultClass getDefaultClass() {
+//        IdentifiableClass identifiableClass = this;
+        EntityMappings entityMappings = this.getRootElement();
+        DefaultClass _class = entityMappings.addDefaultClass(this.getPackage(), this.getCompositePrimaryKeyClass());
+        List<Id> idAttributes = null;
+        if (this.isEmbeddedIdType()) {
+            idAttributes = this.getAttributes().getId();
+            _class.setEmbeddable(true);
+        } else if (this.isIdClassType()) {
+            idAttributes = this.getAttributes().getSuperId();
+        }
+
+        for (Id idSpec : idAttributes) {
+            DefaultAttribute attribute = new DefaultAttribute(idSpec);
+            attribute.setAttributeType(idSpec.getAttributeType());
+            attribute.setName(idSpec.getName());
+            _class.getAttributes().addDefaultAttribute(attribute);
+        }
+
+        for (SingleRelationAttribute relationAttributeSpec : this.getAttributes().getDerivedRelationAttributes()) {
+            Entity targetEntitySpec = relationAttributeSpec.getConnectedEntity();
+            List<Attribute> targetPrimaryAttributes = targetEntitySpec.getAttributes().getPrimaryKeyAttributes();
+            DefaultAttribute attribute = new DefaultAttribute(relationAttributeSpec);
+            if (targetPrimaryAttributes.size() == 1) {
+                if (targetPrimaryAttributes.get(0) instanceof Id) { //if only @Id exist
+                    Id idSpec = (Id) targetPrimaryAttributes.get(0);
+                    attribute.setAttributeType(idSpec.getAttributeType());
+                    attribute.setName(relationAttributeSpec.getName());// matches name of @Id Relation attribute
+                } else {// if only @Id @Relation exist
+                    //never execute , handled by above AUTO_CLASS condition
+                    throw new IllegalStateException("Handled by Auto Class case");
+                }
+            } else {// if @Id and @Id @Relation exist
+                attribute.setAttributeType(targetEntitySpec.getCompositePrimaryKeyClass());
+                attribute.setName(relationAttributeSpec.getName());// matches name of @Id Relation attribute//PK
+                attribute.setDerived(true);
+            }
+            _class.getAttributes().addDefaultAttribute(attribute);
+            //Start : if dependent class is Embedded that add @MapsId to Derived PK
+            if (this.isIdClassType()) {
+                if (relationAttributeSpec instanceof OneToOne) {
+                    ((OneToOne) relationAttributeSpec).setMapsId(null);
+                } else if (relationAttributeSpec instanceof ManyToOne) {
+                    ((ManyToOne) relationAttributeSpec).setMapsId(null);
+                }
+            } else if (this.isEmbeddedIdType()) {
+                if (relationAttributeSpec instanceof OneToOne) {
+                    ((OneToOne) relationAttributeSpec).setMapsId(attribute.getName());
+                } else if (relationAttributeSpec instanceof ManyToOne) {
+                    ((ManyToOne) relationAttributeSpec).setMapsId(attribute.getName());
+                }
+            }
+            //End : if dependent class is Embedded that add @MapsId to Derived PK
+
+        }
+        return _class;
     }
 
 }

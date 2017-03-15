@@ -124,6 +124,9 @@ public class POMManager {
                 if (targetProfile == null) {
                     throw new IllegalArgumentException(String.format("Profile[%s] not exist", profile));
                 }
+                if (targetProfile.getProperties() == null) {
+                        targetProfile.setProperties(pomModel.getFactory().createProperties());
+                    }
                 registerProperties(prop, targetProfile.getProperties());
             } else {
                 registerProperties(prop, pomProject.getProperties());
