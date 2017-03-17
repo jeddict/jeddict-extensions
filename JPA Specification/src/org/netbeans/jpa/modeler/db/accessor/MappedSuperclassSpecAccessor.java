@@ -32,29 +32,13 @@ public class MappedSuperclassSpecAccessor extends MappedSuperclassAccessor {
 
     public static MappedSuperclassSpecAccessor getInstance(MappedSuperclass mappedSuperclass) {
         MappedSuperclassSpecAccessor accessor = new MappedSuperclassSpecAccessor(mappedSuperclass);
-
         accessor.setClassName(mappedSuperclass.getClazz());
         accessor.setAccess("VIRTUAL");
         accessor.setAttributes(mappedSuperclass.getAttributes().getAccessor(true));
         if (mappedSuperclass.getSuperclass() != null) {
             accessor.setParentClassName(mappedSuperclass.getSuperclass().getClazz());
         }
-//        accessor.setAccess("VIRTUAL");
-//        accessor.setName(mappedSuperclass.getName());
-
-//        if (mappedSuperclass.getTable() != null) {
-//            accessor.setTable(mappedSuperclass.getTable().getAccessor());
-//        }
-//        processSuperClass(mappedSuperclass, accessor);
-//        if (mappedSuperclass.getInheritance() != null) {
-//            accessor.setInheritance(mappedSuperclass.getInheritance().getAccessor());
-//        }
-//        if (mappedSuperclass.getDiscriminatorColumn() != null) {
-//            accessor.setDiscriminatorColumn(mappedSuperclass.getDiscriminatorColumn().getAccessor());
-//        }
-//        accessor.setDiscriminatorValue(mappedSuperclass.getDiscriminatorValue());
         return accessor;
-
     }
 
     /**

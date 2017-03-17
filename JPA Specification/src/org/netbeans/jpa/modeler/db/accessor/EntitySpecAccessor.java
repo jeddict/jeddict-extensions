@@ -15,12 +15,15 @@
  */
 package org.netbeans.jpa.modeler.db.accessor;
 
+import static java.lang.Boolean.TRUE;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import static java.util.stream.Collectors.toList;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.SecondaryTableMetadata;
 import org.netbeans.jpa.modeler.spec.Entity;
@@ -52,6 +55,12 @@ public class EntitySpecAccessor extends EntityAccessor {
         accessor.setName(entity.getName());
         accessor.setClassName(entity.getClazz());
         accessor.setAccess("VIRTUAL");
+        if(TRUE.equals(entity.getAbstract())){//set abstract
+            MetadataClass metadataClass = new MetadataClass(null, entity.getClazz());//accessor.getMetadataFactory()
+            metadataClass.setModifiers(1024);
+            accessor.setAccessibleObject(metadataClass);//Test : Modifier.isAbstract(accessor.getJavaClass().getModifiers());
+        }
+        
         accessor.setAttributes(entity.getAttributes().getAccessor());
         if (entity.getTable() != null) {
             accessor.setTable(entity.getTable().getAccessor());
