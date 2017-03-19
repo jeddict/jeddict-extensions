@@ -16,7 +16,6 @@
 package org.netbeans.jpa.modeler.db.accessor;
 
 import static java.lang.Boolean.TRUE;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import static java.util.stream.Collectors.toList;
@@ -131,5 +130,26 @@ public class EntitySpecAccessor extends EntityAccessor {
             throw exception;
         }
     }
-
+     
+    @Override
+    public void process() {
+        try {
+            super.process();
+        } catch (ValidationException ex) {
+            DBValidationException exception = new DBValidationException(ex);
+            exception.setJavaClass(entity);
+            throw exception;
+        }
+    }
+    
+    @Override
+    protected void processVirtualClass() {
+      try {
+            super.processVirtualClass();
+        } catch (ValidationException ex) {
+            DBValidationException exception = new DBValidationException(ex);
+            exception.setJavaClass(entity);
+            throw exception;
+        }
+    }
 }

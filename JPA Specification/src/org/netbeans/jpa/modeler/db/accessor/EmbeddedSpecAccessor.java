@@ -19,6 +19,7 @@ import static java.util.stream.Collectors.toList;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedAccessor;
 import org.netbeans.jpa.modeler.spec.Convert;
 import org.netbeans.jpa.modeler.spec.Embedded;
+import org.netbeans.jpa.modeler.spec.Inheritance;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import org.netbeans.jpa.modeler.spec.validator.override.AssociationValidator;
 import org.netbeans.jpa.modeler.spec.validator.override.AttributeValidator;
@@ -30,13 +31,15 @@ import org.netbeans.jpa.modeler.spec.validator.override.AttributeValidator;
 public class EmbeddedSpecAccessor extends EmbeddedAccessor {
 
     private final Embedded embedded;
+    private boolean inherit;
 
     private EmbeddedSpecAccessor(Embedded embedded) {
         this.embedded = embedded;
     }
 
-    public static EmbeddedSpecAccessor getInstance(Embedded embedded) {
+    public static EmbeddedSpecAccessor getInstance(Embedded embedded, boolean inherit) {
         EmbeddedSpecAccessor accessor = new EmbeddedSpecAccessor(embedded);
+        accessor.inherit = inherit;
         accessor.setName(embedded.getName());
         accessor.setAttributeType(embedded.getAttributeType());
         AttributeValidator.filter(embedded);
@@ -51,6 +54,7 @@ public class EmbeddedSpecAccessor extends EmbeddedAccessor {
     public void process() {
         super.process();
         getMapping().setProperty(Attribute.class, embedded);
+        getMapping().setProperty(Inheritance.class, inherit);//Remove inherit functionality , once eclipse support dynamic mapped super class
     }
 
 }

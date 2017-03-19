@@ -15,7 +15,9 @@
  */
 package org.netbeans.jpa.modeler.db.accessor;
 
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
+import org.netbeans.db.modeler.exception.DBValidationException;
 import org.netbeans.jpa.modeler.spec.DefaultClass;
 
 /**
@@ -47,6 +49,28 @@ public class DefaultClassSpecAccessor extends EmbeddableAccessor {
      */
     public DefaultClass getDefaultClass() {
         return defaultClass;
+    }
+    
+        @Override
+    public void process() {
+        try {
+            super.process();
+        } catch (ValidationException ex) {
+            DBValidationException exception = new DBValidationException(ex);
+            exception.setJavaClass(defaultClass);
+            throw exception;
+        }
+    }
+    
+    @Override
+    protected void processVirtualClass() {
+      try {
+            super.processVirtualClass();
+        } catch (ValidationException ex) {
+            DBValidationException exception = new DBValidationException(ex);
+            exception.setJavaClass(defaultClass);
+            throw exception;
+        }
     }
 
 }

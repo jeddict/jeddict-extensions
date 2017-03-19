@@ -16,6 +16,7 @@
 package org.netbeans.jpa.modeler.db.accessor;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VersionAccessor;
+import org.netbeans.jpa.modeler.spec.Inheritance;
 import org.netbeans.jpa.modeler.spec.Version;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
 
@@ -26,13 +27,15 @@ import org.netbeans.jpa.modeler.spec.extend.Attribute;
 public class VersionSpecAccessor extends VersionAccessor {
 
     private Version version;
+    private boolean inherit;
 
     private VersionSpecAccessor(Version version) {
         this.version = version;
     }
 
-    public static VersionSpecAccessor getInstance(Version version) {
+    public static VersionSpecAccessor getInstance(Version version, boolean inherit) {
         VersionSpecAccessor accessor = new VersionSpecAccessor(version);
+        accessor.inherit = inherit;
         accessor.setName(version.getName());
         accessor.setAttributeType(version.getAttributeType());
         if (version.getColumn() != null) {
@@ -44,6 +47,7 @@ public class VersionSpecAccessor extends VersionAccessor {
     public void process() {
         super.process();
         getMapping().setProperty(Attribute.class, version);
+        getMapping().setProperty(Inheritance.class, inherit);//Remove inherit functionality , once eclipse support dynamic mapped super class
     }
 
 }

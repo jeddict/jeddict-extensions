@@ -15,7 +15,9 @@
  */
 package org.netbeans.jpa.modeler.db.accessor;
 
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
+import org.netbeans.db.modeler.exception.DBValidationException;
 import org.netbeans.jpa.modeler.spec.MappedSuperclass;
 
 /**
@@ -46,6 +48,28 @@ public class MappedSuperclassSpecAccessor extends MappedSuperclassAccessor {
      */
     public MappedSuperclass getMappedSuperclass() {
         return mappedSuperclass;
+    }
+
+    @Override
+    public void process() {
+        try {
+            super.process();
+        } catch (ValidationException ex) {
+            DBValidationException exception = new DBValidationException(ex);
+            exception.setJavaClass(mappedSuperclass);
+            throw exception;
+        }
+    }
+
+    @Override
+    protected void processVirtualClass() {
+        try {
+            super.processVirtualClass();
+        } catch (ValidationException ex) {
+            DBValidationException exception = new DBValidationException(ex);
+            exception.setJavaClass(mappedSuperclass);
+            throw exception;
+        }
     }
 
 }

@@ -785,16 +785,37 @@ public abstract class PersistenceAttributes<T extends ManagedClass> extends Attr
 //        return updateAccessor(attr);
     }
 
+    @Override
     public XMLAttributes updateAccessor(XMLAttributes attr, boolean inherit) {
-        attr.getBasics().addAll(getBasic().stream().map(basic -> BasicSpecAccessor.getInstance(basic, inherit)).collect(toList()));
-        attr.getElementCollections().addAll(getElementCollection().stream().map(ElementCollectionSpecAccessor::getInstance).collect(toList()));
-        attr.getEmbeddeds().addAll(getEmbedded().stream().map(EmbeddedSpecAccessor::getInstance).collect(toList()));
-//      Ignore Transient
-//      attr.getTransients().addAll(getTransient().stream().map(TransientSpecAccessor::getInstance).collect(toList()));
-        attr.getManyToManys().addAll(getManyToMany().stream().map(ManyToManySpecAccessor::getInstance).collect(toList()));
-        attr.getManyToOnes().addAll(getManyToOne().stream().map(ManyToOneSpecAccessor::getInstance).collect(toList()));
-        attr.getOneToManys().addAll(getOneToMany().stream().map(OneToManySpecAccessor::getInstance).collect(toList()));
-        attr.getOneToOnes().addAll(getOneToOne().stream().map(OneToOneSpecAccessor::getInstance).collect(toList()));
+        attr.getBasics().addAll(getBasic()
+                .stream()
+                .map(basic -> BasicSpecAccessor.getInstance(basic, inherit))
+                .collect(toList()));
+        attr.getElementCollections().addAll(getElementCollection()
+                .stream()
+                .map(ec -> ElementCollectionSpecAccessor.getInstance(ec, inherit))
+                .collect(toList()));
+        attr.getEmbeddeds().addAll(getEmbedded()
+                .stream()
+                .map(emb -> EmbeddedSpecAccessor.getInstance(emb, inherit))
+                .collect(toList()));
+//      Skip Transient
+        attr.getManyToManys().addAll(getManyToMany()
+                .stream()
+                .map(mtm -> ManyToManySpecAccessor.getInstance(mtm, inherit))
+                .collect(toList()));
+        attr.getManyToOnes().addAll(getManyToOne()
+                .stream()
+                .map(mto -> ManyToOneSpecAccessor.getInstance(mto, inherit))
+                .collect(toList()));
+        attr.getOneToManys().addAll(getOneToMany()
+                .stream()
+                .map(otm -> OneToManySpecAccessor.getInstance(otm, inherit))
+                .collect(toList()));
+        attr.getOneToOnes().addAll(getOneToOne()
+                .stream()
+                .map(oto -> OneToOneSpecAccessor.getInstance(oto, inherit))
+                .collect(toList()));
         return attr; 
     }
 

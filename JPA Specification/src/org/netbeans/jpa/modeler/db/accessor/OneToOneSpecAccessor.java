@@ -21,6 +21,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToOne
 import org.netbeans.db.modeler.exception.DBValidationException;
 import org.netbeans.jpa.modeler.spec.PrimaryKeyAttributes;
 import org.netbeans.jpa.modeler.spec.IdClass;
+import org.netbeans.jpa.modeler.spec.Inheritance;
 import org.netbeans.jpa.modeler.spec.JoinColumn;
 import org.netbeans.jpa.modeler.spec.ManagedClass;
 import org.netbeans.jpa.modeler.spec.OneToOne;
@@ -36,13 +37,15 @@ import org.netbeans.jpa.modeler.spec.validator.table.JoinTableValidator;
 public class OneToOneSpecAccessor extends OneToOneAccessor {
 
     private final OneToOne oneToOne;
+    private boolean inherit;
 
     private OneToOneSpecAccessor(OneToOne oneToOne) {
         this.oneToOne = oneToOne;
     }
 
-    public static OneToOneSpecAccessor getInstance(OneToOne oneToOne) {
+    public static OneToOneSpecAccessor getInstance(OneToOne oneToOne, boolean inherit) {
         OneToOneSpecAccessor accessor = new OneToOneSpecAccessor(oneToOne);
+        accessor.inherit = inherit;
         accessor.setName(oneToOne.getName());
         accessor.setTargetEntityName(oneToOne.getTargetEntity());
         if (oneToOne.isPrimaryKey()) {
@@ -74,6 +77,7 @@ public class OneToOneSpecAccessor extends OneToOneAccessor {
         try{
         super.process();
         getMapping().setProperty(Attribute.class, oneToOne);
+        getMapping().setProperty(Inheritance.class, inherit);//Remove inherit functionality , once eclipse support dynamic mapped super class
         } catch (ValidationException ex) {
             DBValidationException exception = new DBValidationException(ex);
             exception.setAttribute(oneToOne);

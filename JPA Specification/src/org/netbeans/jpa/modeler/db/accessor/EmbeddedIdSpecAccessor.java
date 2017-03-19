@@ -18,8 +18,8 @@ package org.netbeans.jpa.modeler.db.accessor;
 import static java.util.stream.Collectors.toList;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedIdAccessor;
 import org.netbeans.jpa.modeler.spec.EmbeddedId;
+import org.netbeans.jpa.modeler.spec.Inheritance;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
-import org.netbeans.jpa.modeler.spec.validator.override.AssociationValidator;
 import org.netbeans.jpa.modeler.spec.validator.override.AttributeValidator;
 
 /**
@@ -29,13 +29,15 @@ import org.netbeans.jpa.modeler.spec.validator.override.AttributeValidator;
 public class EmbeddedIdSpecAccessor extends EmbeddedIdAccessor {
 
     private final EmbeddedId embeddedId;
+    private boolean inherit;
 
     private EmbeddedIdSpecAccessor(EmbeddedId embeddedId) {
         this.embeddedId = embeddedId;
     }
 
-    public static EmbeddedIdSpecAccessor getInstance(EmbeddedId embeddedId) {
+    public static EmbeddedIdSpecAccessor getInstance(EmbeddedId embeddedId, boolean inherit) {
         EmbeddedIdSpecAccessor accessor = new EmbeddedIdSpecAccessor(embeddedId);
+        accessor.inherit = inherit;
         accessor.setName(embeddedId.getName());
         accessor.setAttributeType(embeddedId.getAttributeType());
         AttributeValidator.filter(embeddedId);
@@ -48,6 +50,7 @@ public class EmbeddedIdSpecAccessor extends EmbeddedIdAccessor {
     public void process() {
         super.process();
         getMapping().setProperty(Attribute.class, embeddedId);
+        getMapping().setProperty(Inheritance.class, inherit);//Remove inherit functionality , once eclipse support dynamic mapped super class
     }
 
 }

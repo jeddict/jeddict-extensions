@@ -15,24 +15,28 @@
  */
 package org.netbeans.jpa.modeler.spec.extend;
 
-import java.util.List;
-import org.netbeans.jpa.modeler.spec.ForeignKey;
-import org.netbeans.jpa.modeler.spec.JoinColumn;
+import org.netbeans.jpa.modeler.spec.JoinTable;
 
 /**
  *
  * @author gaurav
  */
-public interface JoinColumnHandler extends JoinTableHandler {
+public interface JoinTableHandler {
 
-    public List<JoinColumn> getJoinColumn();
+    /**
+     * Gets the value of the joinTable property.
+     *
+     * @return possible object is {@link JoinTable }
+     *
+     */
+    public JoinTable getJoinTable();
 
-    public void addJoinColumn(JoinColumn joinColumn);
-
-    public void removeJoinColumn(JoinColumn joinColumn);
-    
-    public ForeignKey getForeignKey();
-
-    public void setForeignKey(ForeignKey value);
+    /**
+     * Sets the value of the joinTable property.
+     *
+     * @param value allowed object is {@link JoinTable }
+     *
+     */
+    public void setJoinTable(JoinTable value);
 
 }

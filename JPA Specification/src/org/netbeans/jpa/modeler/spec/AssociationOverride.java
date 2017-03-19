@@ -19,6 +19,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 import static org.netbeans.jcode.jpa.JPAConstants.ASSOCIATION_OVERRIDES_FQN;
 import static org.netbeans.jcode.jpa.JPAConstants.ASSOCIATION_OVERRIDE_FQN;
+import org.netbeans.jpa.modeler.spec.extend.JoinColumnHandler;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
@@ -67,7 +68,7 @@ import org.netbeans.jpa.source.JavaSourceParserUtil;
     "joinTable"
 })
 //@XmlJavaTypeAdapter(value=AssociationValidator.class)
-public class AssociationOverride implements Comparable<AssociationOverride> {
+public class AssociationOverride implements Comparable<AssociationOverride>, JoinColumnHandler {
 
     protected String description;
     @XmlElement(name = "join-column")
@@ -252,6 +253,22 @@ public class AssociationOverride implements Comparable<AssociationOverride> {
      */
     public void setJoinColumn(List<JoinColumn> joinColumn) {
         this.joinColumn = joinColumn;
+    }
+
+    @Override
+    public void addJoinColumn(JoinColumn joinColumn_In) {
+        if (joinColumn == null) {
+            joinColumn = new ArrayList<>();
+        }
+        joinColumn.add(joinColumn_In);
+    }
+
+    @Override
+    public void removeJoinColumn(JoinColumn joinColumn_In) {
+        if (joinColumn == null) {
+            joinColumn = new ArrayList<>();
+        }
+        joinColumn.remove(joinColumn_In);
     }
 
 }

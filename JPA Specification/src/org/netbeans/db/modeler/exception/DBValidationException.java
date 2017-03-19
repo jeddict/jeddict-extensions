@@ -24,9 +24,11 @@ public class DBValidationException extends ValidationException {
     private ValidationException validationException;
     private Attribute attribute;
     private JavaClass javaClass;
+    
     /**
      * Creates a new instance of <code>DBConnectionNotFound</code> without
      * detail message.
+     * @param exception
      */
     public DBValidationException(ValidationException exception) {
         this.validationException=exception;
@@ -45,9 +47,9 @@ public class DBValidationException extends ValidationException {
     /**
      * @return the validationException
      */
-//    public ValidationException getValidationException() {
-//        return validationException;
-//    }
+    public ValidationException getValidationException() {
+        return validationException;
+    }
     
     @Override
     public int getErrorCode(){

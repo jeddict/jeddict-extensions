@@ -21,6 +21,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToMa
 import org.netbeans.db.modeler.exception.DBValidationException;
 import org.netbeans.jpa.modeler.db.accessor.spec.MapKeyAccessor;
 import org.netbeans.jpa.modeler.spec.Convert;
+import org.netbeans.jpa.modeler.spec.Inheritance;
 import org.netbeans.jpa.modeler.spec.ManyToMany;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import org.netbeans.jpa.modeler.spec.validator.table.JoinTableValidator;
@@ -32,13 +33,15 @@ import org.netbeans.jpa.modeler.spec.validator.table.JoinTableValidator;
 public class ManyToManySpecAccessor extends ManyToManyAccessor implements MapKeyAccessor  {
 
     private final ManyToMany manyToMany;
+    private boolean inherit;
 
     private ManyToManySpecAccessor(ManyToMany manyToMany) {
         this.manyToMany = manyToMany;
     }
 
-    public static ManyToManySpecAccessor getInstance(ManyToMany manyToMany) {
+    public static ManyToManySpecAccessor getInstance(ManyToMany manyToMany, boolean inherit) {
         ManyToManySpecAccessor accessor = new ManyToManySpecAccessor(manyToMany);
+        accessor.inherit = inherit;
         accessor.setName(manyToMany.getName());
         accessor.setTargetEntityName(manyToMany.getTargetEntity());
         accessor.setAttributeType(manyToMany.getCollectionType());
@@ -59,6 +62,7 @@ public class ManyToManySpecAccessor extends ManyToManyAccessor implements MapKey
         try{
         super.process();
         getMapping().setProperty(Attribute.class, manyToMany);
+        getMapping().setProperty(Inheritance.class, inherit);//Remove inherit functionality , once eclipse support dynamic mapped super class
         } catch (ValidationException ex) {
             DBValidationException exception = new DBValidationException(ex);
             exception.setAttribute(manyToMany);

@@ -35,7 +35,7 @@ import org.netbeans.jpa.modeler.spec.extend.JavaClass;
 public class DefaultClass extends JavaClass<DefaultAttributes> {
 
     private boolean embeddable;
-    
+
     @XmlElement(name = "attrs")
     private DefaultAttributes attributes;
 
@@ -48,17 +48,18 @@ public class DefaultClass extends JavaClass<DefaultAttributes> {
 
     @Override
     public DefaultAttributes getAttributes() {
-        if(attributes == null){
+        if (attributes == null) {
             attributes = new DefaultAttributes();
             attributes.setJavaClass(this);
         }
         return attributes;
     }
-    
+
     @Override
     public void setAttributes(DefaultAttributes attributes) {
         this.attributes = attributes;
     }
+
     /**
      * @return the embeddable
      */
@@ -82,8 +83,8 @@ public class DefaultClass extends JavaClass<DefaultAttributes> {
     public void setName(String name) {
         this.clazz = clazz;
     }
-    
-        public XMLAttributes getAccessor() {
+
+    public XMLAttributes getAccessor() {
         XMLAttributes attr = new XMLAttributes();
         attr.setBasicCollections(new ArrayList<>());
         attr.setBasicMaps(new ArrayList<>());
@@ -105,8 +106,8 @@ public class DefaultClass extends JavaClass<DefaultAttributes> {
     }
 
     public XMLAttributes updateAccessor(XMLAttributes attr) {
-        for(DefaultAttribute attribute : getAttributes().getDefaultAttributes()){
-            if(attribute.isDerived()){
+        for (DefaultAttribute attribute : getAttributes().getDefaultAttributes()) {
+            if (attribute.isDerived()) {
                 attr.getEmbeddeds().add(DefaultEmbeddedAttributeSpecAccessor.getInstance(attribute, false));
             } else {
                 attr.getBasics().add(DefaultAttributeSpecAccessor.getInstance(attribute, false));
@@ -114,6 +115,5 @@ public class DefaultClass extends JavaClass<DefaultAttributes> {
         }
         return attr;
     }
-    
-    
+
 }

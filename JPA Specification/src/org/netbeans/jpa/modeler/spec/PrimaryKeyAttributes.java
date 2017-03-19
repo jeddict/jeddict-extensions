@@ -466,11 +466,17 @@ public class PrimaryKeyAttributes extends PersistenceAttributes<IdentifiableClas
 
     private XMLAttributes processAccessor(XMLAttributes attr, boolean inherit) {
         if (getEmbeddedId() != null) {
-            attr.setEmbeddedId(EmbeddedIdSpecAccessor.getInstance(getEmbeddedId()));
+            attr.setEmbeddedId(EmbeddedIdSpecAccessor.getInstance(getEmbeddedId(), inherit));
         } else {
-            attr.getIds().addAll(getId().stream().map(id -> IdSpecAccessor.getInstance(id, inherit)).collect(toList()));
+            attr.getIds().addAll(getId()
+                    .stream()
+                    .map(id -> IdSpecAccessor.getInstance(id, inherit))
+                    .collect(toList()));
         }
-        attr.getVersions().addAll(getVersion().stream().map(VersionSpecAccessor::getInstance).collect(toList()));
+        attr.getVersions().addAll(getVersion()
+                .stream()
+                .map(version -> VersionSpecAccessor.getInstance(version, inherit))
+                .collect(toList()));
 
         return attr;
     }

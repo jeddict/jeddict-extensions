@@ -21,6 +21,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ElementC
 import org.netbeans.jpa.modeler.db.accessor.spec.MapKeyAccessor;
 import org.netbeans.jpa.modeler.spec.Convert;
 import org.netbeans.jpa.modeler.spec.ElementCollection;
+import org.netbeans.jpa.modeler.spec.Inheritance;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import org.netbeans.jpa.modeler.spec.validator.override.AssociationValidator;
 import org.netbeans.jpa.modeler.spec.validator.override.AttributeValidator;
@@ -32,13 +33,15 @@ import org.netbeans.jpa.modeler.spec.validator.override.AttributeValidator;
 public class ElementCollectionSpecAccessor extends ElementCollectionAccessor implements MapKeyAccessor{
 
     private final ElementCollection elementCollection;
+    private boolean inherit;
 
     private ElementCollectionSpecAccessor(ElementCollection elementCollection) {
         this.elementCollection = elementCollection;
     }
 
-    public static ElementCollectionSpecAccessor getInstance(ElementCollection elementCollection) {
+    public static ElementCollectionSpecAccessor getInstance(ElementCollection elementCollection, boolean inherit) {
         ElementCollectionSpecAccessor accessor = new ElementCollectionSpecAccessor(elementCollection);
+        accessor.inherit = inherit;
         accessor.setName(elementCollection.getName());
         accessor.setAttributeType(elementCollection.getCollectionType());
         accessor.setTargetClassName(elementCollection.getAttributeType());
@@ -70,6 +73,7 @@ public class ElementCollectionSpecAccessor extends ElementCollectionAccessor imp
     public void process() {
         super.process();
         getMapping().setProperty(Attribute.class, elementCollection);
+        getMapping().setProperty(Inheritance.class, inherit);//Remove inherit functionality , once eclipse support dynamic mapped super class
     }
 
 }

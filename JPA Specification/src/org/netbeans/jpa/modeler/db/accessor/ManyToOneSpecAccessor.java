@@ -20,6 +20,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToOneAccessor;
 import org.netbeans.db.modeler.exception.DBValidationException;
 import org.netbeans.jpa.modeler.spec.IdClass;
+import org.netbeans.jpa.modeler.spec.Inheritance;
 import org.netbeans.jpa.modeler.spec.JoinColumn;
 import org.netbeans.jpa.modeler.spec.ManyToOne;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
@@ -33,13 +34,15 @@ import org.netbeans.jpa.modeler.spec.validator.table.JoinTableValidator;
 public class ManyToOneSpecAccessor extends ManyToOneAccessor {
 
     private final ManyToOne manyToOne;
+    private boolean inherit;
 
     private ManyToOneSpecAccessor(ManyToOne manyToOne) {
         this.manyToOne = manyToOne;
     }
 
-    public static ManyToOneSpecAccessor getInstance(ManyToOne manyToOne) {
+    public static ManyToOneSpecAccessor getInstance(ManyToOne manyToOne, boolean inherit) {
         ManyToOneSpecAccessor accessor = new ManyToOneSpecAccessor(manyToOne);
+        accessor.inherit = inherit;
         accessor.setName(manyToOne.getName());
         accessor.setTargetEntityName(manyToOne.getTargetEntity());
         if (manyToOne.isPrimaryKey()) { 
@@ -63,6 +66,7 @@ public class ManyToOneSpecAccessor extends ManyToOneAccessor {
         try {
         super.process();
         getMapping().setProperty(Attribute.class, manyToOne);
+        getMapping().setProperty(Inheritance.class, inherit);//Remove inherit functionality , once eclipse support dynamic mapped super class
         } catch (ValidationException ex) {
             DBValidationException exception = new DBValidationException(ex);
             exception.setAttribute(manyToOne);

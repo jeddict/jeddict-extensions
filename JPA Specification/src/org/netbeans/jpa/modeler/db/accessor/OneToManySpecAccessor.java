@@ -21,6 +21,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToMan
 import org.netbeans.db.modeler.exception.DBValidationException;
 import org.netbeans.jpa.modeler.db.accessor.spec.MapKeyAccessor;
 import org.netbeans.jpa.modeler.spec.Convert;
+import org.netbeans.jpa.modeler.spec.Inheritance;
 import org.netbeans.jpa.modeler.spec.JoinColumn;
 import org.netbeans.jpa.modeler.spec.OneToMany;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
@@ -34,13 +35,15 @@ import org.netbeans.jpa.modeler.spec.validator.table.JoinTableValidator;
 public class OneToManySpecAccessor extends OneToManyAccessor implements MapKeyAccessor {
 
     private final OneToMany oneToMany;
+    private boolean inherit;
 
     private OneToManySpecAccessor(OneToMany oneToMany) {
         this.oneToMany = oneToMany;
     }
 
-    public static OneToManySpecAccessor getInstance(OneToMany oneToMany) {
+    public static OneToManySpecAccessor getInstance(OneToMany oneToMany, boolean inherit) {
         OneToManySpecAccessor accessor = new OneToManySpecAccessor(oneToMany);
+        accessor.inherit = inherit;
         accessor.setName(oneToMany.getName());
         accessor.setTargetEntityName(oneToMany.getTargetEntity());
         accessor.setAttributeType(oneToMany.getCollectionType());
@@ -64,6 +67,7 @@ public class OneToManySpecAccessor extends OneToManyAccessor implements MapKeyAc
         try{
         super.process();
         getMapping().setProperty(Attribute.class, oneToMany);
+        getMapping().setProperty(Inheritance.class, inherit);//Remove inherit functionality , once eclipse support dynamic mapped super class
         } catch (ValidationException ex) {
             DBValidationException exception = new DBValidationException(ex);
             exception.setAttribute(oneToMany);
