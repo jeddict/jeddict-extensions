@@ -80,6 +80,7 @@ public class OneToOneSpecAccessor extends OneToOneAccessor {
         getMapping().setProperty(Inheritance.class, inherit);//Remove inherit functionality , once eclipse support dynamic mapped super class
         } catch (ValidationException ex) {
             DBValidationException exception = new DBValidationException(ex);
+            exception.setJavaClass(oneToOne.getJavaClass());
             exception.setAttribute(oneToOne);
             throw exception;
         }

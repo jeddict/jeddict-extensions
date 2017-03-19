@@ -65,6 +65,7 @@ public class ManyToManySpecAccessor extends ManyToManyAccessor implements MapKey
         getMapping().setProperty(Inheritance.class, inherit);//Remove inherit functionality , once eclipse support dynamic mapped super class
         } catch (ValidationException ex) {
             DBValidationException exception = new DBValidationException(ex);
+            exception.setJavaClass(manyToMany.getJavaClass());
             exception.setAttribute(manyToMany);
             throw exception;
         }

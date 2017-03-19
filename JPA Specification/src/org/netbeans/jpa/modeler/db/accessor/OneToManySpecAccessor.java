@@ -70,6 +70,7 @@ public class OneToManySpecAccessor extends OneToManyAccessor implements MapKeyAc
         getMapping().setProperty(Inheritance.class, inherit);//Remove inherit functionality , once eclipse support dynamic mapped super class
         } catch (ValidationException ex) {
             DBValidationException exception = new DBValidationException(ex);
+            exception.setJavaClass(oneToMany.getJavaClass());
             exception.setAttribute(oneToMany);
             throw exception;
         }

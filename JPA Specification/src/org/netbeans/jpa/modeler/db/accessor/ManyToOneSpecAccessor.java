@@ -69,6 +69,7 @@ public class ManyToOneSpecAccessor extends ManyToOneAccessor {
         getMapping().setProperty(Inheritance.class, inherit);//Remove inherit functionality , once eclipse support dynamic mapped super class
         } catch (ValidationException ex) {
             DBValidationException exception = new DBValidationException(ex);
+            exception.setJavaClass(manyToOne.getJavaClass());
             exception.setAttribute(manyToOne);
             throw exception;
         }
