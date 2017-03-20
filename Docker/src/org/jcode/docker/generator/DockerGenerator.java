@@ -209,7 +209,7 @@ public final class DockerGenerator implements Generator {
                 pomManager.commit();
             }
             
-            POMManager pomManager = new POMManager(TEMPLATE + "dev/_pom.xml", project);
+            POMManager pomManager = new POMManager(TEMPLATE + "profile/dev/pom/_pom.xml", project);
             pomManager.commit();
             
             

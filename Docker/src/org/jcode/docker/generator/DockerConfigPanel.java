@@ -101,7 +101,7 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
     }
 
     private boolean validateDB() {
-        if (getDatabaseType() == DatabaseType.MYSQL) {
+        if (dockerMachineCheckBox.isSelected() && getDatabaseType() == DatabaseType.MYSQL) {
             if (StringUtils.equals(dbUserTextField.getText(), "root")) {
                 warningLabel.setText(getMessage(DockerConfigPanel.class, "MYSQL_ROOT_USER_EXIST"));
                 return false;
@@ -116,9 +116,6 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
         DockerConfigData data = this.getConfigData();
         if (data.getServerType() != null) {
             serverComboBox.setSelectedItem(data.getServerType());
-        }
-        if (data.getDatabaseType() != null) {
-            dbComboBox.setSelectedItem(data.getDatabaseType());
         }
         if (StringUtils.isNotBlank(data.getDatabaseVersion())) {
             dbVersionComboBox.setSelectedItem(data.getDatabaseVersion());
@@ -140,9 +137,35 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
         if (data.isDockerActivated() && StringUtils.isNotEmpty(data.getDockerMachine())) {
             setDockerMachine(data.getDockerMachine());
         }
-
-        serverComboBoxActionPerformed(null);
-        dockerMachineCheckBoxActionPerformed(null);
+ 
+        dockerMachineCheckBoxActionPerformed(null);//automates serverComboBoxActionPerformed(null);
+        
+        if (data.getDatabaseType() != null) {
+            dbComboBox.setSelectedItem(data.getDatabaseType());
+        }
+        selectDBConnection();
+    }
+    
+    private void selectDBConnection(){
+        DockerConfigData data = this.getConfigData();
+        for (int i = 0; i < dbConnectionComboBox.getItemCount(); i++) {
+            Object dbObj = dbConnectionComboBox.getItemAt(i);
+            if (dbObj instanceof org.netbeans.api.db.explorer.DatabaseConnection) {
+                org.netbeans.api.db.explorer.DatabaseConnection databaseConnection = (DatabaseConnection) dbObj;
+                String name = JdbcUrl.getDatabaseName(databaseConnection.getDatabaseURL());
+                String user = databaseConnection.getUser();
+                String password = databaseConnection.getPassword();
+                String host = JdbcUrl.getHostName(databaseConnection.getDatabaseURL());
+                String port = String.valueOf(JdbcUrl.getPort(databaseConnection.getDatabaseURL()));
+                if(StringUtils.equals(name, data.getDbName()) 
+                        && StringUtils.equals(user, data.getDbUserName())
+                        && StringUtils.equals(password, data.getDbPassword())
+                        && StringUtils.equals(host, data.getDbHost())
+                        && StringUtils.equals(port, data.getDbPort())){
+                    dbConnectionComboBox.setSelectedItem(databaseConnection);
+                }
+            }
+        }
     }
 
     @Override
@@ -499,9 +522,9 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
     }//GEN-LAST:event_dbComboBoxActionPerformed
 
     private void dockerMachineCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dockerMachineCheckBoxActionPerformed
+        setVisibility(dockerMachineCheckBox.isSelected());
         checkDockerStatus();
         loadDatabaseTypeModel();
-        setVisibility(dockerMachineCheckBox.isSelected());
         Arrays.stream(buildInstanceVisual.getComponents())
                 .forEach(c -> c.setEnabled(dockerMachineCheckBox.isSelected()));//Docker Machine
     }//GEN-LAST:event_dockerMachineCheckBoxActionPerformed
