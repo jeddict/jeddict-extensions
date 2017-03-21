@@ -16,13 +16,23 @@
 package org.netbeans.jpa.modeler.spec.workspace;
 
 import java.awt.Point;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import org.netbeans.jpa.modeler.spec.extend.JavaClass;
+import org.netbeans.modeler.widget.design.NodeTextDesign;
 
 /**
  *
@@ -41,13 +51,23 @@ public class WorkSpaceItem {
     @XmlAttribute(name = "y")
     private Integer y;
 
+    @XmlElement(name = "v")
+    private NodeTextDesign textDesign;
+
+    @XmlElementWrapper(name = "el")
+    @XmlElement(name = "e")
+    private List<WorkSpaceElement> workSpaceElement;
+
+    @XmlTransient
+    private Map<Attribute, WorkSpaceElement> workSpaceElementCache;
+
     public WorkSpaceItem() {
     }
 
     public WorkSpaceItem(JavaClass javaClass) {
         this.javaClass = javaClass;
     }
-    
+
     public WorkSpaceItem(JavaClass javaClass, Integer x, Integer y) {
         this.javaClass = javaClass;
         this.x = x;
@@ -102,7 +122,7 @@ public class WorkSpaceItem {
         }
         return new Point(x, y);
     }
-    
+
     public void setLocation(Point point) {
         if (point == null) {
             x = null;
@@ -116,7 +136,7 @@ public class WorkSpaceItem {
     @Override
     public int hashCode() {
         Integer hash = 7;
-        if(this.javaClass!=null){
+        if (this.javaClass != null) {
             hash = 37 * hash + Objects.hashCode(this.javaClass.getId());
         }
         return hash;
@@ -134,7 +154,7 @@ public class WorkSpaceItem {
             return false;
         }
         final WorkSpaceItem other = (WorkSpaceItem) obj;
-        if(this.javaClass == null || other.javaClass == null){
+        if (this.javaClass == null || other.javaClass == null) {
             return false;
         }
         if (!Objects.equals(this.javaClass.getId(), other.javaClass.getId())) {
@@ -143,5 +163,45 @@ public class WorkSpaceItem {
         return true;
     }
 
-    
+    /**
+     * @return the workSpaceElement
+     */
+    private List<WorkSpaceElement> getWorkSpaceElement() {
+        if (workSpaceElement == null) {
+            workSpaceElement = new ArrayList<>();
+        }
+        return workSpaceElement;
+    }
+
+    public Map<Attribute, WorkSpaceElement> getWorkSpaceElementMap() {
+        if (workSpaceElementCache == null) {
+            workSpaceElementCache = getWorkSpaceElement()
+                    .stream()
+                    .collect(toMap(WorkSpaceElement::getAttribute, identity()));
+        }
+        return workSpaceElementCache;
+    }
+
+    /**
+     * @param workSpaceElement the workSpaceElement to set
+     */
+    public void setWorkSpaceElement(List<WorkSpaceElement> workSpaceElement) {
+        this.workSpaceElementCache = null;
+        this.workSpaceElement = workSpaceElement;
+    }
+
+    /**
+     * @return the textDesign
+     */
+    public NodeTextDesign getTextDesign() {
+        return textDesign;
+    }
+
+    /**
+     * @param textDesign the textDesign to set
+     */
+    public void setTextDesign(NodeTextDesign textDesign) {
+        this.textDesign = textDesign;
+    }
+
 }
