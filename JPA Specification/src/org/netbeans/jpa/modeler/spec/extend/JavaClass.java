@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang.StringUtils;
 import org.netbeans.api.java.source.JavaSource;
@@ -67,10 +68,11 @@ public abstract class JavaClass<T extends IAttributes> extends FlowNode implemen
     @XmlAttribute(name = "class", required = true)
     protected String clazz;
 
-    @XmlAttribute
+    @XmlTransient
     private String superclassId;
 
-    @XmlTransient
+    @XmlAttribute(name = "superclassId")
+    @XmlIDREF
     private JavaClass superclass;
 
     @XmlTransient

@@ -15,7 +15,10 @@
  */
 package org.netbeans.bean.validation.constraints;
 
+import javax.lang.model.element.AnnotationMirror;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
  *
@@ -24,16 +27,39 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "pa")
 public class Past extends Constraint {
 
+    @XmlAttribute(name = "op")
+    private Boolean orPresent;
+
     public Past() {
     }
 
     @Override
-    public boolean isEmpty() {
-        return false;
+    public void load(AnnotationMirror annotationMirror) {
+        super.load(annotationMirror);
+        this.orPresent = (Boolean) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "orPresent");
     }
     
     @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+    @Override
     protected void clearConstraint(){
-        
+        orPresent = false;
+    }
+
+    /**
+     * @return the orPresent
+     */
+    public Boolean getOrPresent() {
+        return orPresent;
+    }
+
+    /**
+     * @param orPresent the orPresent to set
+     */
+    public void setOrPresent(Boolean orPresent) {
+        this.orPresent = orPresent;
     }
 }

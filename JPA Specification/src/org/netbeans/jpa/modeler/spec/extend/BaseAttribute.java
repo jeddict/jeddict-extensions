@@ -47,6 +47,20 @@ import org.netbeans.bean.validation.constraints.Min;
 import org.netbeans.bean.validation.constraints.Past;
 import org.netbeans.bean.validation.constraints.Pattern;
 import org.netbeans.bean.validation.constraints.Size;
+import static org.netbeans.jcode.core.util.AttributeType.HIJRAH_DATE;
+import static org.netbeans.jcode.core.util.AttributeType.INSTANT;
+import static org.netbeans.jcode.core.util.AttributeType.JAPANESE_DATE;
+import static org.netbeans.jcode.core.util.AttributeType.LOCAL_DATE;
+import static org.netbeans.jcode.core.util.AttributeType.LOCAL_DATE_TIME;
+import static org.netbeans.jcode.core.util.AttributeType.LOCAL_TIME;
+import static org.netbeans.jcode.core.util.AttributeType.MINGUO_DATE;
+import static org.netbeans.jcode.core.util.AttributeType.MONTH_DAY;
+import static org.netbeans.jcode.core.util.AttributeType.OFFSET_DATE_TIME;
+import static org.netbeans.jcode.core.util.AttributeType.OFFSET_TIME;
+import static org.netbeans.jcode.core.util.AttributeType.THAI_BUDDHIST_DATE;
+import static org.netbeans.jcode.core.util.AttributeType.YEAR;
+import static org.netbeans.jcode.core.util.AttributeType.YEAR_MONTH;
+import static org.netbeans.jcode.core.util.AttributeType.ZONED_DATE_TIME;
 
 /**
  *
@@ -94,6 +108,20 @@ public abstract class BaseAttribute extends Attribute {
                     break;
                 case CALENDAR:
                 case DATE:
+                case INSTANT:
+                case LOCAL_DATE:
+                case LOCAL_DATE_TIME:
+                case LOCAL_TIME:
+                case MONTH_DAY:
+                case OFFSET_DATE_TIME:
+                case OFFSET_TIME:
+                case YEAR:
+                case YEAR_MONTH:
+                case ZONED_DATE_TIME:
+                case HIJRAH_DATE:
+                case JAPANESE_DATE:
+                case MINGUO_DATE:
+                case THAI_BUDDHIST_DATE:
                     classes.add(Past.class);
                     classes.add(Future.class);
                     break;

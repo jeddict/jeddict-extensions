@@ -28,30 +28,49 @@ import org.netbeans.jpa.source.JavaSourceParserUtil;
 @XmlRootElement(name="dmi")
 public class DecimalMin extends Constraint {
 
-    @XmlAttribute(name="v")
+    @XmlAttribute(name = "v")
     private String value;
+    
+    @XmlAttribute(name = "i")
+    private boolean inclusive = true;
 
+    @Override
+    public void load(AnnotationMirror annotationMirror) {
+        super.load(annotationMirror);
+        this.value = JavaSourceParserUtil.findAnnotationValueAsString(annotationMirror, "value");
+        this.inclusive = (Boolean)JavaSourceParserUtil.findAnnotationValue(annotationMirror, "inclusive");
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return StringUtils.isBlank(value) && !inclusive;
+    }
+    
+    @Override
+    protected void clearConstraint(){
+        value = null;
+        inclusive = true;
+    }
+
+    /**
+     * @return the inclusive
+     */
+    public boolean isInclusive() {
+        return inclusive;
+    }
+
+    /**
+     * @param inclusive the inclusive to set
+     */
+    public void setInclusive(boolean inclusive) {
+        this.inclusive = inclusive;
+    }
+    
     public String getValue() {
         return value;
     }
 
     public void setValue(String value) {
         this.value = value;
-    }
-    
-     @Override
-    public void load(AnnotationMirror annotationMirror) {
-        super.load(annotationMirror);
-        this.value = JavaSourceParserUtil.findAnnotationValueAsString(annotationMirror, "value");
-    }
-
-    @Override
-    public boolean isEmpty(){
-        return StringUtils.isBlank(value);
-    }
-    
-    @Override
-    protected void clearConstraint(){
-        value = null;
     }
 }

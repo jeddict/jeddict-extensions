@@ -63,8 +63,21 @@ public class AttributeType {
     public static final String CHAR_ARRAY = "char[]";
     public static final String CHAR_WRAPPER_ARRAY = "Character[]";
     public static final String UUID = "java.util.UUID";
+    
+    public static final String INSTANT = "java.time.Instant";
     public static final String LOCAL_DATE = "java.time.LocalDate";
+    public static final String LOCAL_DATE_TIME = "java.time.LocalDateTime";
+    public static final String LOCAL_TIME = "java.time.LocalTime";
+    public static final String MONTH_DAY = "java.time.MonthDay";
+    public static final String OFFSET_DATE_TIME = "java.time.OffsetDateTime";
+    public static final String OFFSET_TIME = "java.time.OffsetTime";
+    public static final String YEAR = "java.time.Year";
+    public static final String YEAR_MONTH = "java.time.YearMonth";
     public static final String ZONED_DATE_TIME = "java.time.ZonedDateTime";
+    public static final String HIJRAH_DATE = "java.time.chrono.HijrahDate";
+    public static final String JAPANESE_DATE = "java.time.chrono.JapaneseDate";
+    public static final String MINGUO_DATE = "java.time.chrono.MinguoDate";
+    public static final String THAI_BUDDHIST_DATE = "java.time.chrono.ThaiBuddhistDate";
 
     private static final Map<String, String> WRAPPER_DATA_TYPES = new HashMap<>();
         

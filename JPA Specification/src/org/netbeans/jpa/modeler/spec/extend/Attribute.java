@@ -494,15 +494,22 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
 
     public Map<String, Constraint> getConstraintsMap() {
         if (constraintsMap == null || !Objects.equals(getDataTypeLabel(),constraintsDataTypeBinding)) {//Objects.equals used -> getDataTypeLabel() could be null incase of EmbeddedId
-            Map<String, Constraint> completeConstraintsMap = getConstraints().stream().collect(Collectors.toMap(c -> c.getClass().getSimpleName(), c -> c, (c1, c2) -> c1));
+            Map<String, Constraint> completeConstraintsMap = getConstraints()
+                    .stream()
+                    .collect(Collectors.toMap(c -> c.getClass().getSimpleName(), c -> c, (c1, c2) -> c1));
             Set<Class<? extends Constraint>> allConstraintsClass = getAllConstraintsClass().keySet();
             Set<Class<? extends Constraint>> allowedConstraintsClass = getConstraintsClass();
-            constraintsMap = allowedConstraintsClass.stream().collect(Collectors.toMap(c -> c.getSimpleName(), c -> completeConstraintsMap.get(c.getSimpleName()), (c1, c2) -> c1));
+            constraintsMap = allowedConstraintsClass
+                    .stream()
+                    .collect(Collectors.toMap(c -> c.getSimpleName(), c -> completeConstraintsMap.get(c.getSimpleName()), (c1, c2) -> c1));
             //after datatype change , clearConstraint/disable the non-applicable constraints
             if (constraintsDataTypeBinding != null) {
                 allConstraintsClass.removeAll(annotation);
                 Set<Class<? extends Constraint>> skipConstraintsClass = allConstraintsClass;
-                skipConstraintsClass.stream().map(c -> completeConstraintsMap.get(c.getSimpleName())).forEach(Constraint::clear);
+                skipConstraintsClass
+                        .stream()
+                        .map(c -> completeConstraintsMap.get(c.getSimpleName()))
+                        .forEach(Constraint::clear);
             }
             constraintsDataTypeBinding = getDataTypeLabel();
         }

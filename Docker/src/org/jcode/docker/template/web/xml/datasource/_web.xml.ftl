@@ -4,6 +4,7 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
     <data-source>
+        <!--  environment-specific properties applied using maven-war-plugin Webapp resource filtering -->
         <name>${jndi}</name>
         <class-name>${driverClass}</class-name>
         <server-name>${r"${db.host}"}</server-name>
