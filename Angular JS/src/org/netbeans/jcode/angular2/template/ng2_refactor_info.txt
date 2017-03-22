@@ -44,6 +44,7 @@ ________________________________On Force Rebase________________________________
 File : nbactions.xml added
 File : package.json, webpack-common.js
                     Remove generator-jhipster, packagejs
+                    Remove  <%_ otherModules.forEach(module => { _%>
 File : webpack-common.js
                     Remove  : exclude: ['node_modules/generator-jhipster']
                     Add     : plugins->CopyWebpackPlugin->{ from: './src/main/webapp/WEB-INF', to: 'WEB-INF' }
@@ -56,7 +57,7 @@ File : webpack-common.js
 >>>> web-resource-i18n.zip
                     Rename : jhip text
 >>>> entity-resources.zip
-                    Replace :  for(var rel of differentRelationships) -> for (var i in differentRelationships) { var rel = differentRelationships[i];
+                    Replace :  for(const rel of differentRelationships) -> for (var i in differentRelationships) { var rel = differentRelationships[i];
 File : entity-management.component.ts
                     Replace :  let eventCallBack -> var eventCallBack
 File : _entity.model.ts
@@ -66,3 +67,5 @@ File : _entity.model.ts
                     Replace :  
                                 let elementGetter -> var elementGetter
                                 `   ->  "
+
+

@@ -65,7 +65,7 @@ public class Needle {
             param.put("startCase_routerName", startCase(entity.getEntityStateName()));
             param.put("entityTranslationKeyMenu", entity.getEntityTranslationKeyMenu());
             param.put("startCase_entityClass", startCase(entity.getEntityClass()));
-            param.put("appName", applicationConfig.getAngular2AppName());
+            param.put("appName", applicationConfig.getAngularAppName());
             param.put("prefix", applicationConfig.getJhiPrefix());
             
             content.append(expandTemplate(template, param));

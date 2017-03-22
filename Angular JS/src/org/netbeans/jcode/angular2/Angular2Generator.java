@@ -23,6 +23,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import static java.util.stream.Collectors.toList;
+import org.netbeans.jcode.angular2.domain.NG2ApplicationConfig;
+import org.netbeans.jcode.angular2.domain.NG2Entity;
+import org.netbeans.jcode.angular2.domain.NG2Relationship;
+import org.netbeans.jcode.angular2.domain.NG2Field;
 import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.BOLD;
 import static org.netbeans.jcode.console.Console.FG_RED;
@@ -45,10 +49,14 @@ import org.netbeans.jcode.ng.main.domain.ApplicationSourceFilter;
 import org.netbeans.jcode.ng.main.domain.EntityConfig;
 import org.netbeans.jcode.ng.main.domain.NGApplicationConfig;
 import org.netbeans.jcode.ng.main.domain.NGEntity;
+import org.netbeans.jcode.ng.main.domain.NGField;
+import org.netbeans.jcode.ng.main.domain.NGRelationship;
 import org.netbeans.jcode.ng.main.domain.Needle;
 import org.netbeans.jcode.ng.main.domain.NeedleFile;
 import org.netbeans.jcode.parser.ejs.EJSParser;
 import org.netbeans.jpa.modeler.spec.Entity;
+import org.netbeans.jpa.modeler.spec.extend.BaseAttribute;
+import org.netbeans.jpa.modeler.spec.extend.RelationAttribute;
 import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
@@ -93,7 +101,7 @@ public class Angular2Generator extends AngularGenerator {
             List<NGEntity> ngEntities = new ArrayList<>();
             List<Entity> entities = entityMapping.getGeneratedEntity().collect(toList());
             for (Entity entity : entities) {
-                NGEntity ngEntity = getEntity(entity);
+                NGEntity ngEntity = getEntity(applicationConfig.getAngularAppName(), entity);
                 if (ngEntity != null) {
                     ngEntities.add(ngEntity);
                     generateNgEntity(applicationConfig, getEntityConfig(), ngEntity, templateLib);
@@ -114,7 +122,7 @@ public class Angular2Generator extends AngularGenerator {
 
                 addMavenDependencies("pom/_pom.xml");
             }
-            
+
             updateNgEntityNeedle(applicationConfig, ngEntities);
 
 //            installYarn(project.getProjectDirectory());
@@ -212,12 +220,12 @@ public class Angular2Generator extends AngularGenerator {
 //        ));
         NeedleFile NAVBAR_COMPONENT_HTML = new NeedleFile("app/layouts/navbar/navbar.component.html");
         NAVBAR_COMPONENT_HTML.setNeedles(Arrays.asList(new Needle("needle-add-entity-to-menu",
-                        "                    <li uiSrefActive=\"active\">\n"
-                        + "                        <a class=\"dropdown-item\" routerLink=\"${routerName}\" (click)=\"collapseNavbar()\">\n"
-                        + "                            <i class=\"fa fa-fw fa-asterisk\" aria-hidden=\"true\"></i>\n"
-                        + "                            <span <#if enableTranslation>${prefix}Translate=\"global.menu.entities.${camelCase_routerName}\"</#if>>${startCase_routerName}</span>\n"
-                        + "                        </a>\n"
-                        + "                    </li>")
+                "                    <li uiSrefActive=\"active\">\n"
+                + "                        <a class=\"dropdown-item\" routerLink=\"${routerName}\" (click)=\"collapseNavbar()\">\n"
+                + "                            <i class=\"fa fa-fw fa-asterisk\" aria-hidden=\"true\"></i>\n"
+                + "                            <span <#if enableTranslation>${prefix}Translate=\"global.menu.entities.${camelCase_routerName}\"</#if>>${startCase_routerName}</span>\n"
+                + "                        </a>\n"
+                + "                    </li>")
         ));
 
         NeedleFile GLOBAL_JSON = new NeedleFile("i18n/en/global.json");
@@ -277,7 +285,7 @@ public class Angular2Generator extends AngularGenerator {
         FileObject testRoot = SourceGroupSupport.getTestSourceGroup(project).getRootFolder().getParent();//test/java => ../java
 //        FileObject javascriptRoot = testRoot.createFolder("javascript");
         copyDynamicResource(getParserManager(parser), getTemplatePath() + "karma-test.zip", testRoot, PATH_RESOLVER, handler);
-        if(ngData.isProtractorTest()){
+        if (ngData.isProtractorTest()) {
             copyDynamicResource(getParserManager(parser), getTemplatePath() + "protractor-test.zip", testRoot, PATH_RESOLVER, handler);
         }
     }
@@ -290,8 +298,8 @@ public class Angular2Generator extends AngularGenerator {
 
         FileObject testRoot = SourceGroupSupport.getTestSourceGroup(project).getRootFolder().getParent();//test/java => ../java
         copyDynamicResource(getParserManager(parser), getTemplatePath() + "entity-karma-test.zip", testRoot, getEntityPathResolver(entity), handler);
-        if(ngData.isProtractorTest()){
-        copyDynamicResource(getParserManager(parser), getTemplatePath() + "entity-protractor-test.zip", testRoot, getEntityPathResolver(entity), handler);
+        if (ngData.isProtractorTest()) {
+            copyDynamicResource(getParserManager(parser), getTemplatePath() + "entity-protractor-test.zip", testRoot, getEntityPathResolver(entity), handler);
         }
     }
 
@@ -316,6 +324,26 @@ public class Angular2Generator extends AngularGenerator {
         config.setClientPackageManager("yarn");
         config.setProtractorTests(ngData.isProtractorTest());
         return config;
+    }
+
+    @Override
+    public NGApplicationConfig getNGApplicationConfig() {
+        return new NG2ApplicationConfig();
+    }
+
+    @Override
+    public NGEntity getNGEntity(String name, String entityAngularJSSuffix) {
+        return new NG2Entity(name, entityAngularJSSuffix);
+    }
+
+    @Override
+    public NGRelationship getNGRelationship(String angularAppName, String entityAngularJSSuffix, Entity entity, RelationAttribute relation) {
+        return new NG2Relationship(angularAppName, entityAngularJSSuffix, entity, relation);
+    }
+
+    @Override
+    public NGField getNGField(BaseAttribute attribute) {
+        return new NG2Field(attribute);
     }
 
 }

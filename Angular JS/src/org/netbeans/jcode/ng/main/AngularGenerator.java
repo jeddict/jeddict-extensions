@@ -187,7 +187,7 @@ public abstract class AngularGenerator implements Generator {
     protected abstract String getClientFramework();
 
     protected NGApplicationConfig getAppConfig() {
-        NGApplicationConfig applicationConfig = new NGApplicationConfig();
+        NGApplicationConfig applicationConfig = getNGApplicationConfig();
         applicationConfig.setAngularAppName(ngData.getModule());
         applicationConfig.setEnableTranslation(true);
         applicationConfig.setJhiPrefix("jhi");
@@ -203,8 +203,17 @@ public abstract class AngularGenerator implements Generator {
         applicationConfig.setSkipServer(false);
         return applicationConfig;
     }
+    
+    public abstract NGApplicationConfig getNGApplicationConfig();
 
-    protected NGEntity getEntity(Entity entity) {
+    public abstract NGEntity getNGEntity(String name, String entityAngularJSSuffix);
+
+    public abstract NGRelationship getNGRelationship(String angularAppName, String entityAngularJSSuffix, Entity entity, RelationAttribute relation);
+
+    public abstract NGField getNGField(BaseAttribute attribute);
+ 
+
+    protected NGEntity getEntity(String angularAppName, Entity entity) {
         Attribute idAttribute = entity.getAttributes().getIdField();
         if (idAttribute instanceof EmbeddedId || idAttribute instanceof DefaultAttribute) {
             handler.error(NbBundle.getMessage(AngularGenerator.class, "TITLE_Composite_Key_Not_Supported"),
@@ -215,7 +224,8 @@ public abstract class AngularGenerator implements Generator {
                     NbBundle.getMessage(AngularGenerator.class, "MSG_PK_Field_Named_Id_Missing", entity.getClazz(), idAttribute.getName()));
             return null;
         }
-        NGEntity ngEntity = new NGEntity(entity.getClazz(), "");
+        String entityAngularJSSuffix = "";
+        NGEntity ngEntity = getNGEntity(entity.getClazz(), entityAngularJSSuffix);
         ngEntity.setPkType(entity.getAttributes().getIdField().getDataTypeLabel());
         List<Attribute> attributes = entity.getAttributes().getAllAttribute();
 //      Uncomment for inheritance support
@@ -236,7 +246,7 @@ public abstract class AngularGenerator implements Generator {
 
             if (attribute instanceof RelationAttribute) {
                 RelationAttribute relationAttribute = (RelationAttribute) attribute;
-                NGRelationship relationship = new NGRelationship(entity, relationAttribute);
+                NGRelationship relationship = getNGRelationship(angularAppName, entityAngularJSSuffix, entity, relationAttribute);
                 Entity mappedEntity = relationAttribute.getConnectedEntity();
                 if (mappedEntity.getLabelAttribute() == null || mappedEntity.getLabelAttribute().getName().equals("id")) {
                     handler.warning(NbBundle.getMessage(AngularGenerator.class, "TITLE_Entity_Label_Missing"),
@@ -269,7 +279,7 @@ public abstract class AngularGenerator implements Generator {
                 if (attribute instanceof Version || attribute instanceof Transient) {
                     continue;
                 }
-                NGField field = new NGField((BaseAttribute) attribute);
+                NGField field = getNGField((BaseAttribute) attribute);
                 Class<?> primitiveType = JavaUtil.getPrimitiveType(attribute.getDataTypeLabel());
                 if (primitiveType != null) {
                     field.setFieldType(primitiveType.getSimpleName());//todo short, byte, char not supported in ui template

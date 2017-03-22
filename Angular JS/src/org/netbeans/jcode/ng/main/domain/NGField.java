@@ -15,278 +15,112 @@
  */
 package org.netbeans.jcode.ng.main.domain;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import org.netbeans.bean.validation.constraints.Constraint;
-import org.netbeans.bean.validation.constraints.Max;
-import org.netbeans.bean.validation.constraints.Min;
-import org.netbeans.bean.validation.constraints.NotNull;
-import org.netbeans.bean.validation.constraints.Pattern;
-import org.netbeans.bean.validation.constraints.Size;
-import static org.netbeans.jcode.core.util.StringHelper.firstUpper;
-import static org.netbeans.jcode.core.util.StringHelper.snakeCase;
-import static org.netbeans.jcode.core.util.StringHelper.startCase;
-import org.netbeans.jpa.modeler.spec.extend.BaseAttribute;
 
-public class NGField {
+public interface NGField {
+    
+    /**
+     * @return the fieldInJavaBeanMethod
+     */
+    String getFieldInJavaBeanMethod();
 
-    public String fieldName;
-    public String fieldType;
-    public String fieldTypeBlobContent;//any , image, text
-    public boolean fieldIsEnum;
-    public String fieldNameCapitalized;
-    public String fieldNameUnderscored;
-    public String fieldNameHumanized;
-    public String fieldInJavaBeanMethod;
-    public String fieldValues;
-
-    public List<String> fieldValidateRules;
-    public boolean fieldValidate;
-    public String fieldValidateRulesMax;
-    public String fieldValidateRulesMin;
-    public String fieldValidateRulesMaxlength;
-    public String fieldValidateRulesMinlength;
-    public String fieldValidateRulesMaxbytes;
-    public String fieldValidateRulesMinbytes;
-    public String fieldValidateRulesPattern;
-
-
-    public NGField(String fieldName) {
-        this.fieldName = fieldName;
-    }
-
-    public NGField(BaseAttribute attribute) {
-        this.fieldName = attribute.getName();
-        loadValidation(attribute.getConstraintsMap());
-    }
-
-    //['required', 'max', 'min', 'maxlength', 'minlength', 'maxbytes', 'minbytes', 'pattern'];
-    private void loadValidation(Map<String, Constraint> constraints) {
-        List<String> validationRules = new ArrayList<>();
-        
-        NotNull notNull = (NotNull) constraints.get(NotNull.class.getSimpleName());
-        if (notNull != null && notNull.getSelected()) {
-            validationRules.add("required");
-        }
-        
-        Pattern pattern = (Pattern) constraints.get(Pattern.class.getSimpleName());
-        if (pattern != null && pattern.getSelected()) {
-            validationRules.add("pattern");
-            fieldValidateRulesMin = pattern.getRegexp();
-        }
-        
-        Min min = (Min) constraints.get(Min.class.getSimpleName());
-        if (min != null && min.getSelected()) {
-            validationRules.add("min");
-            fieldValidateRulesMin = String.valueOf(min.getValue());
-        }
-        
-        Max max = (Max) constraints.get(Max.class.getSimpleName());
-        if (max != null && max.getSelected()) {
-            validationRules.add("max");
-            fieldValidateRulesMax = String.valueOf(max.getValue());
-        }
-        
-        if (constraints.get(Size.class.getSimpleName()) != null) {
-            Size size = (Size) constraints.get(Size.class.getSimpleName());
-            if (size.getMax() != null) {
-                fieldValidateRulesMaxlength = String.valueOf(size.getMax());
-                validationRules.add("max");
-            }
-            if (size.getMin() != null) {
-                fieldValidateRulesMinlength = String.valueOf(size.getMin());
-                validationRules.add("min");
-            }
-        }
-        setFieldValidate(validationRules);
-
-    }
+    /**
+     * @return the fieldIsEnum
+     */
+    boolean getFieldIsEnum();
 
     /**
      * @return the fieldName
      */
-    public String getFieldName() {
-        return fieldName;
-    }
-
-    /**
-     * @param fieldName the fieldName to set
-     */
-    public void setFieldName(String fieldName) {
-        this.fieldName = fieldName;
-    }
-
-    /**
-     * @return the fieldType
-     */
-    public String getFieldType() {
-        return fieldType;
-    }
-
-    public void setFieldType(String fieldType) {
-        setFieldType(fieldType, "sql");
-    }
-
-    /**
-     * @param fieldType the fieldType to set
-     */
-    public void setFieldType(String fieldType, String databaseType) {
-        if ("DateTime".equals(fieldType)) {
-            fieldType = "ZonedDateTime";
-        }
-        if ("Date".equals(fieldType)) {
-            fieldType = "ZonedDateTime";
-        }
-        this.fieldType = fieldType;
-    }
-
-    /**
-     * @return the fieldTypeBlobContent
-     */
-    public String getFieldTypeBlobContent() {
-        return fieldTypeBlobContent;
-    }
-
-    /**
-     * @param fieldTypeBlobContent the fieldTypeBlobContent to set
-     */
-    public void setFieldTypeBlobContent(String fieldTypeBlobContent) {
-        this.fieldTypeBlobContent = fieldTypeBlobContent;
-    }
-
-    /**
-     * @return the fieldNameHumanized
-     */
-    public String getFieldNameHumanized() {
-        if (fieldNameHumanized == null) {
-            fieldNameHumanized = startCase(fieldName);
-        }
-        return fieldNameHumanized;
-    }
-
-    /**
-     * @param fieldNameHumanized the fieldNameHumanized to set
-     */
-    public void setFieldNameHumanized(String fieldNameHumanized) {
-        this.fieldNameHumanized = fieldNameHumanized;
-    }
-
-    /**
-     * @return the fieldIsEnum
-     */
-    public boolean getFieldIsEnum() {
-        return isFieldIsEnum();
-    }
-
-    /**
-     * @param fieldIsEnum the fieldIsEnum to set
-     */
-    public void setFieldIsEnum(boolean fieldIsEnum) {
-        this.fieldIsEnum = fieldIsEnum;
-    }
-
-    /**
-     * @return the fieldIsEnum
-     */
-    public boolean isFieldIsEnum() {
-        return fieldIsEnum;
-    }
+    String getFieldName();
 
     /**
      * @return the fieldNameCapitalized
      */
-    public String getFieldNameCapitalized() {
-        if (fieldNameCapitalized == null) {
-            fieldNameCapitalized = firstUpper(fieldName);
-        }
-        return fieldNameCapitalized;
-    }
+    String getFieldNameCapitalized();
 
     /**
-     * @param fieldNameCapitalized the fieldNameCapitalized to set
+     * @return the fieldNameHumanized
      */
-    public void setFieldNameCapitalized(String fieldNameCapitalized) {
-        this.fieldNameCapitalized = fieldNameCapitalized;
-    }
+    String getFieldNameHumanized();
 
     /**
      * @return the fieldNameUnderscored
      */
-    public String getFieldNameUnderscored() {
-        if (fieldNameUnderscored == null) {
-            fieldNameUnderscored = snakeCase(fieldName);
-        }
-        return fieldNameUnderscored;
-    }
+    String getFieldNameUnderscored();
 
     /**
-     * @param fieldNameUnderscored the fieldNameUnderscored to set
+     * @return the fieldType
      */
-    public void setFieldNameUnderscored(String fieldNameUnderscored) {
-        this.fieldNameUnderscored = fieldNameUnderscored;
-    }
+    String getFieldType();
 
     /**
-     * @return the fieldInJavaBeanMethod
+     * @return the fieldTypeBlobContent
      */
-    public String getFieldInJavaBeanMethod() {
-//        if (fieldInJavaBeanMethod == null) {
-//                    if (fieldName.length() > 1) {
-//                        Character firstLetter = fieldName.charAt(0);
-//                        Character secondLetter = fieldName.charAt(1);
-//                        if (firstLetter == firstLetter.toLowerCase() && secondLetter == secondLetter.toUpperCase()) {
-//                            field.fieldInJavaBeanMethod = firstLetter.toLowerCase() + field.fieldName.slice(1);
-//                        } else {
-//                            field.fieldInJavaBeanMethod = _.firstUpper(field.fieldName);
-//                        }
-//                    } else {
-//                        field.fieldInJavaBeanMethod = _.firstUpper(field.fieldName);
-//                    }
-//                }
-        return fieldInJavaBeanMethod;
-    }
-
-    /**
-     * @param fieldInJavaBeanMethod the fieldInJavaBeanMethod to set
-     */
-    public void setFieldInJavaBeanMethod(String fieldInJavaBeanMethod) {
-        this.fieldInJavaBeanMethod = fieldInJavaBeanMethod;
-    }
-
-    /**
-     * @return the fieldValidate
-     */
-    public boolean isFieldValidate() {
-        return fieldValidate;
-    }
-
-    public void setFieldValidate(List<String> fieldValidateRules) {
-
-        if (fieldValidateRules != null && fieldValidateRules.size() >= 1) {
-            fieldValidate = true;
-        } else {
-            fieldValidate = false;
-        }
-        this.fieldValidateRules = fieldValidateRules;
-    }
+    String getFieldTypeBlobContent();
 
     /**
      * @return the fieldValues
      */
-    public String getFieldValues() {
-        if (fieldValues == null) {
-            return EMPTY;
-        }
-        return fieldValues;
-    }
+    String getFieldValues();
+
+    /**
+     * @return the fieldIsEnum
+     */
+    boolean isFieldIsEnum();
+
+    /**
+     * @return the fieldValidate
+     */
+    boolean isFieldValidate();
+
+    /**
+     * @param fieldInJavaBeanMethod the fieldInJavaBeanMethod to set
+     */
+    void setFieldInJavaBeanMethod(String fieldInJavaBeanMethod);
+
+    /**
+     * @param fieldIsEnum the fieldIsEnum to set
+     */
+    void setFieldIsEnum(boolean fieldIsEnum);
+
+    /**
+     * @param fieldName the fieldName to set
+     */
+    void setFieldName(String fieldName);
+
+    /**
+     * @param fieldNameCapitalized the fieldNameCapitalized to set
+     */
+    void setFieldNameCapitalized(String fieldNameCapitalized);
+
+    /**
+     * @param fieldNameHumanized the fieldNameHumanized to set
+     */
+    void setFieldNameHumanized(String fieldNameHumanized);
+
+    /**
+     * @param fieldNameUnderscored the fieldNameUnderscored to set
+     */
+    void setFieldNameUnderscored(String fieldNameUnderscored);
+
+    void setFieldType(String fieldType);
+
+    /**
+     * @param fieldType the fieldType to set
+     */
+    void setFieldType(String fieldType, String databaseType);
+
+    /**
+     * @param fieldTypeBlobContent the fieldTypeBlobContent to set
+     */
+    void setFieldTypeBlobContent(String fieldTypeBlobContent);
+
+    void setFieldValidate(List<String> fieldValidateRules);
 
     /**
      * @param fieldValues the fieldValues to set
      */
-    public void setFieldValues(String fieldValues) {
-        this.fieldValues = fieldValues;
-    }
-
+    void setFieldValues(String fieldValues);
+    
 }

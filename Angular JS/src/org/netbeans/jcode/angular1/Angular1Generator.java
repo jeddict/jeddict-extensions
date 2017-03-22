@@ -22,6 +22,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import static java.util.stream.Collectors.toList;
+import org.netbeans.jcode.angular1.domain.NG1ApplicationConfig;
+import org.netbeans.jcode.angular1.domain.NG1Field;
+import org.netbeans.jcode.angular1.domain.NG1Entity;
+import org.netbeans.jcode.angular1.domain.NG1Relationship;
+
 import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.BOLD;
 import static org.netbeans.jcode.console.Console.FG_RED;
@@ -36,7 +41,6 @@ import org.netbeans.jcode.rest.controller.RESTGenerator;
 import org.openide.util.lookup.ServiceProvider;
 import org.netbeans.jcode.layer.Generator;
 import org.netbeans.jcode.ng.main.AngularGenerator;
-import org.netbeans.jcode.angular2.Angular2Panel;
 import static org.netbeans.jcode.ng.main.AngularUtil.copyDynamicFile;
 import static org.netbeans.jcode.ng.main.AngularUtil.copyDynamicResource;
 import static org.netbeans.jcode.ng.main.AngularUtil.getResource;
@@ -44,8 +48,12 @@ import org.netbeans.jcode.ng.main.domain.ApplicationSourceFilter;
 import org.netbeans.jcode.ng.main.domain.EntityConfig;
 import org.netbeans.jcode.ng.main.domain.NGApplicationConfig;
 import org.netbeans.jcode.ng.main.domain.NGEntity;
+import org.netbeans.jcode.ng.main.domain.NGField;
+import org.netbeans.jcode.ng.main.domain.NGRelationship;
 import org.netbeans.jcode.parser.ejs.EJSParser;
 import org.netbeans.jpa.modeler.spec.Entity;
+import org.netbeans.jpa.modeler.spec.extend.BaseAttribute;
+import org.netbeans.jpa.modeler.spec.extend.RelationAttribute;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
 
@@ -91,7 +99,7 @@ public class Angular1Generator extends AngularGenerator {
             Map<String, String> templateLib = getResource(getTemplatePath() + "entity-include-resources.zip");
             List<NGEntity> entities = new ArrayList<>();
             for (Entity entity : entityMapping.getGeneratedEntity().collect(toList())) {
-                NGEntity ngEntity = getEntity(entity);
+                NGEntity ngEntity = getEntity(applicationConfig.getAngularAppName(), entity);
                 if (ngEntity != null) {
                     entities.add(ngEntity);
                     generateNgEntity(applicationConfig, fileFilter, getEntityConfig(), ngEntity, templateLib);
@@ -212,6 +220,27 @@ public class Angular1Generator extends AngularGenerator {
             return templatePath;
         };
         copyDynamicResource(getParserManager(parser), getTemplatePath() + "web-resources.zip", webRoot, pathResolver, handler);
+    }
+    
+        
+    @Override
+    public NGApplicationConfig getNGApplicationConfig() {
+        return new NG1ApplicationConfig();
+    }
+
+    @Override
+    public NGEntity getNGEntity(String name, String entityAngularJSSuffix) {
+        return new NG1Entity(name, entityAngularJSSuffix);
+    }
+
+    @Override
+    public NGRelationship getNGRelationship(String angularAppName, String entityAngularJSSuffix, Entity entity, RelationAttribute relation) {
+        return new NG1Relationship(angularAppName, entity, relation);
+    }
+
+    @Override
+    public NGField getNGField(BaseAttribute attribute) {
+        return new NG1Field(attribute);
     }
 
 }
