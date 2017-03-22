@@ -99,7 +99,7 @@ public class AccessorUtil {
         }
         if (isArray(attributeType)) {
             String attributeArrayType = AttributeType.getArrayType(attributeType);
-            if (attributeArrayType.equals(BYTE) || attributeArrayType.equals(BYTE_WRAPPER)) { //https://github.com/jGauravGupta/jpamodeler/issues/5 , https://github.com/jGauravGupta/jpamodeler/issues/6
+            if (attributeArrayType.equals(BYTE) || attributeArrayType.equals(BYTE_WRAPPER)) { //https://github.com/jeddict/jeddict/issues/5 , https://github.com/jeddict/jeddict/issues/6
                 if (isCollectionType) {
                     ((ElementCollectionAccessor) accessor).setTargetClassName(Blob.class.getName());
                 } else {

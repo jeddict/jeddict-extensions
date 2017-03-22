@@ -164,7 +164,7 @@ function handleCache(options, template) {
       throw new Error('Internal EJS error: no file name or template '
                     + 'provided');
     }
-  template = options.ext[filename.substring(1,filename.lastIndexOf('.'))];//fs.readFileSync(filename).toString().replace(_BOM, '');//JPAModeler
+  template = options.ext[filename.substring(1,filename.lastIndexOf('.'))];//fs.readFileSync(filename).toString().replace(_BOM, '');//jeddict
   }
   func = exports.compile(template, options);
   if (options.cache) {
@@ -207,7 +207,7 @@ function includeSource(path, options) {
   var includePath;
   var template;
   includePath = getIncludePath(path,opts);
-  template = options.ext[path];//fs.readFileSync(includePath).toString().replace(_BOM, '');//JPAModeler
+  template = options.ext[path];//fs.readFileSync(includePath).toString().replace(_BOM, '');//jeddict
   opts.filename = includePath;
   var templ = new Template(template, opts);
   templ.generateSource();
@@ -400,7 +400,7 @@ function Template(text, opts) {
   options.rmWhitespace = opts.rmWhitespace;
   options.root = opts.root;
   options.localsName = opts.localsName || exports.localsName || _DEFAULT_LOCALS_NAME;
-  options.ext = opts.ext; //JPAModeler
+  options.ext = opts.ext; //jeddict
   if (options.strict) {
     options._with = false;
   }

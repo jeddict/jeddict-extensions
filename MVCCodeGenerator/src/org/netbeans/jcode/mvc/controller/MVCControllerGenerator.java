@@ -647,7 +647,7 @@ public class MVCControllerGenerator implements Generator {
 
             }
             RestUtils.disableRestServicesChangeListner(project);
-            restSupport.configure("JPA Modeler - REST support");
+            restSupport.configure("Jeddict - REST support");
         } catch (Exception iox) {
             Exceptions.printStackTrace(iox);
         } finally {

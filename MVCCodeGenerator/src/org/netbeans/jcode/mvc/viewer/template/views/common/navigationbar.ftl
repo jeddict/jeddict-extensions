@@ -10,22 +10,22 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="http://jpamodeler.github.io" target="_blank"><img src="${r"${webPath}"}/static/images/logo.png" /></a>
+        <a class="navbar-brand" href="http://jeddict.github.io" target="_blank"><img src="${r"${webPath}"}/static/images/logo.png" /></a>
     </div>
     <!-- /.navbar-header -->
 
     <ul class="nav navbar-top-links navbar-right">
-        <li><a href="https://twitter.com/JPAModeler" target="_blank"><i class="fa fa-twitter"></i></a></li>
+        <li><a href="https://twitter.com/ImJeddict" target="_blank"><i class="fa fa-twitter"></i></a></li>
         <li><a href="https://youtube.com/JPAModeler" target="_blank"><i class="fa fa-youtube"></i></a></li>
-        <li><a href="https://github.com/jGauravGupta/jpamodeler" target="_blank"><i class="fa fa-github"></i></a></li>
-        <li><a href="https://twitter.com/intent/tweet?text=%40JPAModeler%20%3C3" target="_blank"><i class="fa fa-heart"></i></a></li>
+        <li><a href="https://github.com/jeddict/jeddict" target="_blank"><i class="fa fa-github"></i></a></li>
+        <li><a href="https://twitter.com/intent/tweet?text=%40ImJeddict%20%3C3" target="_blank"><i class="fa fa-heart"></i></a></li>
         <li class="dropdown">
             <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                 <i class="fa fa-envelope fa-fw"></i>  <i class="fa fa-caret-down"></i>
             </a>
             <ul class="dropdown-menu dropdown-messages">
                 <li>
-                    <a href="http://jpamodeler.github.io/tutorial/page.html?l=QuickStart" target="_blank">
+                    <a href="http://jeddict.github.io/tutorial/page.html?l=QuickStart" target="_blank">
                         <div>
                             <strong>MVC Generator Quick Start</strong>
                             <span class="pull-right text-muted">
@@ -36,19 +36,19 @@
                     </a>
                 </li>
                 <li>
-                    <a href="http://jpamodeler.github.io/tutorial/page.html?l=QuickStart" target="_blank">
+                    <a href="http://jeddict.github.io/tutorial/page.html?l=QuickStart" target="_blank">
                         <div>
-                            <strong>JPA Modeler Quick Start</strong>
+                            <strong>Jeddict Quick Start</strong>
                             <span class="pull-right text-muted">
                                 <em><i class="fa fa-info-circle fa-fw"></i></em>
                             </span>
                         </div>
-                        <div>Quick introduction to the JPA Modeler workflow by walking you through the creation of a simple JPA application...</div>
+                        <div>Quick introduction to the Jeddict workflow by walking you through the creation of a simple JPA application...</div>
                     </a>
                 </li>
                 <li class="divider"></li>
                 <li>
-                    <a class="text-center" href="http://jpamodeler.github.io" target="_blank">
+                    <a class="text-center" href="http://jeddict.github.io" target="_blank">
                         <strong>Learn other tutorial</strong>
                         <i class="fa fa-angle-right"></i>
                     </a>

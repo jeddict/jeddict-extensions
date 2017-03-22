@@ -593,7 +593,7 @@ public class RESTGenerator implements Generator {
                         restAppPack, restData.getAppPackage(), singletonClasses, providerClasses, handler);
             }
             RestUtils.disableRestServicesChangeListner(project);
-            restSupport.configure("JPA Modeler - REST support");
+            restSupport.configure("Jeddict - REST support");
         } catch (IOException iox) {
             Exceptions.printStackTrace(iox);
         } finally {

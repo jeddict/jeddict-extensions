@@ -26,7 +26,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * Common metatata descriptor for the annotation and xml processors.
  *
  * @author Gaurav Gupta
- * @since JPA Modeler 1.3
+ * @since Jeddict 1.3
  */
 public class DBMetadataDescriptor extends MetadataDescriptor {
 
