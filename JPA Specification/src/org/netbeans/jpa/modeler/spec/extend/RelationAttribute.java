@@ -21,8 +21,6 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.ErrorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlIDREF;
@@ -36,14 +34,9 @@ import org.netbeans.jpa.modeler.spec.Entity;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
 import org.netbeans.jpa.modeler.spec.FetchType;
 import org.netbeans.jpa.modeler.spec.JoinTable;
-import org.netbeans.jpa.modeler.spec.OneToMany;
 import org.netbeans.jpa.modeler.spec.jaxb.JaxbVariableType;
-import org.netbeans.bean.validation.constraints.Constraint;
-import org.netbeans.bean.validation.constraints.NotNull;
-import org.netbeans.bean.validation.constraints.Null;
 import org.netbeans.jpa.source.JARELoader;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
-import org.netbeans.modeler.core.NBModelerUtil;
 
 /**
  *
@@ -53,7 +46,7 @@ import org.netbeans.modeler.core.NBModelerUtil;
     "joinTable",
     "cascade"
 })
-public abstract class RelationAttribute extends Attribute implements AccessTypeHandler, FetchTypeHandler,JARELoader {
+public abstract class RelationAttribute extends Attribute implements AccessTypeHandler, FetchTypeHandler, JoinTableHandler, JARELoader {
 
     @XmlAttribute(name = "connected-entity-id", required = true)
     @XmlIDREF
