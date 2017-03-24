@@ -8,6 +8,7 @@ package org.netbeans.jpa.modeler.spec;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,6 +18,8 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
+import javax.persistence.MapKeyColumn;
+import javax.persistence.MapKeyJoinColumn;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -26,10 +29,13 @@ import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.StringUtils;
+import org.netbeans.bean.validation.constraints.Constraint;
+import org.netbeans.bean.validation.constraints.Size;
 import org.netbeans.jpa.modeler.spec.extend.AssociationOverrideHandler;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import static org.netbeans.jcode.core.util.AttributeType.STRING;
 import org.netbeans.jcode.core.util.JavaSourceHelper;
+import static org.netbeans.jcode.core.util.JavaUtil.isMap;
 import static org.netbeans.jcode.jpa.JPAConstants.ELEMENT_COLLECTION_FQN;
 import static org.netbeans.jcode.jpa.JPAConstants.MAP_KEY_COLUMN_FQN;
 import static org.netbeans.jcode.jpa.JPAConstants.MAP_KEY_ENUMERATED_FQN;
@@ -272,7 +278,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
         } else {
             elementCollection.setTargetClass(STRING);
         }
-        JavaSourceParserUtil.getBeanValidation(elementCollection, element);
+        elementCollection.setAttributeConstraints(JavaSourceParserUtil.getBeanValidation(element));
 //elementCollection.getName()
         elementCollection.convert = Convert.load(element, mapKeyExist, false);
         if (mapKeyExist) {
@@ -985,7 +991,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
 
     @Override
     public boolean isTextAttributeType() {
-        if (isMapType(getCollectionType())) {
+        if (isMap(getCollectionType())) {
             return isTextAttributeType(getMapKeyAttributeType());
         } else {
             return isTextAttributeType(getAttributeType());
@@ -994,7 +1000,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
 
     @Override
     public boolean isPrecisionAttributeType() {
-        if (isMapType(getCollectionType())) {
+        if (isMap(getCollectionType())) {
             return isPrecisionAttributeType(getMapKeyAttributeType());
         } else {
             return isPrecisionAttributeType(getAttributeType());
@@ -1003,7 +1009,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
 
     @Override
     public boolean isScaleAttributeType() {
-        if (isMapType(getCollectionType())) {
+        if (isMap(getCollectionType())) {
             return isScaleAttributeType(getMapKeyAttributeType());
         } else {
             return isScaleAttributeType(getAttributeType());
@@ -1201,4 +1207,23 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
         return null;
     }
 
+    @Override
+    public Set<Class<? extends Constraint>> getAttributeConstraintsClass() {
+        Set<Class<? extends Constraint>> classes = getConstraintsClass(null);
+        classes.add(Size.class);
+        return classes;
+    }
+    
+    @Override
+    public Set<Class<? extends Constraint>> getKeyConstraintsClass() {
+        if(!isMap(getCollectionType())){
+            return Collections.EMPTY_SET;
+        }
+        return getConstraintsClass(getMapKeyDataTypeLabel());
+    }
+    
+         @Override
+    public Set<Class<? extends Constraint>> getValueConstraintsClass() {
+        return getConstraintsClass(getAttributeType());
+    }
 }

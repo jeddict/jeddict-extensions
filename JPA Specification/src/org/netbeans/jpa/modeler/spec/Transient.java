@@ -70,8 +70,7 @@ public class Transient extends BaseAttribute {
         Transient _transient = new Transient();
         _transient.loadAttribute(element, variableElement, getterElement);
         _transient.setAttributeType(variableElement.asType().toString());
-        
-        JavaSourceParserUtil.getBeanValidation(_transient,element);
+        _transient.setAttributeConstraints(JavaSourceParserUtil.getBeanValidation(element));
         return _transient;
     }
 

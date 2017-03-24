@@ -95,7 +95,7 @@ public class EmbeddedId extends CompositionAttribute<DefaultClass> {
         
 //        embeddedId.setConnectedClass(embeddableClassSpec);//TODO Priority
 
-        JavaSourceParserUtil.getBeanValidation(embeddedId,element);
+        embeddedId.setAttributeConstraints(JavaSourceParserUtil.getBeanValidation(element));
         return embeddedId;
     }
 

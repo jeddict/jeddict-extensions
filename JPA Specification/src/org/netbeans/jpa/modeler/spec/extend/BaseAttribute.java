@@ -16,6 +16,8 @@
 package org.netbeans.jpa.modeler.spec.extend;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import org.apache.commons.lang.StringUtils;
@@ -89,67 +91,22 @@ public abstract class BaseAttribute extends Attribute {
     }
 
     @Override
-    public Set<Class<? extends Constraint>> getConstraintsClass() {
-        Set<Class<? extends Constraint>> classes = super.getConstraintsClass();
-        String attribute = getAttributeType();
-        if (StringUtils.isNotBlank(attribute)) {
-            switch (attribute) {
-                case BOOLEAN:
-                    classes.add(AssertTrue.class);
-                    classes.add(AssertFalse.class);
-                    break;
-                case STRING:
-                    classes.add(Size.class);//array, collection, map pending
-                    classes.add(Pattern.class);
-                    
-                    classes.add(DecimalMin.class);
-                    classes.add(DecimalMax.class);
-                    classes.add(Digits.class);
-                    break;
-                case CALENDAR:
-                case DATE:
-                case INSTANT:
-                case LOCAL_DATE:
-                case LOCAL_DATE_TIME:
-                case LOCAL_TIME:
-                case MONTH_DAY:
-                case OFFSET_DATE_TIME:
-                case OFFSET_TIME:
-                case YEAR:
-                case YEAR_MONTH:
-                case ZONED_DATE_TIME:
-                case HIJRAH_DATE:
-                case JAPANESE_DATE:
-                case MINGUO_DATE:
-                case THAI_BUDDHIST_DATE:
-                    classes.add(Past.class);
-                    classes.add(Future.class);
-                    break;
-                case BIGDECIMAL:
-                case BIGINTEGER:
-                case BYTE:
-                case SHORT:
-                case INT:
-                case LONG:
-                case BYTE_WRAPPER:
-                case SHORT_WRAPPER:
-                case INT_WRAPPER:
-                case LONG_WRAPPER:
-                    classes.add(Min.class);
-                    classes.add(Max.class);
-                    classes.add(DecimalMin.class);
-                    classes.add(DecimalMax.class);
-                    classes.add(Digits.class);
-                    break;
-                    default:
-                        if(isArray(attribute)){
-                            classes.add(Size.class);
-                        }
-                        
-            }
-        }
-        return classes;
+    public Set<Class<? extends Constraint>> getAttributeConstraintsClass() {
+//        if(isOptionalReturnType()){
+//            return Collections.EMPTY_SET;
+//        }
+        return getConstraintsClass(getAttributeType());
     }
+    
+//     @Override
+//    public Set<Class<? extends Constraint>> getValueConstraintsClass() {
+//        if(!isOptionalReturnType()){
+//            return Collections.EMPTY_SET;
+//        }
+//        return getConstraintsClass(getAttributeType());
+//    }
+  
+    
 
     public boolean isTextAttributeType() {
         return isTextAttributeType(getAttributeType());

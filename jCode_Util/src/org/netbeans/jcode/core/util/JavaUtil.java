@@ -68,15 +68,17 @@ public class JavaUtil {
     }
     
     public static boolean isMap(String _className) {
-        Class _class = null;
+        boolean valid = false;
         try {
-            _class = Class.forName(_className);
+            if (_className != null && !_className.trim().isEmpty()) {
+                if (java.util.Map.class.isAssignableFrom(Class.forName(_className.trim()))) {
+                    valid = true;
+                }
+            }
         } catch (ClassNotFoundException ex) {
+            //skip allow = false;
         }
-        if (_class == null) {
-            return false;
-        }
-        return Map.class.isAssignableFrom(_class);
+        return valid;
     }
 
 }

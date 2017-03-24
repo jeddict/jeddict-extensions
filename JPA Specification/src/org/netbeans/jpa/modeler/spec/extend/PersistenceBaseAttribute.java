@@ -50,7 +50,7 @@ public abstract class PersistenceBaseAttribute extends BaseAttribute implements 
         this.access = AccessType.load(element);
         this.temporal = TemporalType.load(element, null);
         this.setAttributeType(variableElement.asType().toString());
-        JavaSourceParserUtil.getBeanValidation(this,element);
+        this.setAttributeConstraints(JavaSourceParserUtil.getBeanValidation(element));
     }
 
     @Override

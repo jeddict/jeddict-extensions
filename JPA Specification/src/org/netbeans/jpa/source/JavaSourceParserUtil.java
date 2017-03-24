@@ -181,7 +181,7 @@ public class JavaSourceParserUtil {
         }
     }
 
-    public static void getBeanValidation(BaseAttribute attribute, Element element) {
+    public static Set<Constraint> getBeanValidation(Element element) {
         Set<Constraint> constraints = org.netbeans.jpa.modeler.spec.extend.Attribute.CONSTRAINTS_SUPPLIER.get();
         for (AnnotationMirror annotationMirror : element.getAnnotationMirrors()) {
             String annotationQualifiedName = getAnnotationQualifiedName(annotationMirror);
@@ -200,7 +200,7 @@ public class JavaSourceParserUtil {
                 }
             }
         }
-        attribute.setConstraints(constraints);
+        return constraints;
     }
 
     public static List<Annotation> getNonEEAnnotation(Element element) {

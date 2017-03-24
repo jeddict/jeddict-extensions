@@ -17,6 +17,7 @@ package org.netbeans.jpa.modeler.spec.extend;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -37,21 +38,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlTransient;
-import static org.netbeans.jcode.core.util.AttributeType.BIGDECIMAL;
-import static org.netbeans.jcode.core.util.AttributeType.BIGINTEGER;
-import static org.netbeans.jcode.core.util.AttributeType.BYTE;
-import static org.netbeans.jcode.core.util.AttributeType.BYTE_WRAPPER;
+import org.apache.commons.lang.StringUtils;
 import static org.netbeans.jcode.core.util.AttributeType.DOUBLE;
 import static org.netbeans.jcode.core.util.AttributeType.DOUBLE_WRAPPER;
 import static org.netbeans.jcode.core.util.AttributeType.FLOAT;
 import static org.netbeans.jcode.core.util.AttributeType.FLOAT_WRAPPER;
-import static org.netbeans.jcode.core.util.AttributeType.INT;
-import static org.netbeans.jcode.core.util.AttributeType.INT_WRAPPER;
-import static org.netbeans.jcode.core.util.AttributeType.LONG;
-import static org.netbeans.jcode.core.util.AttributeType.LONG_WRAPPER;
-import static org.netbeans.jcode.core.util.AttributeType.SHORT;
-import static org.netbeans.jcode.core.util.AttributeType.SHORT_WRAPPER;
-import static org.netbeans.jcode.core.util.AttributeType.STRING;
 import static org.netbeans.jcode.core.util.AttributeType.STRING_FQN;
 import org.netbeans.jpa.modeler.settings.code.CodePanel;
 import org.netbeans.jpa.modeler.spec.extend.annotation.Annotation;
@@ -73,6 +64,36 @@ import org.netbeans.bean.validation.constraints.Null;
 import org.netbeans.bean.validation.constraints.Past;
 import org.netbeans.bean.validation.constraints.Pattern;
 import org.netbeans.bean.validation.constraints.Size;
+import static org.netbeans.jcode.core.util.AttributeType.BIGDECIMAL;
+import static org.netbeans.jcode.core.util.AttributeType.BIGINTEGER;
+import static org.netbeans.jcode.core.util.AttributeType.BOOLEAN;
+import static org.netbeans.jcode.core.util.AttributeType.BOOLEAN_WRAPPER;
+import static org.netbeans.jcode.core.util.AttributeType.BYTE;
+import static org.netbeans.jcode.core.util.AttributeType.BYTE_WRAPPER;
+import static org.netbeans.jcode.core.util.AttributeType.CALENDAR;
+import static org.netbeans.jcode.core.util.AttributeType.DATE;
+import static org.netbeans.jcode.core.util.AttributeType.HIJRAH_DATE;
+import static org.netbeans.jcode.core.util.AttributeType.INSTANT;
+import static org.netbeans.jcode.core.util.AttributeType.INT;
+import static org.netbeans.jcode.core.util.AttributeType.INT_WRAPPER;
+import static org.netbeans.jcode.core.util.AttributeType.JAPANESE_DATE;
+import static org.netbeans.jcode.core.util.AttributeType.LOCAL_DATE;
+import static org.netbeans.jcode.core.util.AttributeType.LOCAL_DATE_TIME;
+import static org.netbeans.jcode.core.util.AttributeType.LOCAL_TIME;
+import static org.netbeans.jcode.core.util.AttributeType.LONG;
+import static org.netbeans.jcode.core.util.AttributeType.LONG_WRAPPER;
+import static org.netbeans.jcode.core.util.AttributeType.MINGUO_DATE;
+import static org.netbeans.jcode.core.util.AttributeType.MONTH_DAY;
+import static org.netbeans.jcode.core.util.AttributeType.OFFSET_DATE_TIME;
+import static org.netbeans.jcode.core.util.AttributeType.OFFSET_TIME;
+import static org.netbeans.jcode.core.util.AttributeType.SHORT;
+import static org.netbeans.jcode.core.util.AttributeType.SHORT_WRAPPER;
+import static org.netbeans.jcode.core.util.AttributeType.STRING;
+import static org.netbeans.jcode.core.util.AttributeType.THAI_BUDDHIST_DATE;
+import static org.netbeans.jcode.core.util.AttributeType.YEAR;
+import static org.netbeans.jcode.core.util.AttributeType.YEAR_MONTH;
+import static org.netbeans.jcode.core.util.AttributeType.ZONED_DATE_TIME;
+import static org.netbeans.jcode.core.util.AttributeType.isArray;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 import org.netbeans.modeler.core.NBModelerUtil;
 import org.openide.util.Exceptions;
@@ -118,10 +139,10 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
 
     @XmlElement(name = "snp")
     private List<AttributeSnippet> snippets;
-    
+
     @XmlTransient
     private List<AttributeSnippet> runtimeSnippets;
-    
+
     @XmlAttribute(name = "pc")
     private Boolean propertyChangeSupport;
 
@@ -156,7 +177,82 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
         ,
         @XmlElement(name = "di", type = Digits.class)
     })
-    private Set<Constraint> constraints = CONSTRAINTS_SUPPLIER.get();
+    private Set<Constraint> attributeConstraints = CONSTRAINTS_SUPPLIER.get();
+
+    @XmlTransient
+    private Map<String, Constraint> attributeConstraintsMap;
+    @XmlTransient
+    private String attributeConstraintsDataTypeBinding;
+
+    @XmlElementWrapper(name = "kbv")
+    @XmlElements({
+        @XmlElement(name = "nu", type = Null.class)
+        ,
+        @XmlElement(name = "nn", type = NotNull.class)
+        ,
+        @XmlElement(name = "af", type = AssertFalse.class)
+        ,
+        @XmlElement(name = "at", type = AssertTrue.class)
+        ,
+        @XmlElement(name = "pa", type = Past.class)
+        ,
+        @XmlElement(name = "fu", type = Future.class)
+        ,
+        @XmlElement(name = "si", type = Size.class)
+        ,
+        @XmlElement(name = "pt", type = Pattern.class)
+        ,
+        @XmlElement(name = "mi", type = Min.class)
+        ,
+        @XmlElement(name = "ma", type = Max.class)
+        ,
+        @XmlElement(name = "dmi", type = DecimalMin.class)
+        ,
+        @XmlElement(name = "dma", type = DecimalMax.class)
+        ,
+        @XmlElement(name = "di", type = Digits.class)
+    })
+    private Set<Constraint> keyConstraints = CONSTRAINTS_SUPPLIER.get();
+
+    @XmlTransient
+    private Map<String, Constraint> keyConstraintsMap;
+    @XmlTransient
+    private String keyConstraintsDataTypeBinding;
+
+    @XmlElementWrapper(name = "vbv")
+    @XmlElements({
+        @XmlElement(name = "nu", type = Null.class)
+        ,
+        @XmlElement(name = "nn", type = NotNull.class)
+        ,
+        @XmlElement(name = "af", type = AssertFalse.class)
+        ,
+        @XmlElement(name = "at", type = AssertTrue.class)
+        ,
+        @XmlElement(name = "pa", type = Past.class)
+        ,
+        @XmlElement(name = "fu", type = Future.class)
+        ,
+        @XmlElement(name = "si", type = Size.class)
+        ,
+        @XmlElement(name = "pt", type = Pattern.class)
+        ,
+        @XmlElement(name = "mi", type = Min.class)
+        ,
+        @XmlElement(name = "ma", type = Max.class)
+        ,
+        @XmlElement(name = "dmi", type = DecimalMin.class)
+        ,
+        @XmlElement(name = "dma", type = DecimalMax.class)
+        ,
+        @XmlElement(name = "di", type = Digits.class)
+    })
+    private Set<Constraint> valueConstraints = CONSTRAINTS_SUPPLIER.get();
+
+    @XmlTransient
+    private Map<String, Constraint> valueConstraintsMap;
+    @XmlTransient
+    private String valueConstraintsDataTypeBinding;
 
     public final static Map<Class<? extends Constraint>, Integer> ALL_CONSTRAINTS = getAllConstraintsClass(); //Applicable Constraint template for datatype
     public final static Supplier<Set<Constraint>> CONSTRAINTS_SUPPLIER = () -> new TreeSet<>((a, b) -> ALL_CONSTRAINTS.getOrDefault(a.getClass(), 0).compareTo(ALL_CONSTRAINTS.getOrDefault(b.getClass(), 0)));
@@ -239,7 +335,7 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
     public void removeRuntimeAnnotation(Annotation runtimeAnnotation) {
         getRuntimeAnnotation().remove(runtimeAnnotation);
     }
-    
+
     /**
      * @return the visibile
      */
@@ -444,20 +540,6 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
         return false;
     }
 
-    public static boolean isMapType(String collectionType) {
-        boolean valid = false;
-        try {
-            if (collectionType != null && !collectionType.trim().isEmpty()) {
-                if (java.util.Map.class.isAssignableFrom(Class.forName(collectionType.trim()))) {
-                    valid = true;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            //skip allow = false;
-        }
-        return valid;
-    }
-
     /**
      * @return the functionalType
      */
@@ -469,7 +551,7 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
     }
 
     public boolean isOptionalReturnType() {
-        return  getFunctionalType();
+        return getFunctionalType();
     }
 
     /**
@@ -487,40 +569,68 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
         this.defaultValue = defaultValue;
     }
 
-    @XmlTransient
-    private Map<String, Constraint> constraintsMap;
-    @XmlTransient
-    private String constraintsDataTypeBinding;
-
-    public Map<String, Constraint> getConstraintsMap() {
-        if (constraintsMap == null || !Objects.equals(getDataTypeLabel(),constraintsDataTypeBinding)) {//Objects.equals used -> getDataTypeLabel() could be null incase of EmbeddedId
-            Map<String, Constraint> completeConstraintsMap = getConstraints()
+    public Map<String, Constraint> getAttributeConstraintsMap() {
+        if (attributeConstraintsMap == null || !Objects.equals(getDataTypeLabel(), attributeConstraintsDataTypeBinding)) {//Objects.equals used -> getDataTypeLabel() could be null incase of EmbeddedId
+            Map<String, Constraint> completeConstraintsMap = getAttributeConstraints()
                     .stream()
                     .collect(Collectors.toMap(c -> c.getClass().getSimpleName(), c -> c, (c1, c2) -> c1));
             Set<Class<? extends Constraint>> allConstraintsClass = getAllConstraintsClass().keySet();
-            Set<Class<? extends Constraint>> allowedConstraintsClass = getConstraintsClass();
-            constraintsMap = allowedConstraintsClass
+            Set<Class<? extends Constraint>> allowedConstraintsClass = getAttributeConstraintsClass();
+            attributeConstraintsMap = allowedConstraintsClass
                     .stream()
                     .collect(Collectors.toMap(c -> c.getSimpleName(), c -> completeConstraintsMap.get(c.getSimpleName()), (c1, c2) -> c1));
-            //after datatype change , clearConstraint/disable the non-applicable constraints
-            if (constraintsDataTypeBinding != null) {
-                allConstraintsClass.removeAll(annotation);
-                Set<Class<? extends Constraint>> skipConstraintsClass = allConstraintsClass;
-                skipConstraintsClass
-                        .stream()
-                        .map(c -> completeConstraintsMap.get(c.getSimpleName()))
-                        .forEach(Constraint::clear);
-            }
-            constraintsDataTypeBinding = getDataTypeLabel();
+            attributeConstraintsDataTypeBinding = cleanUnusedConstraint(attributeConstraintsDataTypeBinding, allConstraintsClass, completeConstraintsMap);
         }
-        return constraintsMap;
+        return attributeConstraintsMap;
+    }
+
+    public Map<String, Constraint> getKeyConstraintsMap() {
+        if (keyConstraintsMap == null || !Objects.equals(getDataTypeLabel(), keyConstraintsDataTypeBinding)) {//Objects.equals used -> getDataTypeLabel() could be null incase of EmbeddedId
+            Map<String, Constraint> completeConstraintsMap = getKeyConstraints()
+                    .stream()
+                    .collect(Collectors.toMap(c -> c.getClass().getSimpleName(), c -> c, (c1, c2) -> c1));
+            Set<Class<? extends Constraint>> allConstraintsClass = getAllConstraintsClass().keySet();
+            Set<Class<? extends Constraint>> allowedConstraintsClass = getKeyConstraintsClass();
+            keyConstraintsMap = allowedConstraintsClass
+                    .stream()
+                    .collect(Collectors.toMap(c -> c.getSimpleName(), c -> completeConstraintsMap.get(c.getSimpleName()), (c1, c2) -> c1));
+            keyConstraintsDataTypeBinding = cleanUnusedConstraint(keyConstraintsDataTypeBinding, allConstraintsClass, completeConstraintsMap);
+        }
+        return keyConstraintsMap;
+    }
+
+    public Map<String, Constraint> getValueConstraintsMap() {
+        if (valueConstraintsMap == null || !Objects.equals(getDataTypeLabel(), valueConstraintsDataTypeBinding)) {//Objects.equals used -> getDataTypeLabel() could be null incase of EmbeddedId
+            Map<String, Constraint> completeConstraintsMap = getValueConstraints()
+                    .stream()
+                    .collect(Collectors.toMap(c -> c.getClass().getSimpleName(), c -> c, (c1, c2) -> c1));
+            Set<Class<? extends Constraint>> allConstraintsClass = getAllConstraintsClass().keySet();
+            Set<Class<? extends Constraint>> allowedConstraintsClass = getValueConstraintsClass();
+            valueConstraintsMap = allowedConstraintsClass
+                    .stream()
+                    .collect(Collectors.toMap(c -> c.getSimpleName(), c -> completeConstraintsMap.get(c.getSimpleName()), (c1, c2) -> c1));
+            valueConstraintsDataTypeBinding = cleanUnusedConstraint(valueConstraintsDataTypeBinding, allConstraintsClass, completeConstraintsMap);
+        }
+        return valueConstraintsMap;
+    }
+
+    private String cleanUnusedConstraint(String constraintsDataTypeBinding, Set<Class<? extends Constraint>> allConstraintsClass, Map<String, Constraint> completeConstraintsMap) {
+        //after datatype change , clearConstraint/disable the non-applicable constraints
+        if (constraintsDataTypeBinding != null) {
+            allConstraintsClass//todo only non-visible
+                    .stream()
+                    .map(c -> completeConstraintsMap.get(c.getSimpleName()))
+                    .forEach(Constraint::clear);
+        }
+        constraintsDataTypeBinding = getDataTypeLabel();
+        return constraintsDataTypeBinding;
     }
 
     /**
      * @return the complete list of Constraint (old datatype Constraint instance
      * and new created Constraint instance)
      */
-    private void bootAllConstraints() {
+    private void bootAllConstraints(Set<Constraint> constraints) {
         Set<Class<? extends Constraint>> existingConstraints = constraints.stream().map(c -> c.getClass()).collect(toSet());
         for (Class<? extends Constraint> constraintClass : ALL_CONSTRAINTS.keySet()) {
             if (!existingConstraints.contains(constraintClass)) {
@@ -554,37 +664,154 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
         return classes;
     }
 
+    public Set<Class<? extends Constraint>> getAttributeConstraintsClass() {        
+         return Collections.emptySet();
+     }
+     
+     
+     public Set<Class<? extends Constraint>> getKeyConstraintsClass() {
+         return Collections.emptySet();
+     }
+     
+     
+     public Set<Class<? extends Constraint>> getValueConstraintsClass() {
+         return Collections.emptySet();
+     }
+     
+     
+     
     /**
      * Filtered constraint class based on data type
+     *
+     * @return
      */
-    public Set<Class<? extends Constraint>> getConstraintsClass() {
-//      DecimalMin/DecimalMax,Digits > BigDecimal,BigInteger,String,byte,short,int,long | Min/Max > BigDecimal,BigInteger,byte,short,int,long
-//      Size > String,Collection,Map,Array | Past/Future > java.util.Date,java.util.Calendar | attern > String
+    protected Set<Class<? extends Constraint>> getConstraintsClass(String attribute) {
         Set<Class<? extends Constraint>> classes = new LinkedHashSet<>();
         classes.add(NotNull.class);
         classes.add(Null.class);
+        if (StringUtils.isNotBlank(attribute)) {
+            switch (attribute) {
+                case BOOLEAN:
+                case BOOLEAN_WRAPPER:
+                    classes.add(AssertTrue.class);
+                    classes.add(AssertFalse.class);
+                    break;
+                case STRING:
+                case STRING_FQN:
+                    classes.add(Size.class);//array, collection, map pending
+                    classes.add(Pattern.class);
+                    classes.add(DecimalMin.class);
+                    classes.add(DecimalMax.class);
+                    classes.add(Digits.class);
+                    break;
+                case CALENDAR:
+                case DATE:
+                case INSTANT:
+                case LOCAL_DATE:
+                case LOCAL_DATE_TIME:
+                case LOCAL_TIME:
+                case MONTH_DAY:
+                case OFFSET_DATE_TIME:
+                case OFFSET_TIME:
+                case YEAR:
+                case YEAR_MONTH:
+                case ZONED_DATE_TIME:
+                case HIJRAH_DATE:
+                case JAPANESE_DATE:
+                case MINGUO_DATE:
+                case THAI_BUDDHIST_DATE:
+                    classes.add(Past.class);
+                    classes.add(Future.class);
+                    break;
+                case BIGDECIMAL:
+                case BIGINTEGER:
+                case BYTE:
+                case SHORT:
+                case INT:
+                case LONG:
+                case BYTE_WRAPPER:
+                case SHORT_WRAPPER:
+                case INT_WRAPPER:
+                case LONG_WRAPPER:
+                    classes.add(Min.class);
+                    classes.add(Max.class);
+                    classes.add(DecimalMin.class);
+                    classes.add(DecimalMax.class);
+                    classes.add(Digits.class);
+                    break;
+                default:
+                    if(isArray(attribute)){
+                        classes.add(Size.class);
+                    }
+                        
+            }
+        }
         return classes;
+    }
+    
+  
+    /**
+     * @param constraints
+     * @return the constraints
+     */
+    public Set<Constraint> getAttributeConstraints() {
+        if (attributeConstraints == null) {
+            attributeConstraints = CONSTRAINTS_SUPPLIER.get();
+        }
+        if (ALL_CONSTRAINTS.size() != attributeConstraints.size()) {
+            bootAllConstraints(attributeConstraints);
+        }
+        return attributeConstraints;
     }
 
     /**
      * @return the constraints
      */
-    public Set<Constraint> getConstraints() {
-        if (constraints == null) {
-            constraints = CONSTRAINTS_SUPPLIER.get();
+    public Set<Constraint> getKeyConstraints() {
+        if (keyConstraints == null) {
+            keyConstraints = CONSTRAINTS_SUPPLIER.get();
         }
-        if (ALL_CONSTRAINTS.size() != constraints.size()) {
-            bootAllConstraints();
+        if (ALL_CONSTRAINTS.size() != keyConstraints.size()) {
+            bootAllConstraints(keyConstraints);
         }
-        return constraints;
+        return keyConstraints;
+    }
+
+    /**
+     * @return the constraints
+     */
+    public Set<Constraint> getValueConstraints() {
+        if (valueConstraints == null) {
+            valueConstraints = CONSTRAINTS_SUPPLIER.get();
+        }
+        if (ALL_CONSTRAINTS.size() != valueConstraints.size()) {
+            bootAllConstraints(valueConstraints);
+        }
+        return valueConstraints;
     }
 
     /**
      * @param constraints the constraints to set
      */
-    public void setConstraints(Set<Constraint> constraints) {
-        this.constraintsMap = null;//reset
-        this.constraints = constraints;
+    public void setAttributeConstraints(Set<Constraint> constraints) {
+        this.attributeConstraintsMap = null;//reset
+        this.attributeConstraints = constraints;
+    }
+
+    /**
+     * @param keyConstraints the keyConstraints to set
+     */
+    public void setKeyConstraints(Set<Constraint> keyConstraints) {
+        this.keyConstraintsMap = null;//reset
+        this.keyConstraints = keyConstraints;
+    }
+
+    /**
+     * @param valueConstraints the valueConstraints to set
+     */
+    public void setValueConstraints(Set<Constraint> valueConstraints) {
+        this.valueConstraintsMap = null;//reset
+        this.valueConstraints = valueConstraints;
     }
 
     /**
@@ -611,8 +838,8 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
     public boolean removeSnippet(AttributeSnippet snippet) {
         return getSnippets().remove(snippet);
     }
-    
-     /**
+
+    /**
      * @return the runtimeSnippets
      */
     public List<AttributeSnippet> getRuntimeSnippets() {
@@ -636,12 +863,12 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
     public boolean removeRuntimeSnippet(AttributeSnippet snippet) {
         return getRuntimeSnippets().remove(snippet);
     }
-    
+
     /**
      * @return the propertyChangeSupport
      */
     public Boolean getPropertyChangeSupport() {
-        if(!CodePanel.isJavaSESupportEnable() && (propertyChangeSupport == null || propertyChangeSupport == false)){
+        if (!CodePanel.isJavaSESupportEnable() && (propertyChangeSupport == null || propertyChangeSupport == false)) {
             return null;
         }
 //        if (propertyChangeSupport == null) {
@@ -661,7 +888,7 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
      * @return the vetoableChangeSupport
      */
     public Boolean getVetoableChangeSupport() {
-        if(!CodePanel.isJavaSESupportEnable() && (vetoableChangeSupport == null || vetoableChangeSupport == false)){
+        if (!CodePanel.isJavaSESupportEnable() && (vetoableChangeSupport == null || vetoableChangeSupport == false)) {
             return null;
         }
         return vetoableChangeSupport;

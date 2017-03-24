@@ -17,6 +17,7 @@ package org.netbeans.jpa.modeler.spec.extend;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -26,6 +27,7 @@ import javax.lang.model.type.ErrorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import org.netbeans.bean.validation.constraints.Constraint;
 import static org.netbeans.jcode.core.util.JavaSourceHelper.getSimpleClassName;
 import static org.netbeans.jcode.jpa.JPAConstants.ID_FQN;
 import static org.netbeans.jcode.jpa.JPAConstants.JOIN_COLUMNS_FQN;
@@ -249,6 +251,11 @@ public abstract class SingleRelationAttribute extends RelationAttribute implemen
      */
     public void setMapsId(String value) {
         this.mapsId = value;
+    }
+    
+    @Override
+    public Set<Class<? extends Constraint>> getAttributeConstraintsClass() {
+        return getConstraintsClass(null);
     }
 
 }

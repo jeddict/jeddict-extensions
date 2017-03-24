@@ -16,6 +16,7 @@
 package org.netbeans.jpa.modeler.spec.extend;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,6 +27,8 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ErrorType;
+import javax.persistence.MapKeyColumn;
+import javax.persistence.MapKeyJoinColumn;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlIDREF;
@@ -54,6 +57,7 @@ import org.netbeans.jpa.modeler.spec.OrderColumn;
 import org.netbeans.jpa.modeler.spec.TemporalType;
 import org.netbeans.bean.validation.constraints.Constraint;
 import org.netbeans.bean.validation.constraints.Size;
+import static org.netbeans.jcode.core.util.JavaUtil.isMap;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 import static org.netbeans.jpa.source.JavaSourceParserUtil.isEmbeddableClass;
 import static org.netbeans.jpa.source.JavaSourceParserUtil.isEntityClass;
@@ -718,10 +722,23 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
 //    }
     
     @Override
-    public Set<Class<? extends Constraint>> getConstraintsClass() {
-        Set<Class<? extends Constraint>> classes = super.getConstraintsClass();
+    public Set<Class<? extends Constraint>> getAttributeConstraintsClass() {
+        Set<Class<? extends Constraint>> classes = getConstraintsClass(null);
         classes.add(Size.class);
         return classes;
+    }
+    
+    @Override
+    public Set<Class<? extends Constraint>> getKeyConstraintsClass() {
+        if(!isMap(getCollectionType())){
+            return Collections.EMPTY_SET;
+        }
+        return getConstraintsClass(getMapKeyDataTypeLabel());
+    }
+    
+         @Override
+    public Set<Class<? extends Constraint>> getValueConstraintsClass() {
+        return getConstraintsClass(null);
     }
     
 }

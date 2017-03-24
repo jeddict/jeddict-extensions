@@ -115,7 +115,7 @@ public class Embedded extends CompositionAttribute<Embeddable> implements Associ
         }
         embedded.setConnectedClass(embeddableClassSpec);
         embedded.convert = Convert.load(element);
-        JavaSourceParserUtil.getBeanValidation(embedded,element);
+        embedded.setAttributeConstraints(JavaSourceParserUtil.getBeanValidation(element));
         return embedded;
     }
 
