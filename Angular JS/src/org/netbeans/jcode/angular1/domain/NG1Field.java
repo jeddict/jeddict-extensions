@@ -60,7 +60,7 @@ public class NG1Field implements NGField{
 
     public NG1Field(BaseAttribute attribute) {
         this.fieldName = attribute.getName();
-        loadValidation(attribute.getConstraintsMap());
+        loadValidation(attribute.getAttributeConstraintsMap());
     }
 
     //['required', 'max', 'min', 'maxlength', 'minlength', 'maxbytes', 'minbytes', 'pattern'];

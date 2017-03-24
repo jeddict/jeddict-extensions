@@ -60,7 +60,7 @@ public class NG2Field implements NGField{
 
     public NG2Field(BaseAttribute attribute) {
         this.fieldName = attribute.getName();
-        loadValidation(attribute.getConstraintsMap());
+        loadValidation(attribute.getAttributeConstraintsMap());
     }
 
     //['required', 'max', 'min', 'maxlength', 'minlength', 'maxbytes', 'minbytes', 'pattern'];

@@ -367,8 +367,8 @@ public class RESTGenerator implements Generator {
                 attrConf.put("setter", "set" + firstUpper(attr.getName()));
                 attrConf.put("getter", (isBoolean(attr.getDataTypeLabel()) ? "is" : "get") + firstUpper(attr.getName()));
                 attrConf.put("dataType", attr.getDataTypeLabel());
-                attrConf.put("defaultValue", getAttributeDefaultValue(attr.getDataTypeLabel(), attr.getConstraintsMap()));
-                attrConf.put("updatedValue", getAttributeUpdateValue(attr.getDataTypeLabel(), attr.getConstraintsMap()));
+                attrConf.put("defaultValue", getAttributeDefaultValue(attr.getDataTypeLabel(), attr.getAttributeConstraintsMap()));
+                attrConf.put("updatedValue", getAttributeUpdateValue(attr.getDataTypeLabel(), attr.getAttributeConstraintsMap()));
 //            attrConf.put("array", isArray(attr.getDataTypeLabel()));
 //            attrConf.put("precision", isPrecision(attr.getDataTypeLabel()));
 //            attrConf.put("precisionType", isDouble(attr.getDataTypeLabel())?'d':'f');
