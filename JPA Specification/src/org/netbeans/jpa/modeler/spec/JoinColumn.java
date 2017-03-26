@@ -111,7 +111,7 @@ public class JoinColumn implements JAREAnnotationLoader, IJoinColumn {
         }
         return joinColumn;
     }
-   
+
 
     /**
      * Gets the value of the name property.
