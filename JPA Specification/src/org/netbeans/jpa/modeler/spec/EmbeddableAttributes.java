@@ -27,6 +27,7 @@ import static org.netbeans.jcode.jpa.JPAConstants.ONE_TO_ONE_FQN;
 import static org.netbeans.jcode.jpa.JPAConstants.TRANSIENT_FQN;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import org.netbeans.jpa.modeler.spec.extend.PersistenceAttributes;
+import org.netbeans.jpa.modeler.spec.workspace.WorkSpace;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
@@ -124,20 +125,20 @@ public class EmbeddableAttributes extends PersistenceAttributes<Embeddable> {
     }
 
     @Override
-    public XMLAttributes getAccessor() {
-        XMLAttributes attr = super.getAccessor();
+    public XMLAttributes getAccessor(WorkSpace workSpace) {
+        XMLAttributes attr = super.getAccessor(workSpace);
         attr.setIds(new ArrayList<>());
         attr.setVersions(new ArrayList<>());
-        return updateAccessor(attr);
+        return updateAccessor(workSpace, attr);
     }
     
-    public XMLAttributes getAccessor(boolean inherit) {//inherit not supported
-        XMLAttributes attr = super.getAccessor();
+    public XMLAttributes getAccessor(WorkSpace workSpace, boolean inherit) {//inherit not supported
+        XMLAttributes attr = super.getAccessor(workSpace);
         return attr;
     }
 
-    public XMLAttributes updateAccessor(XMLAttributes attr) {
-        super.updateAccessor(attr, false);
+    public XMLAttributes updateAccessor(WorkSpace workSpace, XMLAttributes attr) {
+        super.updateAccessor(workSpace, attr, false);
         return attr;
     }
     

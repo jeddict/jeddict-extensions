@@ -19,6 +19,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
 import org.netbeans.db.modeler.exception.DBValidationException;
 import org.netbeans.jpa.modeler.spec.MappedSuperclass;
+import org.netbeans.jpa.modeler.spec.workspace.WorkSpace;
 
 /**
  *
@@ -32,11 +33,11 @@ public class MappedSuperclassSpecAccessor extends MappedSuperclassAccessor {
         this.mappedSuperclass = mappedSuperclass;
     }
 
-    public static MappedSuperclassSpecAccessor getInstance(MappedSuperclass mappedSuperclass) {
+    public static MappedSuperclassSpecAccessor getInstance(WorkSpace workSpace, MappedSuperclass mappedSuperclass) {
         MappedSuperclassSpecAccessor accessor = new MappedSuperclassSpecAccessor(mappedSuperclass);
         accessor.setClassName(mappedSuperclass.getClazz());
         accessor.setAccess("VIRTUAL");
-        accessor.setAttributes(mappedSuperclass.getAttributes().getAccessor(true));
+        accessor.setAttributes(mappedSuperclass.getAttributes().getAccessor(workSpace, true));
         if (mappedSuperclass.getSuperclass() != null) {
             accessor.setParentClassName(mappedSuperclass.getSuperclass().getClazz());
         }

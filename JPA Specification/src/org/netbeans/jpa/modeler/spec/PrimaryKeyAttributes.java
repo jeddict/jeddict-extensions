@@ -41,6 +41,7 @@ import org.netbeans.jpa.modeler.spec.extend.PersistenceAttributes;
 import org.netbeans.jpa.modeler.spec.extend.JavaClass;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 import org.netbeans.jpa.modeler.spec.extend.IPrimaryKeyAttributes;
+import org.netbeans.jpa.modeler.spec.workspace.WorkSpace;
 
 /**
  *
@@ -438,29 +439,26 @@ public class PrimaryKeyAttributes extends PersistenceAttributes<IdentifiableClas
     }
     
     @Override
-    public XMLAttributes getAccessor() {
-        return getAccessor(false);
+    public XMLAttributes getAccessor(WorkSpace workSpace) {
+        return getAccessor(workSpace, false);
     }
 
-    /**
-     * Remove inherit functionality , once eclipse support dynamic mapped super
-     * class
-     *
-     */
-    public XMLAttributes getAccessor(boolean inherit) {
-        XMLAttributes attr = super.getAccessor();
+    //Remove inherit functionality , once eclipse support dynamic mapped superclass
+    @Override
+    public XMLAttributes getAccessor(WorkSpace workSpace, boolean inherit) {
+        XMLAttributes attr = super.getAccessor(workSpace);
         attr.setIds(new ArrayList<>());
         attr.setVersions(new ArrayList<>());
-        return updateAccessor(attr, inherit);
+        return updateAccessor(workSpace, attr, inherit);
     }
 
-    public XMLAttributes updateAccessor(XMLAttributes attr) {
-        return updateAccessor(attr, false);
+    public XMLAttributes updateAccessor(WorkSpace workSpace, XMLAttributes attr) {
+        return updateAccessor(workSpace, attr, false);
     }
 
     @Override
-    public XMLAttributes updateAccessor(XMLAttributes attr, boolean inherit) {
-        super.updateAccessor(attr, inherit);
+    public XMLAttributes updateAccessor(WorkSpace workSpace, XMLAttributes attr, boolean inherit) {
+        super.updateAccessor(workSpace, attr, inherit);
         return processAccessor(attr, inherit);
     }
 

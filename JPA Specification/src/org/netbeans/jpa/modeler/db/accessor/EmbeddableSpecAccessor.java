@@ -19,6 +19,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.netbeans.db.modeler.exception.DBValidationException;
 import org.netbeans.jpa.modeler.spec.Embeddable;
+import org.netbeans.jpa.modeler.spec.workspace.WorkSpace;
 
 /**
  *
@@ -32,11 +33,11 @@ public class EmbeddableSpecAccessor extends EmbeddableAccessor {
         this.embeddable = embeddable;
     }
 
-    public static EmbeddableSpecAccessor getInstance(Embeddable embeddable) {
+    public static EmbeddableSpecAccessor getInstance(WorkSpace workSpace, Embeddable embeddable) {
         EmbeddableSpecAccessor accessor = new EmbeddableSpecAccessor(embeddable);
         accessor.setClassName(embeddable.getClazz());
         accessor.setAccess("VIRTUAL");
-        accessor.setAttributes(embeddable.getAttributes().getAccessor());
+        accessor.setAttributes(embeddable.getAttributes().getAccessor(workSpace));
         if (embeddable.getSuperclass() != null) {
             accessor.setParentClassName(embeddable.getSuperclass().getClazz());
         }

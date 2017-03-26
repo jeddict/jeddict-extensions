@@ -103,7 +103,7 @@ public class JoinTable {
 
     @XmlTransient
     private String generatedName;
-
+    
     public static JoinTable load(Element element) {
         AnnotationMirror annotationMirror = JavaSourceParserUtil.findAnnotation(element, JOIN_TABLE_FQN);
         return JoinTable.load(element, annotationMirror);

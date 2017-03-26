@@ -36,6 +36,7 @@ import org.netbeans.jpa.modeler.spec.validator.column.PrimaryKeyJoinColumnValida
 import org.netbeans.db.modeler.exception.DBValidationException;
 import org.netbeans.jpa.modeler.spec.Convert;
 import org.netbeans.jpa.modeler.spec.Inheritance;
+import org.netbeans.jpa.modeler.spec.workspace.WorkSpace;
 
 /**
  *
@@ -49,7 +50,7 @@ public class EntitySpecAccessor extends EntityAccessor {
         this.entity = entity;
     }
 
-    public static EntitySpecAccessor getInstance(Entity entity) {
+    public static EntitySpecAccessor getInstance(WorkSpace workSpace, Entity entity) {
         EntitySpecAccessor accessor = new EntitySpecAccessor(entity);
         accessor.setName(entity.getName());
         accessor.setClassName(entity.getClazz());
@@ -60,7 +61,7 @@ public class EntitySpecAccessor extends EntityAccessor {
             accessor.setAccessibleObject(metadataClass);//Test : Modifier.isAbstract(accessor.getJavaClass().getModifiers());
         }
         
-        accessor.setAttributes(entity.getAttributes().getAccessor());
+        accessor.setAttributes(entity.getAttributes().getAccessor(workSpace));
         if (entity.getTable() != null) {
             accessor.setTable(entity.getTable().getAccessor());
         }
@@ -71,7 +72,7 @@ public class EntitySpecAccessor extends EntityAccessor {
             }
             accessor.setSecondaryTables(secondaryTableMetadata);
         }
-        processSuperClass(entity, accessor);
+        processSuperClass(workSpace, entity, accessor);
         if (entity.getInheritance() != null) {
             accessor.setInheritance(entity.getInheritance().getAccessor());
         } else if(!entity.getSubclassList().isEmpty()) { //if Inheritance null and ROOT/BRANCH then set default
@@ -101,12 +102,12 @@ public class EntitySpecAccessor extends EntityAccessor {
 
     }
 
-    private static void processSuperClass(JavaClass _class, EntityAccessor accessor) {
+    private static void processSuperClass(WorkSpace workSpace, JavaClass _class, EntityAccessor accessor) {
         if (_class.getSuperclass() != null) {
             if (_class.getSuperclass() instanceof MappedSuperclass) {
                 MappedSuperclass superclass = (MappedSuperclass) _class.getSuperclass();
-                superclass.getAttributes().updateAccessor(accessor.getAttributes(), true);
-                processSuperClass(superclass, accessor);
+                superclass.getAttributes().updateAccessor(workSpace, accessor.getAttributes(), true);
+                processSuperClass(workSpace, superclass, accessor);
             } else {
                 accessor.setParentClassName(_class.getSuperclass().getClazz());
             }

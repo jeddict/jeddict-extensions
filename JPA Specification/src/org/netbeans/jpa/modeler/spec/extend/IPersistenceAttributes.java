@@ -28,6 +28,7 @@ import org.netbeans.jpa.modeler.spec.ManyToOne;
 import org.netbeans.jpa.modeler.spec.OneToMany;
 import org.netbeans.jpa.modeler.spec.OneToOne;
 import org.netbeans.jpa.modeler.spec.Transient;
+import org.netbeans.jpa.modeler.spec.workspace.WorkSpace;
 
 /**
  *
@@ -290,10 +291,10 @@ public interface IPersistenceAttributes extends IAttributes {
     
     List<Basic> getSuperBasic();
     
-    XMLAttributes getAccessor();
+    XMLAttributes getAccessor(WorkSpace workSpace);
 
-    XMLAttributes getAccessor(boolean inherit);
+    XMLAttributes getAccessor(WorkSpace workSpace, boolean inherit);
     
-    XMLAttributes updateAccessor(XMLAttributes attr, boolean inherit);
+    XMLAttributes updateAccessor(WorkSpace workSpace, XMLAttributes attr, boolean inherit);
 
 }

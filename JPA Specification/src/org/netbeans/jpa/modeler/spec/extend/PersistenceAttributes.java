@@ -60,6 +60,7 @@ import org.netbeans.jpa.modeler.spec.ManyToOne;
 import org.netbeans.jpa.modeler.spec.OneToMany;
 import org.netbeans.jpa.modeler.spec.OneToOne;
 import org.netbeans.jpa.modeler.spec.Transient;
+import org.netbeans.jpa.modeler.spec.workspace.WorkSpace;
 
 /**
  *
@@ -765,7 +766,7 @@ public abstract class PersistenceAttributes<T extends ManagedClass> extends Attr
         return attributes;
     }
 
-    public XMLAttributes getAccessor() {
+    public XMLAttributes getAccessor(WorkSpace workSpace) {
         XMLAttributes attr = new XMLAttributes();
         attr.setBasicCollections(new ArrayList<>());
         attr.setBasicMaps(new ArrayList<>());
@@ -782,38 +783,43 @@ public abstract class PersistenceAttributes<T extends ManagedClass> extends Attr
         attr.setOneToManys(new ArrayList<>());
         attr.setOneToOnes(new ArrayList<>());
         return attr;
-//        return updateAccessor(attr);
     }
 
     @Override
-    public XMLAttributes updateAccessor(XMLAttributes attr, boolean inherit) {
+    public XMLAttributes updateAccessor(WorkSpace workSpace, XMLAttributes attr, boolean inherit) {
         attr.getBasics().addAll(getBasic()
                 .stream()
-                .map(basic -> BasicSpecAccessor.getInstance(basic, inherit))
+                .map(bsc -> BasicSpecAccessor.getInstance(bsc, inherit))
                 .collect(toList()));
         attr.getElementCollections().addAll(getElementCollection()
                 .stream()
+                .filter(ec -> workSpace==null || ec.getConnectedClass()== null || workSpace.hasItem(ec.getConnectedClass()))
                 .map(ec -> ElementCollectionSpecAccessor.getInstance(ec, inherit))
                 .collect(toList()));
         attr.getEmbeddeds().addAll(getEmbedded()
                 .stream()
+                .filter(emb -> workSpace==null || workSpace.hasItem(emb.getConnectedClass()))
                 .map(emb -> EmbeddedSpecAccessor.getInstance(emb, inherit))
-                .collect(toList()));
+                .collect(toList()));        
 //      Skip Transient
         attr.getManyToManys().addAll(getManyToMany()
                 .stream()
+                .filter(mtm -> workSpace==null || workSpace.hasItem(mtm.getConnectedEntity()))
                 .map(mtm -> ManyToManySpecAccessor.getInstance(mtm, inherit))
                 .collect(toList()));
         attr.getManyToOnes().addAll(getManyToOne()
                 .stream()
+                .filter(mto -> workSpace==null || workSpace.hasItem(mto.getConnectedEntity()))
                 .map(mto -> ManyToOneSpecAccessor.getInstance(mto, inherit))
                 .collect(toList()));
         attr.getOneToManys().addAll(getOneToMany()
                 .stream()
+                .filter(otm -> workSpace==null || workSpace.hasItem(otm.getConnectedEntity()))
                 .map(otm -> OneToManySpecAccessor.getInstance(otm, inherit))
                 .collect(toList()));
         attr.getOneToOnes().addAll(getOneToOne()
                 .stream()
+                .filter(oto -> workSpace==null || workSpace.hasItem(oto.getConnectedEntity()))
                 .map(oto -> OneToOneSpecAccessor.getInstance(oto, inherit))
                 .collect(toList()));
         return attr; 
