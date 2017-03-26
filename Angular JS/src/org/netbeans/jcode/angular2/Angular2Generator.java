@@ -67,7 +67,7 @@ import org.openide.util.NbBundle;
  * @author Gaurav Gupta
  */
 @ServiceProvider(service = Generator.class)
-@Technology(type = VIEWER, label = "Angular 2.x", panel = Angular2Panel.class, parents = {RESTGenerator.class})
+@Technology(type = VIEWER, label = "Angular", panel = Angular2Panel.class, parents = {RESTGenerator.class})
 public class Angular2Generator extends AngularGenerator {
 
     private static final String TEMPLATE = "org/netbeans/jcode/angular2/template/";
