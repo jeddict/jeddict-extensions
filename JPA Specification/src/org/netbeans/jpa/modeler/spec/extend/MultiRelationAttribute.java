@@ -709,18 +709,33 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
         return null;
     }
     
-//    public boolean isTextMapKeyAttributeType() {
-//        return isTextAttributeType(getMapKeyAttributeType());
-//    }
-//
-//    public boolean isPrecisionpMapKeyAttributeType() {
-//        return isPrecisionAttributeType(getMapKeyAttributeType());
-//    }
-//
-//    public boolean isScaleMapKeyAttributeType() {
-//        return isScaleAttributeType(getMapKeyAttributeType());
-//    }
+    //used in db modeler element-config.xml expression
+    public boolean isTextMapKeyAttributeType() {
+        return isTextAttributeType(getMapKeyAttributeType());
+    }
+
+    public boolean isPrecisionpMapKeyAttributeType() {
+        return isPrecisionAttributeType(getMapKeyAttributeType());
+    }
+
+    public boolean isScaleMapKeyAttributeType() {
+        return isScaleAttributeType(getMapKeyAttributeType());
+    }
     
+        public String getDefaultMapKeyColumnName() {
+//        if(getValidatedMapKeyType()==MapKeyType.NEW){
+//            if(mapKeyAttributeType != null){
+//                
+//            } else if(mapKeyEmbeddable != null){
+//                
+//            } else if(mapKeyEntity != null){
+//                
+//            }
+//        }
+        return this.getName().toUpperCase()+"_KEY";
+    }
+    
+        
     @Override
     public Set<Class<? extends Constraint>> getAttributeConstraintsClass() {
         Set<Class<? extends Constraint>> classes = getCollectionTypeConstraintsClass();

@@ -1020,7 +1020,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
         return this.getName().toUpperCase();
     }
 
-//    public String getDefaultMapKeyColumnName() {
+    public String getDefaultMapKeyColumnName() {
 //        if(getValidatedMapKeyType()==MapKeyType.NEW){
 //            if(mapKeyAttributeType != null){
 //                
@@ -1030,8 +1030,22 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
 //                
 //            }
 //        }
-//        return this.getName().toUpperCase();
-//    }
+        return this.getName().toUpperCase()+"_KEY";
+    }
+    
+        //used in db modeler element-config.xml expression
+    public boolean isTextMapKeyAttributeType() {
+        return isTextAttributeType(getMapKeyAttributeType());
+    }
+
+    public boolean isPrecisionpMapKeyAttributeType() {
+        return isPrecisionAttributeType(getMapKeyAttributeType());
+    }
+
+    public boolean isScaleMapKeyAttributeType() {
+        return isScaleAttributeType(getMapKeyAttributeType());
+    }
+    
     public String getColumnName() {
         if (this.getColumn() != null && StringUtils.isNotBlank(this.getColumn().getName())) {
             return getColumn().getName();

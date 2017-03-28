@@ -82,4 +82,13 @@ public interface MapKeyHandler {
     MapKey getMapKey();
             
     void setMapKey(MapKey value);
+    
+    String getDefaultMapKeyColumnName();
+    
+        //used in db modeler element-config.xml expression
+    boolean isTextMapKeyAttributeType();
+
+    boolean isPrecisionpMapKeyAttributeType();
+
+    boolean isScaleMapKeyAttributeType();
 }
