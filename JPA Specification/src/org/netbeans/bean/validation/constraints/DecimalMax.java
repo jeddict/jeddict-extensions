@@ -15,6 +15,7 @@
  */
 package org.netbeans.bean.validation.constraints;
 
+import static java.lang.Boolean.FALSE;
 import javax.lang.model.element.AnnotationMirror;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -32,7 +33,7 @@ public class DecimalMax extends Constraint {
     private String value;
     
     @XmlAttribute(name = "i")
-    private boolean inclusive = true;
+    private Boolean inclusive = true;
 
     @Override
     public void load(AnnotationMirror annotationMirror) {
@@ -43,26 +44,29 @@ public class DecimalMax extends Constraint {
 
     @Override
     public boolean isEmpty() {
-        return StringUtils.isBlank(value) && !inclusive;
+        return StringUtils.isBlank(value) && !FALSE.equals(inclusive);
     }
     
     @Override
     protected void clearConstraint(){
         value = null;
-        inclusive = true;
+        inclusive = null;
     }
 
     /**
      * @return the inclusive
      */
-    public boolean isInclusive() {
+    public Boolean getInclusive() {
+        if(inclusive == null){
+            return true;
+        }
         return inclusive;
     }
 
     /**
      * @param inclusive the inclusive to set
      */
-    public void setInclusive(boolean inclusive) {
+    public void setInclusive(Boolean inclusive) {
         this.inclusive = inclusive;
     }
     

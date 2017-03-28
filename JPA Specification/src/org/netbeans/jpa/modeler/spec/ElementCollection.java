@@ -1209,7 +1209,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
 
     @Override
     public Set<Class<? extends Constraint>> getAttributeConstraintsClass() {
-        Set<Class<? extends Constraint>> classes = getConstraintsClass(null);
+        Set<Class<? extends Constraint>> classes = getCollectionTypeConstraintsClass();
         classes.add(Size.class);
         return classes;
     }
@@ -1222,7 +1222,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
         return getConstraintsClass(getMapKeyDataTypeLabel());
     }
     
-         @Override
+    @Override
     public Set<Class<? extends Constraint>> getValueConstraintsClass() {
         return getConstraintsClass(getAttributeType());
     }

@@ -723,7 +723,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
     
     @Override
     public Set<Class<? extends Constraint>> getAttributeConstraintsClass() {
-        Set<Class<? extends Constraint>> classes = getConstraintsClass(null);
+        Set<Class<? extends Constraint>> classes = getCollectionTypeConstraintsClass();
         classes.add(Size.class);
         return classes;
     }

@@ -15,10 +15,13 @@
  */
 package org.netbeans.bean.validation.constraints;
 
+import java.util.List;
 import javax.lang.model.element.AnnotationMirror;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.lang.StringUtils;
+import org.netbeans.api.java.classpath.ClassPath.Flag;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
@@ -31,6 +34,9 @@ public class Pattern extends Constraint {
     @XmlAttribute(name = "r")
     private String regexp;
 
+    @XmlElement(name = "f")
+    private String flags;
+    
     public String getRegexp() {
         return regexp;
     }
@@ -53,5 +59,19 @@ public class Pattern extends Constraint {
     @Override
     protected void clearConstraint() {
         regexp = null;
+    }
+
+    /**
+     * @return the flags
+     */
+    public String getFlags() {
+        return flags;
+    }
+
+    /**
+     * @param flags the flags to set
+     */
+    public void setFlags(String flags) {
+        this.flags = flags;
     }
 }

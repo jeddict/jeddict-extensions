@@ -691,11 +691,6 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
         classes.add(Null.class);
         if (StringUtils.isNotBlank(attribute)) {
             switch (attribute) {
-                case BOOLEAN:
-                case BOOLEAN_WRAPPER:
-                    classes.add(AssertTrue.class);
-                    classes.add(AssertFalse.class);
-                    break;
                 case STRING:
                 case STRING_FQN:
                     classes.add(Size.class);//array, collection, map pending
@@ -703,6 +698,27 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
                     classes.add(DecimalMin.class);
                     classes.add(DecimalMax.class);
                     classes.add(Digits.class);
+                    break;
+                case BIGDECIMAL:
+                case BIGINTEGER:
+                case BYTE:
+                case SHORT:
+                case INT:
+                case LONG:
+                case BYTE_WRAPPER:
+                case SHORT_WRAPPER:
+                case INT_WRAPPER:
+                case LONG_WRAPPER:
+                    classes.add(Min.class);
+                    classes.add(Max.class);
+                    classes.add(DecimalMin.class);
+                    classes.add(DecimalMax.class);
+                    classes.add(Digits.class);
+                    break;
+                case BOOLEAN:
+                case BOOLEAN_WRAPPER:
+                    classes.add(AssertTrue.class);
+                    classes.add(AssertFalse.class);
                     break;
                 case CALENDAR:
                 case DATE:
@@ -723,32 +739,22 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
                     classes.add(Past.class);
                     classes.add(Future.class);
                     break;
-                case BIGDECIMAL:
-                case BIGINTEGER:
-                case BYTE:
-                case SHORT:
-                case INT:
-                case LONG:
-                case BYTE_WRAPPER:
-                case SHORT_WRAPPER:
-                case INT_WRAPPER:
-                case LONG_WRAPPER:
-                    classes.add(Min.class);
-                    classes.add(Max.class);
-                    classes.add(DecimalMin.class);
-                    classes.add(DecimalMax.class);
-                    classes.add(Digits.class);
-                    break;
                 default:
                     if(isArray(attribute)){
                         classes.add(Size.class);
-                    }
-                        
+                    } 
             }
         }
         return classes;
     }
     
+    protected Set<Class<? extends Constraint>> getCollectionTypeConstraintsClass() {
+        Set<Class<? extends Constraint>> classes = new LinkedHashSet<>();
+        classes.add(NotNull.class);
+        classes.add(Null.class);
+        classes.add(Size.class);
+        return classes;
+    }
   
     /**
      * @param constraints
