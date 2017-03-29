@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
+import org.eclipse.persistence.internal.jpa.metadata.sequencing.GeneratedValueMetadata;
 import static org.netbeans.jcode.jpa.JPAConstants.GENERATED_VALUE_FQN;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
@@ -106,6 +107,13 @@ public class GeneratedValue {
      */
     public void setGenerator(String value) {
         this.generator = value;
+    }
+    
+    public GeneratedValueMetadata getAccessor() {
+        GeneratedValueMetadata accessr = new GeneratedValueMetadata();
+        accessr.setGenerator(getGenerator());
+        accessr.setStrategy(getStrategy().name());
+        return accessr;
     }
 
 }

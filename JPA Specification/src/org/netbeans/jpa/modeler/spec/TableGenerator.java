@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import static java.util.stream.Collectors.toList;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -18,6 +19,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
 import static org.netbeans.jcode.jpa.JPAConstants.TABLE_GENERATOR_FQN;
 import org.netbeans.jpa.modeler.spec.validator.TableGeneratorValidator;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
@@ -388,4 +390,25 @@ public class TableGenerator {
         this.allocationSize = value;
     }
 
+    
+    public TableGeneratorMetadata getAccessor() {
+        TableGeneratorMetadata accessor = new TableGeneratorMetadata();
+        accessor.setName(table);
+        accessor.setAllocationSize(allocationSize);
+        accessor.setCatalog(catalog);
+        accessor.setInitialValue(initialValue);
+        accessor.setSchema(schema);
+        accessor.setPkColumnName(pkColumnName);
+        accessor.setPkColumnValue(pkColumnValue);
+        accessor.setValueColumnName(valueColumnName);
+//        accessr.setDatabaseTable(new DatabaseTable(table, ""));
+        accessor.setGeneratorName(name);
+        accessor.setUniqueConstraints(getUniqueConstraint().stream()
+                .map(UniqueConstraint::getAccessor)
+                .collect(toList()));
+        accessor.setIndexes(getIndex().stream()
+                .map(Index::getAccessor)
+                .collect(toList()));
+        return accessor;
+    }
 }

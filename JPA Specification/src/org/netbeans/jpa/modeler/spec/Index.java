@@ -9,6 +9,7 @@ package org.netbeans.jpa.modeler.spec;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import static java.util.stream.Collectors.joining;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -17,6 +18,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.persistence.internal.jpa.metadata.tables.IndexMetadata;
 import static org.netbeans.jcode.jpa.JPAConstants.INDEX_FQN;
 import org.netbeans.jpa.modeler.spec.extend.OrderbyItem;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
@@ -187,4 +189,11 @@ public class Index {
         return getColumnList().stream().map(c -> c.getProperty()).collect(Collectors.joining(", "));
     }
 
+    public IndexMetadata getAccessor() {
+        IndexMetadata accessor = new IndexMetadata();
+        accessor.setName(name);
+        accessor.setUnique(unique);
+        accessor.setColumnList(getColumnList().stream().map(ot -> ot.toString()).collect(joining(",")));
+        return accessor;
+    }
 }

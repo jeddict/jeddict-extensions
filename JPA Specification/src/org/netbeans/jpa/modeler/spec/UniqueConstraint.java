@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import org.eclipse.persistence.internal.jpa.metadata.tables.UniqueConstraintMetadata;
 import static org.netbeans.jcode.jpa.JPAConstants.UNIQUE_CONSTRAINT_FQN;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
@@ -68,8 +69,6 @@ public class UniqueConstraint {
         this.name = name;
     }
 
-    
-    
     public static UniqueConstraint load(Element element, AnnotationMirror annotationMirror) {
         if (annotationMirror == null) {
             annotationMirror = JavaSourceParserUtil.findAnnotation(element, UNIQUE_CONSTRAINT_FQN);
@@ -81,9 +80,9 @@ public class UniqueConstraint {
             if (columnNameList != null) {
                 for (Object object : columnNameList) {
                     String column = object.toString();
-                    if(column.length() > 2){
-                        column = column.substring(1, column.length()-1);
-                        uniqueConstraint.getColumnName().add(column); 
+                    if (column.length() > 2) {
+                        column = column.substring(1, column.length() - 1);
+                        uniqueConstraint.getColumnName().add(column);
                     }
                 }
             }
@@ -168,10 +167,16 @@ public class UniqueConstraint {
         }
         return true;
     }
-    
-        @Override
+
+    @Override
     public String toString() {
         return getColumnName().stream().collect(Collectors.joining(", "));
     }
 
+    public UniqueConstraintMetadata getAccessor() {
+        UniqueConstraintMetadata accessor = new UniqueConstraintMetadata();
+        accessor.setName(name);
+        accessor.setColumnNames(columnName);
+        return accessor;//java.lang.IllegalAccessError: tried to access method org.eclipse.persistence.tools.schemaframework.TableDefinition.buildUniqueKeyConstraint
+    }
 }

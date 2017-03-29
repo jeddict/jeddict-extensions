@@ -98,6 +98,13 @@ public class EntitySpecAccessor extends EntityAccessor {
         
         accessor.setConverts(entity.getConverts().stream().map(Convert::getAccessor).collect(toList()));
         
+        if (entity.getSequenceGenerator()!= null) {
+            accessor.setSequenceGenerator(entity.getSequenceGenerator().getAccessor());
+        }  
+        if (entity.getTableGenerator() != null) {
+            accessor.setTableGenerator(entity.getTableGenerator().getAccessor());
+        }  
+        
         return accessor;
 
     }

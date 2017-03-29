@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
 import static org.netbeans.jcode.jpa.JPAConstants.SEQUENCE_GENERATOR_FQN;
 import org.netbeans.jpa.modeler.spec.validator.SequenceGeneratorValidator;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
@@ -232,4 +233,14 @@ public class SequenceGenerator {
         this.allocationSize = value;
     }
 
+    public SequenceGeneratorMetadata getAccessor() {
+        SequenceGeneratorMetadata accessor = new SequenceGeneratorMetadata();
+        accessor.setName(name);
+        accessor.setAllocationSize(allocationSize);
+        accessor.setCatalog(catalog);
+        accessor.setInitialValue(initialValue);
+        accessor.setSchema(schema);
+        accessor.setSequenceName(sequenceName);
+        return accessor;
+    }
 }

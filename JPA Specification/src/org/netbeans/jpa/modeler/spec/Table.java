@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import static java.util.stream.Collectors.toList;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -226,7 +227,12 @@ public class Table {
         accessor.setName(name);
         accessor.setCatalog(catalog);
         accessor.setSchema(schema);
-
+        accessor.setUniqueConstraints(getUniqueConstraint().stream()
+                .map(UniqueConstraint::getAccessor)
+                .collect(toList()));
+        accessor.setIndexes(getIndex().stream()
+                .map(Index::getAccessor)
+                .collect(toList()));        
         return accessor;
     }
 

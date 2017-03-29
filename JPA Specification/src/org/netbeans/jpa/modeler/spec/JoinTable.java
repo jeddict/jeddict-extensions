@@ -394,6 +394,12 @@ public class JoinTable {
         if (ForeignKeyValidator.isNotEmpty(inverseForeignKey)) {
             accessor.setInverseForeignKey(inverseForeignKey.getAccessor());
         }
+        accessor.setUniqueConstraints(getUniqueConstraint().stream()
+                .map(UniqueConstraint::getAccessor)
+                .collect(toList()));
+        accessor.setIndexes(getIndex().stream()
+                .map(Index::getAccessor)
+                .collect(toList()));
         return accessor;
     }
 

@@ -312,6 +312,12 @@ public class CollectionTable {
         if (ForeignKeyValidator.isNotEmpty(foreignKey)) {
             accessor.setForeignKey(foreignKey.getAccessor());
         }
+        accessor.setUniqueConstraints(getUniqueConstraint().stream()
+                .map(UniqueConstraint::getAccessor)
+                .collect(toList()));
+        accessor.setIndexes(getIndex().stream()
+                .map(Index::getAccessor)
+                .collect(toList()));
         return accessor;
     }
 

@@ -90,6 +90,14 @@ public class OrderbyItem {
         }
         return true;
     }
-    
+
+    @Override
+    public String toString() {
+        if (orderType != null) {
+            return property + " " + orderType.name();
+        } else {
+            return property;
+        }
+    }
     
 }
