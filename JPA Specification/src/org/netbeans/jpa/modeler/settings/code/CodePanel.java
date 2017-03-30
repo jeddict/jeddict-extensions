@@ -16,6 +16,7 @@
 package org.netbeans.jpa.modeler.settings.code;
 
 import java.util.prefs.Preferences;
+import static org.apache.commons.lang.StringUtils.EMPTY;
 import org.openide.util.NbPreferences;
 
 public final class CodePanel extends javax.swing.JPanel {
@@ -39,7 +40,11 @@ public final class CodePanel extends javax.swing.JPanel {
         rootLayeredPane = new javax.swing.JLayeredPane();
         refractorNamedQueryComp = new javax.swing.JCheckBox();
         deleteNamedQueryComp = new javax.swing.JCheckBox();
+        javaseWrapperPanel1 = new javax.swing.JLayeredPane();
         generateFluentAPIComp = new javax.swing.JCheckBox();
+        fluentAPIPrefixWrapperPanel = new javax.swing.JLayeredPane();
+        fluentAPIPrefix_Label = new javax.swing.JLabel();
+        fluentAPIPrefixComp = new javax.swing.JTextField();
         generateDefaultValueComp = new javax.swing.JCheckBox();
         javaseWrapperPanel = new javax.swing.JLayeredPane();
         javaseSupportLabel = new javax.swing.JLabel();
@@ -59,8 +64,23 @@ public final class CodePanel extends javax.swing.JPanel {
         org.openide.awt.Mnemonics.setLocalizedText(deleteNamedQueryComp, org.openide.util.NbBundle.getMessage(CodePanel.class, "CodePanel.deleteNamedQueryComp.text")); // NOI18N
         rootLayeredPane.add(deleteNamedQueryComp);
 
+        javaseWrapperPanel1.setLayout(new java.awt.BorderLayout());
+
         org.openide.awt.Mnemonics.setLocalizedText(generateFluentAPIComp, org.openide.util.NbBundle.getMessage(CodePanel.class, "CodePanel.generateFluentAPIComp.text")); // NOI18N
-        rootLayeredPane.add(generateFluentAPIComp);
+        javaseWrapperPanel1.add(generateFluentAPIComp, java.awt.BorderLayout.WEST);
+
+        fluentAPIPrefixWrapperPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        org.openide.awt.Mnemonics.setLocalizedText(fluentAPIPrefix_Label, org.openide.util.NbBundle.getMessage(CodePanel.class, "CodePanel.fluentAPIPrefix_Label.text")); // NOI18N
+        fluentAPIPrefixWrapperPanel.add(fluentAPIPrefix_Label);
+
+        fluentAPIPrefixComp.setText(org.openide.util.NbBundle.getMessage(CodePanel.class, "CodePanel.fluentAPIPrefixComp.text")); // NOI18N
+        fluentAPIPrefixComp.setPreferredSize(new java.awt.Dimension(120, 20));
+        fluentAPIPrefixWrapperPanel.add(fluentAPIPrefixComp);
+
+        javaseWrapperPanel1.add(fluentAPIPrefixWrapperPanel, java.awt.BorderLayout.CENTER);
+
+        rootLayeredPane.add(javaseWrapperPanel1);
 
         org.openide.awt.Mnemonics.setLocalizedText(generateDefaultValueComp, org.openide.util.NbBundle.getMessage(CodePanel.class, "CodePanel.generateDefaultValueComp.text")); // NOI18N
         rootLayeredPane.add(generateDefaultValueComp);
@@ -137,7 +157,7 @@ public final class CodePanel extends javax.swing.JPanel {
                 .addComponent(compositePrimaryKeyTypeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(defaultCompositePrimaryKeyTypeComp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(102, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         compositePKWrapperPanelLayout.setVerticalGroup(
             compositePKWrapperPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -176,6 +196,7 @@ public final class CodePanel extends javax.swing.JPanel {
         refractorNamedQueryComp.setSelected(isRefractorQuery());
         deleteNamedQueryComp.setSelected(isDeleteQuery());
         generateFluentAPIComp.setSelected(isGenerateFluentAPI());
+        fluentAPIPrefixComp.setText(getFluentAPIPrefix());
         generateDefaultValueComp.setSelected(isGenerateDefaultValue());
         javaseSupportComp.setSelected(isJavaSESupportEnable());
         optionalReturnTypeStatusComp.setSelectedItem(isOptionalReturnType() ? "Enable" : "Disable");
@@ -186,6 +207,7 @@ public final class CodePanel extends javax.swing.JPanel {
         pref.putBoolean("refractorNamedQuery", refractorNamedQueryComp.isSelected());
         pref.putBoolean("deleteNamedQuery", deleteNamedQueryComp.isSelected());
         pref.putBoolean("generateFluentAPI", generateFluentAPIComp.isSelected());
+        pref.put("fluentAPIPrefix", fluentAPIPrefixComp.getText());
         pref.putBoolean("generateDefaultValue", generateDefaultValueComp.isSelected());
         pref.putBoolean("javaSESupportEnable", javaseSupportComp.isSelected());
         pref.putBoolean("optionalReturnType", "Enable".equals(optionalReturnTypeStatusComp.getSelectedItem()));
@@ -193,6 +215,7 @@ public final class CodePanel extends javax.swing.JPanel {
         deleteNamedQuery = null;
         refractorNamedQuery = null;
         generateFluentAPI = null;
+        fluentAPIPrefix = null;
         generateDefaultValue = null;
         javaSESupportEnable = null;
         optionalReturnTypeStatus = null;
@@ -202,6 +225,7 @@ public final class CodePanel extends javax.swing.JPanel {
     private static Boolean deleteNamedQuery;
     private static Boolean refractorNamedQuery;
     private static Boolean generateFluentAPI;
+    private static String fluentAPIPrefix;
     private static Boolean generateDefaultValue;
     private static Boolean javaSESupportEnable;
     private static Boolean optionalReturnTypeStatus;
@@ -219,6 +243,13 @@ public final class CodePanel extends javax.swing.JPanel {
             generateFluentAPI = pref.getBoolean("generateFluentAPI", Boolean.FALSE);
         }
         return generateFluentAPI;
+    }
+    
+    public static String getFluentAPIPrefix() {
+        if (fluentAPIPrefix == null) {
+            fluentAPIPrefix = pref.get("fluentAPIPrefix", EMPTY);
+        }
+        return fluentAPIPrefix;
     }
 
     public static boolean isGenerateDefaultValue() {
@@ -270,11 +301,15 @@ public final class CodePanel extends javax.swing.JPanel {
     private javax.swing.JLabel compositePrimaryKeyTypeLabel;
     private javax.swing.JComboBox<String> defaultCompositePrimaryKeyTypeComp;
     private javax.swing.JCheckBox deleteNamedQueryComp;
+    private javax.swing.JTextField fluentAPIPrefixComp;
+    private javax.swing.JLayeredPane fluentAPIPrefixWrapperPanel;
+    private javax.swing.JLabel fluentAPIPrefix_Label;
     private javax.swing.JCheckBox generateDefaultValueComp;
     private javax.swing.JCheckBox generateFluentAPIComp;
     private javax.swing.JCheckBox javaseSupportComp;
     private javax.swing.JLabel javaseSupportLabel;
     private javax.swing.JLayeredPane javaseWrapperPanel;
+    private javax.swing.JLayeredPane javaseWrapperPanel1;
     private javax.swing.JLayeredPane optionalReturnTypePanel;
     private javax.swing.JComboBox<String> optionalReturnTypeStatusComp;
     private javax.swing.JLabel optionalReturnTypeStatusLabel;
