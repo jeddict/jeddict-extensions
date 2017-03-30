@@ -2,4 +2,4 @@ Manifest-Version: 1.0
 AutoUpdate-Show-In-Client: true
 OpenIDE-Module: org.netbeans.jcode.rest
 OpenIDE-Module-Localizing-Bundle: org/netbeans/jcode/rest/Bundle.properties
-OpenIDE-Module-Specification-Version: 4.0
+OpenIDE-Module-Specification-Version: 4.1
