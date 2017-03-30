@@ -49,6 +49,13 @@ public final class CodePanel extends javax.swing.JPanel {
         javaseWrapperPanel = new javax.swing.JLayeredPane();
         javaseSupportLabel = new javax.swing.JLabel();
         javaseSupportComp = new javax.swing.JCheckBox();
+        javaDocPanel = new javax.swing.JLayeredPane();
+        javaDoc_Label = new javax.swing.JLabel();
+        javadocSetting_LayeredPane = new javax.swing.JLayeredPane();
+        propertyJavaDocComp = new javax.swing.JCheckBox();
+        getterJavaDocComp = new javax.swing.JCheckBox();
+        setterJavaDocComp = new javax.swing.JCheckBox();
+        fluentAPIJavaDocComp = new javax.swing.JCheckBox();
         optionalReturnTypePanel = new javax.swing.JLayeredPane();
         optionalReturnTypeStatusLabel = new javax.swing.JLabel();
         optionalReturnTypeStatusComp = new javax.swing.JComboBox<>();
@@ -56,7 +63,7 @@ public final class CodePanel extends javax.swing.JPanel {
         compositePrimaryKeyTypeLabel = new javax.swing.JLabel();
         defaultCompositePrimaryKeyTypeComp = new javax.swing.JComboBox<>();
 
-        rootLayeredPane.setLayout(new java.awt.GridLayout(7, 1));
+        rootLayeredPane.setLayout(new java.awt.GridLayout(8, 1));
 
         org.openide.awt.Mnemonics.setLocalizedText(refractorNamedQueryComp, org.openide.util.NbBundle.getMessage(CodePanel.class, "CodePanel.refractorNamedQueryComp.text")); // NOI18N
         rootLayeredPane.add(refractorNamedQueryComp);
@@ -112,6 +119,31 @@ public final class CodePanel extends javax.swing.JPanel {
 
         rootLayeredPane.add(javaseWrapperPanel);
 
+        javaDocPanel.setLayout(new java.awt.BorderLayout());
+
+        org.openide.awt.Mnemonics.setLocalizedText(javaDoc_Label, org.openide.util.NbBundle.getMessage(CodePanel.class, "CodePanel.javaDoc_Label.text")); // NOI18N
+        javaDocPanel.add(javaDoc_Label, java.awt.BorderLayout.WEST);
+
+        javadocSetting_LayeredPane.setPreferredSize(new java.awt.Dimension(253, 17));
+        javadocSetting_LayeredPane.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 18, 0));
+
+        propertyJavaDocComp.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(propertyJavaDocComp, org.openide.util.NbBundle.getMessage(CodePanel.class, "CodePanel.propertyJavaDocComp.text")); // NOI18N
+        javadocSetting_LayeredPane.add(propertyJavaDocComp);
+
+        org.openide.awt.Mnemonics.setLocalizedText(getterJavaDocComp, org.openide.util.NbBundle.getMessage(CodePanel.class, "CodePanel.getterJavaDocComp.text")); // NOI18N
+        javadocSetting_LayeredPane.add(getterJavaDocComp);
+
+        org.openide.awt.Mnemonics.setLocalizedText(setterJavaDocComp, org.openide.util.NbBundle.getMessage(CodePanel.class, "CodePanel.setterJavaDocComp.text")); // NOI18N
+        javadocSetting_LayeredPane.add(setterJavaDocComp);
+
+        org.openide.awt.Mnemonics.setLocalizedText(fluentAPIJavaDocComp, org.openide.util.NbBundle.getMessage(CodePanel.class, "CodePanel.fluentAPIJavaDocComp.text")); // NOI18N
+        javadocSetting_LayeredPane.add(fluentAPIJavaDocComp);
+
+        javaDocPanel.add(javadocSetting_LayeredPane, java.awt.BorderLayout.CENTER);
+
+        rootLayeredPane.add(javaDocPanel);
+
         org.openide.awt.Mnemonics.setLocalizedText(optionalReturnTypeStatusLabel, org.openide.util.NbBundle.getMessage(CodePanel.class, "CodePanel.optionalReturnTypeStatusLabel.text")); // NOI18N
 
         optionalReturnTypeStatusComp.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Disable", "Enable" }));
@@ -136,7 +168,7 @@ public final class CodePanel extends javax.swing.JPanel {
                 .addGroup(optionalReturnTypePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(optionalReturnTypeStatusLabel)
                     .addComponent(optionalReturnTypeStatusComp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 9, Short.MAX_VALUE))
+                .addGap(0, 6, Short.MAX_VALUE))
         );
 
         rootLayeredPane.add(optionalReturnTypePanel);
@@ -165,7 +197,7 @@ public final class CodePanel extends javax.swing.JPanel {
                 .addGroup(compositePKWrapperPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(compositePrimaryKeyTypeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(defaultCompositePrimaryKeyTypeComp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 9, Short.MAX_VALUE))
+                .addGap(0, 6, Short.MAX_VALUE))
         );
 
         rootLayeredPane.add(compositePKWrapperPanel);
@@ -195,6 +227,10 @@ public final class CodePanel extends javax.swing.JPanel {
     void load() {
         refractorNamedQueryComp.setSelected(isRefractorQuery());
         deleteNamedQueryComp.setSelected(isDeleteQuery());
+        propertyJavaDocComp.setSelected(isPropertyJavaDoc());
+        getterJavaDocComp.setSelected(isGetterJavaDoc());
+        setterJavaDocComp.setSelected(isSetterJavaDoc());
+        fluentAPIJavaDocComp.setSelected(isFluentAPIJavaDoc());
         generateFluentAPIComp.setSelected(isGenerateFluentAPI());
         fluentAPIPrefixComp.setText(getFluentAPIPrefix());
         generateDefaultValueComp.setSelected(isGenerateDefaultValue());
@@ -206,6 +242,10 @@ public final class CodePanel extends javax.swing.JPanel {
     void store() {
         pref.putBoolean("refractorNamedQuery", refractorNamedQueryComp.isSelected());
         pref.putBoolean("deleteNamedQuery", deleteNamedQueryComp.isSelected());
+        pref.putBoolean("propertyJavaDoc", propertyJavaDocComp.isSelected());
+        pref.putBoolean("getterJavaDoc", getterJavaDocComp.isSelected());
+        pref.putBoolean("setterJavaDoc", setterJavaDocComp.isSelected());
+        pref.putBoolean("fluentAPIJavaDoc", fluentAPIJavaDocComp.isSelected());
         pref.putBoolean("generateFluentAPI", generateFluentAPIComp.isSelected());
         pref.put("fluentAPIPrefix", fluentAPIPrefixComp.getText());
         pref.putBoolean("generateDefaultValue", generateDefaultValueComp.isSelected());
@@ -214,6 +254,10 @@ public final class CodePanel extends javax.swing.JPanel {
         pref.put("defaultCompositePrimaryKeyType", (String) defaultCompositePrimaryKeyTypeComp.getSelectedItem());
         deleteNamedQuery = null;
         refractorNamedQuery = null;
+        propertyJavaDoc = null;
+        getterJavaDoc = null;
+        setterJavaDoc = null;
+        fluentAPIJavaDoc = null;
         generateFluentAPI = null;
         fluentAPIPrefix = null;
         generateDefaultValue = null;
@@ -224,6 +268,10 @@ public final class CodePanel extends javax.swing.JPanel {
 
     private static Boolean deleteNamedQuery;
     private static Boolean refractorNamedQuery;
+    private static Boolean propertyJavaDoc;
+    private static Boolean getterJavaDoc;
+    private static Boolean setterJavaDoc;
+    private static Boolean fluentAPIJavaDoc;
     private static Boolean generateFluentAPI;
     private static String fluentAPIPrefix;
     private static Boolean generateDefaultValue;
@@ -243,6 +291,35 @@ public final class CodePanel extends javax.swing.JPanel {
             generateFluentAPI = pref.getBoolean("generateFluentAPI", Boolean.FALSE);
         }
         return generateFluentAPI;
+    }
+    
+    
+    public static boolean isPropertyJavaDoc() {
+        if (propertyJavaDoc == null) {
+            propertyJavaDoc = pref.getBoolean("propertyJavaDoc", Boolean.TRUE);
+        }
+        return propertyJavaDoc;
+    }
+
+    public static boolean isGetterJavaDoc() {
+        if (getterJavaDoc == null) {
+            getterJavaDoc = pref.getBoolean("getterJavaDoc", Boolean.FALSE);
+        }
+        return getterJavaDoc;
+    }
+
+    public static boolean isSetterJavaDoc() {
+        if (setterJavaDoc == null) {
+            setterJavaDoc = pref.getBoolean("setterJavaDoc", Boolean.FALSE);
+        }
+        return setterJavaDoc;
+    }
+    
+    public static boolean isFluentAPIJavaDoc() {
+        if (fluentAPIJavaDoc == null) {
+            fluentAPIJavaDoc = pref.getBoolean("fluentAPIJavaDoc", Boolean.FALSE);
+        }
+        return fluentAPIJavaDoc;
     }
     
     public static String getFluentAPIPrefix() {
@@ -301,11 +378,16 @@ public final class CodePanel extends javax.swing.JPanel {
     private javax.swing.JLabel compositePrimaryKeyTypeLabel;
     private javax.swing.JComboBox<String> defaultCompositePrimaryKeyTypeComp;
     private javax.swing.JCheckBox deleteNamedQueryComp;
+    private javax.swing.JCheckBox fluentAPIJavaDocComp;
     private javax.swing.JTextField fluentAPIPrefixComp;
     private javax.swing.JLayeredPane fluentAPIPrefixWrapperPanel;
     private javax.swing.JLabel fluentAPIPrefix_Label;
     private javax.swing.JCheckBox generateDefaultValueComp;
     private javax.swing.JCheckBox generateFluentAPIComp;
+    private javax.swing.JCheckBox getterJavaDocComp;
+    private javax.swing.JLayeredPane javaDocPanel;
+    private javax.swing.JLabel javaDoc_Label;
+    private javax.swing.JLayeredPane javadocSetting_LayeredPane;
     private javax.swing.JCheckBox javaseSupportComp;
     private javax.swing.JLabel javaseSupportLabel;
     private javax.swing.JLayeredPane javaseWrapperPanel;
@@ -313,7 +395,9 @@ public final class CodePanel extends javax.swing.JPanel {
     private javax.swing.JLayeredPane optionalReturnTypePanel;
     private javax.swing.JComboBox<String> optionalReturnTypeStatusComp;
     private javax.swing.JLabel optionalReturnTypeStatusLabel;
+    private javax.swing.JCheckBox propertyJavaDocComp;
     private javax.swing.JCheckBox refractorNamedQueryComp;
     private javax.swing.JLayeredPane rootLayeredPane;
+    private javax.swing.JCheckBox setterJavaDocComp;
     // End of variables declaration//GEN-END:variables
 }
