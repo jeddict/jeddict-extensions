@@ -41,7 +41,7 @@ public class IdSpecAccessor extends IdAccessor {
         if (id.getColumn() != null) {
             accessor.setColumn(id.getColumn().getAccessor());
         }
-        if (id.getGeneratedValue() != null) {
+        if (id.getGeneratedValue() != null && id.getGeneratedValue().getStrategy()!=null) {
             accessor.setGeneratedValue(id.getGeneratedValue().getAccessor());
         }  
         if (id.getSequenceGenerator()!= null) {
