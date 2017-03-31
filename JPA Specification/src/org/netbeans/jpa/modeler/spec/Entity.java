@@ -179,7 +179,7 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
     
     @XmlAttribute(name = "lbl-ref")
     @XmlIDREF
-    private Attribute labelAttribute;//to diplay value in UI
+    private Attribute labelAttribute;//to display value in UI
 
     @Override
     public void load(EntityMappings entityMappings, TypeElement element, boolean fieldAccess) {
