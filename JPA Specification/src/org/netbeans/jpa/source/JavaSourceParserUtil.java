@@ -203,8 +203,8 @@ public class JavaSourceParserUtil {
         return constraints;
     }
 
-    public static List<Annotation> getNonEEAnnotation(Element element) {
-        List<Annotation> annotations = new ArrayList<>();
+    public static <T extends Annotation> List<T> getNonEEAnnotation(Element element, Class<? extends T> type) {
+        List<T> annotations = new ArrayList<>();
         for (AnnotationMirror annotationMirror : element.getAnnotationMirrors()) {
             String annotationQualifiedName = getAnnotationQualifiedName(annotationMirror);
             Matcher matcher = JPA_PACKAGE_PATTERN.matcher(annotationQualifiedName);
@@ -212,8 +212,15 @@ public class JavaSourceParserUtil {
                 if (SUPPORTED_BV_REVENG_CLASS_SET.containsKey(annotationQualifiedName)) {
                     continue;//skip this annotation , already reveng in getBeanValidation()
                 }
-                Annotation annotation = new Annotation();
-                //TODO parse annotation
+                T annotation;
+                
+                try {
+                    annotation = type.newInstance();
+                } catch(Exception e){
+                    throw new IllegalStateException(e);
+                }
+                
+//TODO parse annotation
 //        Iterator itr = annotationMirror.getElementValues().entrySet().iterator();
 //        while(itr.hasNext()){
 //            Entry entry = (Entry)itr.next();

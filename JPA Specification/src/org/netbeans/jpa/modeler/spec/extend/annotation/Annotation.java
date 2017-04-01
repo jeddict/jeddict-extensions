@@ -22,13 +22,14 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import org.netbeans.jpa.modeler.spec.extend.AnnotationLocation;
 
 /**
  *
  * @author Gaurav Gupta
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Annotation implements Serializable {
+public abstract class Annotation<L extends AnnotationLocation> implements Serializable {
 
     @XmlAttribute(name = "e")
     private boolean enable = true;
@@ -96,7 +97,18 @@ public class Annotation implements Serializable {
     public void setAnnotationElements(List<AnnotationElement> elements) {
         this.elements = elements;
     }
+    
+    /**
+     * @return the locationType
+     */
+    public abstract L getLocationType();
 
+    /**
+     * @param locationType the locationType to set
+     */
+    public abstract void setLocationType(L locationType);
+
+    
     @Override
     public String toString() {
         return "Annotation{" + "name=" + name + ", elements=" + elements + '}';

@@ -36,7 +36,6 @@ import org.apache.commons.lang.StringUtils;
 import org.netbeans.api.java.source.JavaSource;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
 import org.netbeans.jpa.modeler.spec.IdentifiableClass;
-import org.netbeans.jpa.modeler.spec.extend.annotation.Annotation;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 import org.netbeans.modeler.core.NBModelerUtil;
 import org.netbeans.jpa.source.JCRELoader;
@@ -81,10 +80,10 @@ public abstract class JavaClass<T extends IAttributes> extends FlowNode implemen
     @XmlAttribute(name="v")
     private boolean visibile = true;
 
-    private List<Annotation> annotation;
+    private List<ClassAnnotation> annotation;
     
     @XmlTransient
-    private List<Annotation> runtimeAnnotation;
+    private List<ClassAnnotation> runtimeAnnotation;
     
     @XmlElement(name = "ext")
     private ReferenceClass superclassRef;//if refered from classpath
@@ -124,7 +123,7 @@ public abstract class JavaClass<T extends IAttributes> extends FlowNode implemen
         for (TypeMirror mirror : element.getInterfaces()) {
             this.addInterface(new ReferenceClass(mirror.toString()));
         }
-        this.setAnnotation(JavaSourceParserUtil.getNonEEAnnotation(element));
+        this.setAnnotation(JavaSourceParserUtil.getNonEEAnnotation(element, ClassAnnotation.class));
     }
     
     public abstract T getAttributes();
@@ -135,7 +134,7 @@ public abstract class JavaClass<T extends IAttributes> extends FlowNode implemen
     /**
      * @return the annotation
      */
-    public List<Annotation> getAnnotation() {
+    public List<ClassAnnotation> getAnnotation() {
         if (annotation == null) {
             annotation = new ArrayList<>();
         }
@@ -145,22 +144,22 @@ public abstract class JavaClass<T extends IAttributes> extends FlowNode implemen
     /**
      * @param annotation the annotation to set
      */
-    public void setAnnotation(List<Annotation> annotation) {
+    public void setAnnotation(List<ClassAnnotation> annotation) {
         this.annotation = annotation;
     }
 
-    public void addAnnotation(Annotation annotation_In) {
+    public void addAnnotation(ClassAnnotation annotation_In) {
         getAnnotation().add(annotation_In);
     }
 
-    public void removeAnnotation(Annotation annotation_In) {
+    public void removeAnnotation(ClassAnnotation annotation_In) {
         getAnnotation().remove(annotation_In);
     }
 
     /**
      * @return the runtimeAnnotation
      */
-    public List<Annotation> getRuntimeAnnotation() {
+    public List<ClassAnnotation> getRuntimeAnnotation() {
         if (runtimeAnnotation == null) {
             runtimeAnnotation = new ArrayList<>();
         }
@@ -170,15 +169,15 @@ public abstract class JavaClass<T extends IAttributes> extends FlowNode implemen
     /**
      * @param runtimeAnnotation the runtimeAnnotation to set
      */
-    public void setRuntimeAnnotation(List<Annotation> runtimeAnnotation) {
+    public void setRuntimeAnnotation(List<ClassAnnotation> runtimeAnnotation) {
         this.runtimeAnnotation = runtimeAnnotation;
     }
 
-    public void addRuntimeAnnotation(Annotation runtimeAnnotation) {
+    public void addRuntimeAnnotation(ClassAnnotation runtimeAnnotation) {
         getRuntimeAnnotation().add(runtimeAnnotation);
     }
 
-    public void removeRuntimeAnnotation(Annotation runtimeAnnotation) {
+    public void removeRuntimeAnnotation(ClassAnnotation runtimeAnnotation) {
         getRuntimeAnnotation().remove(runtimeAnnotation);
     }
 
