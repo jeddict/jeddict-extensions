@@ -860,7 +860,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         }
         return Optional.empty();
     }
-
+    
     public Optional<? extends IdentifiableClass> findIdentifiableClass(String className) {
         if (StringUtils.isBlank(className)) {
             return Optional.empty();

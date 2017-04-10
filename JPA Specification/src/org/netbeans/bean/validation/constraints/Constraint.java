@@ -69,6 +69,7 @@ public abstract class Constraint implements JCREBVLoader {
     void afterUnmarshal(Unmarshaller u, Object parent) {
         setSelected(true);
     }
+    
     @Override
     public int hashCode() {
         int hash = 7;

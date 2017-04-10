@@ -37,6 +37,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlElements;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang.StringUtils;
 import static org.netbeans.jcode.core.util.AttributeType.DOUBLE;
@@ -420,19 +421,19 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
     }
 
     @XmlTransient
-    private Attributes attributes;
+    private IAttributes attributes;
 
     public JavaClass getJavaClass() {
         return attributes.getJavaClass();
     }
 
-    public void setAttributes(Attributes attributes) {
+    public void setAttributes(IAttributes attributes) {
         this.attributes = attributes;
     }
 
     void afterUnmarshal(Unmarshaller u, Object parent) {
-        if (parent instanceof Attributes) {
-            setAttributes((Attributes) parent);//this
+        if (parent instanceof IAttributes) {
+            setAttributes((IAttributes) parent);//this
         }
     }
 

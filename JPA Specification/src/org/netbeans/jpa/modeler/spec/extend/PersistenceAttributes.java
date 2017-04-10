@@ -15,25 +15,21 @@
  */
 package org.netbeans.jpa.modeler.spec.extend;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import static java.util.function.Function.identity;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.XMLAttributes;
 import org.netbeans.jcode.core.util.AttributeType.Type;
@@ -914,5 +910,39 @@ public abstract class PersistenceAttributes<T extends ManagedClass> extends Attr
             converts.addAll(mtm.getMapKeyConverts().stream().filter(con -> con.getConverter() != null).map(Convert::getConverter).collect(toSet()));
         }
         return converts;
+    }
+    
+    @Override
+    public void removeNonOwnerAttribute(){
+        Predicate<RelationAttribute> filterOwner = attr -> attr.isOwner() || (attr.getConnectedAttribute()!=null && attr.getJavaClass() == attr.getConnectedEntity());//either owner or self relation
+//        
+//        
+//        getManyToOne().get(0).getConnectedAttribute()
+//                getManyToOne().get(0).getJavaClass() == getManyToOne().get(0).getConnectedEntity()
+        
+        setOneToOne(
+                getOneToOne()
+                        .stream()
+                        .filter(filterOwner)
+                        .collect(toList())
+        );
+        setOneToMany(
+                getOneToMany()
+                        .stream()
+                        .filter(filterOwner)
+                        .collect(toList())
+        );
+        setManyToOne(
+                getManyToOne()
+                        .stream()
+                        .filter(filterOwner)
+                        .collect(toList())
+        );
+        setManyToMany(
+                getManyToMany()
+                        .stream()
+                        .filter(filterOwner)
+                        .collect(toList())
+        );
     }
 }

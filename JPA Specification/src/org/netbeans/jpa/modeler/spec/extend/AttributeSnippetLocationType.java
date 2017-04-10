@@ -21,6 +21,7 @@ public enum AttributeSnippetLocationType implements SnippetLocation {
     BEFORE_METHOD("Before Method"), AFTER_METHOD("After Method"),
     PRE_GETTER("Pre Getter"), GETTER("Getter"),
     PRE_SETTER("Pre Setter"), SETTER("Setter"), POST_SETTER("Post Setter"),
+    PRE_FLUENT("Pre Fluent"), FLUENT("Fluent"),
     IMPORT("Import");
     
     private final String title;
