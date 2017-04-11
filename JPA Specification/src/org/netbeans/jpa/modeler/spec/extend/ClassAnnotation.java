@@ -24,8 +24,16 @@ import org.netbeans.jpa.modeler.spec.extend.annotation.Annotation;
  */
 public class ClassAnnotation extends Annotation<ClassAnnotationLocationType> {
 
-    @XmlAttribute(name="loc")
+    @XmlAttribute(name = "loc")
     protected ClassAnnotationLocationType locationType;
+
+    public ClassAnnotation() {
+    }
+
+    public ClassAnnotation(String name) {
+        super(name);
+    }
+
     /**
      * @return the locationType
      */

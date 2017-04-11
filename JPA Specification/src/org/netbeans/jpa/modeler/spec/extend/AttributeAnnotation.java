@@ -26,6 +26,14 @@ public class AttributeAnnotation extends Annotation<AttributeAnnotationLocationT
 
     @XmlAttribute(name="loc")
     protected AttributeAnnotationLocationType locationType;
+    
+    public AttributeAnnotation() {
+    }
+
+    public AttributeAnnotation(String name) {
+        super(name);
+    }
+    
     /**
      * @return the locationType
      */

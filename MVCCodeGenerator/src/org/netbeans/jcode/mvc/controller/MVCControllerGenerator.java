@@ -123,8 +123,7 @@ import org.netbeans.jpa.modeler.spec.DefaultClass;
 import org.netbeans.jpa.modeler.spec.Entity;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
-import org.netbeans.jpa.modeler.spec.extend.annotation.Annotation;
-import org.netbeans.jpa.modeler.spec.extend.annotation.AnnotationElement;
+import org.netbeans.jpa.modeler.spec.extend.AttributeAnnotation;
 import org.netbeans.modules.websvc.rest.spi.RestSupport;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
@@ -858,10 +857,10 @@ public class MVCControllerGenerator implements Generator {
 
     private void addFormParam(){
         for (Entity entity : entityMapping.getEntity()) {
-            List<Attribute> attributes = new ArrayList<Attribute>(entity.getAttributes().getId());
+            List<Attribute> attributes = new ArrayList<>(entity.getAttributes().getId());
             attributes.addAll(entity.getAttributes().getBasic());
             for (Attribute attribute : attributes) {
-                attribute.addRuntimeAnnotation(new Annotation(String.format("@%s(\"%s\")", FORM_PARAM, attribute.getName())));
+                attribute.addRuntimeAnnotation(new AttributeAnnotation(String.format("@%s(\"%s\")", FORM_PARAM, attribute.getName())));
             }
         }
     }
