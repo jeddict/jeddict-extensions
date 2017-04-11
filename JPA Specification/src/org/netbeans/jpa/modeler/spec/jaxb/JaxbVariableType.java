@@ -31,7 +31,9 @@ public enum JaxbVariableType {
     @XmlEnumValue("L_E")
     XML_LIST_ELEMENT("L_E", "Element List"),
     @XmlEnumValue("I_E")
-    XML_INVERSE_REFERENCE("I_E", "Inverse Reference");
+    XML_INVERSE_REFERENCE("I_E", "Inverse Reference"),
+    @XmlEnumValue("E_R")
+    XML_ELEMENT_REF("E_R", "Element Ref");
 
     private final String type, display;
 

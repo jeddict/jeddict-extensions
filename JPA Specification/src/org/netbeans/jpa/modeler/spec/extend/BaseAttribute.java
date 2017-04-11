@@ -42,6 +42,7 @@ public abstract class BaseAttribute extends Attribute {
         jaxbVariableTypeList.add(JaxbVariableType.XML_ELEMENT);
         jaxbVariableTypeList.add(JaxbVariableType.XML_VALUE);
         jaxbVariableTypeList.add(JaxbVariableType.XML_TRANSIENT);
+        jaxbVariableTypeList.add(JaxbVariableType.XML_ELEMENT_REF);
         return jaxbVariableTypeList;
     }
     

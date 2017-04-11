@@ -59,6 +59,7 @@ public abstract class CompositionAttribute<T extends JavaClass> extends BaseAttr
         List<JaxbVariableType> jaxbVariableTypeList = new ArrayList<>();
         jaxbVariableTypeList.add(JaxbVariableType.XML_ELEMENT);
         jaxbVariableTypeList.add(JaxbVariableType.XML_TRANSIENT);
+        jaxbVariableTypeList.add(JaxbVariableType.XML_ELEMENT_REF);
         return jaxbVariableTypeList;
     }
 }
