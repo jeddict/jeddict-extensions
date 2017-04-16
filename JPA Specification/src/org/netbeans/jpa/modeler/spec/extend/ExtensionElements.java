@@ -20,6 +20,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import org.w3c.dom.Element;
 
@@ -49,10 +50,18 @@ import org.w3c.dom.Element;
 @XmlType(name = "tExtensionElements", propOrder = {
     "any"
 })
-public class ExtensionElements {
+@XmlRootElement
+public class ExtensionElements<T extends Object> {
 
     @XmlAnyElement(lax = true)
-    protected List<Object> any;
+    protected List<T> any;
+
+    public ExtensionElements() {
+    }
+
+    public ExtensionElements(List<T> any) {
+        this.any = any;
+    }
 
     /**
      * Gets the value of the any property.
@@ -77,9 +86,9 @@ public class ExtensionElements {
      *
      *
      */
-    public List<Object> getAny() {
+    public List<T> getAny() {
         if (any == null) {
-            any = new ArrayList<Object>();
+            any = new ArrayList<>();
         }
         return this.any;
     }

@@ -20,6 +20,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.StringUtils;
 import static org.netbeans.jcode.jpa.JPAConstants.CACHEABLE_FQN;
@@ -30,7 +31,6 @@ import org.netbeans.jpa.modeler.spec.extend.AssociationOverrideHandler;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import org.netbeans.jpa.modeler.spec.extend.AttributeOverrideHandler;
 import org.netbeans.jpa.modeler.spec.extend.ConvertContainerHandler;
-import org.netbeans.jpa.modeler.spec.extend.IAttributes;
 import org.netbeans.jpa.modeler.spec.validator.override.AssociationValidator;
 import org.netbeans.jpa.modeler.spec.validator.override.AttributeValidator;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
@@ -142,6 +142,7 @@ import org.netbeans.jpa.modeler.spec.extend.InheritanceHandler;
 //    "attributes",
 //    "interfaces"
 })
+@XmlRootElement
 public class Entity extends IdentifiableClass implements AccessTypeHandler, InheritanceHandler, AttributeOverrideHandler, AssociationOverrideHandler, ConvertContainerHandler {
 
     protected Table table;

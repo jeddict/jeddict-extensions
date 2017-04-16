@@ -287,7 +287,7 @@ public interface IPersistenceAttributes extends IAttributes {
     
     Set<Entity> getRelationConnectedClassRef();
     
-    void removeNonOwnerAttribute();
+    void removeNonOwnerAttribute(Set<JavaClass> filterJavaClasses);
     
     Set<String> getAllConvert();
     

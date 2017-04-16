@@ -12,6 +12,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import static org.netbeans.jcode.jpa.JPAConstants.MANY_TO_MANY_FQN;
 import org.netbeans.jpa.modeler.spec.extend.MultiRelationAttribute;
@@ -80,6 +81,7 @@ import org.netbeans.jpa.source.JavaSourceParserUtil;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "many-to-many")
+@XmlRootElement
 public class ManyToMany extends MultiRelationAttribute {
 
     @Override

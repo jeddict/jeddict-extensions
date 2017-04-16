@@ -71,20 +71,23 @@ public final class ViewPanel extends javax.swing.JPanel {
         dataTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(values.toArray()));
         dataTypeLayeredPane.add(dataTypeComboBox, java.awt.BorderLayout.CENTER);
 
+        rootLayeredPane.setLayer(dataTypeLayeredPane, javax.swing.JLayeredPane.DEFAULT_LAYER);
+
         javax.swing.GroupLayout rootLayeredPaneLayout = new javax.swing.GroupLayout(rootLayeredPane);
         rootLayeredPane.setLayout(rootLayeredPaneLayout);
         rootLayeredPaneLayout.setHorizontalGroup(
             rootLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(dataTypeLayeredPane, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+            .addGroup(rootLayeredPaneLayout.createSequentialGroup()
+                .addComponent(dataTypeLayeredPane, javax.swing.GroupLayout.DEFAULT_SIZE, 390, Short.MAX_VALUE)
+                .addContainerGap())
         );
         rootLayeredPaneLayout.setVerticalGroup(
             rootLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(rootLayeredPaneLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(dataTypeLayeredPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(356, Short.MAX_VALUE))
+                .addContainerGap(364, Short.MAX_VALUE))
         );
-        rootLayeredPane.setLayer(dataTypeLayeredPane, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         add(rootLayeredPane);
     }// </editor-fold>//GEN-END:initComponents
@@ -94,15 +97,25 @@ public final class ViewPanel extends javax.swing.JPanel {
     }
     
     private static AttributeViewAs attributeViewAs;
+//    private static DBArtifactCase dbArtifactCase;
+    
     public static AttributeViewAs getDataType() {
         if (attributeViewAs == null) {
             attributeViewAs = AttributeViewAs.valueOf(NbPreferences.forModule(ViewPanel.class).get("dataType", AttributeViewAs.NONE.name()));
         }
         return attributeViewAs;
     }
+    
+//    public static DBArtifactCase getDBArtifactCase() {
+//        if (dbArtifactCase == null) {
+//            dbArtifactCase = DBArtifactCase.valueOf(NbPreferences.forModule(ViewPanel.class).get("dbArtifactCase", DBArtifactCase.UPPER_CASE.name()));
+//        }
+//        return dbArtifactCase;
+//    }
 
     void store() {
         NbPreferences.forModule(ViewPanel.class).put("dataType", ((AttributeViewAs)((ComboBoxValue)dataTypeComboBox.getSelectedItem()).getValue()).name());
+//        NbPreferences.forModule(ViewPanel.class).put("dbArtifactCase", ((DBArtifactCase)((ComboBoxValue)dbArtifactCaseComboBox.getSelectedItem()).getValue()).name());
         attributeViewAs = null;
     }
 

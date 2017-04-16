@@ -622,4 +622,6 @@ public abstract class JavaClass<T extends IAttributes> extends FlowNode implemen
             toStringMethod.removeAttribute(removedAttribute);
         }
     }
+    
+    
 }

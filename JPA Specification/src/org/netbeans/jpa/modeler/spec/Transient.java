@@ -12,6 +12,7 @@ import javax.lang.model.element.VariableElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import static org.netbeans.jcode.core.util.Constants.LANG_PACKAGE;
 import org.netbeans.jpa.modeler.spec.extend.BaseAttribute;
@@ -45,6 +46,7 @@ import org.netbeans.jpa.source.JavaSourceParserUtil;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "transient")
+@XmlRootElement
 public class Transient extends BaseAttribute {
 
     @XmlAttribute(name = "attribute-type", required = true)

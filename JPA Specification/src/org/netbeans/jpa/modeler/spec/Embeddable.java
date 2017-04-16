@@ -9,8 +9,8 @@ package org.netbeans.jpa.modeler.spec;
 import javax.lang.model.element.TypeElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import org.netbeans.jpa.modeler.spec.extend.IAttributes;
 import org.netbeans.jpa.modeler.spec.extend.ReferenceClass;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
@@ -56,6 +56,7 @@ import org.netbeans.jpa.source.JavaSourceParserUtil;
 @XmlType(name = "embeddable", propOrder = {
     "attributes"
 })
+@XmlRootElement
 public class Embeddable extends ManagedClass<EmbeddableAttributes> {
 
     protected EmbeddableAttributes attributes;

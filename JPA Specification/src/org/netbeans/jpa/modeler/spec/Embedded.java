@@ -21,6 +21,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.StringUtils;
 import org.netbeans.jpa.modeler.spec.extend.AssociationOverrideHandler;
@@ -68,6 +69,7 @@ import org.netbeans.jpa.source.JavaSourceParserUtil;
     "associationOverride",
     "convert"
 })
+@XmlRootElement
 public class Embedded extends CompositionAttribute<Embeddable> implements AssociationOverrideHandler, ConvertContainerHandler {
 
     @XmlElement(name = "attribute-override")

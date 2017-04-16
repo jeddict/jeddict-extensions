@@ -15,6 +15,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -58,6 +59,7 @@ import org.netbeans.jpa.source.JavaSourceParserUtil;
 @XmlType(name = "embedded-id", propOrder = {
     "attributeOverride"
 })
+@XmlRootElement
 @XmlJavaTypeAdapter(value = EmbeddedIdValidator.class)
 public class EmbeddedId extends CompositionAttribute<DefaultClass> {
 

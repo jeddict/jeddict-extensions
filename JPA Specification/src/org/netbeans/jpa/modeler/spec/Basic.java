@@ -13,6 +13,7 @@ import javax.lang.model.element.VariableElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import static org.netbeans.jcode.jpa.JPAConstants.BASIC_FQN;
 import org.netbeans.jpa.modeler.spec.extend.AccessTypeHandler;
@@ -67,6 +68,7 @@ import org.netbeans.jpa.source.JavaSourceParserUtil;
     "enumerated",
     "convert"
 })
+@XmlRootElement
 public class Basic extends PersistenceBaseAttribute implements AccessTypeHandler, FetchTypeHandler, EnumTypeHandler, ConvertHandler {
 
     protected Lob lob;

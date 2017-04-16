@@ -913,12 +913,15 @@ public abstract class PersistenceAttributes<T extends ManagedClass> extends Attr
     }
     
     @Override
-    public void removeNonOwnerAttribute(){
-        Predicate<RelationAttribute> filterOwner = attr -> attr.isOwner() || (attr.getConnectedAttribute()!=null && attr.getJavaClass() == attr.getConnectedEntity());//either owner or self relation
-//        
-//        
-//        getManyToOne().get(0).getConnectedAttribute()
-//                getManyToOne().get(0).getJavaClass() == getManyToOne().get(0).getConnectedEntity()
+    public void removeNonOwnerAttribute(Set<JavaClass> filterJavaClasses){
+        Predicate<RelationAttribute> filterOwner = attr -> attr.isOwner() 
+                || (attr.getConnectedAttribute()!=null && filterJavaClasses.contains(attr.getConnectedEntity()));//either owner or contains in specified class set
+
+//        filterJavaClasses.(
+//        getManyToMany().get(0).getConnectedEntity()
+//        )
+//                
+        
         
         setOneToOne(
                 getOneToOne()

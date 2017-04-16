@@ -11,12 +11,9 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlRootElement;
 import org.netbeans.jpa.modeler.spec.extend.AccessTypeHandler;
 import org.netbeans.jpa.modeler.spec.extend.PersistenceBaseAttribute;
-import org.netbeans.jpa.source.JavaSourceParserUtil;
-import org.netbeans.modeler.core.NBModelerUtil;
 
 /**
  *
@@ -50,6 +47,7 @@ import org.netbeans.modeler.core.NBModelerUtil;
  *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 public class Version extends PersistenceBaseAttribute implements AccessTypeHandler {
 
     public static Version load(Element element, VariableElement variableElement, ExecutableElement getterElement) {
