@@ -28,17 +28,17 @@ import static org.valid4j.matchers.http.HttpResponseMatchers.hasStatus;
 import ${UserFacade_FQN};
 
 /**
- * Test class for the ${restPrefix}User${restSuffix} REST controller.
+ * Test class for the ${UserController} REST controller.
  *
  */
-public class ${restPrefix}User${restSuffix}Test extends ApplicationTest {
+public class ${UserControllerTest} extends ApplicationTest {
 
     @Inject
     private ${UserFacade} ${userFacade};
 
     @Deployment
     public static WebArchive createDeployment() {
-        return buildApplication().addClass(${restPrefix}User${restSuffix}.class);
+        return buildApplication().addClass(${UserController}.class);
     }
 
     @Test

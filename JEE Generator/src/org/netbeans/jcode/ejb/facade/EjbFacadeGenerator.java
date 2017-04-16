@@ -141,6 +141,10 @@ public final class EjbFacadeGenerator implements Generator {
         String fileName = beanData.getPrefixName() + FACADE_ABSTRACT + beanData.getSuffixName();
         FileObject afFO = targetFolder.getFileObject(fileName, JAVA_EXT);//skips here
 
+        Map<String, Object> param = new HashMap<>();
+        param.put("AbstractFacade", fileName);
+        param.put("package", beanData.getPackage());
+
         if (afFO != null) {
             if (overrideExisting) {
                 afFO.delete();
@@ -149,7 +153,7 @@ public final class EjbFacadeGenerator implements Generator {
             }
         }
         handler.progress(fileName);
-        afFO = org.netbeans.jcode.core.util.FileUtil.expandTemplate("org/netbeans/jcode/ejb/facade/resource/AbstractFacade.java.ftl", targetFolder, fileName + '.' + JAVA_EXT, Collections.singletonMap("package", beanData.getPackage()));
+        afFO = org.netbeans.jcode.core.util.FileUtil.expandTemplate("org/netbeans/jcode/ejb/facade/resource/AbstractFacade.java.ftl", targetFolder, fileName + '.' + JAVA_EXT, param);
 
         return afFO;
     }
@@ -180,10 +184,10 @@ public final class EjbFacadeGenerator implements Generator {
 
         Map<String, Object> param = new HashMap<>();
         param.put("EntityClass", entityClass);
-        param.put("EntityClassPlural", pluralize(firstUpper(entitySimpleName)));
+        param.put("EntityClassPlural", pluralize(entityClass));
         param.put("EntityClass_FQN", entityFQN);
         param.put("entityInstance", entityInstance);
-        param.put("entityInstancePlural", pluralize(firstLower(entitySimpleName)));
+        param.put("entityInstancePlural", pluralize(entityInstance));
 
         param.put("AbstractFacade", abstractFileName);
         if (!entity.getAbsolutePackage(beanData.getPackage()).equals(beanData.getPackage())) { //if both EntityFacade and AbstractFacade are not in same package

@@ -8,7 +8,7 @@ import javax.inject.Inject;
 
 @Stateless
 @Named("authority")
-public class ${AuthorityFacade} extends AbstractFacade<Authority, String> {
+public class ${AuthorityFacade} extends ${AbstractFacade}<Authority, String> {
 
     @Inject
     private EntityManager em;
