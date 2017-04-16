@@ -51,7 +51,7 @@ import com.wordnik.swagger.annotations.ApiResponses;</#if>
  */
 <#if docs>@Api(value = "/api")</#if>
 @Path("/api")
-public class ${restPrefix}User${restSuffix} {
+public class ${UserController} {
 
     @Inject
     private Logger log;
@@ -163,7 +163,7 @@ public class ${restPrefix}User${restSuffix} {
                     user.setEmail(managedUserDTO.getEmail());
                     user.setActivated(managedUserDTO.isActivated());
                     user.setLangKey(managedUserDTO.getLangKey());
-                    user.setAuthorities(managedUserDTO.getAuthorities().stream().map(authorityFacade::find).collect(toSet()));
+                    user.setAuthorities(managedUserDTO.getAuthorities().stream().map(${authorityFacade}::find).collect(toSet()));
                     ${userFacade}.edit(user);
                     return HeaderUtil.createAlert(Response.ok(new ManagedUserDTO(${userFacade}
                             .find(managedUserDTO.getId()))), "userManagement.updated", managedUserDTO.getLogin())

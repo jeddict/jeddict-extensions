@@ -33,10 +33,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.valid4j.matchers.http.HttpResponseMatchers.hasStatus;
 
 /**
- * Test class for the ${restPrefix}Account${restSuffix} REST controller.
+ * Test class for the ${AccountController} REST controller.
  *
  */
-public class ${restPrefix}Account${restSuffix}Test extends ApplicationTest {
+public class ${AccountControllerTest} extends ApplicationTest {
 
     @Inject
     private ${UserFacade} ${userFacade};
@@ -46,7 +46,7 @@ public class ${restPrefix}Account${restSuffix}Test extends ApplicationTest {
 
     @Deployment
     public static WebArchive createDeployment() {
-        return buildApplication().addClass(${restPrefix}Account${restSuffix}.class);
+        return buildApplication().addClass(${AccountController}.class);
     }
 
     @Test

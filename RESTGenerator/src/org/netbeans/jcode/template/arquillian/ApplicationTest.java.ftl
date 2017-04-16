@@ -45,7 +45,7 @@ public abstract class ApplicationTest extends AbstractTest {
                 .addClass(${UserFacade}.class).addClass(${AuthorityFacade}.class).addClass(${UserService}.class)
                 .addAsResource(new ClassLoaderAsset("config/application.properties"), "config/application.properties")
                 .addAsResource(new ClassLoaderAsset("i18n/messages.properties"), "i18n/messages.properties")
-                .addClass(UserJWTController.class).addPackage(JWTAuthenticationFilter.class.getPackage());
+                .addClass(${UserJWTController}.class).addPackage(JWTAuthenticationFilter.class.getPackage());
     }
 
     @Before

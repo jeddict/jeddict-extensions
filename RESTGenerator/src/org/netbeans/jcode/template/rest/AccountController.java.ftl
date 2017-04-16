@@ -41,7 +41,7 @@ import com.wordnik.swagger.annotations.ApiResponses;</#if>
  */
 <#if docs>@Api(value = "/api")</#if>
 @Path("/api")
-public class ${restPrefix}Account${restSuffix} {
+public class ${AccountController} {
 
     @Inject
     private Logger log;

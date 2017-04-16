@@ -26,7 +26,7 @@ import com.wordnik.swagger.annotations.ApiResponses;</#if>
 
 <#if docs>@Api(value = "/api")</#if>
 @Path("/api")
-public class ${restPrefix}UserJWT${restSuffix} {
+public class ${UserJWTController} {
 
     @Inject
     private TokenProvider tokenProvider;

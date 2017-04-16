@@ -122,7 +122,7 @@ public class UserService {
             user.setLangKey(userDTO.getLangKey());
         }
         if (userDTO.getAuthorities() != null) {
-            user.setAuthorities(userDTO.getAuthorities().stream().map(authorityFacade::find).collect(toSet()));
+            user.setAuthorities(userDTO.getAuthorities().stream().map(${authorityFacade}::find).collect(toSet()));
         }
         String encryptedPassword = passwordEncoder.encode(RandomUtil.generatePassword());
         user.setPassword(encryptedPassword);
@@ -162,18 +162,18 @@ public class UserService {
     }
 
     public Optional<User> getUserWithAuthoritiesByLogin(String login) {
-        return userFacade.findOneWithAuthoritiesByLogin(login);
+        return ${userFacade}.findOneWithAuthoritiesByLogin(login);
     }
 
     public User getUserWithAuthorities(Long id) {
-        return userFacade.findOneWithAuthoritiesById(id).orElse(null);
+        return ${userFacade}.findOneWithAuthoritiesById(id).orElse(null);
     }
 
     public User getUserWithAuthorities() {
         if (securityUtils.getCurrentUserLogin() == null) {
             return null;
         }
-        return userFacade.findOneWithAuthoritiesByLogin(securityUtils.getCurrentUserLogin()).orElse(null);
+        return ${userFacade}.findOneWithAuthoritiesByLogin(securityUtils.getCurrentUserLogin()).orElse(null);
     }
 
     public User authenticate(UserAuthenticationToken authenticationToken) throws AuthenticationException {

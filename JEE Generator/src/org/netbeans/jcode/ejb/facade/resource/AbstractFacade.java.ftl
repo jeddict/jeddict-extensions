@@ -1,5 +1,6 @@
 <#if package!="">package ${package};</#if>
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,11 +13,11 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-public abstract class AbstractFacade<E,P> {
+public abstract class ${AbstractFacade}<E,P> {
 
     private final Class<E> entityClass;
 
-    public AbstractFacade(Class<E> entityClass) {
+    public ${AbstractFacade}(Class<E> entityClass) {
         this.entityClass = entityClass;
     }
 
@@ -72,17 +73,17 @@ public abstract class AbstractFacade<E,P> {
         return ((Long) q.getSingleResult()).intValue();
     }
 
-    public Optional<E> findSingleByNamedQuery(String namedQueryName, Class<E> classT) {
-        return findOrEmpty(() -> getEntityManager().createNamedQuery(namedQueryName, classT).getSingleResult());
+    public Optional<E> findSingleByNamedQuery(String namedQueryName) {
+        return findOrEmpty(() -> getEntityManager().createNamedQuery(namedQueryName, entityClass).getSingleResult());
     }
 
-    public Optional<E> findSingleByNamedQuery(String namedQueryName, Map<String, Object> parameters, Class<E> classT) {
-        return findSingleByNamedQuery(namedQueryName, null, parameters, classT);
+    public Optional<E> findSingleByNamedQuery(String namedQueryName, Map<String, Object> parameters) {
+        return findSingleByNamedQuery(namedQueryName, null, parameters);
     }
 
-    public Optional<E> findSingleByNamedQuery(String namedQueryName, String entityGraph, Map<String, Object> parameters, Class<E> classT) {
+    public Optional<E> findSingleByNamedQuery(String namedQueryName, String entityGraph, Map<String, Object> parameters) {
         Set<Entry<String, Object>> rawParameters = parameters.entrySet();
-        TypedQuery<E> query = getEntityManager().createNamedQuery(namedQueryName, classT);
+        TypedQuery<E> query = getEntityManager().createNamedQuery(namedQueryName, entityClass);
         rawParameters.stream().forEach((entry) -> {
             query.setParameter(entry.getKey(), entry.getValue());
         });
@@ -93,16 +94,15 @@ public abstract class AbstractFacade<E,P> {
     }
 
     public List<E> findByNamedQuery(String namedQueryName) {
-        return getEntityManager().createNamedQuery(namedQueryName).getResultList();
+        return findByNamedQuery(namedQueryName, -1);
     }
 
     public List<E> findByNamedQuery(String namedQueryName, Map<String, Object> parameters) {
-        return findByNamedQuery(namedQueryName, parameters, 0);
+        return findByNamedQuery(namedQueryName, parameters, -1);
     }
 
-    public List<E> findByNamedQuery(String queryName, int resultLimit) {
-        return getEntityManager().createNamedQuery(queryName).
-                setMaxResults(resultLimit).getResultList();
+    public List<E> findByNamedQuery(String namedQueryName, int resultLimit) {
+        return findByNamedQuery(namedQueryName, Collections.EMPTY_MAP, resultLimit);
     }
 
     public List<E> findByNamedQuery(String namedQueryName, Map<String, Object> parameters, int resultLimit) {
