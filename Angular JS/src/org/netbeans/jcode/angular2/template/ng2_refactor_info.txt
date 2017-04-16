@@ -3,15 +3,15 @@ File : _navbar.component.html
                     enableDocs filter
                     needle-add-entity-to-menu to
 File : _navbar.component.ts
-                    enableDocs,enableProfile filter
-File : _language.constant,ts
-                    needle-i18n-language-constant  
+                    enableDocs,enableProfile filter 
 File : app/layout/index.ts
                     enableProfile filter
 File : app/app.module.ts, app/admin/_admin.module.ts, app/admin/_index.ts
                     enableProfile,enableMetrics,enableAudits,enableLogs,enableDocs,enableConfiguration,enableHealth filter
 File : _language.constants.ts
                     needle-i18n-language-constant
+File : _language.pipe.ts
+                    remove header ejs parsing not working due to multi-lang
 File : app/layouts/main/main.component.html
                     enableProfile filter
 File : index.html

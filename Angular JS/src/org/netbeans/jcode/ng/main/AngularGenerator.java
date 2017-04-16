@@ -139,8 +139,11 @@ public abstract class AngularGenerator implements Generator {
             String simpleFileName = getSimpleFileName(templatePath);
             String[] pathSplitter = simpleFileName.split("_");
             String type = pathSplitter[1];
+            if (!"entity".equals(type)){
+                 return null;
+            }
             String lang = pathSplitter[2];
-            if (!"entity".equals(type) || !applicationConfig.getLanguages().contains(lang)) {
+            if (!applicationConfig.getLanguages().contains(lang)) {
                 return null;
             }
 

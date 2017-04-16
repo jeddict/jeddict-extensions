@@ -78,6 +78,7 @@ public class NG2SourceFilter extends ApplicationSourceFilter {
             dataFilter.put("_tracker.component.ts", () -> SPRING_WEBSOCKET.equals(config.getWebsocket()));//admin
             dataFilter.put("_tracker.route.ts", () -> SPRING_WEBSOCKET.equals(config.getWebsocket()));//admin
             dataFilter.put("_tracker.service.ts", () -> SPRING_WEBSOCKET.equals(config.getWebsocket()));//shared
+            dataFilter.put("_window.service.ts", () -> SPRING_WEBSOCKET.equals(config.getWebsocket()));//shared
             dataFilter.put("tracker.json", () -> SPRING_WEBSOCKET.equals(config.getWebsocket()));//shared
             dataFilter.put("_mock-tracker.service.ts", () -> SPRING_WEBSOCKET.equals(config.getWebsocket()));//shared
 
@@ -137,6 +138,8 @@ public class NG2SourceFilter extends ApplicationSourceFilter {
             dataFilter.put("_audits.route.ts", () -> config.isEnableAudits());//admin/audits/
             dataFilter.put("_audits.service.ts", () -> config.isEnableAudits());//admin/audits/
             dataFilter.put("audits.json", () -> config.isEnableAudits());//admin/audits/
+            dataFilter.put("_audits.component.spec.ts", () -> config.isEnableAudits());
+
 
             //Docs
             dataFilter.put("_docs.component.ts", () -> config.isEnableDocs());
