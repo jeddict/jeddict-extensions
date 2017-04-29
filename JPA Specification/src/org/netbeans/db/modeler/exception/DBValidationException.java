@@ -70,6 +70,23 @@ public class DBValidationException extends ValidationException {
         this.attribute = attribute;
     }
 
+    @Override
+    public synchronized Throwable getCause() {
+        return validationException;
+    }
+
+    @Override
+    public String getLocalizedMessage() {
+        return validationException.getLocalizedMessage();
+    }
+    
+    @Override
+    public String getMessage() {
+        return validationException.getMessage();
+    }
+    
+    
+    
     /**
      * @return the javaClass
      */

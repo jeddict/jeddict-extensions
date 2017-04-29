@@ -671,7 +671,6 @@ public abstract class IdentifiableClass extends ManagedClass<IPrimaryKeyAttribut
     }
 
     public DefaultClass getDefaultClass() {
-//        IdentifiableClass identifiableClass = this;
         EntityMappings entityMappings = this.getRootElement();
         DefaultClass _class = entityMappings.addDefaultClass(this.getPackage(), this.getCompositePrimaryKeyClass());
         List<Id> idAttributes = null;
@@ -703,7 +702,7 @@ public abstract class IdentifiableClass extends ManagedClass<IPrimaryKeyAttribut
                     throw new IllegalStateException("Handled by Auto Class case");
                 }
             } else {// if @Id and @Id @Relation exist
-                attribute.setAttributeType(targetEntitySpec.getCompositePrimaryKeyClass());
+                attribute.setAttributeType(targetEntitySpec.getRootIdentifiableClass().getCompositePrimaryKeyClass());
                 attribute.setName(relationAttributeSpec.getName());// matches name of @Id Relation attribute//PK
                 attribute.setDerived(true);
             }
@@ -728,4 +727,11 @@ public abstract class IdentifiableClass extends ManagedClass<IPrimaryKeyAttribut
         return _class;
     }
 
+    public IdentifiableClass getRootIdentifiableClass() {
+        if (this.getSuperclass() != null && this.getSuperclass() instanceof IdentifiableClass) {
+            return (IdentifiableClass) this.getSuperclass();
+        } else {
+            return this;
+        }
+    }
 }
