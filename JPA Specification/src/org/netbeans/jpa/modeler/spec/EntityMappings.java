@@ -44,6 +44,11 @@ import org.netbeans.jpa.modeler.spec.extend.IPersistenceAttributes;
 import org.netbeans.jpa.modeler.spec.extend.MapKeyType;
 import org.netbeans.modeler.specification.version.SoftwareVersion;
 import org.netbeans.jpa.modeler.spec.extend.cache.Cache;
+import org.netbeans.jpa.modeler.spec.jsonb.JsonbDateFormat;
+import org.netbeans.jpa.modeler.spec.jsonb.JsonbNumberFormat;
+import org.netbeans.jpa.modeler.spec.jsonb.JsonbVisibilityHandler;
+import org.netbeans.jpa.modeler.spec.jsonb.PropertyNamingStrategy;
+import org.netbeans.jpa.modeler.spec.jsonb.PropertyOrderStrategy;
 import org.netbeans.jpa.modeler.spec.workspace.WorkSpace;
 import org.netbeans.jpa.modeler.spec.workspace.WorkSpaceItem;
 import org.netbeans.modeler.core.NBModelerUtil;
@@ -140,12 +145,16 @@ import org.openide.windows.InputOutput;
     "snippets",
     "interfaces",
     "cache",
+    "jsonbDateFormat",
+    "jsonbNumberFormat",
+    "jsonbVisibility",
     "jpaDiagram",
     "workSpaces"
 })
 @XmlRootElement(name = "entity-mappings")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class EntityMappings extends BaseElement implements IDefinitionElement, IRootElement {
+public class EntityMappings extends BaseElement implements IDefinitionElement, IRootElement, 
+        org.netbeans.modeler.properties.type.Embedded, JsonbVisibilityHandler {
 
     private static final String DEFAULT_PU_NAME = "DEFAULT_PU";
 
@@ -208,6 +217,8 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     private String theme;
     @XmlAttribute(name = "dbthm")
     private String dbTheme;
+    @XmlAttribute(name = "jbthm")
+    private String jbTheme;
     @XmlAttribute
     private String persistenceUnitName;
 
@@ -219,16 +230,36 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     private String staticMetamodelPackage;
 
     /**
-     * JAXB PrimaryKeyAttributes Start *
+     * JAXB support
      */
     @XmlAttribute(name = "xs")
-    private Boolean jaxbSupport = false;
+    private Boolean jaxbSupport;
+    
     @XmlAttribute(name = "xn")
     private String jaxbNameSpace;
+    
+    //Jsonb support start
+    
+    @XmlAttribute(name = "jbpns")
+    private PropertyNamingStrategy jsonbPropertyNamingStrategy;
+    
+    @XmlAttribute(name = "jbpos")
+    private PropertyOrderStrategy jsonbPropertyOrderStrategy;   
+        
+    @XmlAttribute(name = "jbn")
+    private Boolean jsonbNillable;
+    
+    @XmlElement(name = "jbdf")
+    private JsonbDateFormat jsonbDateFormat;
+        
+    @XmlElement(name = "jbnf")
+    private JsonbNumberFormat jsonbNumberFormat;   
+        
+    @XmlElement(name = "jbv")
+    private ReferenceClass jsonbVisibility;
 
-    /**
-     * JAXB PrimaryKeyAttributes End *
-     */
+    //Jsonb support end
+    
     @XmlElement(name = "snp")
     private List<ClassSnippet> snippets;
 
@@ -1414,20 +1445,6 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     }
 
     /**
-     * @return the jaxbSupport
-     */
-    public Boolean getJaxbSupport() {
-        return jaxbSupport;
-    }
-
-    /**
-     * @param jaxbSupport the jaxbSupport to set
-     */
-    public void setJaxbSupport(Boolean jaxbSupport) {
-        this.jaxbSupport = jaxbSupport;
-    }
-
-    /**
      * @return the jaxbNameSpace
      */
     public String getJaxbNameSpace() {
@@ -1816,6 +1833,142 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     
     public Optional<WorkSpace> findWorkSpace(String workSpaceId) {
        return getWorkSpaces().stream().filter(ws -> ws.getId().equals(workSpaceId)).findAny();
+    }
+
+    /**
+     * @return the jaxbSupport
+     */
+    public Boolean getJaxbSupport() {
+        if(jaxbSupport == null){
+            jaxbSupport = false;
+        }
+        return jaxbSupport;
+    }
+
+    /**
+     * @param jaxbSupport the jaxbSupport to set
+     */
+    public void setJaxbSupport(Boolean jaxbSupport) {
+        this.jaxbSupport = jaxbSupport;
+    }
+    
+    /**
+     * @return the jsonbSupport
+     */
+    public Boolean isJsonbPackageInfoExist() {
+        return  jsonbPropertyNamingStrategy!=null
+                || jsonbPropertyOrderStrategy!=null
+                || jsonbNillable!=null
+                || jsonbDateFormat!=null
+                || jsonbNumberFormat!=null
+                || (jsonbVisibility!=null && StringUtils.isNotBlank(jsonbVisibility.getName()));
+    }
+
+    /**
+     * @return the jsonbPropertyNamingStrategy
+     */
+    public PropertyNamingStrategy getJsonbPropertyNamingStrategy() {
+        return jsonbPropertyNamingStrategy;
+    }
+
+    /**
+     * @param jsonbPropertyNamingStrategy the jsonbPropertyNamingStrategy to set
+     */
+    public void setJsonbPropertyNamingStrategy(PropertyNamingStrategy jsonbPropertyNamingStrategy) {
+        this.jsonbPropertyNamingStrategy = jsonbPropertyNamingStrategy;
+    }
+
+    /**
+     * @return the jsonbNillable
+     */
+    public Boolean getJsonbNillable() {
+        if (jsonbNillable == null) {
+            return true;
+        }
+        return jsonbNillable;
+    }
+
+    /**
+     * @param jsonbNillable the jsonbNillable to set
+     */
+    public void setJsonbNillable(Boolean jsonbNillable) {
+        this.jsonbNillable = jsonbNillable;
+    }
+
+    /**
+     * @return the jsonbDateFormat
+     */
+    public JsonbDateFormat getJsonbDateFormat() {
+        if(jsonbDateFormat==null){
+            jsonbDateFormat = new JsonbDateFormat();
+        }
+        return jsonbDateFormat;
+    }
+
+    /**
+     * @param jsonbDateFormat the jsonbDateFormat to set
+     */
+    public void setJsonbDateFormat(JsonbDateFormat jsonbDateFormat) {
+        this.jsonbDateFormat = jsonbDateFormat;
+    }
+
+    /**
+     * @return the jsonbNumberFormat
+     */
+    public JsonbNumberFormat getJsonbNumberFormat() {
+        if(jsonbNumberFormat==null){
+            jsonbNumberFormat = new JsonbNumberFormat();
+        }
+        return jsonbNumberFormat;
+    }
+
+    /**
+     * @param jsonbNumberFormat the jsonbNumberFormat to set
+     */
+    public void setJsonbNumberFormat(JsonbNumberFormat jsonbNumberFormat) {
+        this.jsonbNumberFormat = jsonbNumberFormat;
+    }
+
+    /**
+     * @return the jsonbVisibility
+     */
+    public ReferenceClass getJsonbVisibility() {
+        return jsonbVisibility;
+    }
+
+    /**
+     * @param jsonbVisibility the jsonbVisibility to set
+     */
+    public void setJsonbVisibility(ReferenceClass jsonbVisibility) {
+        this.jsonbVisibility = jsonbVisibility;
+    }
+
+    /**
+     * @return the jsonbPropertyOrderStrategy
+     */
+    public PropertyOrderStrategy getJsonbPropertyOrderStrategy() {
+        return jsonbPropertyOrderStrategy;
+    }
+
+    /**
+     * @param jsonbPropertyOrderStrategy the jsonbPropertyOrderStrategy to set
+     */
+    public void setJsonbPropertyOrderStrategy(PropertyOrderStrategy jsonbPropertyOrderStrategy) {
+        this.jsonbPropertyOrderStrategy = jsonbPropertyOrderStrategy;
+    }
+
+    /**
+     * @return the jbTheme
+     */
+    public String getJBTheme() {
+        return jbTheme;
+    }
+
+    /**
+     * @param jbTheme the jbTheme to set
+     */
+    public void setJBTheme(String jbTheme) {
+        this.jbTheme = jbTheme;
     }
     
 }

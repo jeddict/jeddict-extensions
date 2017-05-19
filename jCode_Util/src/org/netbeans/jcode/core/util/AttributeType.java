@@ -55,6 +55,9 @@ public class AttributeType {
     public static final String STRING_FQN = "java.lang.String";
     public static final String CALENDAR = "java.util.Calendar";
     public static final String DATE = "java.util.Date";
+    public static final String GREGORIAN_CALENDAR = "java.util.GregorianCalendar";
+    public static final String TIME_ZONE = "java.util.TimeZone";
+    public static final String SIMPLE_TIME_ZONE = "java.util.SimpleTimeZone";
     public static final String SQL_DATE = "java.sql.Date";
     public static final String SQL_TIME = "java.sql.Time";
     public static final String SQL_TIMESTAMP = "java.sql.Timestamp";
@@ -63,8 +66,12 @@ public class AttributeType {
     public static final String CHAR_ARRAY = "char[]";
     public static final String CHAR_WRAPPER_ARRAY = "Character[]";
     public static final String UUID = "java.util.UUID";
+    public static final String URL = "java.net.URL";
+    public static final String URI = "java.net.URI";  
     
     public static final String INSTANT = "java.time.Instant";
+    public static final String DURATION = "java.time.Duration";
+    public static final String PERIOD = "java.time.Period";
     public static final String LOCAL_DATE = "java.time.LocalDate";
     public static final String LOCAL_DATE_TIME = "java.time.LocalDateTime";
     public static final String LOCAL_TIME = "java.time.LocalTime";
@@ -74,6 +81,8 @@ public class AttributeType {
     public static final String YEAR = "java.time.Year";
     public static final String YEAR_MONTH = "java.time.YearMonth";
     public static final String ZONED_DATE_TIME = "java.time.ZonedDateTime";
+    public static final String ZONE_ID = "java.time.ZoneId";
+    public static final String ZONE_OFFSET = "java.time.ZoneOffset";
     public static final String HIJRAH_DATE = "java.time.chrono.HijrahDate";
     public static final String JAPANESE_DATE = "java.time.chrono.JapaneseDate";
     public static final String MINGUO_DATE = "java.time.chrono.MinguoDate";
@@ -147,6 +156,62 @@ public class AttributeType {
 
     public static boolean isBoolean(String type) {
         return BOOLEAN.equals(type) || BOOLEAN_WRAPPER.equals(type);
+    }
+    
+    public static boolean isText(String type) {
+        return STRING.equals(type) 
+                || STRING_FQN.equals(type)
+                || CHAR_WRAPPER.equals(type)
+                || CHAR.equals(type)
+                || URL.equals(type)
+                || URI.equals(type);
+    }
+    
+    
+    public static boolean isNumber(String type) {
+        return BYTE.equals(type) 
+                || BYTE_WRAPPER.equals(type) 
+                || SHORT.equals(type) 
+                || SHORT_WRAPPER.equals(type) 
+                || INT.equals(type) 
+                || INT_WRAPPER.equals(type) 
+                || LONG.equals(type) 
+                || LONG_WRAPPER.equals(type) 
+                || FLOAT.equals(type) 
+                || FLOAT_WRAPPER.equals(type) 
+                || DOUBLE.equals(type) 
+                || DOUBLE_WRAPPER.equals(type) 
+                || BIGDECIMAL.equals(type) 
+                || BIGINTEGER.equals(type);
+    }
+
+    public static boolean isDate(String type) {
+        return CALENDAR.equals(type) 
+                || DATE.equals(type)
+                || GREGORIAN_CALENDAR.equals(type) 
+                || TIME_ZONE.equals(type) 
+                || SIMPLE_TIME_ZONE.equals(type) 
+                || SQL_DATE.equals(type)
+                || PERIOD.equals(type) 
+                || LOCAL_DATE.equals(type)
+                || LOCAL_DATE_TIME.equals(type)
+                || ZONE_ID.equals(type)
+                || ZONE_OFFSET.equals(type);
+    }
+
+    public static boolean isDateTime(String type) {
+        return LOCAL_DATE_TIME.equals(type) 
+                || OFFSET_DATE_TIME.equals(type)
+                || ZONED_DATE_TIME.equals(type)
+                || SQL_TIMESTAMP.equals(type);
+    }
+
+    public static boolean isTime(String type) {
+        return SQL_TIME.equals(type) 
+                || INSTANT.equals(type) 
+                || DURATION.equals(type)
+                || LOCAL_TIME.equals(type)
+                || OFFSET_TIME.equals(type);
     }
 
     public static boolean isPrimitive(String type) {

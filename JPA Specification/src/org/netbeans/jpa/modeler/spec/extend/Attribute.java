@@ -37,7 +37,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang.StringUtils;
 import static org.netbeans.jcode.core.util.AttributeType.DOUBLE;
@@ -46,7 +45,6 @@ import static org.netbeans.jcode.core.util.AttributeType.FLOAT;
 import static org.netbeans.jcode.core.util.AttributeType.FLOAT_WRAPPER;
 import static org.netbeans.jcode.core.util.AttributeType.STRING_FQN;
 import org.netbeans.jpa.modeler.settings.code.CodePanel;
-import org.netbeans.jpa.modeler.spec.extend.annotation.Annotation;
 import org.netbeans.jpa.modeler.spec.jaxb.JaxbVariableType;
 import org.netbeans.jpa.modeler.spec.jaxb.JaxbVariableTypeHandler;
 import org.netbeans.jpa.modeler.spec.jaxb.JaxbXmlAttribute;
@@ -95,15 +93,20 @@ import static org.netbeans.jcode.core.util.AttributeType.YEAR;
 import static org.netbeans.jcode.core.util.AttributeType.YEAR_MONTH;
 import static org.netbeans.jcode.core.util.AttributeType.ZONED_DATE_TIME;
 import static org.netbeans.jcode.core.util.AttributeType.isArray;
+import org.netbeans.jpa.modeler.spec.jsonb.JsonbDateFormat;
+import org.netbeans.jpa.modeler.spec.jsonb.JsonbNumberFormat;
+import org.netbeans.jpa.modeler.spec.jsonb.JsonbTypeHandler;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 import org.netbeans.modeler.core.NBModelerUtil;
+import org.netbeans.modeler.properties.type.Embedded;
 import org.openide.util.Exceptions;
 
 /**
  *
  * @author Gaurav Gupta
  */
-public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandler {
+public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandler, 
+        JsonbTypeHandler, Embedded {
 
     @XmlElement(name = "an")
     private List<AttributeAnnotation> annotation;
@@ -150,6 +153,35 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
     @XmlAttribute(name = "vc")
     private Boolean vetoableChangeSupport;
 
+    
+    //Jsonb support start
+    
+    @XmlAttribute(name = "jbn")
+    private Boolean jsonbNillable;
+
+    @XmlAttribute(name = "jbt")
+    private Boolean jsonbTransient ;
+
+    @XmlAttribute(name = "jbp")
+    private String jsonbProperty;
+
+    @XmlElement(name = "jbta")
+    private ReferenceClass jsonbTypeAdapter;
+    
+    @XmlElement(name = "jbdf")
+    private JsonbDateFormat jsonbDateFormat;
+        
+    @XmlElement(name = "jbnf")
+    private JsonbNumberFormat jsonbNumberFormat;   
+    
+    @XmlElement(name = "jbtd")
+    private ReferenceClass jsonbTypeDeserializer;
+        
+    @XmlElement(name = "jbts")
+    private ReferenceClass jsonbTypeSerializer ;
+    
+    //Jsonb support end
+    
     @XmlElementWrapper(name = "bv")
     @XmlElements({
         @XmlElement(name = "nu", type = Null.class)
@@ -906,6 +938,130 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
      */
     public void setVetoableChangeSupport(Boolean vetoableChangeSupport) {
         this.vetoableChangeSupport = vetoableChangeSupport;
+    }
+
+    /**
+     * @return the jsonbNillable
+     */
+    public Boolean getJsonbNillable() {
+        if (jsonbNillable == null) {
+            return false;
+        }
+        return jsonbNillable;
+    }
+
+    /**
+     * @param jsonbNillable the jsonbNillable to set
+     */
+    public void setJsonbNillable(Boolean jsonbNillable) {
+        this.jsonbNillable = jsonbNillable;
+    }
+
+    /**
+     * @return the jsonbTransient
+     */
+    public Boolean getJsonbTransient() {
+        if (jsonbTransient == null) {
+            return false;
+        }
+        return jsonbTransient;
+    }
+
+    /**
+     * @param jsonbTransient the jsonbTransient to set
+     */
+    public void setJsonbTransient(Boolean jsonbTransient) {
+        this.jsonbTransient = jsonbTransient;
+    }
+
+    /**
+     * @return the jsonbProperty
+     */
+    public String getJsonbProperty() {
+        return jsonbProperty;
+    }
+
+    /**
+     * @param jsonbProperty the jsonbProperty to set
+     */
+    public void setJsonbProperty(String jsonbProperty) {
+        this.jsonbProperty = jsonbProperty;
+    }
+
+    /**
+     * @return the jsonbTypeAdapter
+     */
+    public ReferenceClass getJsonbTypeAdapter() {
+        return jsonbTypeAdapter;
+    }
+
+    /**
+     * @param jsonbTypeAdapter the jsonbTypeAdapter to set
+     */
+    public void setJsonbTypeAdapter(ReferenceClass jsonbTypeAdapter) {
+        this.jsonbTypeAdapter = jsonbTypeAdapter;
+    }
+
+    /**
+     * @return the jsonbDateFormat
+     */
+    public JsonbDateFormat getJsonbDateFormat() {
+        if(jsonbDateFormat==null){
+            jsonbDateFormat = new JsonbDateFormat();
+        }
+        return jsonbDateFormat;
+    }
+
+    /**
+     * @param jsonbDateFormat the jsonbDateFormat to set
+     */
+    public void setJsonbDateFormat(JsonbDateFormat jsonbDateFormat) {
+        this.jsonbDateFormat = jsonbDateFormat;
+    }
+
+    /**
+     * @return the jsonbNumberFormat
+     */
+    public JsonbNumberFormat getJsonbNumberFormat() {
+        if(jsonbNumberFormat==null){
+            jsonbNumberFormat = new JsonbNumberFormat();
+        }
+        return jsonbNumberFormat;
+    }
+
+    /**
+     * @param jsonbNumberFormat the jsonbNumberFormat to set
+     */
+    public void setJsonbNumberFormat(JsonbNumberFormat jsonbNumberFormat) {
+        this.jsonbNumberFormat = jsonbNumberFormat;
+    }
+
+    /**
+     * @return the jsonbTypeDeserializer
+     */
+    public ReferenceClass getJsonbTypeDeserializer() {
+        return jsonbTypeDeserializer;
+    }
+
+    /**
+     * @param jsonbTypeDeserializer the jsonbTypeDeserializer to set
+     */
+    public void setJsonbTypeDeserializer(ReferenceClass jsonbTypeDeserializer) {
+        this.jsonbTypeDeserializer = jsonbTypeDeserializer;
+    }
+
+    /**
+     * @return the JsonbTypeSerializer
+     */
+    public ReferenceClass getJsonbTypeSerializer() {
+        return jsonbTypeSerializer;
+    }
+
+    /**
+     * @param JsonbTypeSerializer the JsonbTypeSerializer to set
+     */
+    public void setJsonbTypeSerializer(ReferenceClass jsonbTypeSerializer) {
+        this.jsonbTypeSerializer = jsonbTypeSerializer;
     }
 
 }

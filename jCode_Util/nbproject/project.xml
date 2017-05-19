@@ -624,6 +624,7 @@
                 <package>org.netbeans.jcode.console</package>
                 <package>org.netbeans.jcode.core.util</package>
                 <package>org.netbeans.jcode.jpa</package>
+                <package>org.netbeans.jcode.jsonb</package>
                 <package>org.netbeans.jcode.task</package>
                 <package>org.netbeans.jcode.task.progress</package>
                 <package>org.netbeans.jcode.util</package>

@@ -420,20 +420,21 @@ public class PrimaryKeyAttributes extends PersistenceAttributes<IdentifiableClas
         notifyListeners(version, "removeAttribute", null, null);
     }
 
-    public Optional<Version> getVersion(String id_) {
+    public Optional<Version> getVersion(String _id) {
         if (version != null) {
-            return version.stream().filter(a -> a.getId().equals(id_)).findFirst();
+            return version.stream().filter(a -> a.getId().equals(_id)).findFirst();
         }
         return null;
     }
     
     @Override
     public List<Attribute> getAllAttribute(boolean includeParentClassAttibute) {
-        List<Attribute> attributes = super.getAllAttribute(includeParentClassAttibute);
+        List<Attribute> attributes = new ArrayList<>();
         if (this.getEmbeddedId() != null) {
             attributes.add(this.getEmbeddedId());
         }
         attributes.addAll(this.getId());
+        attributes.addAll(super.getAllAttribute(includeParentClassAttibute));
         attributes.addAll(this.getVersion());
         return attributes;
     }

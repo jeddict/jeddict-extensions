@@ -208,6 +208,7 @@
                 <package>org.netbeans.jpa.modeler.spec.extend.annotation</package>
                 <package>org.netbeans.jpa.modeler.spec.extend.cache</package>
                 <package>org.netbeans.jpa.modeler.spec.jaxb</package>
+                <package>org.netbeans.jpa.modeler.spec.jsonb</package>
                 <package>org.netbeans.jpa.modeler.spec.validation.constraints</package>
                 <package>org.netbeans.jpa.modeler.spec.validator</package>
                 <package>org.netbeans.jpa.modeler.spec.validator.column</package>

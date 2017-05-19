@@ -36,9 +36,14 @@ import org.apache.commons.lang.StringUtils;
 import org.netbeans.api.java.source.JavaSource;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
 import org.netbeans.jpa.modeler.spec.IdentifiableClass;
+import org.netbeans.jpa.modeler.spec.jsonb.JsonbDateFormat;
+import org.netbeans.jpa.modeler.spec.jsonb.JsonbNumberFormat;
+import org.netbeans.jpa.modeler.spec.jsonb.JsonbTypeHandler;
+import org.netbeans.jpa.modeler.spec.jsonb.JsonbVisibilityHandler;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 import org.netbeans.modeler.core.NBModelerUtil;
 import org.netbeans.jpa.source.JCRELoader;
+import org.netbeans.modeler.properties.type.Embedded;
 import org.openide.filesystems.FileObject;
 
 /**
@@ -47,7 +52,8 @@ import org.openide.filesystems.FileObject;
  * @param <T>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-public abstract class JavaClass<T extends IAttributes> extends FlowNode implements JCRELoader {
+public abstract class JavaClass<T extends IAttributes> extends FlowNode implements JCRELoader, 
+        JsonbTypeHandler, JsonbVisibilityHandler, Embedded {
 
     @XmlElement(name = "ts")
     private ClassMembers toStringMethod;
@@ -111,6 +117,31 @@ public abstract class JavaClass<T extends IAttributes> extends FlowNode implemen
     
     @XmlElement(name = "ath")
     private String author;
+    
+    //Jsonb support start
+    
+    @XmlAttribute(name = "jbn")
+    private Boolean jsonbNillable;
+
+    @XmlElement(name = "jbta")
+    private ReferenceClass jsonbTypeAdapter;
+    
+    @XmlElement(name = "jbdf")
+    private JsonbDateFormat jsonbDateFormat;
+        
+    @XmlElement(name = "jbnf")
+    private JsonbNumberFormat jsonbNumberFormat;   
+    
+    @XmlElement(name = "jbtd")
+    private ReferenceClass jsonbTypeDeserializer;
+        
+    @XmlElement(name = "jbts")
+    private ReferenceClass jsonbTypeSerializer;
+    
+    @XmlElement(name = "jbv")
+    private ReferenceClass jsonbVisibility;
+    
+    //Jsonb support end
     
     @Override
     public void load(EntityMappings entityMappings, TypeElement element, boolean fieldAccess) {
@@ -621,6 +652,113 @@ public abstract class JavaClass<T extends IAttributes> extends FlowNode implemen
         if (toStringMethod != null) {
             toStringMethod.removeAttribute(removedAttribute);
         }
+    }
+
+    /**
+     * @return the jsonbNillable
+     */
+    public Boolean getJsonbNillable() {
+        if(jsonbNillable == null){
+            jsonbNillable = false;
+        }
+        return jsonbNillable;
+    }
+
+    /**
+     * @param jsonbNillable the jsonbNillable to set
+     */
+    public void setJsonbNillable(Boolean jsonbNillable) {
+        this.jsonbNillable = jsonbNillable;
+    }
+
+    /**
+     * @return the jsonbTypeAdapter
+     */
+    public ReferenceClass getJsonbTypeAdapter() {
+        return jsonbTypeAdapter;
+    }
+
+    /**
+     * @param jsonbTypeAdapter the jsonbTypeAdapter to set
+     */
+    public void setJsonbTypeAdapter(ReferenceClass jsonbTypeAdapter) {
+        this.jsonbTypeAdapter = jsonbTypeAdapter;
+    }
+
+    /**
+     * @return the jsonbDateFormat
+     */
+    public JsonbDateFormat getJsonbDateFormat() {
+        if(jsonbDateFormat==null){
+            jsonbDateFormat = new JsonbDateFormat();
+        }
+        return jsonbDateFormat;
+    }
+
+    /**
+     * @param jsonbDateFormat the jsonbDateFormat to set
+     */
+    public void setJsonbDateFormat(JsonbDateFormat jsonbDateFormat) {
+        this.jsonbDateFormat = jsonbDateFormat;
+    }
+
+    /**
+     * @return the jsonbNumberFormat
+     */
+    public JsonbNumberFormat getJsonbNumberFormat() {
+        if(jsonbNumberFormat==null){
+            jsonbNumberFormat = new JsonbNumberFormat();
+        }
+        return jsonbNumberFormat;
+    }
+
+    /**
+     * @param jsonbNumberFormat the jsonbNumberFormat to set
+     */
+    public void setJsonbNumberFormat(JsonbNumberFormat jsonbNumberFormat) {
+        this.jsonbNumberFormat = jsonbNumberFormat;
+    }
+
+    /**
+     * @return the jsonbTypeDeserializer
+     */
+    public ReferenceClass getJsonbTypeDeserializer() {
+        return jsonbTypeDeserializer;
+    }
+
+    /**
+     * @param jsonbTypeDeserializer the jsonbTypeDeserializer to set
+     */
+    public void setJsonbTypeDeserializer(ReferenceClass jsonbTypeDeserializer) {
+        this.jsonbTypeDeserializer = jsonbTypeDeserializer;
+    }
+
+    /**
+     * @return the jsonbTypeSerializer
+     */
+    public ReferenceClass getJsonbTypeSerializer() {
+        return jsonbTypeSerializer;
+    }
+
+    /**
+     * @param jsonbTypeSerializer the jsonbTypeSerializer to set
+     */
+    public void setJsonbTypeSerializer(ReferenceClass jsonbTypeSerializer) {
+        this.jsonbTypeSerializer = jsonbTypeSerializer;
+    }
+
+    /**
+     * @return the jsonbVisibility
+     */
+    public ReferenceClass getJsonbVisibility() {
+        return jsonbVisibility;
+    }
+
+    /**
+     * @param jsonbVisibility the jsonbVisibility to set
+     */
+    public void setJsonbVisibility(ReferenceClass jsonbVisibility) {
+        this.jsonbVisibility = jsonbVisibility;
     }
     
     

@@ -1,5 +1,5 @@
 /**
- * Copyright [2015] Gaurav Gupta
+ * Copyright [2017] Gaurav Gupta
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,18 +13,24 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.netbeans.db.modeler.manager;
+package org.netbeans.jpa.modeler.spec.jsonb;
 
-import org.netbeans.jpa.modeler.spec.EntityMappings;
-import org.netbeans.jpa.modeler.spec.workspace.WorkSpace;
-import org.netbeans.modeler.core.ModelerFile;
+import org.netbeans.jpa.modeler.spec.extend.ReferenceClass;
 
 /**
  *
- * @author Gaurav Gupta
+ * @author jGauravGupta
  */
-public interface DBModelerRequestManager {
+public interface JsonbVisibilityHandler {
 
-    void init(ModelerFile file, EntityMappings mappings, WorkSpace workSpace);
+    /**
+     * @return the jsonbVisibility
+     */
+    public ReferenceClass getJsonbVisibility();
 
+    /**
+     * @param jsonbVisibility the jsonbVisibility to set
+     */
+    public void setJsonbVisibility(ReferenceClass jsonbVisibility);
+    
 }

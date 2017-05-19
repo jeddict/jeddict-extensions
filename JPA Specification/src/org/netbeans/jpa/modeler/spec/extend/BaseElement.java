@@ -18,6 +18,7 @@ package org.netbeans.jpa.modeler.spec.extend;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -48,6 +49,9 @@ public abstract class BaseElement implements IBaseElement {
 
     @XmlTransient
     private IBaseElement orignalObject;
+
+    @XmlTransient
+    private Map<Class, Object> lookup = new HashMap<>();
 
     /**
      * Gets the value of the id property.
@@ -156,5 +160,20 @@ public abstract class BaseElement implements IBaseElement {
         this.orignalObject = orignalObject;
     }
 
-    
+    public void addLookup(Class clazz, Object object) {
+        lookup.put(clazz, object);
+    }
+
+    public <T> T getLookup(Class<T> clazz) {
+        return (T)lookup.get(clazz);
+    }
+
+    public void removeLookup(Class clazz) {
+        lookup.remove(clazz);
+    }
+
+    public void clearLookup() {
+        lookup.clear();
+    }
+
 }
