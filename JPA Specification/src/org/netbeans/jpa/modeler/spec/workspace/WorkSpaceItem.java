@@ -53,6 +53,9 @@ public class WorkSpaceItem {
 
     @XmlElement(name = "v")
     private NodeTextDesign textDesign;
+    
+    @XmlElement(name = "jbv")
+    private NodeTextDesign jsonbTextDesign;
 
     @XmlElementWrapper(name = "el")
     @XmlElement(name = "e")
@@ -166,11 +169,17 @@ public class WorkSpaceItem {
     /**
      * @return the workSpaceElement
      */
-    private List<WorkSpaceElement> getWorkSpaceElement() {
+    public List<WorkSpaceElement> getWorkSpaceElement() {
         if (workSpaceElement == null) {
             workSpaceElement = new ArrayList<>();
         }
         return workSpaceElement;
+    }
+
+    
+    public void addWorkSpaceElement(WorkSpaceElement workSpaceElement) {
+        getWorkSpaceElement().add(workSpaceElement);
+        this.workSpaceElementCache = null;
     }
 
     public Map<Attribute, WorkSpaceElement> getWorkSpaceElementMap() {
@@ -194,6 +203,9 @@ public class WorkSpaceItem {
      * @return the textDesign
      */
     public NodeTextDesign getTextDesign() {
+        if(jsonbTextDesign == null){
+            jsonbTextDesign = new NodeTextDesign(); 
+        }
         return textDesign;
     }
 
@@ -202,6 +214,23 @@ public class WorkSpaceItem {
      */
     public void setTextDesign(NodeTextDesign textDesign) {
         this.textDesign = textDesign;
+    }
+
+    /**
+     * @return the jsonbTextDesign
+     */
+    public NodeTextDesign getJsonbTextDesign() {
+        if(jsonbTextDesign == null){
+            jsonbTextDesign = new NodeTextDesign(); 
+        }
+        return jsonbTextDesign;
+    }
+
+    /**
+     * @param jsonbTextDesign the jsonbTextDesign to set
+     */
+    public void setJsonbTextDesign(NodeTextDesign jsonbTextDesign) {
+        this.jsonbTextDesign = jsonbTextDesign;
     }
 
 }

@@ -22,6 +22,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
+import org.netbeans.modeler.widget.design.NodeTextDesign;
 import org.netbeans.modeler.widget.design.PinTextDesign;
 
 /**
@@ -29,7 +30,7 @@ import org.netbeans.modeler.widget.design.PinTextDesign;
  * @author jGauravGupta
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlJavaTypeAdapter(value = WorkSpaceItemValidator.class)
+@XmlJavaTypeAdapter(value = WorkSpaceElementValidator.class)
 public class WorkSpaceElement {
     
     @XmlAttribute(name = "ref")
@@ -38,13 +39,26 @@ public class WorkSpaceElement {
 
     @XmlElement(name="v")
     private PinTextDesign textDesign;
-
+    
+    @XmlElement(name="jbv")
+    private PinTextDesign jsonbTextDesign;
+    
     public WorkSpaceElement() {
     }
 
+    public WorkSpaceElement(Attribute attribute) {
+        this.attribute = attribute;
+    }
+    
     public WorkSpaceElement(Attribute attribute, PinTextDesign textDesign) {
         this.attribute = attribute;
         this.textDesign = textDesign;
+    }
+    
+    public WorkSpaceElement(Attribute attribute, PinTextDesign textDesign, PinTextDesign jsonbTextDesign) {
+        this.attribute = attribute;
+        this.textDesign = textDesign;
+        this.jsonbTextDesign = jsonbTextDesign;
     }
     
     /**
@@ -65,6 +79,9 @@ public class WorkSpaceElement {
      * @return the textDesign
      */
     public PinTextDesign getTextDesign() {
+        if(textDesign == null){
+            textDesign = new PinTextDesign(); 
+        }
         return textDesign;
     }
 
@@ -73,6 +90,23 @@ public class WorkSpaceElement {
      */
     public void setTextDesign(PinTextDesign textDesign) {
         this.textDesign = textDesign;
+    }
+
+    /**
+     * @return the jsonbTextDesign
+     */
+    public PinTextDesign getJsonbTextDesign() {
+        if(jsonbTextDesign == null){
+            jsonbTextDesign = new PinTextDesign(); 
+        }
+        return jsonbTextDesign;
+    }
+
+    /**
+     * @param jsonbTextDesign the jsonbTextDesign to set
+     */
+    public void setJsonbTextDesign(PinTextDesign jsonbTextDesign) {
+        this.jsonbTextDesign = jsonbTextDesign;
     }
     
 }
