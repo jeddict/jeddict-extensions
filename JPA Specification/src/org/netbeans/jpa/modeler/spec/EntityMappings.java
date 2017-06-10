@@ -247,16 +247,16 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     private PropertyOrderStrategy jsonbPropertyOrderStrategy;   
         
     @XmlAttribute(name = "jbn")
-    private Boolean jsonbNillable;
+    private Boolean jsonbNillable;//REVENG pending
     
     @XmlElement(name = "jbdf")
-    private JsonbDateFormat jsonbDateFormat;
+    private JsonbDateFormat jsonbDateFormat;//REVENG pending
         
     @XmlElement(name = "jbnf")
-    private JsonbNumberFormat jsonbNumberFormat;   
+    private JsonbNumberFormat jsonbNumberFormat;//REVENG pending
         
     @XmlElement(name = "jbv")
-    private ReferenceClass jsonbVisibility;
+    private ReferenceClass jsonbVisibility;//REVENG pending
 
     //Jsonb support end
     
@@ -1856,11 +1856,11 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
      * @return the jsonbSupport
      */
     public Boolean isJsonbPackageInfoExist() {
-        return  jsonbPropertyNamingStrategy!=null
-                || jsonbPropertyOrderStrategy!=null
-                || jsonbNillable!=null
-                || jsonbDateFormat!=null
-                || jsonbNumberFormat!=null
+        return  //jsonbPropertyNamingStrategy!=null
+                //jsonbPropertyOrderStrategy!=null
+                 (jsonbNillable!=null && jsonbNillable!=false)
+                || (jsonbDateFormat!=null && !jsonbDateFormat.isEmpty())
+                || (jsonbNumberFormat!=null && !jsonbNumberFormat.isEmpty())
                 || (jsonbVisibility!=null && StringUtils.isNotBlank(jsonbVisibility.getName()));
     }
 
@@ -1883,7 +1883,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
      */
     public Boolean getJsonbNillable() {
         if (jsonbNillable == null) {
-            return true;
+            return false;
         }
         return jsonbNillable;
     }

@@ -29,9 +29,11 @@ import java.util.TreeSet;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toSet;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -93,6 +95,10 @@ import static org.netbeans.jcode.core.util.AttributeType.YEAR;
 import static org.netbeans.jcode.core.util.AttributeType.YEAR_MONTH;
 import static org.netbeans.jcode.core.util.AttributeType.ZONED_DATE_TIME;
 import static org.netbeans.jcode.core.util.AttributeType.isArray;
+import static org.netbeans.jcode.jsonb.JSONBConstants.JSONB_PROPERTY_FQN;
+import static org.netbeans.jcode.jsonb.JSONBConstants.JSONB_TYPE_ADAPTER_FQN;
+import static org.netbeans.jcode.jsonb.JSONBConstants.JSONB_TYPE_DESERIALIZER_FQN;
+import static org.netbeans.jcode.jsonb.JSONBConstants.JSONB_TYPE_SERIALIZER_FQN;
 import org.netbeans.jpa.modeler.spec.jsonb.JsonbDateFormat;
 import org.netbeans.jpa.modeler.spec.jsonb.JsonbNumberFormat;
 import org.netbeans.jpa.modeler.spec.jsonb.JsonbTypeHandler;
@@ -295,6 +301,39 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
         this.name = variableElement.getSimpleName().toString();
         this.setAnnotation(JavaSourceParserUtil.getNonEEAnnotation(element, AttributeAnnotation.class));
         this.setFunctionalType(getterElement.getReturnType().toString().startsWith(Optional.class.getCanonicalName()));
+        
+        AnnotationMirror prpertyAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, JSONB_PROPERTY_FQN);
+        if(prpertyAnnotationMirror!=null){
+            this.jsonbNillable = (Boolean)JavaSourceParserUtil.findAnnotationValue(prpertyAnnotationMirror, "nillable");
+            this.jsonbProperty = (String)JavaSourceParserUtil.findAnnotationValue(prpertyAnnotationMirror, "value");
+        }
+        
+        this.jsonbDateFormat = JsonbDateFormat.load(element);
+        this.jsonbNumberFormat = JsonbNumberFormat.load(element);
+        
+        AnnotationMirror typeAdapterAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, JSONB_TYPE_ADAPTER_FQN);
+        if (typeAdapterAnnotationMirror != null) {
+            DeclaredType classType = (DeclaredType) JavaSourceParserUtil.findAnnotationValue(typeAdapterAnnotationMirror, "value");
+            if (classType != null) {
+                this.jsonbTypeAdapter = new ReferenceClass(classType.toString());
+            }
+        }
+        
+        AnnotationMirror typeDeserializerAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, JSONB_TYPE_DESERIALIZER_FQN);
+        if (typeDeserializerAnnotationMirror != null) {
+            DeclaredType classType = (DeclaredType) JavaSourceParserUtil.findAnnotationValue(typeDeserializerAnnotationMirror, "value");
+            if (classType != null) {
+                this.jsonbTypeDeserializer = new ReferenceClass(classType.toString());
+            }
+        }
+        
+        AnnotationMirror typeSerializerAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, JSONB_TYPE_SERIALIZER_FQN);
+        if (typeSerializerAnnotationMirror != null) {
+            DeclaredType classType = (DeclaredType) JavaSourceParserUtil.findAnnotationValue(typeSerializerAnnotationMirror, "value");
+            if (classType != null) {
+                this.jsonbTypeSerializer = new ReferenceClass(classType.toString());
+            }
+        }
     }
 
     /**

@@ -18,6 +18,10 @@ package org.netbeans.jpa.modeler.spec.jsonb;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import static org.netbeans.jcode.core.util.AttributeType.CALENDAR;
 import static org.netbeans.jcode.core.util.AttributeType.DATE;
 import static org.netbeans.jcode.core.util.AttributeType.DURATION;
@@ -34,6 +38,10 @@ import static org.netbeans.jcode.core.util.AttributeType.TIME_ZONE;
 import static org.netbeans.jcode.core.util.AttributeType.ZONED_DATE_TIME;
 import static org.netbeans.jcode.core.util.AttributeType.ZONE_ID;
 import static org.netbeans.jcode.core.util.AttributeType.ZONE_OFFSET;
+import static org.netbeans.jcode.jsonb.JSONBConstants.JSONB_DATE_FORMAT_FQN;
+import org.netbeans.jpa.modeler.spec.GeneratedValue;
+import org.netbeans.jpa.modeler.spec.GenerationType;
+import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
  *
@@ -47,6 +55,23 @@ public class JsonbDateFormat extends JsonbFormat {
     
     public boolean isSupportedFormat(String type) {
         return SUPPORTED_TYPE.contains(type);
+    }
+    
+    public static JsonbDateFormat load(Element element) {
+        AnnotationMirror annotationMirror = JavaSourceParserUtil.findAnnotation(element, JSONB_DATE_FORMAT_FQN);
+        JsonbDateFormat jsonbDateFormat = null;
+        if (annotationMirror != null) {
+            jsonbDateFormat = new JsonbDateFormat();
+            String value = (String) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "value");
+            if (value != null) {
+                jsonbDateFormat.setValue(value);
+            }
+            String locale = (String) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "locale");
+            if (locale != null) {
+                jsonbDateFormat.setLocale(locale);
+            }
+        }
+        return jsonbDateFormat;
     }
     
 }

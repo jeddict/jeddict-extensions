@@ -27,6 +27,8 @@ public class JSONBConstants {
     public static final String JSONB_CONFIG_PACKAGE = "javax.json.bind.config";
     public static final String JSONB_CONFIG_PACKAGE_PREFIX = JSONB_CONFIG_PACKAGE + '.';
 
+    public static final String JSONB_PROPERTY_ORDER = "JsonbPropertyOrder";
+    public static final String JSONB_PROPERTY_ORDER_FQN = JSONB_ANNOTATION_PACKAGE_PREFIX + JSONB_PROPERTY_ORDER;
     public static final String JSONB_PROPERTY = "JsonbProperty";
     public static final String JSONB_PROPERTY_FQN = JSONB_ANNOTATION_PACKAGE_PREFIX + JSONB_PROPERTY;
     public static final String JSONB_DATE_FORMAT = "JsonbDateFormat";

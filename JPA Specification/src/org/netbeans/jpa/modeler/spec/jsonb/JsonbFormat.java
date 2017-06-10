@@ -18,6 +18,7 @@ package org.netbeans.jpa.modeler.spec.jsonb;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import org.apache.commons.lang.StringUtils;
 import org.netbeans.modeler.properties.type.Embedded;
 
 /**
@@ -62,5 +63,9 @@ public abstract class JsonbFormat implements Embedded {
     }
     
     public abstract boolean isSupportedFormat(String type);
+    
+    public boolean isEmpty(){
+        return StringUtils.isBlank(value) && StringUtils.isBlank(locale);
+    }
     
 }

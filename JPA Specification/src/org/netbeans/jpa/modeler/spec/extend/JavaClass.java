@@ -23,17 +23,25 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang.StringUtils;
 import org.netbeans.api.java.source.JavaSource;
+import static org.netbeans.jcode.jsonb.JSONBConstants.JSONB_NILLABLE_FQN;
+import static org.netbeans.jcode.jsonb.JSONBConstants.JSONB_TYPE_ADAPTER_FQN;
+import static org.netbeans.jcode.jsonb.JSONBConstants.JSONB_TYPE_DESERIALIZER_FQN;
+import static org.netbeans.jcode.jsonb.JSONBConstants.JSONB_TYPE_SERIALIZER_FQN;
+import static org.netbeans.jcode.jsonb.JSONBConstants.JSONB_VISIBILITY_FQN;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
 import org.netbeans.jpa.modeler.spec.IdentifiableClass;
 import org.netbeans.jpa.modeler.spec.jsonb.JsonbDateFormat;
@@ -141,6 +149,11 @@ public abstract class JavaClass<T extends IAttributes> extends FlowNode implemen
     @XmlElement(name = "jbv")
     private ReferenceClass jsonbVisibility;
     
+    @XmlElementWrapper(name = "jbpo")
+    @XmlElement(name = "i")
+    @XmlIDREF
+    private List<Attribute> jsonbPropertyOrder; //REVENG pending
+    
     //Jsonb support end
     
     @Override
@@ -155,7 +168,52 @@ public abstract class JavaClass<T extends IAttributes> extends FlowNode implemen
             this.addInterface(new ReferenceClass(mirror.toString()));
         }
         this.setAnnotation(JavaSourceParserUtil.getNonEEAnnotation(element, ClassAnnotation.class));
+        
+        
+        AnnotationMirror nillableAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, JSONB_NILLABLE_FQN);
+        if(nillableAnnotationMirror!=null){
+            this.jsonbNillable = (Boolean)JavaSourceParserUtil.findAnnotationValue(nillableAnnotationMirror, "value");
+        }
+        
+        this.jsonbDateFormat = JsonbDateFormat.load(element);
+        this.jsonbNumberFormat = JsonbNumberFormat.load(element);
+        
+        AnnotationMirror typeAdapterAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, JSONB_TYPE_ADAPTER_FQN);
+        if (typeAdapterAnnotationMirror != null) {
+            DeclaredType classType = (DeclaredType) JavaSourceParserUtil.findAnnotationValue(typeAdapterAnnotationMirror, "value");
+            if (classType != null) {
+                this.jsonbTypeAdapter = new ReferenceClass(classType.toString());
+            }
+        }
+        
+        AnnotationMirror typeDeserializerAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, JSONB_TYPE_DESERIALIZER_FQN);
+        if (typeDeserializerAnnotationMirror != null) {
+            DeclaredType classType = (DeclaredType) JavaSourceParserUtil.findAnnotationValue(typeDeserializerAnnotationMirror, "value");
+            if (classType != null) {
+                this.jsonbTypeDeserializer = new ReferenceClass(classType.toString());
+            }
+        }
+        
+        AnnotationMirror typeSerializerAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, JSONB_TYPE_SERIALIZER_FQN);
+        if (typeSerializerAnnotationMirror != null) {
+            DeclaredType classType = (DeclaredType) JavaSourceParserUtil.findAnnotationValue(typeSerializerAnnotationMirror, "value");
+            if (classType != null) {
+                this.jsonbTypeSerializer = new ReferenceClass(classType.toString());
+            }
+        }
+        
+        AnnotationMirror visibilityAnnotationMirror = JavaSourceParserUtil.findAnnotation(element, JSONB_VISIBILITY_FQN);
+        if (visibilityAnnotationMirror != null) {
+            DeclaredType classType = (DeclaredType) JavaSourceParserUtil.findAnnotationValue(visibilityAnnotationMirror, "value");
+            if (classType != null) {
+                this.jsonbVisibility = new ReferenceClass(classType.toString());
+            }
+        }
+        
+        
     }
+    
+    
     
     public abstract T getAttributes();
 
@@ -759,6 +817,23 @@ public abstract class JavaClass<T extends IAttributes> extends FlowNode implemen
      */
     public void setJsonbVisibility(ReferenceClass jsonbVisibility) {
         this.jsonbVisibility = jsonbVisibility;
+    }
+
+    /**
+     * @return the jsonbPropertyOrder
+     */
+    public List<Attribute> getJsonbPropertyOrder() {
+        if(jsonbPropertyOrder == null){
+            jsonbPropertyOrder = new ArrayList<>();
+        }
+        return jsonbPropertyOrder;
+    }
+
+    /**
+     * @param jsonbPropertyOrder the jsonbPropertyOrder to set
+     */
+    public void setJsonbPropertyOrder(List<Attribute> jsonbPropertyOrder) {
+        this.jsonbPropertyOrder = jsonbPropertyOrder;
     }
     
     

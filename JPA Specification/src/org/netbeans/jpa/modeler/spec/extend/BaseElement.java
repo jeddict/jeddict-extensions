@@ -117,7 +117,7 @@ public abstract class BaseElement implements IBaseElement {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 71 * hash + (this.id != null ? this.id.hashCode() : 0);
+        hash = 71 * hash + (this.getId() != null ? this.getId().hashCode() : 0);
         return hash;
     }
 
@@ -130,7 +130,7 @@ public abstract class BaseElement implements IBaseElement {
             return false;
         }
         final BaseElement other = (BaseElement) obj;
-        if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
+        if ((this.getId() == null) ? (other.getId() != null) : !this.getId().equals(other.getId())) {
             return false;
         }
         return true;
