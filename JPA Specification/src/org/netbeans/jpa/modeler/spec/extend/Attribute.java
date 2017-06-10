@@ -135,6 +135,9 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
 //    @XmlAttribute(name = "jaxb-xml-list")
 //    private Boolean jaxbXmlList;
 
+    @XmlAttribute(name="am")
+    private AccessModifierType accessModifier;
+    
     @XmlAttribute(name = "name", required = true)
     protected String name;
 
@@ -356,6 +359,20 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
     @Override
     public void setName(String value) {
         this.name = value;
+    }
+
+    /**
+     * @return the accessModifier
+     */
+    public AccessModifierType getAccessModifier() {
+        return accessModifier;
+    }
+
+    /**
+     * @param accessModifier the accessModifier to set
+     */
+    public void setAccessModifier(AccessModifierType accessModifier) {
+        this.accessModifier = accessModifier;
     }
 
     /**

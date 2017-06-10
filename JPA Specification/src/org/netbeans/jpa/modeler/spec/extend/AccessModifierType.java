@@ -15,7 +15,9 @@
  */
 package org.netbeans.jpa.modeler.spec.extend;
 
-public enum AccessModifierType {
+import org.netbeans.modeler.properties.type.Enumy;
+
+public enum AccessModifierType implements Enumy {
 
     PUBLIC("public"), PROTECTED("protected"), PRIVATE("private"), DEFAULT("", "default-package");
     
@@ -32,12 +34,18 @@ public enum AccessModifierType {
         this.title = value;
     }
 
-    public String getTitle() {
-        return title;
-    }
-    
     public String getValue() {
         return value;
+    }
+
+    @Override
+    public String getDisplay() {
+        return title;
+    }
+
+    @Override
+    public Enumy getDefault() {
+        return null;
     }
     
 }
