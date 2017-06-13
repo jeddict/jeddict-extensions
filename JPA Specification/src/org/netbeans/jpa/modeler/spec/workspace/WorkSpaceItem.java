@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -75,6 +76,14 @@ public class WorkSpaceItem {
         this.javaClass = javaClass;
         this.x = x;
         this.y = y;
+    }
+    
+    public void beforeMarshal(Marshaller marshaller) {
+        if (workSpaceElement != null
+                && (workSpaceElement.isEmpty()
+                || workSpaceElement.stream().allMatch(WorkSpaceElementValidator::isEmpty))) {
+            workSpaceElement = null;
+        }
     }
 
     /**
@@ -203,8 +212,8 @@ public class WorkSpaceItem {
      * @return the textDesign
      */
     public NodeTextDesign getTextDesign() {
-        if(jsonbTextDesign == null){
-            jsonbTextDesign = new NodeTextDesign(); 
+        if(textDesign == null){
+            textDesign = new NodeTextDesign(); 
         }
         return textDesign;
     }

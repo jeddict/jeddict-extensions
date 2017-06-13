@@ -20,7 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.TypeElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import static org.netbeans.jcode.core.util.AttributeType.BIGDECIMAL;
 import static org.netbeans.jcode.core.util.AttributeType.BIGINTEGER;
 import static org.netbeans.jcode.core.util.AttributeType.DOUBLE;
@@ -34,12 +34,14 @@ import static org.netbeans.jcode.core.util.AttributeType.LONG_WRAPPER;
 import static org.netbeans.jcode.core.util.AttributeType.SHORT;
 import static org.netbeans.jcode.core.util.AttributeType.SHORT_WRAPPER;
 import static org.netbeans.jcode.jsonb.JSONBConstants.JSONB_NUMBER_FORMAT_FQN;
+import org.netbeans.jpa.modeler.spec.validator.JsonbNumberFormatValidator;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
  *
  * @author jGauravGupta
  */
+@XmlJavaTypeAdapter(value = JsonbNumberFormatValidator.class)
 public class JsonbNumberFormat extends JsonbFormat {
 
     private static final Set<String> SUPPORTED_TYPE = new HashSet<>(Arrays.asList(SHORT, INT, LONG, FLOAT, DOUBLE,

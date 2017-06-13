@@ -16,12 +16,13 @@
 package org.netbeans.jcode.stack.config.data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  *
  * @author Gaurav Gupta
  */
-public class LayerConfigData<T extends LayerConfigData> implements Serializable {
+public abstract class LayerConfigData<T extends LayerConfigData> implements Serializable {
 
     private T parentLayerConfigData;
 
@@ -43,4 +44,7 @@ public class LayerConfigData<T extends LayerConfigData> implements Serializable 
     protected void onLayerConnection(){
         
     }
+    
+    public abstract List<String> getUsageDetails();
+    
 }

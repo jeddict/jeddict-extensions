@@ -16,8 +16,6 @@
 package org.netbeans.jcode.stack.config.data;
 
 import java.io.Serializable;
-import java.util.*;
-import static java.util.stream.Collectors.toSet;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.layer.TechContext;

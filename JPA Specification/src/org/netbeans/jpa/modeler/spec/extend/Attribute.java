@@ -34,6 +34,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -54,6 +55,7 @@ import org.netbeans.jpa.modeler.spec.jaxb.JaxbXmlElement;
 import org.netbeans.bean.validation.constraints.AssertFalse;
 import org.netbeans.bean.validation.constraints.AssertTrue;
 import org.netbeans.bean.validation.constraints.Constraint;
+import org.netbeans.bean.validation.constraints.ConstraintsValidator;
 import org.netbeans.bean.validation.constraints.DecimalMax;
 import org.netbeans.bean.validation.constraints.DecimalMin;
 import org.netbeans.bean.validation.constraints.Digits;
@@ -219,7 +221,7 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
         ,
         @XmlElement(name = "di", type = Digits.class)
     })
-    private Set<Constraint> attributeConstraints = CONSTRAINTS_SUPPLIER.get();
+    private Set<Constraint> attributeConstraints;
 
     @XmlTransient
     private Map<String, Constraint> attributeConstraintsMap;
@@ -254,7 +256,7 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
         ,
         @XmlElement(name = "di", type = Digits.class)
     })
-    private Set<Constraint> keyConstraints = CONSTRAINTS_SUPPLIER.get();
+    private Set<Constraint> keyConstraints;
 
     @XmlTransient
     private Map<String, Constraint> keyConstraintsMap;
@@ -289,7 +291,7 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
         ,
         @XmlElement(name = "di", type = Digits.class)
     })
-    private Set<Constraint> valueConstraints = CONSTRAINTS_SUPPLIER.get();
+    private Set<Constraint> valueConstraints;
 
     @XmlTransient
     private Map<String, Constraint> valueConstraintsMap;
@@ -339,6 +341,24 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
         }
     }
 
+    public void beforeMarshal(Marshaller marshaller) {
+        if(attributeConstraints!=null 
+                && (attributeConstraints.isEmpty()
+                || attributeConstraints.stream().allMatch(ConstraintsValidator::isEmpty))){
+            attributeConstraints = null;
+        }
+        if(keyConstraints!=null 
+                && (keyConstraints.isEmpty()
+                || keyConstraints.stream().allMatch(ConstraintsValidator::isEmpty))){
+            keyConstraints = null;
+        }
+        if(valueConstraints!=null 
+                && (valueConstraints.isEmpty()
+                || valueConstraints.stream().allMatch(ConstraintsValidator::isEmpty))){
+            valueConstraints = null;
+        }
+    }
+    
     /**
      * Gets the value of the name property.
      *

@@ -15,6 +15,9 @@
  */
 package org.netbeans.jcode.rest.applicationconfig;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.netbeans.jcode.stack.config.data.LayerConfigData;
 
@@ -91,5 +94,10 @@ public class RestConfigData extends LayerConfigData{
      */
     public void setUseJersey(boolean useJersey) {
         this.useJersey = useJersey;
+    }
+    
+    @Override
+    public List<String> getUsageDetails() {
+        return Collections.EMPTY_LIST;
     }
 }

@@ -49,7 +49,18 @@ public @interface Technology {
     String description() default "";
     
     enum Type {
-        BUSINESS,CONTROLLER,VIEWER, NONE;
+        BUSINESS("Business"), CONTROLLER("Controller"), VIEWER("Viewer"), NONE("Other");
+
+        private final String displayLabel;
+
+        Type(String displayLabel) {
+            this.displayLabel = displayLabel;
+        }
+
+        public String getDisplayLabel() {
+            return displayLabel;
+        }
+
     }
-    
+
 }

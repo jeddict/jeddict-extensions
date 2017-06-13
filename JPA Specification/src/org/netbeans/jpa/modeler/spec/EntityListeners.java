@@ -14,8 +14,9 @@ import javax.lang.model.element.Element;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.netbeans.jpa.modeler.spec.extend.ReferenceClass;
+import org.netbeans.jpa.modeler.spec.validator.EntityListenersValidator;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
@@ -48,10 +49,9 @@ import org.netbeans.jpa.source.JavaSourceParserUtil;
  *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlJavaTypeAdapter(value = EntityListenersValidator.class)
 public class EntityListeners {
 
-//    @XmlElement(name = "entity-listener")
-//    protected List<EntityListener> entityListener;
     @XmlElement(name = "ln")
     private Set<ReferenceClass> entityListener;
 
@@ -87,7 +87,7 @@ public class EntityListeners {
      * Objects of the following type(s) are allowed in the list
      * {@link EntityListener }
      *
-     *
+     * @return 
      */
     public Set<ReferenceClass> getEntityListener() {
         if (entityListener == null) {

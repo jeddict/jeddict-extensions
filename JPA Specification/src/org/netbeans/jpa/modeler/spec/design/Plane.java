@@ -42,6 +42,7 @@ import javax.xml.namespace.QName;
  *
  *
  */
+@Deprecated
 @XmlRootElement(name = "plane")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Plane

@@ -1,5 +1,5 @@
 /**
- * Copyright [2017] Gaurav Gupta
+ * Copyright [2016] Gaurav Gupta
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,35 +13,31 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.netbeans.jpa.modeler.spec.workspace;
+package org.netbeans.jpa.modeler.spec.validator;
 
-import org.netbeans.jpa.modeler.spec.validator.MarshalValidator;
+import org.apache.commons.lang.StringUtils;
+import org.netbeans.jpa.modeler.spec.EntityListeners;
 
-/**
- *
- * @author jGauravGupta
- */
-public class WorkSpaceElementValidator  extends MarshalValidator<WorkSpaceElement> {
+public class EntityListenersValidator extends MarshalValidator<EntityListeners> {
 
     @Override
-    public WorkSpaceElement marshal(WorkSpaceElement element) throws Exception {
-        if (element != null && isEmpty(element)) {
+    public EntityListeners marshal(EntityListeners classMembers) throws Exception {
+        if (classMembers != null && isEmpty(classMembers)) {
             return null;
         }
-        return element;
+        return classMembers;
     }
 
-    public static boolean isEmpty(WorkSpaceElement element) {
+    public static boolean isEmpty(EntityListeners entityListeners) {
         boolean empty = false;
-        if (element.getAttribute()== null || 
-                (!element.getTextDesign().isChanged() && !element.getJsonbTextDesign().isChanged())){
+        if (entityListeners.getEntityListener().isEmpty()) {
             empty = true;
         }
         return empty;
     }
 
-    public static boolean isNotEmpty(WorkSpaceElement item) {
-        return !isEmpty(item);
+    public static boolean isNotEmpty(EntityListeners entityListeners) {
+        return !isEmpty(entityListeners);
     }
 
 }

@@ -16,6 +16,7 @@
 package org.netbeans.jcode.mvc.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.netbeans.jcode.mvc.controller.returntype.ControllerReturnType;
@@ -197,6 +198,11 @@ public class MVCData extends LayerConfigData {
      */
     public void setAuthentication(boolean authentication) {
         this.authentication = authentication;
+    }
+    
+    @Override
+    public List<String> getUsageDetails() {
+        return Collections.EMPTY_LIST;
     }
 
 }

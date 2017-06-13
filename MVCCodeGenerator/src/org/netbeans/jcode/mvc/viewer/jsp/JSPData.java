@@ -15,6 +15,8 @@
  */
 package org.netbeans.jcode.mvc.viewer.jsp;
 
+import java.util.Arrays;
+import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import static org.netbeans.jcode.rest.applicationconfig.RestConfigPanel.DEFAULT_RESOURCE_FOLDER;
 import org.netbeans.jcode.stack.config.data.LayerConfigData;
@@ -74,5 +76,10 @@ public class JSPData extends LayerConfigData {
      */
     public void setResourceFolder(String resourceFolder) {
         this.resourceFolder = resourceFolder;
+    }
+    
+        @Override
+    public List<String> getUsageDetails() {
+        return Arrays.asList(isOnlineTheme() ? "Online Theme" : null);
     }
 }

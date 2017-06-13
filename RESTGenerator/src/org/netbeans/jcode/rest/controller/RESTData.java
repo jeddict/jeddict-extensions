@@ -16,6 +16,7 @@
 package org.netbeans.jcode.rest.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import org.netbeans.jcode.rest.applicationconfig.RestConfigData;
@@ -41,7 +42,7 @@ public class RESTData extends LayerConfigData {
     private boolean docsEnable = true;
     private boolean testCase = true;
     private boolean pagination;
-    
+
     /**
      * @return the _package
      */
@@ -175,7 +176,7 @@ public class RESTData extends LayerConfigData {
     public void setDocsEnable(boolean swagger) {
         this.docsEnable = swagger;
     }
-    
+
     /**
      * @return the pagination
      */
@@ -218,4 +219,11 @@ public class RESTData extends LayerConfigData {
         this.logger = logger;
     }
 
+    @Override
+    public List<String> getUsageDetails() {
+        return Arrays.asList(metrics ? "Metrics" : null,
+                logger ? "Log-Manager" : null,
+                docsEnable ? "Swagger" : null,
+                testCase ? "TestCase" : null);
+    }
 }

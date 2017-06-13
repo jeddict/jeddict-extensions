@@ -227,7 +227,9 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
         
     }
 
-    void beforeMarshal(Marshaller marshaller) {
+    @Override
+    public void beforeMarshal(Marshaller marshaller) {
+        super.beforeMarshal(marshaller);
         AttributeValidator.filter(this);
         AssociationValidator.filter(this);
     }

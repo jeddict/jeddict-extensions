@@ -15,6 +15,8 @@
  */
 package org.netbeans.jcode.ng.main;
 
+import java.util.Arrays;
+import java.util.List;
 import org.netbeans.jcode.ng.main.domain.EntityConfig;
 import org.netbeans.jcode.rest.controller.RESTData;
 import org.netbeans.jcode.stack.config.data.LayerConfigData;
@@ -107,5 +109,11 @@ public class AngularData extends LayerConfigData<RESTData> {
      */
     public void setProtractorTest(boolean protractorTest) {
         this.protractorTest = protractorTest;
+    }
+    
+    @Override
+    public List<String> getUsageDetails() {
+        return Arrays.asList("PaginationType-"+getPagination().getTitle(), 
+                isProtractorTest() ? "ProtractorTest" : null);
     }
 }

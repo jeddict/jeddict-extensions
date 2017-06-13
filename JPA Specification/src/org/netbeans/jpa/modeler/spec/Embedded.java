@@ -88,8 +88,6 @@ public class Embedded extends CompositionAttribute<Embeddable> implements Associ
     public Embedded(Set<AttributeOverride> attributeOverride) {
         this.attributeOverride = attributeOverride;
     }
-
-    
     
     public static Embedded load(EntityMappings entityMappings, Element element, VariableElement variableElement, ExecutableElement getterElement) {
         Embedded embedded = new Embedded();
@@ -121,7 +119,9 @@ public class Embedded extends CompositionAttribute<Embeddable> implements Associ
         return embedded;
     }
 
-    void beforeMarshal(Marshaller marshaller) {
+    @Override
+    public void beforeMarshal(Marshaller marshaller) {
+        super.beforeMarshal(marshaller);
         AttributeValidator.filter(this);
         AssociationValidator.filter(this);
     }

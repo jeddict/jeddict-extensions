@@ -22,7 +22,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
-import org.netbeans.modeler.widget.design.NodeTextDesign;
 import org.netbeans.modeler.widget.design.PinTextDesign;
 
 /**

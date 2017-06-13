@@ -202,43 +202,40 @@ public class DOMHelper {
     }
 
     public void save() {
-        RequestProcessor.getDefault().post(new Runnable() {
-
-            public void run() {
-                FileLock lock = null;
-                OutputStream os = null;
-
-                try {
-                    DocumentType docType = document.getDoctype();
-                    TransformerFactory factory = TransformerFactory.newInstance();
-                    Transformer transformer = factory.newTransformer();
-                    DOMSource source = new DOMSource(document);
-
-                    lock = fobj.lock();
-                    os = fobj.getOutputStream(lock);
-                    StreamResult result = new StreamResult(os);
-
-                    //transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, docType.getPublicId());
-                    //transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, docType.getSystemId());
-                    transformer.setOutputProperty(OutputKeys.INDENT, "yes");        //NOI18N
-
-                    transformer.setOutputProperty(OutputKeys.METHOD, "xml");        //NOI18N
-
-                    transformer.transform(source, result);
-                } catch (Exception ex) {
-                    Exceptions.printStackTrace(ex);
-                } finally {
-                    if (os != null) {
-                        try {
-                            os.close();
-                        } catch (IOException ex) {
-                            Exceptions.printStackTrace(ex);
-                        }
+        RequestProcessor.getDefault().post(() -> {
+            FileLock lock = null;
+            OutputStream os = null;
+            
+            try {
+                DocumentType docType = document.getDoctype();
+                TransformerFactory factory = TransformerFactory.newInstance();
+                Transformer transformer = factory.newTransformer();
+                DOMSource source = new DOMSource(document);
+                
+                lock = fobj.lock();
+                os = fobj.getOutputStream(lock);
+                StreamResult result = new StreamResult(os);
+                
+                //transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, docType.getPublicId());
+                //transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, docType.getSystemId());
+                transformer.setOutputProperty(OutputKeys.INDENT, "yes");        //NOI18N
+                
+                transformer.setOutputProperty(OutputKeys.METHOD, "xml");        //NOI18N
+                
+                transformer.transform(source, result);
+            } catch (Exception ex) {
+                Exceptions.printStackTrace(ex);
+            } finally {
+                if (os != null) {
+                    try {
+                        os.close();
+                    } catch (IOException ex) {
+                        Exceptions.printStackTrace(ex);
                     }
-
-                    if (lock != null) {
-                        lock.releaseLock();
-                    }
+                }
+                
+                if (lock != null) {
+                    lock.releaseLock();
                 }
             }
         }, TIME_TO_WAIT);

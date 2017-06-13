@@ -28,6 +28,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -212,8 +213,12 @@ public abstract class JavaClass<T extends IAttributes> extends FlowNode implemen
         
         
     }
-    
-    
+        
+    public void beforeMarshal(Marshaller marshaller) {
+        if(jsonbPropertyOrder!=null && jsonbPropertyOrder.isEmpty()){
+            jsonbPropertyOrder = null;
+        }
+    }
     
     public abstract T getAttributes();
 

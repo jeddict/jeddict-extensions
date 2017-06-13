@@ -15,6 +15,8 @@
  */
 package org.jcode.docker.generator;
 
+import java.util.Arrays;
+import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.netbeans.jcode.stack.config.data.LayerConfigData;
 
@@ -33,11 +35,10 @@ public class DockerConfigData extends LayerConfigData {
     private String dbName = "sample";
     private String dbHost = "localhost";
     private String dbPort;
-    
+
     private String dockerMachine;
     private boolean dockerEnable;
     private boolean dockerActivated;//checkbox
-
 
     public ServerType getServerType() {
         return serverType;
@@ -48,7 +49,7 @@ public class DockerConfigData extends LayerConfigData {
     }
 
     public DatabaseType getDatabaseType() {
-        if(serverType == null || serverType == ServerType.NONE){
+        if (serverType == null || serverType == ServerType.NONE) {
             return null;
         }
         return databaseType;
@@ -97,10 +98,11 @@ public class DockerConfigData extends LayerConfigData {
     public void setDbName(String dbName) {
         this.dbName = dbName;
     }
-    
+
     public boolean isDbInfoExist() {
         return StringUtils.isNotBlank(this.dbName);
     }
+
     /**
      * @return the dockerMachine
      */
@@ -169,5 +171,11 @@ public class DockerConfigData extends LayerConfigData {
      */
     public void setDbPort(String dbPort) {
         this.dbPort = dbPort;
+    }
+
+    @Override
+    public List<String> getUsageDetails() {
+        return Arrays.asList(getDatabaseType().getDisplayName(),
+                getServerType().getDisplayName(), dockerEnable ? "Docker" : null);
     }
 }

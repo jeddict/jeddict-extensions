@@ -20,8 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import static org.netbeans.jcode.core.util.AttributeType.CALENDAR;
 import static org.netbeans.jcode.core.util.AttributeType.DATE;
 import static org.netbeans.jcode.core.util.AttributeType.DURATION;
@@ -39,14 +38,14 @@ import static org.netbeans.jcode.core.util.AttributeType.ZONED_DATE_TIME;
 import static org.netbeans.jcode.core.util.AttributeType.ZONE_ID;
 import static org.netbeans.jcode.core.util.AttributeType.ZONE_OFFSET;
 import static org.netbeans.jcode.jsonb.JSONBConstants.JSONB_DATE_FORMAT_FQN;
-import org.netbeans.jpa.modeler.spec.GeneratedValue;
-import org.netbeans.jpa.modeler.spec.GenerationType;
+import org.netbeans.jpa.modeler.spec.validator.JsonbDateFormatValidator;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
  *
  * @author jGauravGupta
  */
+@XmlJavaTypeAdapter(value = JsonbDateFormatValidator.class)
 public class JsonbDateFormat extends JsonbFormat {
     
     private static final Set<String> SUPPORTED_TYPE = new HashSet<>(Arrays.asList(DATE,CALENDAR,GREGORIAN_CALENDAR,TIME_ZONE ,SIMPLE_TIME_ZONE,

@@ -281,7 +281,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
             elementCollection.setTargetClass(STRING);
         }
         elementCollection.setAttributeConstraints(JavaSourceParserUtil.getBeanValidation(element));
-//elementCollection.getName()
+
         elementCollection.convert = Convert.load(element, mapKeyExist, false);
         if (mapKeyExist) {
             elementCollection.mapKeyConvert = Convert.load(element, mapKeyExist, true);
@@ -330,7 +330,9 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
         return elementCollection;
     }
 
-    void beforeMarshal(Marshaller marshaller) {
+    @Override
+    public void beforeMarshal(Marshaller marshaller) {
+        super.beforeMarshal(marshaller);
         AttributeValidator.filter(this);
         AssociationValidator.filter(this);
     }

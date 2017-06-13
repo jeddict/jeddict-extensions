@@ -15,6 +15,8 @@
  */
 package org.netbeans.jcode.ejb.facade;
 
+import java.util.Collections;
+import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.netbeans.jcode.stack.config.data.LayerConfigData;
 
@@ -71,5 +73,10 @@ public class SessionBeanData extends LayerConfigData {
      */
     public void setPrefixName(String prefixName) {
         this.prefixName = prefixName;
+    }
+    
+    @Override
+    public List<String> getUsageDetails() {
+        return Collections.EMPTY_LIST;
     }
 }
