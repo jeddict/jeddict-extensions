@@ -48,9 +48,6 @@ import org.netbeans.jpa.modeler.spec.validation.adapter.CompositePrimaryKeyAdapt
 
 public abstract class IdentifiableClass extends ManagedClass<IPrimaryKeyAttributes> implements PrimaryKeyContainer {
 
-    @XmlAttribute(name = "xre")//(name = "jaxb-root-element")//
-    private Boolean xmlRootElement = false;
-
     @XmlTransient
     protected IdClass idClass;
     protected PrimaryKeyAttributes attributes;
@@ -212,20 +209,6 @@ public abstract class IdentifiableClass extends ManagedClass<IPrimaryKeyAttribut
     @Override
     public void setName(String name) {
         setClazz(name);
-    }
-
-    /**
-     * @return the xmlRootElement
-     */
-    public Boolean getXmlRootElement() {
-        return xmlRootElement;
-    }
-
-    /**
-     * @param xmlRootElement the xmlRootElement to set
-     */
-    public void setXmlRootElement(Boolean xmlRootElement) {
-        this.xmlRootElement = xmlRootElement;
     }
 
     /**
