@@ -22,12 +22,8 @@ import org.openide.util.NbPreferences;
 
 public final class ViewPanel extends javax.swing.JPanel {
 
-    private final ViewOptionsPanelController controller;
-
-    ViewPanel(ViewOptionsPanelController controller) {
-        this.controller = controller;
+    ViewPanel() {
         initComponents();
-        // TODO listen to changes in form fields and call controller.changed()
     }
 
     /**

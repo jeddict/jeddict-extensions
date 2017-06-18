@@ -21,12 +21,9 @@ import org.openide.util.NbPreferences;
 
 public final class CodePanel extends javax.swing.JPanel {
 
-    private final CodeOptionsPanelController controller;
 
-    CodePanel(CodeOptionsPanelController controller) {
-        this.controller = controller;
+    CodePanel() {
         initComponents();
-        // TODO listen to changes in form fields and call controller.changed()
     }
 
     /**

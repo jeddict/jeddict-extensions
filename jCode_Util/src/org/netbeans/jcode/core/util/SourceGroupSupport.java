@@ -82,11 +82,12 @@ public class SourceGroupSupport {
     public static Set<SourceGroup> getTestSourceGroups(Project project) {
         return getTestSourceGroups(project, true);
     }
+
     public static Set<SourceGroup> getTestSourceGroups(Project project, boolean create) {
         SourceGroup[] sourceGroups = ProjectUtils.getSources(project).getSourceGroups(JavaProjectConstants.SOURCES_TYPE_JAVA);
         Set<SourceGroup> testGroups = getTestSourceGroups(sourceGroups);
-        if(testGroups.isEmpty() && create){
-            if (SourceGroupModifier.createSourceGroup(project, JavaProjectConstants.SOURCES_TYPE_JAVA, JavaProjectConstants.SOURCES_HINT_TEST) != null){
+        if (testGroups.isEmpty() && create) {
+            if (SourceGroupModifier.createSourceGroup(project, JavaProjectConstants.SOURCES_TYPE_JAVA, JavaProjectConstants.SOURCES_HINT_TEST) != null) {
                 return getTestSourceGroups(project, false);
             } else {
                 throw new IllegalStateException("Test Source group creation failed");
@@ -94,6 +95,7 @@ public class SourceGroupSupport {
         }
         return testGroups;
     }
+
     public static SourceGroup getTestSourceGroup(Project project) {
         return getTestSourceGroups(project, true).stream().findAny().get();
     }
@@ -148,13 +150,13 @@ public class SourceGroupSupport {
     public static boolean isFolderWritable(SourceGroup sourceGroup, String packageName) {
         Parameters.notNull("sourceGroup", sourceGroup); //NOI18N
         Parameters.notNull("packageName", packageName); //NOI18N
-            FileObject fo = getFolderForPackage(sourceGroup, packageName, false);
+        FileObject fo = getFolderForPackage(sourceGroup, packageName, false);
 
-            while ((fo == null) && (packageName.lastIndexOf('.') != -1)) {
-                packageName = packageName.substring(0, packageName.lastIndexOf('.'));
-                fo = getFolderForPackage(sourceGroup, packageName, false);
-            }
-            return fo == null ? sourceGroup.getRootFolder().canWrite() : fo.canWrite();
+        while ((fo == null) && (packageName.lastIndexOf('.') != -1)) {
+            packageName = packageName.substring(0, packageName.lastIndexOf('.'));
+            fo = getFolderForPackage(sourceGroup, packageName, false);
+        }
+        return fo == null ? sourceGroup.getRootFolder().canWrite() : fo.canWrite();
     }
 
     public static SourceGroup findSourceGroupForFile(Project project, FileObject folder) {
@@ -245,14 +247,14 @@ public class SourceGroupSupport {
      * found.
      */
     public static FileObject getFolderForPackage(SourceGroup sourceGroup, String packageName, boolean create) {
-        Parameters.notNull("sourceGroup", sourceGroup); 
+        Parameters.notNull("sourceGroup", sourceGroup);
         return getFolderForPackage(sourceGroup.getRootFolder(), packageName, create);
     }
 
-    public static FileObject getFolderForPackage(FileObject rootFile, String packageName, boolean create){
+    public static FileObject getFolderForPackage(FileObject rootFile, String packageName, boolean create) {
         Parameters.notEmpty("packageName", packageName);
-        Parameters.notNull("rootFile", rootFile); 
-        
+        Parameters.notNull("rootFile", rootFile);
+
         String relativePkgName = packageName.replace('.', '/');
         FileObject folder = rootFile.getFileObject(relativePkgName);
         if (folder != null) {
@@ -328,8 +330,8 @@ public class SourceGroupSupport {
         return qualifiedClassName.substring(qualifiedClassName.lastIndexOf('.') + 1);
     }
 
-    public static JavaSource getJavaSourceFromClassName(String qualifiedClassName, Project project) throws IOException {
-        FileObject fo = getFileObjectFromClassName(qualifiedClassName, project);
+    public static JavaSource getJavaSource(Project project, String fqClassName) throws IOException {
+        FileObject fo = getJavaFileObject(project, fqClassName);
         if (fo != null) {
             return JavaSource.forFileObject(fo);
         } else {
@@ -338,12 +340,12 @@ public class SourceGroupSupport {
     }
 
     public static JavaSource getJavaSource(SourceGroup sourceGroup, String fqClassName) {
-        FileObject sourceClass = getJavaFileObject(sourceGroup, fqClassName);
+        FileObject sourceClass = SourceGroupSupport.getJavaFileObject(sourceGroup, fqClassName);
         return JavaSource.forFileObject(sourceClass);
     }
 
     public static FileObject getJavaFileObject(SourceGroup sourceGroup, String fqClassName) {
-        return sourceGroup.getRootFolder().getFileObject(fqClassName.replaceAll("\\.", Matcher.quoteReplacement(File.separator)) + JAVA_EXT_SUFFIX);
+        return sourceGroup.getRootFolder().getFileObject(fqClassName.replaceAll("\\.", Matcher.quoteReplacement("/")) + JAVA_EXT_SUFFIX);//File.seprator not supported => "/"
     }
 
     public static ElementHandle<TypeElement> getHandleClassName(String qualifiedClassName,
@@ -390,55 +392,58 @@ public class SourceGroupSupport {
         return null;
     }
 
-    public static FileObject getFileObjectFromClassName(String qualifiedClassName,
-            Project project) throws IOException {
-        final ElementHandle<TypeElement> handle = getHandleClassName(qualifiedClassName, project);
-        if (handle == null) {
+    public static FileObject getJavaFileObject(Project project, String fqClassName) {
+        try {
+            final ElementHandle<TypeElement> handle = getHandleClassName(fqClassName, project);
+            if (handle == null) {
+                return null;
+            }
+            ClassPathProvider provider = project.getLookup().lookup(ClassPathProvider.class);
+            FileObject root = MiscUtilities.findSourceRoot(project);
+            ClassPath sourceCp = provider.findClassPath(root, ClassPath.SOURCE);
+            final ClassPath compileCp = provider.findClassPath(root, ClassPath.COMPILE);
+            ClassPath bootCp = provider.findClassPath(root, ClassPath.BOOT);
+            ClasspathInfo cpInfo = ClasspathInfo.create(bootCp, compileCp, sourceCp);
+            if (fqClassName.equals(handle.getQualifiedName())) {
+                FileObject fo = SourceUtils.getFile(handle, cpInfo);
+                if (fo != null) {
+                    return fo;
+                }
+                JavaSource javaSource = JavaSource.create(cpInfo);
+                final FileObject classFo[] = new FileObject[1];
+                javaSource.runUserActionTask(controller -> {
+                    TypeElement element = handle.resolve(controller);
+                    if (element == null) {
+                        return;
+                    }
+                    PackageElement pack = controller.getElements().getPackageOf(element);
+                    if (pack == null) {
+                        return;
+                    }
+                    String packageName = pack.getQualifiedName().toString();
+                    String fqn = ElementUtilities.getBinaryName(element);
+                    String className = fqn.substring(packageName.length());
+                    if (className.length() > 0 && className.charAt(0) == '.') {
+                        className = className.substring(1);
+                    } else {
+                        return;
+                    }
+                    int dotIndex = className.indexOf('.');
+                    if (dotIndex != -1) {
+                        className = className.substring(0, dotIndex);
+                    }
+
+                    String path = packageName.replace('.', '/') + '/'
+                            + className + ".class"; // NOI18N
+                    classFo[0] = compileCp.findResource(path);
+                }, true);
+                return classFo[0];
+            }
+            return null;
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
             return null;
         }
-        ClassPathProvider provider = project.getLookup().lookup(
-                ClassPathProvider.class);
-        FileObject root = MiscUtilities.findSourceRoot(project);
-        ClassPath sourceCp = provider.findClassPath(root, ClassPath.SOURCE);
-        final ClassPath compileCp = provider.findClassPath(root, ClassPath.COMPILE);
-        ClassPath bootCp = provider.findClassPath(root, ClassPath.BOOT);
-        ClasspathInfo cpInfo = ClasspathInfo.create(bootCp, compileCp, sourceCp);
-        if (qualifiedClassName.equals(handle.getQualifiedName())) {
-            FileObject fo = SourceUtils.getFile(handle, cpInfo);
-            if (fo != null) {
-                return fo;
-            }
-            JavaSource javaSource = JavaSource.create(cpInfo);
-            final FileObject classFo[] = new FileObject[1];
-            javaSource.runUserActionTask(controller -> {
-                TypeElement element = handle.resolve(controller);
-                if (element == null) {
-                    return;
-                }
-                PackageElement pack = controller.getElements().getPackageOf(element);
-                if (pack == null) {
-                    return;
-                }
-                String packageName = pack.getQualifiedName().toString();
-                String fqn = ElementUtilities.getBinaryName(element);
-                String className = fqn.substring(packageName.length());
-                if (className.length() > 0 && className.charAt(0) == '.') {
-                    className = className.substring(1);
-                } else {
-                    return;
-                }
-                int dotIndex = className.indexOf('.');
-                if (dotIndex != -1) {
-                    className = className.substring(0, dotIndex);
-                }
-                
-                String path = packageName.replace('.', '/') + '/'
-                        + className + ".class"; // NOI18N
-                classFo[0] = compileCp.findResource(path);
-            }, true);
-            return classFo[0];
-        }
-        return null;
     }
 
     public static FileObject findJavaSourceFile(Project project, String name) {
@@ -559,14 +564,15 @@ public class SourceGroupSupport {
         return null;
     }
 
-        /**
+    /**
      * Gets the {@link SourceGroup} of the given <code>folder</code>.
-     * 
+     *
      * @param sourceGroups the source groups to search; must not be null.
-     * @param folder the folder whose source group is to be get; must not be null.
-     * @return the source group containing the given <code>folder</code> or 
-     * null if not found.
-     */ 
+     * @param folder the folder whose source group is to be get; must not be
+     * null.
+     * @return the source group containing the given <code>folder</code> or null
+     * if not found.
+     */
     public static SourceGroup getFolderSourceGroup(SourceGroup[] sourceGroups, FileObject folder) {
         Parameters.notNull("sourceGroups", sourceGroups); //NOI18N
         Parameters.notNull("folder", folder); //NOI18N
@@ -577,9 +583,9 @@ public class SourceGroupSupport {
         }
         return null;
     }
-    
+
     public static SourceGroup getFolderSourceGroup(FileObject folder) {
         Project project = FileOwnerQuery.getOwner(folder);
-     return getFolderSourceGroup(ProjectUtils.getSources(project).getSourceGroups(JavaProjectConstants.SOURCES_TYPE_JAVA), folder);
+        return getFolderSourceGroup(ProjectUtils.getSources(project).getSourceGroups(JavaProjectConstants.SOURCES_TYPE_JAVA), folder);
     }
 }
