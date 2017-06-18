@@ -59,8 +59,11 @@ public final class CodePanel extends javax.swing.JPanel {
         compositePKWrapperPanel = new javax.swing.JLayeredPane();
         compositePrimaryKeyTypeLabel = new javax.swing.JLabel();
         defaultCompositePrimaryKeyTypeComp = new javax.swing.JComboBox<>();
+        defaultSingleAssociationFetchTypeWrapperPanel = new javax.swing.JLayeredPane();
+        defaultSingleAssociationFetchTypeLabel = new javax.swing.JLabel();
+        defaultSingleAssociationFetchTypeComp = new javax.swing.JComboBox<>();
 
-        rootLayeredPane.setLayout(new java.awt.GridLayout(8, 1));
+        rootLayeredPane.setLayout(new java.awt.GridLayout(9, 1, 0, 2));
 
         org.openide.awt.Mnemonics.setLocalizedText(refractorNamedQueryComp, org.openide.util.NbBundle.getMessage(CodePanel.class, "CodePanel.refractorNamedQueryComp.text")); // NOI18N
         rootLayeredPane.add(refractorNamedQueryComp);
@@ -199,6 +202,35 @@ public final class CodePanel extends javax.swing.JPanel {
 
         rootLayeredPane.add(compositePKWrapperPanel);
 
+        org.openide.awt.Mnemonics.setLocalizedText(defaultSingleAssociationFetchTypeLabel, org.openide.util.NbBundle.getMessage(CodePanel.class, "CodePanel.defaultSingleAssociationFetchTypeLabel.text")); // NOI18N
+
+        defaultSingleAssociationFetchTypeComp.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "EAGER", "LAZY" }));
+
+        defaultSingleAssociationFetchTypeWrapperPanel.setLayer(defaultSingleAssociationFetchTypeLabel, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        defaultSingleAssociationFetchTypeWrapperPanel.setLayer(defaultSingleAssociationFetchTypeComp, javax.swing.JLayeredPane.DEFAULT_LAYER);
+
+        javax.swing.GroupLayout defaultSingleAssociationFetchTypeWrapperPanelLayout = new javax.swing.GroupLayout(defaultSingleAssociationFetchTypeWrapperPanel);
+        defaultSingleAssociationFetchTypeWrapperPanel.setLayout(defaultSingleAssociationFetchTypeWrapperPanelLayout);
+        defaultSingleAssociationFetchTypeWrapperPanelLayout.setHorizontalGroup(
+            defaultSingleAssociationFetchTypeWrapperPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(defaultSingleAssociationFetchTypeWrapperPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(defaultSingleAssociationFetchTypeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(defaultSingleAssociationFetchTypeComp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        defaultSingleAssociationFetchTypeWrapperPanelLayout.setVerticalGroup(
+            defaultSingleAssociationFetchTypeWrapperPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(defaultSingleAssociationFetchTypeWrapperPanelLayout.createSequentialGroup()
+                .addGroup(defaultSingleAssociationFetchTypeWrapperPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(defaultSingleAssociationFetchTypeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(defaultSingleAssociationFetchTypeComp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 6, Short.MAX_VALUE))
+        );
+
+        rootLayeredPane.add(defaultSingleAssociationFetchTypeWrapperPanel);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -216,8 +248,8 @@ public final class CodePanel extends javax.swing.JPanel {
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(rootLayeredPane, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(91, Short.MAX_VALUE)))
+                    .addComponent(rootLayeredPane, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(47, Short.MAX_VALUE)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -234,6 +266,7 @@ public final class CodePanel extends javax.swing.JPanel {
         javaseSupportComp.setSelected(isJavaSESupportEnable());
         optionalReturnTypeStatusComp.setSelectedItem(isOptionalReturnType() ? "Enable" : "Disable");
         defaultCompositePrimaryKeyTypeComp.setSelectedItem(getDefaultCompositePrimaryKeyType());
+       defaultSingleAssociationFetchTypeComp.setSelectedItem(getDefaultSingleAssociationFetchType());
     }
 
     void store() {
@@ -249,6 +282,7 @@ public final class CodePanel extends javax.swing.JPanel {
         pref.putBoolean("javaSESupportEnable", javaseSupportComp.isSelected());
         pref.putBoolean("optionalReturnType", "Enable".equals(optionalReturnTypeStatusComp.getSelectedItem()));
         pref.put("defaultCompositePrimaryKeyType", (String) defaultCompositePrimaryKeyTypeComp.getSelectedItem());
+        pref.put("defaultSingleAssociationFetchType", (String) defaultSingleAssociationFetchTypeComp.getSelectedItem());
         deleteNamedQuery = null;
         refractorNamedQuery = null;
         propertyJavaDoc = null;
@@ -261,6 +295,7 @@ public final class CodePanel extends javax.swing.JPanel {
         javaSESupportEnable = null;
         optionalReturnTypeStatus = null;
         defaultCompositePrimaryKeyType = null;
+        defaultSingleAssociationFetchType = null;
     }
 
     private static Boolean deleteNamedQuery;
@@ -275,6 +310,7 @@ public final class CodePanel extends javax.swing.JPanel {
     private static Boolean javaSESupportEnable;
     private static Boolean optionalReturnTypeStatus;
     private static String defaultCompositePrimaryKeyType;
+    private static String defaultSingleAssociationFetchType;
 
     public static boolean isRefractorQuery() {
         if (refractorNamedQuery == null) {
@@ -364,6 +400,17 @@ public final class CodePanel extends javax.swing.JPanel {
     public static boolean isEmbeddedIdDefaultType() {
         return "EmbeddedId".equals(getDefaultCompositePrimaryKeyType());
     }
+    
+    public static String getDefaultSingleAssociationFetchType() {
+        if (defaultSingleAssociationFetchType == null) {
+            defaultSingleAssociationFetchType = pref.get("defaultSingleAssociationFetchType", "EAGER");
+        }
+        return defaultSingleAssociationFetchType;
+    }
+
+    public static boolean isLazyDefaultTypeForSingleAssociation() {
+        return "LAZY".equals(getDefaultSingleAssociationFetchType());
+    }
 
     public boolean valid() {
         return true;
@@ -374,6 +421,9 @@ public final class CodePanel extends javax.swing.JPanel {
     private javax.swing.JLayeredPane compositePKWrapperPanel;
     private javax.swing.JLabel compositePrimaryKeyTypeLabel;
     private javax.swing.JComboBox<String> defaultCompositePrimaryKeyTypeComp;
+    private javax.swing.JComboBox<String> defaultSingleAssociationFetchTypeComp;
+    private javax.swing.JLabel defaultSingleAssociationFetchTypeLabel;
+    private javax.swing.JLayeredPane defaultSingleAssociationFetchTypeWrapperPanel;
     private javax.swing.JCheckBox deleteNamedQueryComp;
     private javax.swing.JCheckBox fluentAPIJavaDocComp;
     private javax.swing.JTextField fluentAPIPrefixComp;
