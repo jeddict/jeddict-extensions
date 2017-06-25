@@ -101,9 +101,10 @@
                 <build.name>${project.artifactId}</build.name>
                 <project.binary>${project.build.directory}/${binary}</project.binary>
                 <docker.binary>maven/${binary}</docker.binary>
-                <docker.image>${project.groupId}/${project.artifactId}:${project.version}</docker.image>
                 
+                <docker.image>${project.groupId}/${project.artifactId}:${project.version}</docker.image>
                 <docker.machine>default</docker.machine>
+                
             </properties>
         </profile>
     </profiles>

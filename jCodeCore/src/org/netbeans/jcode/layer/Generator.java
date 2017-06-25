@@ -40,7 +40,7 @@ public interface Generator {
         TechContext context = null;
         for (Generator codeGenerator : Lookup.getDefault().lookupAll(Generator.class)) {
             if (codeGenerator.getClass().getSimpleName().equals(className)) {
-                context = new TechContext(codeGenerator);
+                context = new TechContext((Class<Generator>)codeGenerator.getClass());
             }
         }
         return context;
@@ -58,16 +58,20 @@ public interface Generator {
         return getTechContexts(parentCodeGenerator, Technology.Type.VIEWER);
     }
 
-    static List<TechContext> getSiblingTechContexts(Generator rootCodeGenerator) {
-        Technology rootTechnology = rootCodeGenerator.getClass().getAnnotation(Technology.class);
+    static List<TechContext> getSiblingTechContexts(TechContext rootTechContext) {
+        Class<?> rootCodeGeneratorClass = rootTechContext.getGeneratorClass();
+        Technology rootTechnology = rootCodeGeneratorClass.getAnnotation(Technology.class);
         Set<Class<? extends Generator>> rootCodeGeneratorSibling = Arrays.stream(rootTechnology.sibling()).collect(toSet());
         Set<TechContext> siblingCodeGenerators = new LinkedHashSet<>();
-        Lookup.getDefault().lookupAll(Generator.class).stream().forEach((Generator codeGenerator) -> {
+        Lookup.getDefault().lookupAll(Generator.class).stream().forEach(codeGenerator -> {
             Technology technology = codeGenerator.getClass().getAnnotation(Technology.class);
             //if direct lookup || reverse lookup
-            if (technology != null && technology.type() == Technology.Type.NONE && (rootCodeGeneratorSibling.contains(codeGenerator.getClass())
-                    || Arrays.stream(technology.sibling()).filter(sibling -> sibling == rootCodeGenerator.getClass()).findAny().isPresent())) {
-                siblingCodeGenerators.add(new TechContext(codeGenerator));
+            if (technology != null 
+                    && technology.type() == Technology.Type.NONE 
+                    && !rootTechContext.isRootTechContext(codeGenerator.getClass())
+                    && (rootCodeGeneratorSibling.contains(codeGenerator.getClass())
+                    || Arrays.stream(technology.sibling()).filter(sibling -> sibling == rootCodeGeneratorClass).findAny().isPresent())) {
+                siblingCodeGenerators.add(new TechContext(rootTechContext, (Class<Generator>)codeGenerator.getClass()));
             }
         });
         return new ArrayList<>(siblingCodeGenerators);
@@ -77,27 +81,27 @@ public interface Generator {
         List<TechContext> codeGenerators = new ArrayList<>();//default <none> type //LayerConfigPanel
         List<TechContext> customCodeGenerators = new ArrayList<>();
 
-        Lookup.getDefault().lookupAll(Generator.class).stream().forEach((Generator codeGenerator) -> {
+        Lookup.getDefault().lookupAll(Generator.class).stream().forEach(codeGenerator -> {
             Technology technology = codeGenerator.getClass().getAnnotation(Technology.class);
             if (technology.type() == type) {
                 if (technology.panel() == org.netbeans.jcode.stack.config.panel.LayerConfigPanel.class) {
-                    codeGenerators.add(new TechContext(codeGenerator));
+                    codeGenerators.add(new TechContext((Class<Generator>)codeGenerator.getClass()));
                 } else {
                     if (parentCodeGenerator != null) {
                         for (Class<? extends Generator> genClass : technology.parents()) {
-                            if (genClass == parentCodeGenerator.getGenerator().getClass()) {
-                                customCodeGenerators.add(new TechContext(codeGenerator));
+                            if (genClass == parentCodeGenerator.getGeneratorClass()) {
+                                customCodeGenerators.add(new TechContext((Class<Generator>)codeGenerator.getClass()));
                                 break;
                             }
                         }
                         for (Class<? extends Generator> genClass : parentCodeGenerator.getTechnology().children()) {
                             if (genClass == codeGenerator.getClass()) {
-                                customCodeGenerators.add(new TechContext(codeGenerator));
+                                customCodeGenerators.add(new TechContext((Class<Generator>)codeGenerator.getClass()));
                                 break;
                             }
                         }
                     } else {
-                        customCodeGenerators.add(new TechContext(codeGenerator));
+                        customCodeGenerators.add(new TechContext((Class<Generator>)codeGenerator.getClass()));
                     }
                 }
             }

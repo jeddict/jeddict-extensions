@@ -9,7 +9,7 @@ USER jboss
 WORKDIR $JBOSS_HOME
 
 ARG BINARY
-ARG DB_HOST
+ARG DB_SVC
 ARG DB_PORT
 ARG DB_NAME
 ARG DB_USER
@@ -17,7 +17,7 @@ ARG DB_PASS
 ARG DB_DATASOURCE
 ARG DB_JNDI=java:/jdbc/$DB_DATASOURCE
 
-<#if docker.databaseType == "MySQL">
+<#if DB_TYPE == "mysql">
 ENV MYSQL_VERSION 5.1.38
 # Install mysql drivers and datasource
 RUN /bin/sh -c '$JBOSS_HOME/bin/standalone.sh &' && \
@@ -27,8 +27,8 @@ RUN /bin/sh -c '$JBOSS_HOME/bin/standalone.sh &' && \
   $JBOSS_HOME/bin/jboss-cli.sh --connect --command="deploy /tmp/mysql-$MYSQL_VERSION.jar"  && \
   $JBOSS_HOME/bin/jboss-cli.sh --connect --command="module add --name=com.mysql --resources=/tmp/mysql-$MYSQL_VERSION.jar --dependencies=javax.api,javax.transaction.api" && \
   $JBOSS_HOME/bin/jboss-cli.sh --connect --command="/subsystem=datasources/jdbc-driver=mysql:add(driver-name=mysql,driver-module-name=com.mysql,driver-xa-datasource-class-name=com.mysql.jdbc.jdbc2.optional.MysqlXADataSource)" && \
-  $JBOSS_HOME/bin/jboss-cli.sh --connect --command="data-source add --name=$DB_DATASOURCE --driver-name=mysql --jndi-name=$DB_JNDI --connection-url=jdbc:mysql://$DB_HOST:$DB_PORT/$DB_NAME --user-name=$DB_USER --password=$DB_PASS --use-ccm=false --max-pool-size=25 --blocking-timeout-wait-millis=5000 --enabled=true" && \
-<#elseif docker.databaseType == "MariaDB">
+  $JBOSS_HOME/bin/jboss-cli.sh --connect --command="data-source add --name=$DB_DATASOURCE --driver-name=mysql --jndi-name=$DB_JNDI --connection-url=jdbc:mysql://$DB_SVC:$DB_PORT/$DB_NAME --user-name=$DB_USER --password=$DB_PASS --use-ccm=false --max-pool-size=25 --blocking-timeout-wait-millis=5000 --enabled=true" && \
+<#elseif DB_TYPE == "mariadb">
 ENV MARIADB_VERSION 1.5.8
 # Install mariadb drivers and datasource
 RUN /bin/sh -c '$JBOSS_HOME/bin/standalone.sh &' && \
@@ -38,8 +38,8 @@ RUN /bin/sh -c '$JBOSS_HOME/bin/standalone.sh &' && \
   $JBOSS_HOME/bin/jboss-cli.sh --connect --command="deploy /tmp/mariadb-$MARIADB_VERSION.jar"  && \
   $JBOSS_HOME/bin/jboss-cli.sh --connect --command="module add --name=com.mariadb --resources=/tmp/mariadb-$MARIADB_VERSION.jar --dependencies=javax.api,javax.transaction.api" && \
   $JBOSS_HOME/bin/jboss-cli.sh --connect --command="/subsystem=datasources/jdbc-driver=mariadb:add(driver-name=mariadb,driver-module-name=com.mariadb,driver-xa-datasource-class-name=org.mariadb.jdbc.MariaDbDataSource)" && \
-  $JBOSS_HOME/bin/jboss-cli.sh --connect --command="data-source add --name=$DB_DATASOURCE --driver-name=mariadb --jndi-name=$DB_JNDI --connection-url=jdbc:mariadb://$DB_HOST:$DB_PORT/$DB_NAME --user-name=$DB_USER --password=$DB_PASS --use-ccm=false --max-pool-size=25 --blocking-timeout-wait-millis=5000 --enabled=true" && \
-<#elseif docker.databaseType == "PostgreSQL">
+  $JBOSS_HOME/bin/jboss-cli.sh --connect --command="data-source add --name=$DB_DATASOURCE --driver-name=mariadb --jndi-name=$DB_JNDI --connection-url=jdbc:mariadb://$DB_SVC:$DB_PORT/$DB_NAME --user-name=$DB_USER --password=$DB_PASS --use-ccm=false --max-pool-size=25 --blocking-timeout-wait-millis=5000 --enabled=true" && \
+<#elseif DB_TYPE == "postgres">
 ENV POSTGRESQL_VERSION 9.1-901.jdbc4
 # Install postgres drivers and datasource
 RUN /bin/sh -c '$JBOSS_HOME/bin/standalone.sh &' && \
@@ -49,7 +49,7 @@ RUN /bin/sh -c '$JBOSS_HOME/bin/standalone.sh &' && \
   $JBOSS_HOME/bin/jboss-cli.sh --connect --command="deploy /tmp/postgresql-$POSTGRESQL_VERSION.jar" && \
   $JBOSS_HOME/bin/jboss-cli.sh --connect --command="module add --name=com.postgresql --resources=/tmp/postgresql-$POSTGRESQL_VERSION.jar --dependencies=javax.api,javax.transaction.api" && \
   $JBOSS_HOME/bin/jboss-cli.sh --connect --command="/subsystem=datasources/jdbc-driver=postgresql:add(driver-name=postgresql,driver-module-name=com.postgresql,driver-xa-datasource-class-name=org.postgresql.xa.PGXADataSource)" && \
-  $JBOSS_HOME/bin/jboss-cli.sh --connect --command="data-source add --name=$DB_DATASOURCE --driver-name=postgresql --jndi-name=$DB_JNDI --connection-url=jdbc:postgresql://$DB_HOST:$DB_PORT/$DB_NAME --user-name=$DB_USER --password=$DB_PASS --use-ccm=false --max-pool-size=25 --blocking-timeout-wait-millis=5000 --enabled=true" && \
+  $JBOSS_HOME/bin/jboss-cli.sh --connect --command="data-source add --name=$DB_DATASOURCE --driver-name=postgresql --jndi-name=$DB_JNDI --connection-url=jdbc:postgresql://$DB_SVC:$DB_PORT/$DB_NAME --user-name=$DB_USER --password=$DB_PASS --use-ccm=false --max-pool-size=25 --blocking-timeout-wait-millis=5000 --enabled=true" && \
 </#if>
 # $JBOSS_HOME/bin/jboss-cli.sh --connect --command="/subsystem=datasources/data-source=$DB_DATASOURCE:test-connection-in-pool"
 # $JBOSS_HOME/bin/jboss-cli.sh --connect --command="/subsystem=datasources:read-resource"
@@ -57,11 +57,11 @@ RUN /bin/sh -c '$JBOSS_HOME/bin/standalone.sh &' && \
   $JBOSS_HOME/bin/jboss-cli.sh --connect --command=:shutdown && \
   # Fix for WFLYCTL0056
   rm -rf $JBOSS_HOME/standalone/configuration/standalone_xml_history/ $JBOSS_HOME/standalone/log/* && \ 
-<#if docker.databaseType == "MySQL">
+<#if DB_TYPE == "mysql">
   rm -rf /tmp/mysql-*.jar
-<#elseif docker.databaseType == "MariaDB">
+<#elseif DB_TYPE == "mariadb">
   rm -rf /tmp/mariadb-*.jar
-<#elseif docker.databaseType == "PostgreSQL">
+<#elseif DB_TYPE == "postgres">
   rm -rf /tmp/postgresql-*.jar
 </#if>
 

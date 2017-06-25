@@ -15,6 +15,8 @@
  */
 package org.netbeans.jcode.task.progress;
 
+import org.openide.filesystems.FileObject;
+
 /**
  *
  * @author Gaurav Gupta
@@ -26,6 +28,8 @@ public interface ProgressHandler {
     void start(int step);
 
     void progress(String message);
+    
+    void progress(FileObject fileObject);
 
     void progress(String message, int step);
 

@@ -41,7 +41,6 @@ import static org.openide.util.NbBundle.getMessage;
  */
 public class JSPPanel extends LayerConfigPanel<JSPData> {
 
-    private Preferences pref;
 
     public JSPPanel() {
         initComponents();
@@ -59,7 +58,6 @@ public class JSPPanel extends LayerConfigPanel<JSPData> {
 
     @Override
     public void read() {
-        this.setConfigData(PreferenceUtils.get(pref, JSPData.class));
         JSPData data = this.getConfigData();
         if (StringUtils.isNotBlank(data.getFolder())) {
             setFolder(data.getFolder());
@@ -75,14 +73,12 @@ public class JSPPanel extends LayerConfigPanel<JSPData> {
         }
         this.getConfigData().setFolder(folder);
         this.getConfigData().setOnlineTheme(isOnlineTheme());
-        PreferenceUtils.set(pref, this.getConfigData());
     }
 
     private Project project;
 
     @Override
     public void init(String folder, Project project, SourceGroup sourceGroup) {
-        pref = ProjectUtils.getPreferences(project, JSPData.class, true);
         this.project = project;
         addChangeListener(folderTextField);
         setFolder(DEFAULT_FOLDER);

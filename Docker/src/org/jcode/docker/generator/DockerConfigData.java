@@ -15,6 +15,8 @@
  */
 package org.jcode.docker.generator;
 
+import org.jcode.infra.ServerType;
+import org.jcode.infra.DatabaseType;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
@@ -33,13 +35,15 @@ public class DockerConfigData extends LayerConfigData {
     private String dbPassword = "secret";
     private String dataSource = "SampleDS";
     private String dbName = "sample";
-    private String dbHost = "localhost";
+    private String dbHost;//db service/svc
     private String dbPort;
 
     private String dockerMachine;
     private boolean dockerEnable;
     private boolean dockerActivated;//checkbox
-
+    private String dockerNamespace;
+    private String dockerRepository;
+    
     public ServerType getServerType() {
         return serverType;
     }
@@ -177,5 +181,33 @@ public class DockerConfigData extends LayerConfigData {
     public List<String> getUsageDetails() {
         return Arrays.asList(getDatabaseType().getDisplayName(),
                 getServerType().getDisplayName(), dockerEnable ? "Docker" : null);
+    }
+
+    /**
+     * @return the dockerNamespace
+     */
+    public String getDockerNamespace() {
+        return dockerNamespace;
+    }
+
+    /**
+     * @param dockerNamespace the dockerNamespace to set
+     */
+    public void setDockerNamespace(String dockerNamespace) {
+        this.dockerNamespace = dockerNamespace;
+    }
+
+    /**
+     * @return the dockerRepository
+     */
+    public String getDockerRepository() {
+        return dockerRepository;
+    }
+
+    /**
+     * @param dockerRepository the dockerRepository to set
+     */
+    public void setDockerRepository(String dockerRepository) {
+        this.dockerRepository = dockerRepository;
     }
 }

@@ -585,7 +585,9 @@ public class RESTGenerator implements Generator {
             }
         }
 
-        FileObject restAppPack = SourceGroupSupport.getFolderForPackage(source, restData.getRestConfigData().getPackage(), true);
+        FileObject restAppPack = SourceGroupSupport.getFolderForPackage(source,
+                restData.getRestConfigData().getPackage() == null
+                ? restData.getPackage() : restData.getRestConfigData().getPackage(), true);
 
         try {
             if (restAppPack != null && restData.getRestConfigData().getApplicationClass() != null) {

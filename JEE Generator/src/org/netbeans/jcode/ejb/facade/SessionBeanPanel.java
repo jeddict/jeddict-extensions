@@ -36,7 +36,6 @@ import org.openide.util.NbBundle;
 public class SessionBeanPanel extends LayerConfigPanel<SessionBeanData> {
 
     private static final String DEFAULT_PACKAGE = "service.facade";
-    private Preferences pref;
 
     public SessionBeanPanel() {
         initComponents();
@@ -68,7 +67,6 @@ public class SessionBeanPanel extends LayerConfigPanel<SessionBeanData> {
     
     @Override
     public void read(){
-        this.setConfigData(PreferenceUtils.get(pref,SessionBeanData.class));
         SessionBeanData data = this.getConfigData();
         if(StringUtils.isNotBlank(data.getPackage())){
             setPackage(data.getPackage());
@@ -88,12 +86,10 @@ public class SessionBeanPanel extends LayerConfigPanel<SessionBeanData> {
         this.getConfigData().setPrefixName(getPrefix());
         this.getConfigData().setSuffixName(getSuffix());
         this.getConfigData().setPackage(getPackage());
-        PreferenceUtils.set(pref, this.getConfigData());
     }
     
     @Override
     public void init(String _package, Project project, SourceGroup sourceGroup) {
-        pref = ProjectUtils.getPreferences(project, SessionBeanData.class, true);
         if (sourceGroup != null) {
             packageCombo.setRenderer(PackageView.listRenderer());
             ComboBoxModel model = PackageView.createListView(sourceGroup);

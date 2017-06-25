@@ -231,6 +231,7 @@
                 </dependency>
             </module-dependencies>
             <public-packages>
+                <package>org.jcode.cloud.generator</package>
                 <package>org.jcode.docker.generator</package>
             </public-packages>
         </data>

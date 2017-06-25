@@ -146,75 +146,69 @@ public class ApplicationGenerator extends AbstractGenerator {
         if (bussinesLayerConfig == null) {
             return;
         }
-        layerConfigData.put(bussinesLayerConfig.getPanel().getConfigData().getClass(), bussinesLayerConfig.getPanel().getConfigData());
-        layerConfigData.putAll(bussinesLayerConfig.getSiblingTechContext()
-                .stream().map(context -> context.getPanel().getConfigData()).collect(toMap(data -> data.getClass(), identity(), (d1, d2) -> d1)));
-
+        storeLayerConfigData(bussinesLayerConfig);
+        
         TechContext controllerLayerConfig = applicationConfigData.getControllerTechContext();
         TechContext viewerLayerConfig = null;
         if (controllerLayerConfig != null) {
             controllerLayerConfig.getPanel().getConfigData().setParentLayerConfigData(bussinesLayerConfig.getPanel().getConfigData());
-            layerConfigData.put(controllerLayerConfig.getPanel().getConfigData().getClass(), controllerLayerConfig.getPanel().getConfigData());
-            layerConfigData.putAll(controllerLayerConfig.getSiblingTechContext()
-                    .stream().map(context -> context.getPanel().getConfigData()).collect(toMap(data -> data.getClass(), identity(), (d1, d2) -> d1)));
+            storeLayerConfigData(controllerLayerConfig);
 
             viewerLayerConfig = applicationConfigData.getViewerTechContext();
             if (viewerLayerConfig != null) {
                 viewerLayerConfig.getPanel().getConfigData().setParentLayerConfigData(controllerLayerConfig.getPanel().getConfigData());
-                layerConfigData.put(viewerLayerConfig.getPanel().getConfigData().getClass(), viewerLayerConfig.getPanel().getConfigData());
-                layerConfigData.putAll(viewerLayerConfig.getSiblingTechContext()
-                        .stream().map(context -> context.getPanel().getConfigData()).collect(toMap(data -> data.getClass(), identity(), (d1, d2) -> d1)));
+                storeLayerConfigData(viewerLayerConfig);
             }
         }
 
-        inject(bussinesLayerConfig.getGenerator(), applicationConfigData, layerConfigData, handler);
-        for (TechContext context : bussinesLayerConfig.getSiblingTechContext()) {
-            inject(context.getGenerator(), applicationConfigData, layerConfigData, handler);
-        }
-
+        inject(bussinesLayerConfig);
         if (controllerLayerConfig != null) {
-            inject(controllerLayerConfig.getGenerator(), applicationConfigData, layerConfigData, handler);
-            for (TechContext context : controllerLayerConfig.getSiblingTechContext()) {
-                inject(context.getGenerator(), applicationConfigData, layerConfigData, handler);
-            }
+            inject(controllerLayerConfig);
         }
-
         if (viewerLayerConfig != null) {
-            inject(viewerLayerConfig.getGenerator(), applicationConfigData, layerConfigData, handler);
-            for (TechContext context : viewerLayerConfig.getSiblingTechContext()) {
-                inject(context.getGenerator(), applicationConfigData, layerConfigData, handler);
-            }
+            inject(viewerLayerConfig);
         }
-
+    }
+    
+    private void storeLayerConfigData(TechContext rootTechContext) {
+        layerConfigData.put(rootTechContext.getPanel().getConfigData().getClass(), rootTechContext.getPanel().getConfigData());
+        for (TechContext context : rootTechContext.getSiblingTechContext()) {
+            storeLayerConfigData(context);
+        }
+    }
+    
+    private void inject(TechContext rootTechContext) {
+        inject(rootTechContext.getGenerator(), applicationConfigData, layerConfigData, handler);
+        for (TechContext context : rootTechContext.getSiblingTechContext()) {
+            inject(context);
+        }
     }
 
+    private void execute(TechContext rootTechContext) throws IOException{
+        rootTechContext.getGenerator().execute();
+        for (TechContext siblingTechContext : rootTechContext.getSiblingTechContext()) {
+            execute(siblingTechContext);
+        }
+    }
+    
     private void generateCRUD() throws IOException {
         TechContext bussinesLayerConfig = applicationConfigData.getBussinesTechContext();
         if (bussinesLayerConfig == null) {
             return;
         }
-        bussinesLayerConfig.getGenerator().execute();
-        for (TechContext context : bussinesLayerConfig.getSiblingTechContext()) {
-            context.getGenerator().execute();
-        }
+        execute(bussinesLayerConfig);
 
         TechContext controllerLayerConfig = applicationConfigData.getControllerTechContext();
         if (controllerLayerConfig == null) {
             return;
         }
-        controllerLayerConfig.getGenerator().execute();
-        for (TechContext context : controllerLayerConfig.getSiblingTechContext()) {
-            context.getGenerator().execute();
-        }
+        execute(controllerLayerConfig);
 
         TechContext viewerLayerConfig = applicationConfigData.getViewerTechContext();
         if (viewerLayerConfig == null) {
             return;
         }
-        viewerLayerConfig.getGenerator().execute();
-        for (TechContext context : viewerLayerConfig.getSiblingTechContext()) {
-            context.getGenerator().execute();
-        }
+        execute(viewerLayerConfig);
 
         if (POMManager.isMavenProject(project)) {
             POMManager.reload(project);
@@ -231,7 +225,7 @@ public class ApplicationGenerator extends AbstractGenerator {
 
     private List<Field> getAllFields(List<Field> fields, Class<?> type) {
         fields.addAll(Arrays.asList(type.getDeclaredFields()));
-        if (type.getSuperclass() != null) {
+        if (type.getSuperclass()!= Object.class) {
             fields = getAllFields(fields, type.getSuperclass());
         }
         return fields;

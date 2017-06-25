@@ -700,15 +700,11 @@ public class JavaSourceParserUtil {
      * @author georgeeb <georgeeb@java.net>
      * @since Thu, 17 Apr 2014 15:04:13 +0000
      */
-//    public static VariableElement[] getFields(TypeElement typeElement) {
-//        List<VariableElement> result = new LinkedList<VariableElement>();
-//        final List<VariableElement> fieldsIn = ElementFilter.fieldsIn(typeElement.getEnclosedElements());
-//        result.addAll(removeSerialVersionUid(fieldsIn));
-//        return result.toArray(new VariableElement[result.size()]);
-//    }
-    
     public static List<VariableElement> getFields(TypeElement typeElement) {
-        List<VariableElement> result = new LinkedList<VariableElement>();
+        if(typeElement==null){
+            return Collections.EMPTY_LIST;
+        }
+        List<VariableElement> result = new LinkedList<>();
         final List<VariableElement> fieldsIn = ElementFilter.fieldsIn(typeElement.getEnclosedElements());
         result.addAll(removeSerialVersionUid(fieldsIn));
         return result;

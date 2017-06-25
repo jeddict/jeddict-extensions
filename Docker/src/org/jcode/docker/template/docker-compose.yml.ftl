@@ -6,29 +6,25 @@ services:
             dockerfile: DockerFile
             args:
                 BINARY: ${r"${docker.binary}"}
-                <#if docker.serverType.name() != "PAYARA_MICRO" && docker.serverType.name() != "WILDFLY_SWARM">
-                DB_DATASOURCE: '${docker.dataSource}'
+                <#if SERVER_TYPE != "PAYARA_MICRO" && SERVER_TYPE != "WILDFLY_SWARM">
+                DB_DATASOURCE: '${DATASOURCE}'
                 DB_NAME: '${r"${db.name}"}'
                 DB_USER: '${r"${db.user}"}'
                 DB_PASS: '${r"${db.password}"}'
-                DB_HOST: '${r"${db.host}"}'
+                DB_SVC: '${r"${db.svc}"}'
                 DB_PORT: '${r"${db.port}"}'
                 </#if>
         ports:
             - "8080:8080" 
             - "8081:8081"
         links:
-            - db 
-    db:
-<#if docker.databaseType == "MySQL" || docker.databaseType == "MariaDB">
-        <#if docker.databaseType == "MySQL">
-        image: mysql:${docker.databaseVersion}
-        <#elseif docker.databaseType == "MariaDB">
-        image: mariadb:${docker.databaseVersion}
-        </#if>
+            - '${r"${db.svc}"}' 
+    '${r"${db.svc}"}':
+        image: ${DB_TYPE}:${DB_VERSION}
         ports:
-            - "${r"${db.port}"}:3306"  
+            - "${r"${db.port}"}:${DB_PORT}"   
         environment:
+<#if DB_TYPE == "mysql" || DB_TYPE == "mariadb">
             MYSQL_ROOT_PASSWORD: '${r"${db.password}"}'
             MYSQL_USER: '${r"${db.user}"}'
             MYSQL_PASSWORD: '${r"${db.password}"}'
@@ -38,11 +34,7 @@ services:
 #volumes:  
 #    data-mysql:
 #        driver: local       
-<#elseif docker.databaseType == "PostgreSQL">
-        image: postgres:${docker.databaseVersion}
-        ports:
-            - "${r"${db.port}"}:5432"  
-        environment:
+<#elseif DB_TYPE == "postgres">
             POSTGRES_USER: '${r"${db.user}"}'
             POSTGRES_PASSWORD: '${r"${db.password}"}'
             POSTGRES_DB: '${r"${db.name}"}'

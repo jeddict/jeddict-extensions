@@ -62,7 +62,7 @@ import org.netbeans.jpa.modeler.spec.extend.Attribute;
  */
 
 @ServiceProvider(service = Generator.class)
-@Technology(type = BUSINESS, label = "Session Bean Facade", panel = SessionBeanPanel.class, sibling = {DockerGenerator.class})
+@Technology(type = BUSINESS, label = "Session Bean Facade", panel = SessionBeanPanel.class, sibling = {DockerGenerator.class,})
 public final class EjbFacadeGenerator implements Generator {
 
     private static final String TEMPLATE = "org/netbeans/jcode/template/";

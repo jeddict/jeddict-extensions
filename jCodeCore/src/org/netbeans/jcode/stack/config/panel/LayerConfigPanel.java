@@ -17,6 +17,7 @@ package org.netbeans.jcode.stack.config.panel;
 
 import java.awt.Panel;
 import java.awt.event.KeyAdapter;
+import java.lang.reflect.ParameterizedType;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.event.ChangeEvent;
@@ -27,6 +28,7 @@ import javax.swing.text.JTextComponent;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.stack.config.data.LayerConfigData;
+import org.netbeans.jcode.util.PreferenceUtils;
 import org.openide.util.ChangeSupport;
 
 /**
@@ -42,6 +44,11 @@ public abstract class LayerConfigPanel<T extends LayerConfigData> extends Panel 
 
     public LayerConfigPanel() {
         changeSupport.addChangeListener(this);
+    }
+    
+    public Class<T> getConfigDataClass() {
+        return (Class<T>) ((ParameterizedType) getClass()
+                            .getGenericSuperclass()).getActualTypeArguments()[0];
     }
 
     /**

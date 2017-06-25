@@ -7,7 +7,7 @@
         <!--  environment-specific properties applied using maven-war-plugin Webapp resource filtering -->
         <name>${jndi}</name>
         <class-name>${driverClass}</class-name>
-        <server-name>${r"${db.host}"}</server-name>
+        <server-name>${r"${db.svc}"}</server-name>
         <port-number>${r"${db.port}"}</port-number>
         <database-name>${r"${db.name"}}</database-name>
         <user>${r"${db.user}"}</user>

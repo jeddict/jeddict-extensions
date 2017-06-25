@@ -183,14 +183,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link PersistenceUnitMetadata }
-     *
-     */
-    public PersistenceUnitMetadata createPersistenceUnitMetadata() {
-        return new PersistenceUnitMetadata();
-    }
-
-    /**
      * Create an instance of {@link PostUpdate }
      *
      */
@@ -213,15 +205,6 @@ public class ObjectFactory {
     public PreUpdate createPreUpdate() {
         return new PreUpdate();
     }
-
-    /**
-     * Create an instance of {@link PersistenceUnitDefaults }
-     *
-     */
-    public PersistenceUnitDefaults createPersistenceUnitDefaults() {
-        return new PersistenceUnitDefaults();
-    }
-
 
     /**
      * Create an instance of {@link AssociationOverride }

@@ -27,6 +27,8 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.prefs.Preferences;
 import org.apache.commons.lang.SerializationException;
+import org.netbeans.api.project.Project;
+import org.netbeans.api.project.ProjectUtils;
 import org.openide.util.Exceptions;
 
 public class PreferenceUtils {
@@ -73,8 +75,8 @@ public class PreferenceUtils {
         } catch (ClassNotFoundException ex) {
             throw new SerializationException(ex);
         } catch (InvalidClassException ex) {
-           throw ex;
-        }  catch (IOException ex) {
+            throw ex;
+        } catch (IOException ex) {
             throw new SerializationException(ex);
         } finally {
             try {
@@ -95,15 +97,15 @@ public class PreferenceUtils {
         return deserialize(bais, classLoader);
     }
 
-    public static <T> T get(Preferences pref,Class<T> _class) {
+    public static <T> T get(Preferences pref, Class<T> _class) {
         T newInstance = null;
 //        ClassLoader ctxLoader = Thread.currentThread().getContextClassLoader();
         try {
 //            Thread.currentThread().setContextClassLoader(_class.getClassLoader());
             newInstance = _class.newInstance();
-            return (T) PreferenceUtils.deserialize(pref.getByteArray(_class.getName(), PreferenceUtils.serialize((Serializable)newInstance)), _class.getClassLoader());
+            return (T) PreferenceUtils.deserialize(pref.getByteArray(_class.getName(), PreferenceUtils.serialize((Serializable) newInstance)), _class.getClassLoader());
         } catch (InvalidClassException ex) {
-           return newInstance;
+            return newInstance;
         } catch (InstantiationException | IllegalAccessException ex) {
             Exceptions.printStackTrace(ex);
         } finally {
@@ -112,30 +114,39 @@ public class PreferenceUtils {
         return null;
     }
 
+    public static <T> T get(Project project, Class<T> _class) {
+        Preferences pref = ProjectUtils.getPreferences(project, _class, true);
+        return get(pref, _class);
+    }
+
     public static <T> void set(Preferences pref, T t) {
         pref.putByteArray(t.getClass().getName(), PreferenceUtils.serialize((Serializable) t));
     }
 
+    public static <T> void set(Project project, T t) {
+        Preferences pref = ProjectUtils.getPreferences(project, t.getClass(), true);
+        set(pref, t);
+    }
+
 }
 
-class ClassLoaderObjectInputStream extends ObjectInputStream{
+class ClassLoaderObjectInputStream extends ObjectInputStream {
 
-     private ClassLoader classLoader;
+    private ClassLoader classLoader;
 
-     public ClassLoaderObjectInputStream(ClassLoader classLoader, InputStream in) throws IOException {
-          super(in);
-          this.classLoader = classLoader;
-     }
-     
-     @Override
-     protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException{
-     
-          try{
-               String name = desc.getName();
-               return Class.forName(name, false, classLoader);
-          }
-          catch(ClassNotFoundException e){
-               return super.resolveClass(desc);
-          }
-     }
+    public ClassLoaderObjectInputStream(ClassLoader classLoader, InputStream in) throws IOException {
+        super(in);
+        this.classLoader = classLoader;
+    }
+
+    @Override
+    protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+
+        try {
+            String name = desc.getName();
+            return Class.forName(name, false, classLoader);
+        } catch (ClassNotFoundException e) {
+            return super.resolveClass(desc);
+        }
+    }
 }

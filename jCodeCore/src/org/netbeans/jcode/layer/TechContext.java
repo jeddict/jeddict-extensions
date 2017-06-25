@@ -15,13 +15,23 @@
  */
 package org.netbeans.jcode.layer;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.prefs.Preferences;
 import org.netbeans.api.project.Project;
+import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.SourceGroup;
+import org.netbeans.jcode.stack.config.data.LayerConfigData;
 import org.netbeans.jcode.stack.config.panel.DefaultConfigPanel;
 import org.netbeans.jcode.stack.config.panel.LayerConfigPanel;
+import org.netbeans.jcode.util.PreferenceUtils;
 import org.openide.util.Exceptions;
 
 /**
@@ -34,18 +44,21 @@ public class TechContext {
     private Technology technology;
     private LayerConfigPanel panel;
     private List<TechContext> siblingTechContext;
+    private Class<? extends Generator> generatorClass;
+    private TechContext parentTechContext;
 
-    public TechContext(Generator generator, Technology technology) {
-        this.generator = generator;
-        this.technology = technology;
-        this.siblingTechContext = Generator.getSiblingTechContexts(generator);
+    public TechContext(Class<? extends Generator> generatorClass) {
+        this(null, generatorClass);
     }
 
-    public TechContext(Generator generator) {
-        this(generator, generator.getClass().getAnnotation(Technology.class));
+    public TechContext(TechContext parentTechContext, Class<? extends Generator> generatorClass) {
+        this.parentTechContext = parentTechContext;
+        this.generatorClass = generatorClass;
+        this.technology = generatorClass.getAnnotation(Technology.class);
+        this.siblingTechContext = Generator.getSiblingTechContexts(this);
     }
 
-    public void createPanel(Project project, SourceGroup sourceGroup, String _package) {
+    public LayerConfigPanel createPanel(Project project, SourceGroup sourceGroup, String _package) {
         if (panel == null) {
             if (isValid()) {
                 try {
@@ -56,15 +69,49 @@ public class TechContext {
             } else {
                 panel = new DefaultConfigPanel();
             }
-
-            panel.init(_package, project, sourceGroup);
-            panel.read();
             
-            getSiblingTechContext().forEach(context -> context.createPanel(project, sourceGroup, _package));
+            Class<LayerConfigData> configDataClass = panel.getConfigDataClass();
+            panel.setConfigData(PreferenceUtils.get(project, configDataClass));
+            
+            Map<Class<? extends LayerConfigPanel>, LayerConfigPanel> siblingData = new HashMap<>();
+            Map<Class<? extends LayerConfigPanel>, LayerConfigPanel> cacheSiblingData = new HashMap<>();
+            for(TechContext siblingContext : getSiblingTechContext()){
+               LayerConfigPanel siblingPanel = siblingContext.createPanel(project, sourceGroup, _package);
+               siblingData.put(siblingPanel.getClass(), siblingPanel);
+            }
+            
+            cacheSiblingData.putAll(siblingData);
+            cacheSiblingData.put(panel.getClass(), panel);
+            Iterator<Entry<Class<? extends LayerConfigPanel>, LayerConfigPanel>> iterator = siblingData.entrySet().iterator();
+            while(iterator.hasNext()){
+                Entry<Class<? extends LayerConfigPanel>, LayerConfigPanel> entry = iterator.next();
+                LayerConfigPanel instance = entry.getValue();
+                List<Field> fields = Arrays.asList(instance.getClass().getDeclaredFields());
+                for (Field field : fields) {
+                    if (field.isAnnotationPresent(ConfigData.class)) {
+                        field.setAccessible(true);
+                        try {
+                            if (LayerConfigPanel.class.isAssignableFrom(field.getType())) {
+                                field.set(instance, cacheSiblingData.get(field.getType()));
+                            }
+                        } catch (IllegalArgumentException | IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                instance.init(_package, project, sourceGroup);
+                instance.read();
+            }
+               
+            if (parentTechContext == null) { //if sibling context then first inject field and then init
+                panel.init(_package, project, sourceGroup);
+                panel.read();
+            }
         }
+        return panel;
     }
-    
-      public LayerConfigPanel getPanel() {
+
+    public LayerConfigPanel getPanel() {
         return panel;
     }
 
@@ -72,15 +119,14 @@ public class TechContext {
      * @return the generator
      */
     public Generator getGenerator() {
+        if(generator == null){
+            try {
+                generator = getGeneratorClass().newInstance();
+            } catch (InstantiationException | IllegalAccessException ex) {
+                throw new IllegalStateException(ex);
+            }
+        }
         return generator;
-    }
-
-    /**
-     * @param generator the generator to set
-     */
-    public void setGenerator(Generator generator) {
-        this.generator = generator;
-        this.technology = generator.getClass().getAnnotation(Technology.class);
     }
 
     /**
@@ -122,7 +168,7 @@ public class TechContext {
             return false;
         }
         final TechContext other = (TechContext) obj;
-        if (this.generator.getClass() != other.generator.getClass()) {
+        if (this.getGeneratorClass() != other.getGeneratorClass()) {
             return false;
         }
         return true;
@@ -145,6 +191,37 @@ public class TechContext {
 
     public boolean removeSiblingTechContext(TechContext o) {
         return getSiblingTechContext().remove(o);
+    }
+
+    /**
+     * @return the generatorClass
+     */
+    public Class<? extends Generator> getGeneratorClass() {
+        return generatorClass;
+    }
+
+    /**
+     * @return the parentTechContext
+     */
+    public TechContext getParentTechContext() {
+        return parentTechContext;
+    }
+    
+    public boolean isRootTechContext(Class<? extends Generator> childGenerator) {
+        if(parentTechContext==null){
+            return false;
+        } else if(parentTechContext.getGeneratorClass() == childGenerator){
+            return true;
+        } else {
+           return parentTechContext.isRootTechContext(childGenerator); 
+        }
+    }
+
+    /**
+     * @param parentTechContext the parentTechContext to set
+     */
+    public void setParentTechContext(TechContext parentTechContext) {
+        this.parentTechContext = parentTechContext;
     }
 
 }

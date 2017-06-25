@@ -55,7 +55,6 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
     private static final String DEFAULT_APP_PACKAGE = "app";
     private RestConfigDialog configDialog;
     private final Map<JCheckBox, FilterType> eventTypeBoxs = new HashMap<>();
-    private Preferences pref;
 
     public RESTPanel() {
         initComponents();
@@ -88,7 +87,6 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
 
     @Override
     public void read() {
-        this.setConfigData(get(pref,RESTData.class));
         RESTData data = this.getConfigData();
         if(isNotBlank(data.getPackage())){
             setPackage(data.getPackage());
@@ -132,8 +130,6 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         data.setLogger(isLogger());
         data.setDocsEnable(isDocsEnable());
         data.setTestCase(isTestCase());
-        
-        set(pref, data);
     }
 
     private Project project;
@@ -151,7 +147,6 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
     
     @Override
     public void init(String modelerPackage, Project project, SourceGroup sourceGroup) {
-        pref = getPreferences(project, RESTData.class, true);
         this.project = project;
         this.sourceGroup = sourceGroup;
 

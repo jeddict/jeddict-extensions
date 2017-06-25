@@ -29,8 +29,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.StringUtils;
 import org.netbeans.jcode.core.util.JavaSourceHelper;
+import org.netbeans.jcode.jpa.PersistenceProviderType;
 import org.netbeans.jpa.modeler.spec.design.Diagram;
-import org.netbeans.jpa.modeler.spec.design.Plane;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import org.netbeans.jpa.modeler.spec.extend.BaseElement;
 import org.netbeans.jpa.modeler.spec.extend.ClassSnippet;
@@ -128,7 +128,6 @@ import org.openide.windows.InputOutput;
  */
 @XmlType(name = "entity-mappings", propOrder = {
     "description",
-    "persistenceUnitMetadata",
     "schema",
     "catalog",
     "access",
@@ -159,8 +158,6 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     private static final String DEFAULT_PU_NAME = "DEFAULT_PU";
 
     protected String description;
-    @XmlElement(name = "persistence-unit-metadata")
-    protected PersistenceUnitMetadata persistenceUnitMetadata;
     @XmlAttribute(name = "pkg")
     protected String _package;
     protected String schema;
@@ -221,6 +218,8 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     private String jbTheme;
     @XmlAttribute
     private String persistenceUnitName;
+    @XmlAttribute(name="pp")
+    private PersistenceProviderType persistenceProviderType;
 
     @XmlElement(name = "c")
     private Cache cache;
@@ -332,25 +331,19 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     }
 
     /**
-     * Gets the value of the persistenceUnitMetadata property.
-     *
-     * @return possible object is {@link PersistenceUnitMetadata }
-     *
+     * @return the persistenceProviderType
      */
-    public PersistenceUnitMetadata getPersistenceUnitMetadata() {
-        return persistenceUnitMetadata;
+    public PersistenceProviderType getPersistenceProviderType() {
+        return persistenceProviderType;
     }
 
     /**
-     * Sets the value of the persistenceUnitMetadata property.
-     *
-     * @param value allowed object is {@link PersistenceUnitMetadata }
-     *
+     * @param persistenceProviderType the persistenceProviderType to set
      */
-    public void setPersistenceUnitMetadata(PersistenceUnitMetadata value) {
-        this.persistenceUnitMetadata = value;
+    public void setPersistenceProviderType(PersistenceProviderType persistenceProviderType) {
+        this.persistenceProviderType = persistenceProviderType;
     }
-
+    
     /**
      * Gets the value of the package property.
      *

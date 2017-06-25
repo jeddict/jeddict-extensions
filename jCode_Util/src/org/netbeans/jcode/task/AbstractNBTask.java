@@ -116,15 +116,7 @@ public abstract class AbstractNBTask extends Thread
      * this message.
      */
     protected void beginLog() {
-//        String msg = getBundleMessage("MSG_Begin_Processing") // NOI18N
-//                + " " + getTaskName(); // NOI18N
-//
-//        if (getTotalItems() > 0) {
-//            msg += ": " + getTotalItems() + " " // NOI18N
-//                    + getBundleMessage("MSG_Items"); // NOI18N
-//        }
-//        log(SUMMARY, msg);
-//        log(SUMMARY);
+
     }
 
     /**

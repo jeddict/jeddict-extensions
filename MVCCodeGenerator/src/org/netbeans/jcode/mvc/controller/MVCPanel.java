@@ -59,7 +59,6 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
     private static final String DEFAULT_PACKAGE = "controller";
     private RestConfigDialog configDialog;
     private final Map<JCheckBox, ControllerEventType> eventTypeBoxs = new HashMap<>();
-    private Preferences pref;
 
     public MVCPanel() {
         initComponents();
@@ -89,7 +88,6 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
 
     @Override
     public void read() {
-        this.setConfigData(PreferenceUtils.get(pref, MVCData.class));
         MVCData data = this.getConfigData();
         if (StringUtils.isNotBlank(data.getPackage())) {
             setPackage(data.getPackage());
@@ -133,8 +131,6 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
         data.setHybridClass(getHybridClass());
         data.setReturnType(getReturnType());
         data.setEventType(getSelectedEventType());
-
-        PreferenceUtils.set(pref, data);
     }
 
     private Project project;
@@ -142,7 +138,6 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
 
     @Override
     public void init(String _package, Project project, SourceGroup sourceGroup) {
-        pref = ProjectUtils.getPreferences(project, MVCData.class, true);
         this.project = project;
         this.sourceGroup = sourceGroup;
 

@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.jcode.docker.generator;
+package org.jcode.infra;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,23 +25,24 @@ import org.netbeans.api.db.explorer.DatabaseConnection;
  * @author jGauravGupta
  */
 public enum DatabaseType {
-    DERBY("Derby", "1527", true,
+    DERBY("Derby", "derby", "1527", true,
             new DatabaseDriver("org.apache.derby", "derby", "10.13.1.1", "org.apache.derby.jdbc.ClientDriver"),
             Arrays.asList("--"), false),//, Arrays.asList(PAYARA, PAYARA_MICRO)),
-    H2("H2", "test", true,
+    H2("H2", "h2", "test", true,
             new DatabaseDriver("com.h2database", "h2", "1.4.193", "org.h2.Driver"),
             Arrays.asList("--"), false),//, Arrays.asList(WILDFLY, WILDFLY_SWARM)),
-    MYSQL("MySQL", "3306", false,
+    MYSQL("MySQL", "mysql", "3306", false,
             new DatabaseDriver("mysql", "mysql-connector-java", "5.1.38", "com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"),
             Arrays.asList("latest", "5.5", "5.6", "5.7", "8.0"), true),
-    MARIA_DB("MariaDB", "3306", false,
+    MARIA_DB("MariaDB", "mariadb", "3306", false,
             new DatabaseDriver("org.mariadb.jdbc", "mariadb-java-client", "1.5.8", "org.mariadb.jdbc.MariaDbDataSource"),
             Arrays.asList("latest", "10.1", "10.0", "5.5"), true),
-    POSTGRESQL("PostgreSQL", "5432", false,
+    POSTGRESQL("PostgreSQL", "postgres", "5432", false,
             new DatabaseDriver("postgresql", "postgresql", "9.1-901.jdbc4", "org.postgresql.xa.PGXADataSource"),
             Arrays.asList("latest", "9.6", "9.5", "9.4", "9.3", "9.2"), true);
 
     private final String displayName;
+    private final String dockerImage;
     private final String defaultPort;
     private final DatabaseDriver driver;
     private final boolean embeddedDB;
@@ -49,9 +50,11 @@ public enum DatabaseType {
     private final boolean dockerSupport;
 //    private List<ServerType> supportedServer;
 
-    private DatabaseType(String displayName, String defaultPort, boolean embeddedDB, DatabaseDriver driver,
+    private DatabaseType(String displayName, String dockerImage,
+            String defaultPort, boolean embeddedDB, DatabaseDriver driver,
             List<String> version, boolean dockerSupport) {
         this.displayName = displayName;
+        this.dockerImage = dockerImage;
         this.defaultPort = defaultPort;
         this.driver = driver;
         this.version = version;
@@ -128,5 +131,12 @@ public enum DatabaseType {
      */
     public boolean isEmbeddedDB() {
         return embeddedDB;
+    }
+
+    /**
+     * @return the dockerImage
+     */
+    public String getDockerImage() {
+        return dockerImage;
     }
 }

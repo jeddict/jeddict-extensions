@@ -32,6 +32,7 @@ import static org.netbeans.jcode.console.Console.FG_RED;
 import static org.netbeans.jcode.console.Console.FG_WHITE;
 import static org.netbeans.jcode.console.Console.UNDERLINE;
 import org.netbeans.jcode.task.ITaskSupervisor;
+import org.openide.filesystems.FileObject;
 
 /**
  *
@@ -63,6 +64,11 @@ public class ProgressConsoleHandler implements ProgressHandler {
             taskSupervisor.proceed(1);
         }
         taskSupervisor.log(message, true);
+    }
+    
+    @Override
+    public void progress(FileObject fileObject){
+        progress(fileObject.getNameExt());
     }
 
     @Override

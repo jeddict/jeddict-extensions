@@ -13,15 +13,18 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.jcode.docker.generator;
+package org.jcode.infra;
 
 import java.util.Arrays;
 import static java.util.Collections.EMPTY_LIST;
 import java.util.List;
-import static org.jcode.docker.generator.DatabaseType.DERBY;
-import static org.jcode.docker.generator.DatabaseType.H2;
-import static org.jcode.docker.generator.ServerFamily.PAYARA_FAMILY;
-import static org.jcode.docker.generator.ServerFamily.WILDFLY_FAMILY;
+import static org.jcode.infra.DatabaseType.DERBY;
+import static org.jcode.infra.DatabaseType.H2;
+import static org.jcode.infra.ServerFamily.PAYARA_FAMILY;
+import static org.jcode.infra.ServerFamily.WILDFLY_FAMILY;
+import org.netbeans.jcode.jpa.PersistenceProviderType;
+import static org.netbeans.jcode.jpa.PersistenceProviderType.ECLIPSELINK;
+import static org.netbeans.jcode.jpa.PersistenceProviderType.HIBERNATE;
 
 /**
  *
@@ -31,17 +34,13 @@ public enum ServerType {
     
     NONE(null, "<No Server Selected>", null, null, false,
             null, null, EMPTY_LIST),
-    PAYARA(PAYARA_FAMILY, "Payara", 
-            "org.eclipse.persistence.jpa.PersistenceProvider", DERBY, false,
+    PAYARA(PAYARA_FAMILY, "Payara", ECLIPSELINK, DERBY, false,
            "${build.name}.war", "DockerFile_PAYARA.ftl", Arrays.asList("latest", "161", "161.1")),
-    PAYARA_MICRO(PAYARA_FAMILY, "Payara Micro", 
-            "org.eclipse.persistence.jpa.PersistenceProvider", DERBY, false,
+    PAYARA_MICRO(PAYARA_FAMILY, "Payara Micro", ECLIPSELINK, DERBY, false,
            "${build.name}.jar", "DockerFile_JAVA.ftl", EMPTY_LIST),
-    WILDFLY(WILDFLY_FAMILY, "Wildfly", 
-            "org.hibernate.ejb.HibernatePersistence", H2, false,
+    WILDFLY(WILDFLY_FAMILY, "Wildfly", HIBERNATE, H2, false,
            "${build.name}.war", "DockerFile_WILDFLY.ftl", Arrays.asList("latest", "8.1.0.Final", "8.2.1.Final", "8.2.0.Final", "9.0.0.Final", "10.1.0.Final", "9.0.1.Final", "9.0.2.Final", "10.0.0.Final")),
-    WILDFLY_SWARM(WILDFLY_FAMILY, "Wildfly Swarm", 
-            "org.hibernate.ejb.HibernatePersistence", H2, true,
+    WILDFLY_SWARM(WILDFLY_FAMILY, "Wildfly Swarm", HIBERNATE, H2, true,
           "${build.name}-swarm.jar", "DockerFile_JAVA.ftl", EMPTY_LIST);
 //    GLASSFISH("Glassfish", Arrays.asList("4.1.1","4.1.1-web")),
 
@@ -50,13 +49,13 @@ public enum ServerType {
     private final String binary;
     private final String template;
     private final List<String> version;
-    private final String persistenceProvider;
-    private final DatabaseType embeddedDB;
+    private final PersistenceProviderType persistenceProviderType;
+     private final DatabaseType embeddedDB;
     private final boolean embeddedDBDriverRequired;
     
 
     private ServerType(ServerFamily family, String displayName, 
-            String persistenceProvider, DatabaseType embeddedDB, boolean embeddedDBDriverRequired,
+            PersistenceProviderType persistenceProviderType, DatabaseType embeddedDB, boolean embeddedDBDriverRequired,
             String binary, String template, List<String> version) {
         this.family = family;
         this.displayName = displayName;
@@ -65,7 +64,7 @@ public enum ServerType {
         this.binary = binary;
         this.template = template;
         this.version = version;
-        this.persistenceProvider = persistenceProvider;
+        this.persistenceProviderType = persistenceProviderType;
     }
 
     public String getDisplayName() {
@@ -79,8 +78,8 @@ public enum ServerType {
     /**
      * @return the persistenceProvider
      */
-    public String getPersistenceProvider() {
-        return persistenceProvider;
+    public PersistenceProviderType getPersistenceProviderType() {
+        return persistenceProviderType;
     }
 
     @Override

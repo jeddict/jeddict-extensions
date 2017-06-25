@@ -37,8 +37,6 @@ import org.openide.util.NbBundle;
  */
 public class Angular2Panel extends LayerConfigPanel<AngularData> {
 
-    private Preferences pref;
-
     public Angular2Panel() {
         initComponents();
     }
@@ -61,7 +59,6 @@ public class Angular2Panel extends LayerConfigPanel<AngularData> {
 
     @Override
     public void read() {
-        this.setConfigData(PreferenceUtils.get(pref, AngularData.class));
         AngularData data = this.getConfigData();
         if (StringUtils.isNotBlank(data.getModule())) {
             setModule(data.getModule());
@@ -82,14 +79,12 @@ public class Angular2Panel extends LayerConfigPanel<AngularData> {
         this.getConfigData().setApplicationTitle(getApplicationTitle());
         this.getConfigData().setPagination(getPaginationType());
         this.getConfigData().setProtractorTest(isProtractorTest());
-        PreferenceUtils.set(pref, this.getConfigData());
     }
 
     private Project project;
 
     @Override
     public void init(String folder, Project project, SourceGroup sourceGroup) {
-        pref = ProjectUtils.getPreferences(project, AngularData.class, true);
         this.project = project;
         
         setModule(kebabCase(firstLower(project.getProjectDirectory().getName())));

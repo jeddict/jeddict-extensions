@@ -17,6 +17,7 @@ package org.netbeans.jcode.task.progress;
 
 import org.netbeans.api.progress.aggregate.ProgressContributor;
 import org.netbeans.modules.j2ee.persistence.wizard.fromdb.ProgressPanel;
+import org.openide.filesystems.FileObject;
 
 /**
  *
@@ -34,6 +35,11 @@ public class ProgressPanelHandler implements ProgressHandler {
 
     @Override
     public void progress(String message) {
+    }
+    
+    @Override
+    public void progress(FileObject fileObject){
+        progress(fileObject.getNameExt());
     }
 
     @Override
