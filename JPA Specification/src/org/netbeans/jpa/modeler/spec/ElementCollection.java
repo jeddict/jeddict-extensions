@@ -197,7 +197,9 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
 
     @XmlAttribute(name = "collection-type")
     private String collectionType;
-
+    @XmlAttribute(name = "cit")
+    private String collectionImplType;
+    
     @XmlElement(name = "mkcn")
     protected List<Convert> mapKeyConvert;
 
@@ -951,6 +953,20 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
         this.collectionType = collectionType;
     }
 
+    /**
+     * @return the collectionImplType
+     */
+    public String getCollectionImplType() {
+        return collectionImplType;
+    }
+
+    /**
+     * @param collectionImplType the collectionImplementationType to set
+     */
+    public void setCollectionImplType(String collectionImplType) {
+        this.collectionImplType = collectionImplType;
+    }
+
     @Override
     public AttributeOverride getAttributeOverride(String attributePath) {
         Set<AttributeOverride> attributeOverrides = getAttributeOverride();
@@ -1025,15 +1041,6 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
     }
 
     public String getDefaultMapKeyColumnName() {
-//        if(getValidatedMapKeyType()==MapKeyType.NEW){
-//            if(mapKeyAttributeType != null){
-//                
-//            } else if(mapKeyEmbeddable != null){
-//                
-//            } else if(mapKeyEntity != null){
-//                
-//            }
-//        }
         return this.getName().toUpperCase()+"_KEY";
     }
     
@@ -1090,7 +1097,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
         }
         return null;
     }
-
+    
     /**
      * @return the mapKeyType
      */
@@ -1100,12 +1107,12 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
         }
         return mapKeyType;
     }
-
+    
     @Override
     public void setMapKeyType(MapKeyType mapKeyType) {
         this.mapKeyType = mapKeyType;
     }
-
+    
     /**
      * @return the mapKeyAttributeType
      */
@@ -1213,7 +1220,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
 
     @Override
     public String getMapKeyDataTypeLabel() {
-        if (mapKeyType == MapKeyType.EXT && mapKeyAttribute != null) {
+        if (mapKeyAttribute != null) {
             return mapKeyAttribute.getDataTypeLabel();
         } else if (mapKeyEntity != null) {
             return mapKeyEntity.getClazz();

@@ -24,4 +24,8 @@ public interface CollectionTypeHandler {
     public abstract String getCollectionType();
 
     public abstract void setCollectionType(String value);
+    
+    public String getCollectionImplType();
+
+    public void setCollectionImplType(String implementationType);
 }

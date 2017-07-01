@@ -91,7 +91,9 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
     @XmlTransient//(name = "mapped-by")
     protected String mappedBy;
     @XmlAttribute(name = "collection-type")
-    private String collectionType;//custom added
+    private String collectionType;
+    @XmlAttribute(name = "cit")
+    private String collectionImplType;
 
     @XmlElement(name = "mkcn")
     protected List<Convert> mapKeyConvert;
@@ -134,8 +136,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
     private Embeddable mapKeyEmbeddable;
     @XmlElement(name = "mkao")
     protected Set<AttributeOverride> mapKeyAttributeOverride; 
-    
-
+   
     @Override
     public void loadAttribute(EntityMappings entityMappings, Element element, VariableElement variableElement, ExecutableElement getterElement, AnnotationMirror relationAnnotationMirror) {
         super.loadAttribute(entityMappings, element, variableElement, getterElement, relationAnnotationMirror);
@@ -508,6 +509,20 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
         this.collectionType = collectionType;
     }
 
+    /**
+     * @return the collectionImplType
+     */
+    public String getCollectionImplType() {
+        return collectionImplType;
+    }
+
+    /**
+     * @param collectionImplType the collectionImplType to set
+     */
+    public void setCollectionImplType(String collectionImplType) {
+        this.collectionImplType = collectionImplType;
+    }
+
 //    @Override
 //    public List<JaxbVariableType> getJaxbVariableList() {
 //        if (mappedBy != null && !mappedBy.trim().isEmpty()) {
@@ -582,7 +597,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
         }
         return mapKeyType;
     }
-
+    
     @Override
     public void setMapKeyType(MapKeyType mapKeyType) {
         this.mapKeyType=mapKeyType;
@@ -693,18 +708,16 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
         this.mapKeyAttributeOverride=null;
     }
     
-        @Override
+    @Override
     public String getMapKeyDataTypeLabel(){
-        if(mapKeyType == MapKeyType.EXT && mapKeyAttribute!=null){
+        if (mapKeyAttribute != null) {
             return mapKeyAttribute.getDataTypeLabel();
-        } else {
-            if(mapKeyEntity!=null){
-                return mapKeyEntity.getClazz();
-            } else if(mapKeyEmbeddable!=null){
-                return mapKeyEmbeddable.getClazz();
-            } else if(mapKeyAttributeType!=null){
-                return mapKeyAttributeType;
-            }
+        } else if (mapKeyEntity != null) {
+            return mapKeyEntity.getClazz();
+        } else if (mapKeyEmbeddable != null) {
+            return mapKeyEmbeddable.getClazz();
+        } else if (mapKeyAttributeType != null) {
+            return mapKeyAttributeType;
         }
         return null;
     }
@@ -723,15 +736,6 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
     }
     
         public String getDefaultMapKeyColumnName() {
-//        if(getValidatedMapKeyType()==MapKeyType.NEW){
-//            if(mapKeyAttributeType != null){
-//                
-//            } else if(mapKeyEmbeddable != null){
-//                
-//            } else if(mapKeyEntity != null){
-//                
-//            }
-//        }
         return this.getName().toUpperCase()+"_KEY";
     }
     

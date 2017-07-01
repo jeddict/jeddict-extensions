@@ -15,22 +15,31 @@
  */
 package org.netbeans.jpa.modeler.spec.extend.cache;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.TreeSet;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import org.apache.commons.lang.StringUtils;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Cache {
 
+    private final static int COLLECTION_SIZE = 5;
+
     @XmlElement(name = "ct")
     private Queue<String> collectionClass;
-    private final static int COLLECTION_SIZE = 5;
+
+    @XmlElement(name = "cit")
+    private Queue<String> collectionImplClass;
 
     @XmlElement(name = "db")
     private DatabaseConnectionCache databaseConnection;
@@ -50,16 +59,39 @@ public class Cache {
     }
 
     public void addCollectionClass(String _class) {
-        LinkedList<String> collection = (LinkedList) getCollectionClasses();
+        addClass(_class, (LinkedList) getCollectionClasses());
+    }
+
+    /**
+     * @return the collectionImplementationClass
+     */
+    public Queue<String> getCollectionImplClasses() {
+        if (collectionImplClass == null) {
+            collectionImplClass = new LinkedList<>();
+            collectionImplClass.add(ArrayList.class.getName());
+            collectionImplClass.add(LinkedList.class.getName());
+            collectionImplClass.add(HashSet.class.getName());
+            collectionImplClass.add(TreeSet.class.getName());
+            collectionImplClass.add(HashMap.class.getName());
+        }
+        return collectionImplClass;
+    }
+
+    public void addCollectionImplClass(String _class) {
+        addClass(_class, (LinkedList) getCollectionImplClasses());
+    }
+
+    public void addClass(String _class, LinkedList<String> collection) {
+        if(StringUtils.isEmpty(_class)){
+            return;
+        }
         if (collection.contains(_class)) {
             collection.remove(_class);
         }
         while (COLLECTION_SIZE < collection.size()) {
             collection.removeLast();
         }
-
         collection.addFirst(_class);
-
     }
 
     /**
