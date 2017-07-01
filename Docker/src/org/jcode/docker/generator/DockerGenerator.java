@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import org.apache.commons.lang.StringUtils;
-import org.jcode.cloud.generator.CloudGenerator;
+import org.jcode.infra.ServerFamily;
 import static org.jcode.infra.ServerFamily.PAYARA_FAMILY;
 import static org.jcode.infra.ServerFamily.WILDFLY_FAMILY;
 import static org.jcode.infra.ServerType.NONE;
@@ -39,6 +39,7 @@ import static org.netbeans.jcode.console.Console.UNDERLINE;
 import static org.netbeans.jcode.core.util.FileUtil.expandTemplate;
 import org.netbeans.jcode.core.util.POMManager;
 import org.netbeans.jcode.core.util.PersistenceUtil;
+import static org.netbeans.jcode.core.util.PersistenceUtil.addProperty;
 import static org.netbeans.jcode.core.util.PersistenceUtil.removeProperty;
 import static org.netbeans.jcode.core.util.ProjectHelper.getDockerDirectory;
 import static org.netbeans.jcode.jpa.JPAConstants.JAVA_DATASOURCE_PREFIX;
@@ -66,7 +67,7 @@ import org.openide.util.NbBundle;
  * @author Gaurav Gupta
  */
 @ServiceProvider(service = Generator.class)
-@Technology(label = "Infra", panel = DockerConfigPanel.class, index = 1, sibling = {CloudGenerator.class})
+@Technology(label = "Infra", panel = DockerConfigPanel.class, index = 1)
 public class DockerGenerator implements Generator {
 
     private static final String TEMPLATE = "org/jcode/docker/template/";
@@ -122,7 +123,8 @@ public class DockerGenerator implements Generator {
 
         updatePersistenceXml();
         addMavenDependencies();
-
+        hibernateUpdate();
+       
         if (dockerConfig.isDbInfoExist()) {
             addDatabaseProperties();
             if (setupDataSourceLocally) {
@@ -149,6 +151,45 @@ public class DockerGenerator implements Generator {
             punit.setProvider(getPersistenceProvider(dockerConfig.getServerType(), entityMapping, punit.getProvider()));
             PersistenceUtil.updatePersistenceUnit(project, punit);
         }
+    }
+    
+    private void hibernateUpdate(){
+        if (dockerConfig.getServerType().getFamily() == ServerFamily.PAYARA_FAMILY
+                && entityMapping.getPersistenceProviderType() == PersistenceProviderType.HIBERNATE) {
+            String puName = entityMapping.getPersistenceUnitName();
+            Optional<PersistenceUnit> punitOptional = PersistenceUtil.getPersistenceUnit(project, puName);
+            if (punitOptional.isPresent()) {
+                PersistenceUnit punit = punitOptional.get();
+                addProperty(punit, "hibernate.dialect", getHibernateDialect());
+//                addProperty(punit, "hibernate.hbm2ddl.auto", "create");
+                addProperty(punit, "hibernate.show_sql", "true");
+                addProperty(punit, "hibernate.transaction.jta.platform", "org.hibernate.service.jta.platform.internal.SunOneJtaPlatform");
+                PersistenceUtil.updatePersistenceUnit(project, punit);
+            }
+            if (POMManager.isMavenProject(project)) {
+                POMManager pomManager = new POMManager(TEMPLATE + "persistence/provider/pom/PAYARA_HIBERNATE.xml", project);
+                pomManager.commit();
+            }
+        }
+    }
+    
+    private String getHibernateDialect(){
+        if(dockerConfig.getDatabaseType() != null)
+            switch (dockerConfig.getDatabaseType()) {
+            case MYSQL:
+                return "org.hibernate.dialect.MySQL5Dialect";
+            case POSTGRESQL:
+                return "org.hibernate.dialect.PostgreSQLDialect";
+            case MARIA_DB:
+                return "org.hibernate.dialect.MariaDBDialect";
+            case DERBY:
+                return "org.hibernate.dialect.DB2Dialect";
+            case H2:
+                return "org.hibernate.dialect.H2Dialect";
+            default:
+                break;
+        }
+        throw new IllegalStateException("DB type not supported");
     }
 
     private String getPersistenceProvider(ServerType server, EntityMappings entityMappings, String existingProvider) {
@@ -208,7 +249,7 @@ public class DockerGenerator implements Generator {
                 pomManager.commit();
             }
 
-            addPersistenceProviderDependency();
+//            addPersistenceProviderDependency();
             addDatabaseDriverDependency();
 
             POMManager pomManager = new POMManager(TEMPLATE + "profile/dev/pom/_pom.xml", project);
@@ -221,12 +262,12 @@ public class DockerGenerator implements Generator {
 
     }
     
-    private void addPersistenceProviderDependency() {
-        if (dockerConfig.getServerType().getPersistenceProviderType() != persistenceProviderType) {
-            POMManager pomManager = new POMManager(TEMPLATE + "persistence/provider/pom/" + dockerConfig.getServerType().name() + "_"+persistenceProviderType.name() + ".xml", project);
-            pomManager.commit();
-        }
-    }
+//    private void addPersistenceProviderDependency() {
+//        if (dockerConfig.getServerType().getPersistenceProviderType() != persistenceProviderType) {
+//            POMManager pomManager = new POMManager(TEMPLATE + "persistence/provider/pom/" + dockerConfig.getServerType().name() + "_"+persistenceProviderType.name() + ".xml", project);
+//            pomManager.commit();
+//        }
+//    }
 
     private void addDatabaseDriverDependency() {
         ServerType serverType = dockerConfig.getServerType();

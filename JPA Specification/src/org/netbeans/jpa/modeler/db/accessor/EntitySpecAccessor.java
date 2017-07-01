@@ -89,14 +89,26 @@ public class EntitySpecAccessor extends EntityAccessor {
         accessor.setDiscriminatorValue(entity.getDiscriminatorValue());
 
         AttributeValidator.filter(entity);
-        accessor.setAttributeOverrides(entity.getAttributeOverride().stream().map(AttributeOverrideSpecMetadata::getInstance).collect(toList()));
+        accessor.setAttributeOverrides(entity.getAttributeOverride()
+                .stream()
+                .map(AttributeOverrideSpecMetadata::getInstance)
+                .collect(toList()));
         AssociationValidator.filter(entity);
-        accessor.setAssociationOverrides(entity.getAssociationOverride().stream().map(AssociationOverrideSpecMetadata::getInstance).collect(toList()));
+        accessor.setAssociationOverrides(entity.getAssociationOverride()
+                .stream()
+                .map(AssociationOverrideSpecMetadata::getInstance)
+                .collect(toList()));
 
         PrimaryKeyJoinColumnValidator.filter(entity.getPrimaryKeyJoinColumn());
-        accessor.setPrimaryKeyJoinColumns(entity.getPrimaryKeyJoinColumn().stream().map(PrimaryKeyJoinColumn::getAccessor).collect(toList()));
+        accessor.setPrimaryKeyJoinColumns(entity.getPrimaryKeyJoinColumn()
+                .stream()
+                .map(PrimaryKeyJoinColumn::getAccessor)
+                .collect(toList()));
         
-        accessor.setConverts(entity.getConverts().stream().map(Convert::getAccessor).collect(toList()));
+        accessor.setConverts(entity.getConverts()
+                .stream()
+                .map(Convert::getAccessor)
+                .collect(toList()));
         
         if (entity.getSequenceGenerator()!= null) {
             accessor.setSequenceGenerator(entity.getSequenceGenerator().getAccessor());

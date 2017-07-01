@@ -69,27 +69,16 @@ import org.netbeans.jpa.source.JavaSourceParserUtil;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "collection-table", propOrder = {
     "joinColumn",
-    "foreignKey",
-    "uniqueConstraint",
-    "index"
+    "foreignKey"
 })
 @XmlJavaTypeAdapter(value = CollectionTableValidator.class)
 
-public class CollectionTable {
+public class CollectionTable extends Table {
 
     @XmlElement(name = "join-column")
     protected List<JoinColumn> joinColumn;
     @XmlElement(name = "fk")
     protected ForeignKey foreignKey;
-    @XmlElement(name = "unique-constraint")
-    protected Set<UniqueConstraint> uniqueConstraint;
-    protected List<Index> index;
-    @XmlAttribute(name = "name")
-    protected String name;
-    @XmlAttribute(name = "catalog")
-    protected String catalog;
-    @XmlAttribute(name = "schema")
-    protected String schema;
 
     public static CollectionTable load(Element element, VariableElement variableElement) {
         AnnotationMirror annotationMirror = JavaSourceParserUtil.findAnnotation(element, COLLECTION_TABLE_FQN);
@@ -186,138 +175,13 @@ public class CollectionTable {
         this.foreignKey = value;
     }
 
-    /**
-     * Gets the value of the uniqueConstraint property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list, not a
-     * snapshot. Therefore any modification you make to the returned list will
-     * be present inside the JAXB object. This is why there is not a
-     * <CODE>set</CODE> method for the uniqueConstraint property.
-     *
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getUniqueConstraint().add(newItem);
-     * </pre>
-     *
-     *
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link UniqueConstraint }
-     *
-     *
-     */
-    public Set<UniqueConstraint> getUniqueConstraint() {
-        if (uniqueConstraint == null) {
-            uniqueConstraint = new LinkedHashSet<>();
-        }
-        return this.uniqueConstraint;
-    }
-
-    /**
-     * Gets the value of the index property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list, not a
-     * snapshot. Therefore any modification you make to the returned list will
-     * be present inside the JAXB object. This is why there is not a
-     * <CODE>set</CODE> method for the index property.
-     *
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getIndex().add(newItem);
-     * </pre>
-     *
-     *
-     * <p>
-     * Objects of the following type(s) are allowed in the list {@link Index }
-     *
-     *
-     */
-    public List<Index> getIndex() {
-        if (index == null) {
-            index = new ArrayList<Index>();
-        }
-        return this.index;
-    }
-
-    /**
-     * Gets the value of the name property.
-     *
-     * @return possible object is {@link String }
-     *
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Sets the value of the name property.
-     *
-     * @param value allowed object is {@link String }
-     *
-     */
-    public void setName(String value) {
-        this.name = value;
-    }
-
-    /**
-     * Gets the value of the catalog property.
-     *
-     * @return possible object is {@link String }
-     *
-     */
-    public String getCatalog() {
-        return catalog;
-    }
-
-    /**
-     * Sets the value of the catalog property.
-     *
-     * @param value allowed object is {@link String }
-     *
-     */
-    public void setCatalog(String value) {
-        this.catalog = value;
-    }
-
-    /**
-     * Gets the value of the schema property.
-     *
-     * @return possible object is {@link String }
-     *
-     */
-    public String getSchema() {
-        return schema;
-    }
-
-    /**
-     * Sets the value of the schema property.
-     *
-     * @param value allowed object is {@link String }
-     *
-     */
-    public void setSchema(String value) {
-        this.schema = value;
-    }
-
     public CollectionTableMetadata getAccessor() {
         CollectionTableMetadata accessor = new CollectionTableMetadata();
-        accessor.setName(name);
-        accessor.setCatalog(catalog);
-        accessor.setSchema(schema);
+        super.getAccessor(accessor);
         accessor.setJoinColumns(getJoinColumn().stream().map(JoinColumn::getAccessor).collect(toList()));
         if (ForeignKeyValidator.isNotEmpty(foreignKey)) {
             accessor.setForeignKey(foreignKey.getAccessor());
         }
-        accessor.setUniqueConstraints(getUniqueConstraint().stream()
-                .map(UniqueConstraint::getAccessor)
-                .collect(toList()));
-        accessor.setIndexes(getIndex().stream()
-                .map(Index::getAccessor)
-                .collect(toList()));
         return accessor;
     }
 

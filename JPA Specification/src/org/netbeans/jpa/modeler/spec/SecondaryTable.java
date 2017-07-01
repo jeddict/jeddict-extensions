@@ -8,15 +8,18 @@ package org.netbeans.jpa.modeler.spec;
 
 import java.util.ArrayList;
 import java.util.List;
+import static java.util.stream.Collectors.toList;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyForeignKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.SecondaryTableMetadata;
 import static org.netbeans.jcode.jpa.JPAConstants.SECONDARY_TABLES_FQN;
 import static org.netbeans.jcode.jpa.JPAConstants.SECONDARY_TABLE_FQN;
+import org.netbeans.jpa.modeler.spec.validator.column.ForeignKeyValidator;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**
@@ -193,12 +196,17 @@ public class SecondaryTable extends Table {
         this.foreignKey = value;
     }
 
+    @Override
     public SecondaryTableMetadata getAccessor() {
         SecondaryTableMetadata accessor = new SecondaryTableMetadata();
-        accessor.setName(name);
-        accessor.setCatalog(catalog);
-        accessor.setSchema(schema);
-
+        super.getAccessor(accessor);
+        accessor.setPrimaryKeyJoinColumns(this.getPrimaryKeyJoinColumn()
+                .stream()
+                .map(PrimaryKeyJoinColumn::getAccessor)
+                .collect(toList()));
+        if (ForeignKeyValidator.isNotEmpty(primaryKeyForeignKey)) {
+            accessor.setPrimaryKeyForeignKey((PrimaryKeyForeignKeyMetadata)primaryKeyForeignKey.getAccessor(new PrimaryKeyForeignKeyMetadata()));
+        }
         return accessor;
     }
 

@@ -50,7 +50,7 @@ public enum ServerType {
     private final String template;
     private final List<String> version;
     private final PersistenceProviderType persistenceProviderType;
-     private final DatabaseType embeddedDB;
+    private final DatabaseType embeddedDB;
     private final boolean embeddedDBDriverRequired;
     
 

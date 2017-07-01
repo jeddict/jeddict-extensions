@@ -222,8 +222,11 @@ public class Table {
         this.schema = value;
     }
 
-    public TableMetadata getAccessor() {
-        TableMetadata accessor = new TableMetadata();
+    public TableMetadata getAccessor() {      
+        return getAccessor(new TableMetadata());
+    }
+    
+    public TableMetadata getAccessor(TableMetadata accessor) {
         accessor.setName(name);
         accessor.setCatalog(catalog);
         accessor.setSchema(schema);

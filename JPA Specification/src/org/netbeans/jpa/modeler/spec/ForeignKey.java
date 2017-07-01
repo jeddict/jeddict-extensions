@@ -168,7 +168,10 @@ public class ForeignKey {
     }
 
     public ForeignKeyMetadata getAccessor() {
-        ForeignKeyMetadata accessor = new ForeignKeyMetadata();
+        return getAccessor(new ForeignKeyMetadata());
+    }
+    
+    public ForeignKeyMetadata getAccessor(ForeignKeyMetadata accessor) {
         accessor.setName(name);
         accessor.setForeignKeyDefinition(foreignKeyDefinition);
         if (constraintMode != null) {

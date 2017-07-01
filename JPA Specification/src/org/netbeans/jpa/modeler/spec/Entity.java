@@ -294,6 +294,7 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
      * {@link SecondaryTable }
      *
      *
+     * @return 
      */
     public List<SecondaryTable> getSecondaryTable() {
         if (secondaryTable == null) {
@@ -780,9 +781,11 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
         if(this.getTable()!=null && StringUtils.equalsIgnoreCase(this.getTable().getName(), tableName)){
             return this.getTable();
         }
-//        }
         if(!this.getSecondaryTable().isEmpty()){
-            Optional<SecondaryTable> secondaryTableOptional = this.getSecondaryTable().stream().filter(table -> StringUtils.equalsIgnoreCase(table.getName(), tableName)).findFirst();
+            Optional<SecondaryTable> secondaryTableOptional = this.getSecondaryTable()
+                    .stream()
+                    .filter(secondaryTable -> StringUtils.equalsIgnoreCase(secondaryTable.getName(), tableName))
+                    .findFirst();
             if(secondaryTableOptional.isPresent()){
                 return secondaryTableOptional.get();
             }
