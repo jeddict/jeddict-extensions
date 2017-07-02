@@ -28,6 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.StringUtils;
+import org.jcode.infra.JavaEEVersion;
 import org.netbeans.jcode.core.util.JavaSourceHelper;
 import org.netbeans.jcode.jpa.PersistenceProviderType;
 import org.netbeans.jpa.modeler.spec.design.Diagram;
@@ -220,6 +221,8 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     private String persistenceUnitName;
     @XmlAttribute(name="pp")
     private PersistenceProviderType persistenceProviderType;
+    @XmlAttribute(name="ee")
+    private JavaEEVersion javaEEVersion;
 
     @XmlElement(name = "c")
     private Cache cache;
@@ -342,6 +345,20 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
      */
     public void setPersistenceProviderType(PersistenceProviderType persistenceProviderType) {
         this.persistenceProviderType = persistenceProviderType;
+    }
+
+    /**
+     * @return the javaEEVersion
+     */
+    public JavaEEVersion getJavaEEVersion() {
+        return javaEEVersion;
+    }
+
+    /**
+     * @param javaEEVersion the javaEEVersion to set
+     */
+    public void setJavaEEVersion(JavaEEVersion javaEEVersion) {
+        this.javaEEVersion = javaEEVersion;
     }
     
     /**
