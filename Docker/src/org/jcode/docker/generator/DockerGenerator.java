@@ -85,7 +85,7 @@ public class DockerGenerator implements Generator {
     private static final String DOCKER_COMPOSE = "docker-compose.yml";
 
     @ConfigData
-    protected DockerConfigData dockerConfig;
+    protected DockerConfigData config;
 
     @ConfigData
     protected Project project;
@@ -111,21 +111,46 @@ public class DockerGenerator implements Generator {
         if (!appConfigData.isCompleteApplication()) {
             return;
         }
-        setupDataSourceLocally = !(dockerConfig.isDockerEnable() && (dockerConfig.getServerType() == PAYARA || dockerConfig.getServerType() == WILDFLY));
-        if (dockerConfig.isDockerEnable()) {
+        setupDataSourceLocally = !(config.isDockerEnable() && (config.getServerType() == PAYARA || config.getServerType() == WILDFLY));
+        manageServerSettingGeneration();
+        manageDBSettingGeneration();
+        manageDockerGeneration();
+    }
+
+    private void manageDockerGeneration() throws IOException {
+        if (config.isDockerEnable()) {
             handler.progress(Console.wrap(DockerGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
 
             FileObject targetFolder = getDockerDirectory(source);
             Map<String, Object> params = getParams();
-            handler.progress(expandTemplate(TEMPLATE + dockerConfig.getServerType().getTemplate(), targetFolder, DOCKER_FILE, params));
+            handler.progress(expandTemplate(TEMPLATE + config.getServerType().getTemplate(), targetFolder, DOCKER_FILE, params));
             handler.progress(expandTemplate(TEMPLATE + DOCKER_COMPOSE + ".ftl", targetFolder, DOCKER_COMPOSE, params));
-        }
+            if (POMManager.isMavenProject(project)) {
+                POMManager pomManager = new POMManager(TEMPLATE + "fabric8io/pom/_pom.xml", project);
+                pomManager.commit();
+                handler.info("Profile", "Use \"docker\" profile to create and run Docker image");
 
+                Properties properties = new Properties();
+                if (StringUtils.isBlank(config.getDockerMachine())) {
+                    handler.warning(NbBundle.getMessage(DockerGenerator.class, "TITLE_Docker_Machine_Not_Found"),
+                            NbBundle.getMessage(DockerGenerator.class, "MSG_Docker_Machine_Not_Found"));
+                    properties.put(DOCKER_MACHINE_PROPERTY, "local");
+                } else {
+                    properties.put(DOCKER_MACHINE_PROPERTY, config.getDockerMachine());
+                }
+                properties.put(BINARY, config.getServerType().getBinary());
+                properties.put(DOCKER_IMAGE, config.getDockerNamespace()
+                        + "/" + config.getDockerRepository() + ":${project.version}");
+                pomManager.addProperties(DOCKER_PROFILE, properties);
+            }
+        }
+    }
+
+    private void manageDBSettingGeneration() throws IOException {
         updatePersistenceXml();
-        addMavenDependencies();
         hibernateUpdate();
-       
-        if (dockerConfig.isDbInfoExist()) {
+        addDatabaseDriverDependency();
+        if (config.isDbInfoExist()) {
             addDatabaseProperties();
             if (setupDataSourceLocally) {
                 generateDataSourceDD();
@@ -136,7 +161,7 @@ public class DockerGenerator implements Generator {
             }
         }
     }
-        
+
     private void updatePersistenceXml() {
         String puName = entityMapping.getPersistenceUnitName();
         Optional<PersistenceUnit> punitOptional = PersistenceUtil.getPersistenceUnit(project, puName);
@@ -147,14 +172,14 @@ public class DockerGenerator implements Generator {
             removeProperty(punit, JDBC_PASSWORD);
             removeProperty(punit, JDBC_DRIVER);
             removeProperty(punit, JDBC_USER);
-            punit.setJtaDataSource(dockerConfig.isDbInfoExist() ? getJNDI(dockerConfig.getServerType(), dockerConfig.getDataSource()) : null);
-            punit.setProvider(getPersistenceProvider(dockerConfig.getServerType(), entityMapping, punit.getProvider()));
+            punit.setJtaDataSource(config.isDbInfoExist() ? getJNDI(config.getServerType(), config.getDataSource()) : null);
+            punit.setProvider(getPersistenceProvider(config.getServerType(), entityMapping, punit.getProvider()));
             PersistenceUtil.updatePersistenceUnit(project, punit);
         }
     }
-    
-    private void hibernateUpdate(){
-        if (dockerConfig.getServerType().getFamily() == ServerFamily.PAYARA_FAMILY
+
+    private void hibernateUpdate() {
+        if (config.getServerType().getFamily() == ServerFamily.PAYARA_FAMILY
                 && entityMapping.getPersistenceProviderType() == PersistenceProviderType.HIBERNATE) {
             String puName = entityMapping.getPersistenceUnitName();
             Optional<PersistenceUnit> punitOptional = PersistenceUtil.getPersistenceUnit(project, puName);
@@ -167,27 +192,35 @@ public class DockerGenerator implements Generator {
                 PersistenceUtil.updatePersistenceUnit(project, punit);
             }
             if (POMManager.isMavenProject(project)) {
+//                POMManager pomManager = new POMManager(TEMPLATE + "persistence/provider/pom/" + config.getServerType().name() + "_"+persistenceProviderType.name() + ".xml", project);
                 POMManager pomManager = new POMManager(TEMPLATE + "persistence/provider/pom/PAYARA_HIBERNATE.xml", project);
+                pomManager.commit();
+            }
+        } else if (config.getServerType().getFamily() == ServerFamily.WILDFLY_FAMILY
+                && entityMapping.getPersistenceProviderType() == PersistenceProviderType.ECLIPSELINK) {
+            if (POMManager.isMavenProject(project)) {
+                POMManager pomManager = new POMManager(TEMPLATE + "persistence/provider/pom/WILDFLY_ECLIPSELINK.xml", project);
                 pomManager.commit();
             }
         }
     }
-    
-    private String getHibernateDialect(){
-        if(dockerConfig.getDatabaseType() != null)
-            switch (dockerConfig.getDatabaseType()) {
-            case MYSQL:
-                return "org.hibernate.dialect.MySQL5Dialect";
-            case POSTGRESQL:
-                return "org.hibernate.dialect.PostgreSQLDialect";
-            case MARIA_DB:
-                return "org.hibernate.dialect.MariaDBDialect";
-            case DERBY:
-                return "org.hibernate.dialect.DB2Dialect";
-            case H2:
-                return "org.hibernate.dialect.H2Dialect";
-            default:
-                break;
+
+    private String getHibernateDialect() {
+        if (config.getDatabaseType() != null) {
+            switch (config.getDatabaseType()) {
+                case MYSQL:
+                    return "org.hibernate.dialect.MySQL5Dialect";
+                case POSTGRESQL:
+                    return "org.hibernate.dialect.PostgreSQLDialect";
+                case MARIA_DB:
+                    return "org.hibernate.dialect.MariaDBDialect";
+                case DERBY:
+                    return "org.hibernate.dialect.DB2Dialect";
+                case H2:
+                    return "org.hibernate.dialect.H2Dialect";
+                default:
+                    break;
+            }
         }
         throw new IllegalStateException("DB type not supported");
     }
@@ -219,41 +252,19 @@ public class DockerGenerator implements Generator {
         }
     }
 
-    private void addMavenDependencies() {
+    private void manageServerSettingGeneration() {
         if (POMManager.isMavenProject(project)) {
-            if (dockerConfig.isDockerEnable()) {
-                POMManager pomManager = new POMManager(TEMPLATE + "fabric8io/pom/_pom.xml", project);
-                pomManager.fixDistributionProperties();
-                pomManager.commit();
-                handler.info("Profile", "Use \"docker\" profile to create and run Docker image");
-
-                Properties properties = new Properties();
-                if (StringUtils.isBlank(dockerConfig.getDockerMachine())) {
-                    handler.warning(NbBundle.getMessage(DockerGenerator.class, "TITLE_Docker_Machine_Not_Found"),
-                            NbBundle.getMessage(DockerGenerator.class, "MSG_Docker_Machine_Not_Found"));
-                    properties.put(DOCKER_MACHINE_PROPERTY, "local");
-                } else {
-                    properties.put(DOCKER_MACHINE_PROPERTY, dockerConfig.getDockerMachine());
-                }
-                properties.put(BINARY, dockerConfig.getServerType().getBinary());
-                properties.put(DOCKER_IMAGE, dockerConfig.getDockerNamespace()
-                        + "/" + dockerConfig.getDockerRepository() + ":${project.version}");
-                pomManager.addProperties(DOCKER_PROFILE, properties);
-            }
-
-            if (dockerConfig.getServerType() == ServerType.PAYARA_MICRO) {
-                POMManager pomManager = new POMManager(TEMPLATE + "payara/micro/pom/_pom.xml", project);
-                pomManager.commit();
-            } else if (dockerConfig.getServerType() == ServerType.WILDFLY_SWARM) {
-                POMManager pomManager = new POMManager(TEMPLATE + "wildfly/swarm/pom/_pom.xml", project);
-                pomManager.commit();
-            }
-
-//            addPersistenceProviderDependency();
-            addDatabaseDriverDependency();
-
             POMManager pomManager = new POMManager(TEMPLATE + "profile/dev/pom/_pom.xml", project);
+            pomManager.fixDistributionProperties();
             pomManager.commit();
+
+            if (config.getServerType() == ServerType.PAYARA_MICRO) {
+                pomManager = new POMManager(TEMPLATE + "payara/micro/pom/_pom.xml", project);
+                pomManager.commit();
+            } else if (config.getServerType() == ServerType.WILDFLY_SWARM) {
+                pomManager = new POMManager(TEMPLATE + "wildfly/swarm/pom/_pom.xml", project);
+                pomManager.commit();
+            }
 
         } else {
             handler.warning(NbBundle.getMessage(DockerGenerator.class, "TITLE_Maven_Project_Not_Found"),
@@ -261,28 +272,23 @@ public class DockerGenerator implements Generator {
         }
 
     }
-    
-//    private void addPersistenceProviderDependency() {
-//        if (dockerConfig.getServerType().getPersistenceProviderType() != persistenceProviderType) {
-//            POMManager pomManager = new POMManager(TEMPLATE + "persistence/provider/pom/" + dockerConfig.getServerType().name() + "_"+persistenceProviderType.name() + ".xml", project);
-//            pomManager.commit();
-//        }
-//    }
 
     private void addDatabaseDriverDependency() {
-        ServerType serverType = dockerConfig.getServerType();
-        DatabaseType databaseType = dockerConfig.getDatabaseType();
-        boolean addDependency = (dockerConfig.isDbInfoExist() && setupDataSourceLocally && serverType.getEmbeddedDB() != databaseType)
-                || (serverType.getEmbeddedDB() == databaseType && serverType.isEmbeddedDBDriverRequired());
-        if (databaseType.getDriver() != null && addDependency) {
-            POMManager pomManager = new POMManager(project);
-            DatabaseDriver driver = databaseType.getDriver();
-            String versionRef = "version." + driver.getGroupId();
-            pomManager.registerDependency(driver.getGroupId(), driver.getArtifactId(), "${" + versionRef + '}', null, null, null);
-            Properties properties = new Properties();
-            properties.put(versionRef, driver.getVersion());
-            pomManager.addProperties(properties);
-            pomManager.commit();
+        if (POMManager.isMavenProject(project)) {
+            ServerType serverType = config.getServerType();
+            DatabaseType databaseType = config.getDatabaseType();
+            boolean addDependency = (config.isDbInfoExist() && setupDataSourceLocally && serverType.getEmbeddedDB() != databaseType)
+                    || (serverType.getEmbeddedDB() == databaseType && serverType.isEmbeddedDBDriverRequired());
+            if (databaseType.getDriver() != null && addDependency) {
+                POMManager pomManager = new POMManager(project);
+                DatabaseDriver driver = databaseType.getDriver();
+                String versionRef = "version." + driver.getGroupId();
+                pomManager.registerDependency(driver.getGroupId(), driver.getArtifactId(), "${" + versionRef + '}', null, null, null);
+                Properties properties = new Properties();
+                properties.put(versionRef, driver.getVersion());
+                pomManager.addProperties(properties);
+                pomManager.commit();
+            }
         }
     }
 
@@ -290,11 +296,11 @@ public class DockerGenerator implements Generator {
         if (POMManager.isMavenProject(project)) {
             POMManager pomManager = new POMManager(project);
             Properties properties = new Properties();
-            properties.put(DB_USER, dockerConfig.getDbUserName());
-            properties.put(DB_PASSWORD, dockerConfig.getDbPassword());
-            properties.put(DB_NAME, dockerConfig.getDbName());
+            properties.put(DB_USER, config.getDbUserName());
+            properties.put(DB_PASSWORD, config.getDbPassword());
+            properties.put(DB_NAME, config.getDbName());
             properties.put(DB_SVC, getDBService());
-            properties.put(DB_PORT, dockerConfig.getDbPort());
+            properties.put(DB_PORT, config.getDbPort());
             pomManager.addProperties(DEVELOPMENT_PROFILE, properties);
             pomManager.commit();
         }
@@ -303,49 +309,48 @@ public class DockerGenerator implements Generator {
     private void generateDataSourceDD() throws IOException {
         handler.progress("web.xml <data-source>");
         Map<String, Object> params = new HashMap<>();
-        params.put("jndi", getJNDI(dockerConfig.getServerType(), dockerConfig.getDataSource()));
-        params.put("driverClass", dockerConfig.getDatabaseType().getDriver().getClassName());
+        params.put("jndi", getJNDI(config.getServerType(), config.getDataSource()));
+        params.put("driverClass", config.getDatabaseType().getDriver().getClassName());
         WebDDUtil.createDD(project, "/org/jcode/docker/template/web/xml/datasource/_web.xml.ftl", params);
     }
-    
+
     protected Map<String, Object> getParams() {
         Map<String, Object> params = new HashMap<>();
-        params.put("DB_USER", dockerConfig.getDbUserName());
-        params.put("DB_PASSWORD", dockerConfig.getDbPassword());
-        params.put("DB_NAME", dockerConfig.getDbName());
+        params.put("DB_USER", config.getDbUserName());
+        params.put("DB_PASSWORD", config.getDbPassword());
+        params.put("DB_NAME", config.getDbName());
         params.put("DB_SVC", getDBService());
-        params.put("DB_PORT", dockerConfig.getDbPort());
-        params.put("DB_VERSION", dockerConfig.getDatabaseVersion());
-        params.put("DB_TYPE", dockerConfig.getDatabaseType().getDockerImage());
-        params.put("DATASOURCE", dockerConfig.getDataSource());
-        params.put("SERVER_TYPE", dockerConfig.getServerType().name());
+        params.put("DB_PORT", config.getDbPort());
+        params.put("DB_VERSION", config.getDatabaseVersion());
+        params.put("DB_TYPE", config.getDatabaseType().getDockerImage());
+        params.put("DATASOURCE", config.getDataSource());
+        params.put("SERVER_TYPE", config.getServerType().name());
         return params;
     }
-    
+
     protected String getDBService() {
-        if (dockerConfig.getDbHost() != null) {
-            return dockerConfig.getDbHost();
+        if (config.getDbHost() != null) {
+            return config.getDbHost();
         } else {
-            return getApplicationName() + "-" + dockerConfig.getDatabaseType().name().toLowerCase();
+            return getApplicationName() + "-" + config.getDatabaseType().name().toLowerCase();
         }
     }
 
     protected String getApplicationName() {
         if (applicationName == null) {
-            applicationName = dockerConfig.getDockerRepository()
+            applicationName = config.getDockerRepository()
                     .replace("${project.artifactId}", getPOMManager().getArtifactId());
         }
         return applicationName;
     }
 
-    private POMManager pomManager;
+    private POMManager projectPOMManager;
+
     protected POMManager getPOMManager() {
-        if (pomManager == null) {
-            pomManager = new POMManager(project, true);
+        if (projectPOMManager == null) {
+            projectPOMManager = new POMManager(project, true);
         }
-        return pomManager;
+        return projectPOMManager;
     }
 
-
-    
 }

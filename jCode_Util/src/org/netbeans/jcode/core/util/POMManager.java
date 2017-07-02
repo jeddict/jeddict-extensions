@@ -99,7 +99,7 @@ public class POMManager {
         }
     }
     
-        public void fixDistributionProperties() {
+    public void fixDistributionProperties() {
         org.netbeans.modules.maven.model.pom.Project pomProject = getPOMProject();
         if (pomProject.getGroupId() != null) {
             pomProject.setGroupId(pomProject.getGroupId().toLowerCase());

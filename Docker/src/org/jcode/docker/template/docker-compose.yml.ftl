@@ -17,6 +17,9 @@ services:
         ports:
             - "8080:8080" 
             - "8081:8081"
+<#if SERVER_TYPE != "WILDFLY" && SERVER_TYPE != "WILDFLY_SWARM">
+            - "localhost:9990:9990" 
+</#if>
         links:
             - '${r"${db.svc}"}' 
     '${r"${db.svc}"}':
