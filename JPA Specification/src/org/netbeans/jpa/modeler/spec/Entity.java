@@ -121,7 +121,7 @@ import org.netbeans.jpa.modeler.spec.extend.InheritanceHandler;
     "discriminatorColumn",
     "sequenceGenerator",
     "tableGenerator",
-    "namedStoredProcedureQuery",
+//    "namedStoredProcedureQuery",
     //    "namedQuery",
     //    "namedNativeQuery",
     //    "sqlResultSetMapping",
@@ -163,8 +163,6 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
     @XmlElement(name = "table-generator")
     protected TableGenerator tableGenerator;
 
-    @XmlElement(name = "nspq")
-    protected List<NamedStoredProcedureQuery> namedStoredProcedureQuery;
     @XmlElement(name = "attribute-override")
     protected Set<AttributeOverride> attributeOverride;
     @XmlElement(name = "association-override")
@@ -223,7 +221,6 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
         this.attributeOverride = AttributeOverride.load(element);
         this.associationOverride = AssociationOverride.load(element);
         this.namedEntityGraph = NamedEntityGraph.load(element);
-        this.namedStoredProcedureQuery = NamedStoredProcedureQuery.load(element);
         
     }
 
@@ -361,35 +358,6 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
      */
     public void setPrimaryKeyForeignKey(ForeignKey value) {
         this.primaryKeyForeignKey = value;
-    }
-
-    /**
-     * Gets the value of the namedStoredProcedureQuery property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list, not a
-     * snapshot. Therefore any modification you make to the returned list will
-     * be present inside the JAXB object. This is why there is not a
-     * <CODE>set</CODE> method for the namedStoredProcedureQuery property.
-     *
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNamedStoredProcedureQuery().add(newItem);
-     * </pre>
-     *
-     *
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link NamedStoredProcedureQuery }
-     *
-     *
-     */
-    public List<NamedStoredProcedureQuery> getNamedStoredProcedureQuery() {
-        if (namedStoredProcedureQuery == null) {
-            namedStoredProcedureQuery = new ArrayList<NamedStoredProcedureQuery>();
-        }
-        return this.namedStoredProcedureQuery;
     }
 
     /**

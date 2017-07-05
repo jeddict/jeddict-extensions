@@ -6,6 +6,9 @@
 //
 package org.netbeans.jpa.modeler.spec;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import javax.lang.model.element.TypeElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -83,6 +86,18 @@ public class MappedSuperclass extends IdentifiableClass {
         if (!entityMappings.findMappedSuperclass(element.getSimpleName().toString()).isPresent()) {
             super.load(entityMappings, element, fieldAccess);
         }
+    }
+
+    public List<NamedQuery> getNamedQuery() {
+        return Collections.EMPTY_LIST;
+    }
+
+    public List<NamedNativeQuery> getNamedNativeQuery() {
+        return Collections.EMPTY_LIST;
+    }
+
+    public List<NamedStoredProcedureQuery> getNamedStoredProcedureQuery() {
+        return Collections.EMPTY_LIST;
     }
 
 }

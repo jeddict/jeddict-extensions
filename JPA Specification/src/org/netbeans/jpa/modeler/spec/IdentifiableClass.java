@@ -58,6 +58,8 @@ public abstract class IdentifiableClass extends ManagedClass<IPrimaryKeyAttribut
     protected List<NamedNativeQuery> namedNativeQuery;
     @XmlElement(name = "srsm")//(name = "sql-result-set-mapping")
     protected Set<SqlResultSetMapping> sqlResultSetMapping;
+    @XmlElement(name = "nspq")
+    protected List<NamedStoredProcedureQuery> namedStoredProcedureQuery;
 
     @XmlElement(name = "edl")//(name = "exclude-default-listeners")
     protected EmptyType excludeDefaultListeners;
@@ -145,7 +147,7 @@ public abstract class IdentifiableClass extends ManagedClass<IPrimaryKeyAttribut
                 this.getNamedNativeQuery().add(NamedNativeQuery.load(element, namedNativeQueriesMirror));
             }
         }
-
+        
         AnnotationMirror resultSetMappingsMirror = JavaSourceParserUtil.findAnnotation(element, SQL_RESULTSET_MAPPINGS_FQN);
         if (resultSetMappingsMirror != null) {
             List resultSetMappingsMirrorList = (List) JavaSourceParserUtil.findAnnotationValue(resultSetMappingsMirror, "value");
@@ -164,6 +166,8 @@ public abstract class IdentifiableClass extends ManagedClass<IPrimaryKeyAttribut
                 this.getSqlResultSetMapping().add(mapping);
             }
         }
+
+        this.namedStoredProcedureQuery = NamedStoredProcedureQuery.load(element);
 
         TypeElement superClassElement = JavaSourceParserUtil.getSuperclassTypeElement(element);
         if (!superClassElement.getQualifiedName().toString().equals("java.lang.Object")) {
@@ -717,4 +721,35 @@ public abstract class IdentifiableClass extends ManagedClass<IPrimaryKeyAttribut
             return this;
         }
     }
+    
+    /**
+     * Gets the value of the namedStoredProcedureQuery property.
+     *
+     * <p>
+     * This accessor method returns a reference to the live list, not a
+     * snapshot. Therefore any modification you make to the returned list will
+     * be present inside the JAXB object. This is why there is not a
+     * <CODE>set</CODE> method for the namedStoredProcedureQuery property.
+     *
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getNamedStoredProcedureQuery().add(newItem);
+     * </pre>
+     *
+     *
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link NamedStoredProcedureQuery }
+     *
+     *
+     * @return 
+     */
+    public List<NamedStoredProcedureQuery> getNamedStoredProcedureQuery() {
+        if (namedStoredProcedureQuery == null) {
+            namedStoredProcedureQuery = new ArrayList<>();
+        }
+        return this.namedStoredProcedureQuery;
+    }
+
 }
