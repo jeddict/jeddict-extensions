@@ -20,9 +20,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
+import org.netbeans.modeler.properties.type.Embedded;
 
+@Deprecated
 @XmlAccessorType(XmlAccessType.FIELD)
-public class JaxbXmlElement {
+public class JaxbXmlElement implements Embedded {
 
     /**
      * Name of the XML Schema element.

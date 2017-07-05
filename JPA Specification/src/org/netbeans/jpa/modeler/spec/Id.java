@@ -146,13 +146,6 @@ public class Id extends PersistenceBaseAttribute {
         this.sequenceGenerator = value;
     }
 
-
-//    @Override
-//    public List<JaxbVariableType> getJaxbVariableList(){
-//       List<JaxbVariableType> jaxbVariableTypeList = super.getJaxbVariableList();
-////                jaxbVariableTypeList.add(JaxbVariableType.);
-//        return jaxbVariableTypeList;
-//    }
     public String getReferenceColumnName() {
         Id id = this;
         if (id.getColumn() != null && StringUtils.isNotBlank(id.getColumn().getName())) {

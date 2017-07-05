@@ -38,6 +38,7 @@ public abstract class BaseAttribute extends Attribute {
     @Override
     public List<JaxbVariableType> getJaxbVariableList() {
         List<JaxbVariableType> jaxbVariableTypeList = new ArrayList<>();
+        jaxbVariableTypeList.add(JaxbVariableType.XML_DEFAULT);
         jaxbVariableTypeList.add(JaxbVariableType.XML_ATTRIBUTE);
         jaxbVariableTypeList.add(JaxbVariableType.XML_ELEMENT);
         jaxbVariableTypeList.add(JaxbVariableType.XML_VALUE);

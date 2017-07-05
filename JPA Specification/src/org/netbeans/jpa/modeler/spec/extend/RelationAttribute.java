@@ -276,7 +276,9 @@ public abstract class RelationAttribute extends Attribute implements AccessTypeH
     @Override
     public List<JaxbVariableType> getJaxbVariableList() {
         List<JaxbVariableType> jaxbVariableTypeList = new ArrayList<>();
+        jaxbVariableTypeList.add(JaxbVariableType.XML_DEFAULT);
         jaxbVariableTypeList.add(JaxbVariableType.XML_ELEMENT);
+        jaxbVariableTypeList.add(JaxbVariableType.XML_ELEMENT_WRAPPER);
         jaxbVariableTypeList.add(JaxbVariableType.XML_TRANSIENT);
         jaxbVariableTypeList.add(JaxbVariableType.XML_INVERSE_REFERENCE);//both side are applicable
         jaxbVariableTypeList.add(JaxbVariableType.XML_ELEMENT_REF);

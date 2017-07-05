@@ -27,6 +27,8 @@ public interface JaxbVariableTypeHandler {
      * @return the jaxbVariableType
      */
     public JaxbVariableType getJaxbVariableType();
+    
+    public List<JaxbVariableType> getJaxbVariableList();
 
     /**
      * @param jaxbVariableType the jaxbVariableType to set
@@ -34,34 +36,13 @@ public interface JaxbVariableTypeHandler {
     public void setJaxbVariableType(JaxbVariableType jaxbVariableType);
 
     /**
-     * @return the jaxbXmlAttribute
+     * @return the jaxbMetadata
      */
-    public JaxbXmlAttribute getJaxbXmlAttribute();
+    public JaxbMetadata getJaxbMetadata();
 
     /**
-     * @param jaxbXmlAttribute the jaxbXmlAttribute to set
+     * @param jaxbMetadata the jaxbMetadata to set
      */
-    public void setJaxbXmlAttribute(JaxbXmlAttribute jaxbXmlAttribute);
+    public void setJaxbMetadata(JaxbMetadata jaxbMetadata);
 
-    /**
-     * @return the jaxbXmlElement
-     */
-    public JaxbXmlElement getJaxbXmlElement();
-
-    /**
-     * @param jaxbXmlElement the jaxbXmlElement to set
-     */
-    public void setJaxbXmlElement(JaxbXmlElement jaxbXmlElement);
-
-    /**
-     * @return the jaxbXmlElementList
-     */
-    public List<JaxbXmlElement> getJaxbXmlElementList();
-
-    /**
-     * @param jaxbXmlElementList the jaxbXmlElementList to set
-     */
-    public void setJaxbXmlElementList(List<JaxbXmlElement> jaxbXmlElementList);
-
-    public List<JaxbVariableType> getJaxbVariableList();
 }

@@ -351,6 +351,9 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
      * @return the javaEEVersion
      */
     public JavaEEVersion getJavaEEVersion() {
+        if(javaEEVersion == null){
+            return JavaEEVersion.getDefaultVersion();
+        }
         return javaEEVersion;
     }
 

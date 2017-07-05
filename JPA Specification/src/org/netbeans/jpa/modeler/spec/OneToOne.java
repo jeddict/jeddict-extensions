@@ -207,15 +207,6 @@ public class OneToOne extends SingleRelationAttribute {
         this.orphanRemoval = value;
     }
 
-//    @Override
-//    public List<JaxbVariableType> getJaxbVariableList() {
-//        if (mappedBy != null && !mappedBy.trim().isEmpty()) {
-//            return null;
-//        } else {
-//            return super.getJaxbVariableList();
-//        }
-//    }
-
     /**
      * @return the owner
      */

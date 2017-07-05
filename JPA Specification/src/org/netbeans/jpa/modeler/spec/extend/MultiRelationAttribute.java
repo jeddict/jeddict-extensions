@@ -523,15 +523,6 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
         this.collectionImplType = collectionImplType;
     }
 
-//    @Override
-//    public List<JaxbVariableType> getJaxbVariableList() {
-//        if (mappedBy != null && !mappedBy.trim().isEmpty()) {
-//            return null;
-//        } else {
-//            return super.getJaxbVariableList();
-//        }
-//    }
-
     /**
      * @return the owner
      */

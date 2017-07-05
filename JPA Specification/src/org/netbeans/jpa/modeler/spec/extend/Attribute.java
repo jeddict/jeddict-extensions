@@ -50,8 +50,6 @@ import static org.netbeans.jcode.core.util.AttributeType.STRING_FQN;
 import org.netbeans.jpa.modeler.settings.code.CodePanel;
 import org.netbeans.jpa.modeler.spec.jaxb.JaxbVariableType;
 import org.netbeans.jpa.modeler.spec.jaxb.JaxbVariableTypeHandler;
-import org.netbeans.jpa.modeler.spec.jaxb.JaxbXmlAttribute;
-import org.netbeans.jpa.modeler.spec.jaxb.JaxbXmlElement;
 import org.netbeans.bean.validation.constraints.AssertFalse;
 import org.netbeans.bean.validation.constraints.AssertTrue;
 import org.netbeans.bean.validation.constraints.Constraint;
@@ -101,6 +99,7 @@ import static org.netbeans.jcode.jsonb.JSONBConstants.JSONB_PROPERTY_FQN;
 import static org.netbeans.jcode.jsonb.JSONBConstants.JSONB_TYPE_ADAPTER_FQN;
 import static org.netbeans.jcode.jsonb.JSONBConstants.JSONB_TYPE_DESERIALIZER_FQN;
 import static org.netbeans.jcode.jsonb.JSONBConstants.JSONB_TYPE_SERIALIZER_FQN;
+import org.netbeans.jpa.modeler.spec.jaxb.JaxbMetadata;
 import org.netbeans.jpa.modeler.spec.jsonb.JsonbDateFormat;
 import org.netbeans.jpa.modeler.spec.jsonb.JsonbNumberFormat;
 import org.netbeans.jpa.modeler.spec.jsonb.JsonbTypeHandler;
@@ -127,13 +126,15 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
 
     @XmlAttribute(name = "xvt", required = true)//(name = "jaxb-variable-type", required = true)
     private JaxbVariableType jaxbVariableType;
-    @XmlElement(name = "xa")//(name = "jaxb-xml-attribute")
-    private JaxbXmlAttribute jaxbXmlAttribute;
-    @XmlElement(name = "xe")//(name = "jaxb-xml-element")
-    private JaxbXmlElement jaxbXmlElement;
-    @XmlElement(name = "xe")//(name = "jaxb-xml-element")
-    @XmlElementWrapper(name = "xel")//(name = "jaxb-xml-element-list")
-    private List<JaxbXmlElement> jaxbXmlElementList;
+    @XmlElement(name = "xwm")
+    private JaxbMetadata jaxbWrapperMetadata;
+    @XmlElement(name = "xm")
+    private JaxbMetadata jaxbMetadata;
+//    @XmlElement(name = "xe")//(name = "jaxb-xml-element")
+//    private JaxbXmlElement jaxbXmlElement;
+//    @XmlElement(name = "xe")//(name = "jaxb-xml-element")
+//    @XmlElementWrapper(name = "xel")//(name = "jaxb-xml-element-list")
+//    private List<JaxbXmlElement> jaxbXmlElementList;
 //    @XmlAttribute(name = "jaxb-xml-list")
 //    private Boolean jaxbXmlList;
 
@@ -464,6 +465,9 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
      */
     @Override
     public JaxbVariableType getJaxbVariableType() {
+        if(jaxbVariableType==null){
+            jaxbVariableType = JaxbVariableType.XML_DEFAULT;
+        }
         return jaxbVariableType;
     }
 
@@ -476,51 +480,39 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
     }
 
     /**
-     * @return the jaxbXmlAttribute
+     * @return the jaxbWrapperMetadata
      */
-    @Override
-    public JaxbXmlAttribute getJaxbXmlAttribute() {
-        return jaxbXmlAttribute;
+    public JaxbMetadata getJaxbWrapperMetadata() {
+        if (jaxbWrapperMetadata == null) {
+            jaxbWrapperMetadata = new JaxbMetadata();
+        }
+        return jaxbWrapperMetadata;
     }
 
     /**
-     * @param jaxbXmlAttribute the jaxbXmlAttribute to set
+     * @param jaxbWrapperMetadata the jaxbWrapperMetadata to set
      */
-    @Override
-    public void setJaxbXmlAttribute(JaxbXmlAttribute jaxbXmlAttribute) {
-        this.jaxbXmlAttribute = jaxbXmlAttribute;
+    public void setJaxbWrapperMetadata(JaxbMetadata jaxbWrapperMetadata) {
+        this.jaxbWrapperMetadata = jaxbWrapperMetadata;
     }
 
     /**
-     * @return the jaxbXmlElement
+     * @return the jaxbMetadata
      */
     @Override
-    public JaxbXmlElement getJaxbXmlElement() {
-        return jaxbXmlElement;
+    public JaxbMetadata getJaxbMetadata() {
+        if (jaxbMetadata == null) {
+            jaxbMetadata = new JaxbMetadata();
+        }
+        return jaxbMetadata;
     }
 
     /**
-     * @param jaxbXmlElement the jaxbXmlElement to set
+     * @param jaxbMetadata the jaxbMetadata to set
      */
     @Override
-    public void setJaxbXmlElement(JaxbXmlElement jaxbXmlElement) {
-        this.jaxbXmlElement = jaxbXmlElement;
-    }
-
-    /**
-     * @return the jaxbXmlElementList
-     */
-    @Override
-    public List<JaxbXmlElement> getJaxbXmlElementList() {
-        return jaxbXmlElementList;
-    }
-
-    /**
-     * @param jaxbXmlElementList the jaxbXmlElementList to set
-     */
-    @Override
-    public void setJaxbXmlElementList(List<JaxbXmlElement> jaxbXmlElementList) {
-        this.jaxbXmlElementList = jaxbXmlElementList;
+    public void setJaxbMetadata(JaxbMetadata jaxbMetadata) {
+        this.jaxbMetadata = jaxbMetadata;
     }
 
     @Override

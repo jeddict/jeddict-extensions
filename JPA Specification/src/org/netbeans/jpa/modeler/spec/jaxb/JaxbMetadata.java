@@ -20,34 +20,24 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import org.netbeans.modeler.properties.type.Embedded;
 
-@Deprecated
 @XmlAccessorType(XmlAccessType.FIELD)
-public class JaxbXmlAttribute implements Embedded {
+public class JaxbMetadata implements Embedded {
 
-    /**
-     * Name of the XML Schema attribute. By default, the XML Schema attribute
-     * name is derived from the JavaBean property name.
-     *
-     */
-    @XmlAttribute(name = "name")
-    private String name;// default "##default";
 
-    /**
-     * Specifies if the XML Schema attribute is optional or required. If true,
-     * then the JavaBean property is mapped to a XML Schema attribute that is
-     * required. Otherwise it is mapped to a XML Schema attribute that is
-     * optional.
-     *
-     */
-    @XmlAttribute
+    @XmlAttribute(name="nm")
+    private String name;
+
+    @XmlAttribute(name="nil")
+    private Boolean nillable = false;// default false;
+
+    @XmlAttribute(name="req")
     private Boolean required = false;// default false;
 
-    /**
-     * Specifies the XML target namespace of the XML Schema attribute.
-     *
-     */
-    @XmlAttribute
-    private String namespace;// default "##default" ;
+    @XmlAttribute(name="ns")
+    private String namespace;// default "##default";
+
+    @XmlAttribute(name="dv")
+    private String defaultValue;// default "\u0000";
 
     /**
      * @return the name
@@ -64,9 +54,29 @@ public class JaxbXmlAttribute implements Embedded {
     }
 
     /**
+     * @return the nillable
+     */
+    public Boolean getNillable() {
+        if(nillable==null){
+            return false;
+        }
+        return nillable;
+    }
+
+    /**
+     * @param nillable the nillable to set
+     */
+    public void setNillable(Boolean nillable) {
+        this.nillable = nillable;
+    }
+
+    /**
      * @return the required
      */
     public Boolean getRequired() {
+        if(required==null){
+            return false;
+        }
         return required;
     }
 
@@ -90,4 +100,20 @@ public class JaxbXmlAttribute implements Embedded {
     public void setNamespace(String namespace) {
         this.namespace = namespace;
     }
+
+    /**
+     * @return the defaultValue
+     */
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    /**
+     * @param defaultValue the defaultValue to set
+     */
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+
 }

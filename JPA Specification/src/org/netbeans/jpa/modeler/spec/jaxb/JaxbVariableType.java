@@ -14,22 +14,28 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum JaxbVariableType {
 
+    @XmlEnumValue("")
+    XML_DEFAULT("", "Default"),
     @XmlEnumValue("A")
     XML_ATTRIBUTE("A", "Attribute"),
     @XmlEnumValue("V")
     XML_VALUE("V", "Value"),
+    
     @XmlEnumValue("E")
     XML_ELEMENT("E", "Element"),
-    @XmlEnumValue("W")
-    XML_ELEMENTS("W", "Elements"),
+    @XmlEnumValue("EW")
+    XML_ELEMENT_WRAPPER("EW", "Element Wrapper"),
+    
     @XmlEnumValue("T")
     XML_TRANSIENT("T", "Transient"),
+    
     @XmlEnumValue("L_A")
     XML_LIST_ATTRIBUTE("L_A", "Attribute List"),
     @XmlEnumValue("L_V")
     XML_LIST_VALUE("L_V", "Value List"),
     @XmlEnumValue("L_E")
     XML_LIST_ELEMENT("L_E", "Element List"),
+    
     @XmlEnumValue("I_E")
     XML_INVERSE_REFERENCE("I_E", "Inverse Reference"),
     @XmlEnumValue("E_R")
