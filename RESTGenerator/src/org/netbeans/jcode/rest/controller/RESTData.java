@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import static org.apache.commons.lang.StringUtils.isBlank;
+import org.netbeans.jcode.repository.RepositoryData;
 import org.netbeans.jcode.rest.applicationconfig.RestConfigData;
 import org.netbeans.jcode.rest.filter.FilterType;
 import org.netbeans.jcode.rest.returntype.ControllerReturnType;
@@ -28,7 +29,7 @@ import org.netbeans.jcode.stack.config.data.LayerConfigData;
  *
  * @author Gaurav Gupta
  */
-public class RESTData extends LayerConfigData {
+public class RESTData extends LayerConfigData<RepositoryData> {
 
     private String prefixName;
     private String suffixName;
@@ -217,6 +218,11 @@ public class RESTData extends LayerConfigData {
      */
     public void setLogger(boolean logger) {
         this.logger = logger;
+    }
+    
+    @Override
+    protected void onLayerConnection(){
+        getParentLayerConfigData().setNamed(false);
     }
 
     @Override

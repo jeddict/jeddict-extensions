@@ -1,7 +1,7 @@
 package ${package};
 
 <#assign eid = pkStrategy == "EmbeddedId" >
-import ${EntityFacade_FQN};
+import ${EntityRepository_FQN};
 <#list connectedFQClasses as connectedFQClass>
 import ${connectedFQClass};
 </#list>
@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 </#if>
 import java.util.List;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import static javax.ws.rs.client.Entity.json;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -53,19 +53,19 @@ public class ${controllerClass}Test extends ApplicationTest {
 
     @Deployment
     public static WebArchive createDeployment() {
-        return buildApplication()<#list connectedClasses as connectedClass>.addClass(${connectedClass}.class)</#list>.addClass(${EntityFacade}.class).addClass(${controllerClass}.class);
+        return buildApplication()<#list connectedClasses as connectedClass>.addClass(${connectedClass}.class)</#list>.addClass(${EntityRepository}.class).addClass(${controllerClass}.class);
     }
 
     private static ${instanceType} ${instanceName};
 
-    @EJB
-    private ${EntityFacade} ${entityFacade};
+    @Inject
+    private ${EntityRepository} ${entityRepository};
 
     @Test
     @InSequence(1)
     public void create${EntityClass}() throws Exception {
 
-        int databaseSizeBeforeCreate = ${entityFacade}.findAll().size();
+        int databaseSizeBeforeCreate = ${entityRepository}.findAll().size();
 
         // Create the ${instanceType}
         ${instanceName} = new ${instanceType}();
@@ -88,7 +88,7 @@ public class ${controllerClass}Test extends ApplicationTest {
         ${instanceName} = response.readEntity(${instanceType}.class);
 
         // Validate the ${EntityClass} in the database
-        List<${EntityClass}> ${entityInstancePlural} = ${entityFacade}.findAll();
+        List<${EntityClass}> ${entityInstancePlural} = ${entityRepository}.findAll();
         assertThat(${entityInstancePlural}.size(), is(databaseSizeBeforeCreate + 1));
         ${EntityClass} test${EntityClass} = ${entityInstancePlural}.get(${entityInstancePlural}.size() - 1);
 <#list idAttributes as attribute>
@@ -103,7 +103,7 @@ public class ${controllerClass}Test extends ApplicationTest {
     @InSequence(2)
     public void getAll${EntityClassPlural}() throws Exception {
 
-        int databaseSize = ${entityFacade}.findAll().size();
+        int databaseSize = ${entityRepository}.findAll().size();
 <#if pagination!= "no">
         Map<String, Object> params = new HashMap<>();
         params.put("page", 0);
@@ -164,7 +164,7 @@ public class ${controllerClass}Test extends ApplicationTest {
     @InSequence(5)
     public void update${EntityClass}() throws Exception {
 
-        int databaseSizeBeforeUpdate = ${entityFacade}.findAll().size();
+        int databaseSizeBeforeUpdate = ${entityRepository}.findAll().size();
 
         // Update the ${instanceName}
         ${instanceType} updated${instanceType} = new ${instanceType}();
@@ -186,7 +186,7 @@ public class ${controllerClass}Test extends ApplicationTest {
         assertThat(response, hasStatus(Status.OK));
 
         // Validate the ${EntityClass} in the database
-        List<${EntityClass}> ${entityInstancePlural} = ${entityFacade}.findAll();
+        List<${EntityClass}> ${entityInstancePlural} = ${entityRepository}.findAll();
         assertThat(${entityInstancePlural}.size(), is(databaseSizeBeforeUpdate));
         ${EntityClass} test${EntityClass} = ${entityInstancePlural}.get(${entityInstancePlural}.size() - 1);
 <#list idAttributes as attribute>
@@ -201,7 +201,7 @@ public class ${controllerClass}Test extends ApplicationTest {
     @InSequence(6)
     public void remove${EntityClass}() throws Exception {
 
-        int databaseSizeBeforeDelete = ${entityFacade}.findAll().size();
+        int databaseSizeBeforeDelete = ${entityRepository}.findAll().size();
 
         // Delete the ${instanceName}
 <#if allIdAttributes?size=1>
@@ -216,7 +216,7 @@ public class ${controllerClass}Test extends ApplicationTest {
         assertThat(response, hasStatus(Status.OK));
 
         // Validate the database is empty
-        List<${EntityClass}> ${entityInstancePlural} = ${entityFacade}.findAll();
+        List<${EntityClass}> ${entityInstancePlural} = ${entityRepository}.findAll();
         assertThat(${entityInstancePlural}.size(), is(databaseSizeBeforeDelete - 1));
     }
 

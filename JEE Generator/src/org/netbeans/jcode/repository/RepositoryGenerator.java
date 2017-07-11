@@ -13,10 +13,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.netbeans.jcode.ejb.facade;
+package org.netbeans.jcode.repository;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -56,21 +55,20 @@ import org.netbeans.jpa.modeler.spec.Id;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
 
 /**
- * Generates EJB facades for entity classes.
+ * Generates repository for entity classes.
  *
  * @author Gaurav Gupta
  */
 
 @ServiceProvider(service = Generator.class)
-@Technology(type = BUSINESS, label = "Session Bean Facade", panel = SessionBeanPanel.class, sibling = {DockerGenerator.class,})
-public final class EjbFacadeGenerator implements Generator {
+@Technology(type = BUSINESS, label = "CDI Repository", panel = RepositoryPanel.class, sibling = {DockerGenerator.class,})
+public final class RepositoryGenerator implements Generator {
 
     private static final String TEMPLATE = "org/netbeans/jcode/template/";
-    public static final String FACADE_ABSTRACT = "Abstract"; //NOI18N
-    protected static final String EJB_STATELESS = "javax.ejb.Stateless"; //NOI18N
+    public static final String REPOSITORY_ABSTRACT = "Abstract"; 
 
     @ConfigData
-    private SessionBeanData beanData;
+    private RepositoryData repositoryData;
 
     @ConfigData
     private Project project;
@@ -89,13 +87,14 @@ public final class EjbFacadeGenerator implements Generator {
 
     @Override
     public void execute() throws IOException {
-        handler.progress(Console.wrap(EjbFacadeGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
+        handler.progress(Console.wrap(RepositoryGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
         if (appConfigData.isCompleteApplication()) {
             generateAbstract(true);
             generateProducer();
-            addMavenDependencies("pom/facade/_pom.xml");
+            addMavenDependencies("repository/pom/_pom.xml");
+            handler.info("Build", Console.wrap(" mvn clean install ${profile}", BOLD));
         }
-        generateFacade();
+        generateRepository();
 
     }
 
@@ -105,15 +104,15 @@ public final class EjbFacadeGenerator implements Generator {
             pomManager.setSourceVersion("1.8");
             pomManager.commit();
         } else {
-            handler.warning(NbBundle.getMessage(EjbFacadeGenerator.class, "TITLE_Maven_Project_Not_Found"),
-                    NbBundle.getMessage(EjbFacadeGenerator.class, "MSG_Maven_Project_Not_Found"));
+            handler.warning(NbBundle.getMessage(RepositoryGenerator.class, "TITLE_Maven_Project_Not_Found"),
+                    NbBundle.getMessage(RepositoryGenerator.class, "MSG_Maven_Project_Not_Found"));
         }
     }
 
-    private Set<FileObject> generateFacade() throws IOException {
+    private Set<FileObject> generateRepository() throws IOException {
         final Set<FileObject> createdFiles = new HashSet<>();
         for (Entity entity : entityMapping.getGeneratedEntity().collect(toList())) {
-            handler.progress(beanData.getPrefixName() + entity.getClazz() + beanData.getSuffixName());
+            handler.progress(repositoryData.getPrefixName() + entity.getClazz() + repositoryData.getSuffixName());
             createdFiles.add(generate(entity, true));
         }
 
@@ -121,7 +120,7 @@ public final class EjbFacadeGenerator implements Generator {
     }
 
     private FileObject generateProducer() throws IOException {
-        String _package = beanData.getPackage() + ".producer";
+        String _package = repositoryData.getPackage() + ".producer";
         FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, _package, true);
         String fileName = "EntityManagerProducer";
         FileObject afFO = targetFolder.getFileObject(fileName, JAVA_EXT);//skips here
@@ -130,20 +129,22 @@ public final class EjbFacadeGenerator implements Generator {
             param.put("PU", entityMapping.getPersistenceUnitName());
             param.put("package", _package);
             handler.progress(fileName);
-            afFO = org.netbeans.jcode.core.util.FileUtil.expandTemplate("org/netbeans/jcode/template/service/producer/EntityManagerProducer.java.ftl", targetFolder, fileName + '.' + JAVA_EXT, param);
+            afFO = org.netbeans.jcode.core.util.FileUtil.expandTemplate(TEMPLATE + "service/producer/EntityManagerProducer.java.ftl", targetFolder, fileName + '.' + JAVA_EXT, param);
         }
         return afFO;
     }
 
     private FileObject generateAbstract(boolean overrideExisting) throws IOException {
-        //create the abstract facade class
-        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, beanData.getPackage(), true);
-        String fileName = beanData.getPrefixName() + FACADE_ABSTRACT + beanData.getSuffixName();
+        //create the abstract repository class
+        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, repositoryData.getPackage(), true);
+        String fileName = repositoryData.getPrefixName() + REPOSITORY_ABSTRACT + repositoryData.getSuffixName();
         FileObject afFO = targetFolder.getFileObject(fileName, JAVA_EXT);//skips here
 
         Map<String, Object> param = new HashMap<>();
-        param.put("AbstractFacade", fileName);
-        param.put("package", beanData.getPackage());
+        param.put("AbstractRepository", fileName);
+        param.put("package", repositoryData.getPackage());
+        param.put("cdi", repositoryData.isCDI());
+        param.put("named", repositoryData.isNamed());
 
         if (afFO != null) {
             if (overrideExisting) {
@@ -153,24 +154,24 @@ public final class EjbFacadeGenerator implements Generator {
             }
         }
         handler.progress(fileName);
-        afFO = org.netbeans.jcode.core.util.FileUtil.expandTemplate("org/netbeans/jcode/ejb/facade/resource/AbstractFacade.java.ftl", targetFolder, fileName + '.' + JAVA_EXT, param);
+        afFO = org.netbeans.jcode.core.util.FileUtil.expandTemplate(TEMPLATE + "repository/AbstractRepository.java.ftl", targetFolder, fileName + '.' + JAVA_EXT, param);
 
         return afFO;
     }
 
     /**
-     * Generates the facade for the given entity class.
+     * Generates the repository for the given entity class.
      *
      * @return the generated files.
      */
     private FileObject generate(final Entity entity, boolean overrideExisting) throws IOException {
-        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, entity.getAbsolutePackage(beanData.getPackage()), true);
+        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, entity.getAbsolutePackage(repositoryData.getPackage()), true);
         String entityFQN = entity.getFQN();
         final String entitySimpleName = entity.getClazz();
-        String abstractFileName = beanData.getPrefixName() + FACADE_ABSTRACT + beanData.getSuffixName();
-        String facadeName = beanData.getPrefixName() + entitySimpleName + beanData.getSuffixName();
-        // create the facade
-        FileObject existingFO = targetFolder.getFileObject(facadeName, JAVA_EXT);
+        String abstractFileName = repositoryData.getPrefixName() + REPOSITORY_ABSTRACT + repositoryData.getSuffixName();
+        String repositoryName = repositoryData.getPrefixName() + entitySimpleName + repositoryData.getSuffixName();
+        // create the repository
+        FileObject existingFO = targetFolder.getFileObject(repositoryName, JAVA_EXT);
         if (existingFO != null) {
             if (overrideExisting) {
                 existingFO.delete();
@@ -189,15 +190,17 @@ public final class EjbFacadeGenerator implements Generator {
         param.put("entityInstance", entityInstance);
         param.put("entityInstancePlural", pluralize(entityInstance));
 
-        param.put("AbstractFacade", abstractFileName);
-        if (!entity.getAbsolutePackage(beanData.getPackage()).equals(beanData.getPackage())) { //if both EntityFacade and AbstractFacade are not in same package
-            param.put("AbstractFacade_FQN", beanData.getPackage() + "." + abstractFileName);
+        param.put("AbstractRepository", abstractFileName);
+        if (!entity.getAbsolutePackage(repositoryData.getPackage()).equals(repositoryData.getPackage())) { //if both EntityRepository and AbstractRepository are not in same package
+            param.put("AbstractRepository_FQN", repositoryData.getPackage() + "." + abstractFileName);
         } else {
-            param.put("AbstractFacade_FQN", EMPTY);
+            param.put("AbstractRepository_FQN", EMPTY);
         }
-        param.put("EntityFacade", facadeName);
+        param.put("EntityRepository", repositoryName);
         param.put("PU", entityMapping.getPersistenceUnitName());
-        param.put("package", entity.getAbsolutePackage(beanData.getPackage()));
+        param.put("package", entity.getAbsolutePackage(repositoryData.getPackage()));
+        param.put("cdi", repositoryData.isCDI());
+        param.put("named", repositoryData.isNamed());
 
         Attribute idAttribute = entity.getAttributes().getIdField();
         if (idAttribute != null) {
@@ -219,7 +222,7 @@ public final class EjbFacadeGenerator implements Generator {
             }
         }
 
-        existingFO = org.netbeans.jcode.core.util.FileUtil.expandTemplate("org/netbeans/jcode/ejb/facade/resource/EntityFacade.java.ftl", targetFolder, facadeName + '.' + JAVA_EXT, param);
+        existingFO = org.netbeans.jcode.core.util.FileUtil.expandTemplate(TEMPLATE + "repository/EntityRepository.java.ftl", targetFolder, repositoryName + '.' + JAVA_EXT, param);
 
         return existingFO;
     }

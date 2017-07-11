@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Vector;
+import org.apache.commons.lang.StringUtils;
 import org.netbeans.api.progress.aggregate.AggregateProgressFactory;
 import org.netbeans.api.progress.aggregate.AggregateProgressHandle;
 import org.netbeans.api.progress.aggregate.ProgressContributor;
@@ -323,7 +324,17 @@ public abstract class AbstractNBTask extends Thread
 
         out.flush();
     }
-
+    
+    @Override
+    public void log(String msg, int padding) {
+        String messages[] = msg.split("\n");
+         log(messages[0], true);
+        for(int i = 1 ; i< messages.length ; i++){
+            log(StringUtils.leftPad("\t" + messages[i], padding*2 - 1, ' '), true);
+//            log("\t" + padLeft(messages[i], padding - 1), true);
+        }
+    }
+    
     /**
      * Call this method when a failure in your task is detected and it will set
      * the success flag to false. The next time proceed() is called, it will

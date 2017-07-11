@@ -54,7 +54,6 @@ import static org.netbeans.jcode.core.util.PersistenceUtil.addProperty;
 import static org.netbeans.jcode.core.util.PersistenceUtil.getPersistenceUnit;
 import static org.netbeans.jcode.core.util.PersistenceUtil.updatePersistenceUnit;
 import org.netbeans.jcode.core.util.ProjectHelper;
-import org.netbeans.jcode.ejb.facade.SessionBeanData;
 import org.netbeans.jcode.rest.util.RestUtils;
 import org.netbeans.jcode.core.util.SourceGroupSupport;
 import static org.netbeans.jcode.core.util.SourceGroupSupport.getFolderForPackage;
@@ -65,8 +64,6 @@ import static org.netbeans.jcode.core.util.StringHelper.kebabCase;
 import static org.netbeans.jcode.core.util.StringHelper.pluralize;
 import static org.netbeans.jcode.core.util.StringHelper.startCase;
 import static org.netbeans.jcode.core.util.StringHelper.toConstant;
-import org.netbeans.jcode.ejb.facade.EjbFacadeGenerator;
-import static org.netbeans.jcode.ejb.facade.EjbFacadeGenerator.FACADE_ABSTRACT;
 import org.netbeans.jcode.layer.ConfigData;
 import org.netbeans.jcode.layer.Technology;
 import static org.netbeans.jcode.layer.Technology.Type.CONTROLLER;
@@ -84,19 +81,23 @@ import org.netbeans.jpa.modeler.spec.*;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import org.netbeans.jcode.layer.Generator;
 import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
+import org.netbeans.jcode.repository.RepositoryData;
+import org.netbeans.jcode.repository.RepositoryGenerator;
+import static org.netbeans.jcode.repository.RepositoryGenerator.REPOSITORY_ABSTRACT;
 
 /**
  *
  * @author Gaurav Gupta
  */
 @ServiceProvider(service = Generator.class)
-@Technology(type = CONTROLLER, label = "REST", panel = RESTPanel.class, parents = {EjbFacadeGenerator.class})
+@Technology(type = CONTROLLER, label = "REST", panel = RESTPanel.class, 
+        parents = {RepositoryGenerator.class}, listIndex = 1)
 public class RESTGenerator implements Generator {
 
     private static final String TEMPLATE = "org/netbeans/jcode/template/";
 
     @ConfigData
-    private SessionBeanData beanData;
+    private RepositoryData repositoryData;
 
     @ConfigData
     private RESTData restData;
@@ -124,7 +125,7 @@ public class RESTGenerator implements Generator {
 
     private List<Template> CONFIG_TEMPLATES, ENTITY_TEMPLATES,
             ENTITY_LISTENER_TEMPLATES, 
-            FACADE_TEMPLATES, SERVICE_TEMPLATES, 
+            REPOSITORY_TEMPLATES, SERVICE_TEMPLATES, 
             CONTROLLER_TEMPLATES, CONTROLLER_EXT_TEMPLATES, 
             METRICS_TEMPLATES, LOGGER_TEMPLATES, 
             TEST_CASE_TEMPLATES, TEST_CASE_CONTROLLER_TEMPLATES;
@@ -134,7 +135,7 @@ public class RESTGenerator implements Generator {
         CONFIG_TEMPLATES = new ArrayList<>();
         ENTITY_TEMPLATES = new ArrayList<>();
         ENTITY_LISTENER_TEMPLATES = new ArrayList<>();
-        FACADE_TEMPLATES = new ArrayList<>();
+        REPOSITORY_TEMPLATES = new ArrayList<>();
         SERVICE_TEMPLATES = new ArrayList<>();
         CONTROLLER_TEMPLATES = new ArrayList<>();
         CONTROLLER_EXT_TEMPLATES = new ArrayList<>();
@@ -149,8 +150,8 @@ public class RESTGenerator implements Generator {
 
         ENTITY_LISTENER_TEMPLATES.add(new Template("entity/AuditListner.java.ftl", "AuditListner"));
 
-        FACADE_TEMPLATES.add(new Template("facade/AuthorityFacade.java.ftl", "Authority"));
-        FACADE_TEMPLATES.add(new Template("facade/UserFacade.java.ftl", "User"));
+        REPOSITORY_TEMPLATES.add(new Template("repository/AuthorityRepository.java.ftl", "Authority"));
+        REPOSITORY_TEMPLATES.add(new Template("repository/UserRepository.java.ftl", "User"));
 
         CONFIG_TEMPLATES.add(new Template("config/ConfigResource.java.ftl", "ConfigResource", "config"));
         CONFIG_TEMPLATES.add(new Template("config/Constants.java.ftl", "Constants", "config"));
@@ -241,7 +242,7 @@ public class RESTGenerator implements Generator {
     }
 
     private FileObject generateProducer(Map<String, Object> appParam) throws IOException {
-        String _package = beanData.getPackage() + ".producer";
+        String _package = repositoryData.getPackage() + ".producer";
         FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, _package, true);
         String fileName = "LoggerProducer";
         FileObject afFO = targetFolder.getFileObject(fileName, JAVA_EXT);
@@ -268,8 +269,8 @@ public class RESTGenerator implements Generator {
         boolean overrideExisting = true, dto = false;
         final String entitySimpleName = entity.getClazz();
 
-        String facadeFileName = beanData.getPrefixName() + entitySimpleName + beanData.getSuffixName();
-        String fqFacadeFileName = entity.getAbsolutePackage(beanData.getPackage()) + '.' + facadeFileName;
+        String repositoryFileName = repositoryData.getPrefixName() + entitySimpleName + repositoryData.getSuffixName();
+        String fqRepositoryFileName = entity.getAbsolutePackage(repositoryData.getPackage()) + '.' + repositoryFileName;
 
         String controllerFileName = restData.getPrefixName() + entitySimpleName + restData.getSuffixName();
 
@@ -288,9 +289,9 @@ public class RESTGenerator implements Generator {
         param.put("controllerClassHumanized", startCase(controllerFileName));
         param.put("entityApiUrl", entityNameSpinalCased);
 
-        param.put("EntityFacade", facadeFileName);
-        param.put("entityFacade", firstLower(facadeFileName));
-        param.put("EntityFacade_FQN", fqFacadeFileName);
+        param.put("EntityRepository", repositoryFileName);
+        param.put("entityRepository", firstLower(repositoryFileName));
+        param.put("EntityRepository_FQN", fqRepositoryFileName);
 
         param.put("instanceType", dto ? entityClass + "DTO" : entityClass);
         param.put("instanceName", dto ? entityInstance + "DTO" : entityInstance);
@@ -424,22 +425,25 @@ public class RESTGenerator implements Generator {
         Map<String, Object> param = new HashMap<>();
         String appPackage = restData.getAppPackage();
 
-        final String abstractFacade = beanData.getPrefixName() + FACADE_ABSTRACT + beanData.getSuffixName();
-        param.put("AbstractFacade", abstractFacade);
-        param.put("AbstractFacade_FQN", beanData.getPackage() + '.' + abstractFacade);
-        param.put("EntityManagerProducer_FQN", beanData.getPackage() + ".producer.EntityManagerProducer");
-        param.put("LoggerProducer_FQN", beanData.getPackage() + ".producer.LoggerProducer");
+        final String abstractRepository = repositoryData.getPrefixName() + REPOSITORY_ABSTRACT + repositoryData.getSuffixName();
+        param.put("cdi", repositoryData.isCDI());
+        param.put("named", repositoryData.isNamed());
+        
+        param.put("AbstractRepository", abstractRepository);
+        param.put("AbstractRepository_FQN", repositoryData.getPackage() + '.' + abstractRepository);
+        param.put("EntityManagerProducer_FQN", repositoryData.getPackage() + ".producer.EntityManagerProducer");
+        param.put("LoggerProducer_FQN", repositoryData.getPackage() + ".producer.LoggerProducer");
 
         param.put("entityPackage", entityPackage);
         param.put("PU", entityMapping.getPersistenceUnitName());
         param.put("applicationPath", restData.getRestConfigData().getApplicationPath());
 
         param.put("servicePackage", appPackage);
-        param.put("facadePackage", beanData.getPackage());
+        param.put("repositoryPackage", repositoryData.getPackage());
         param.put("restPackage", restData.getPackage());
 
-        param.put("beanPrefix", beanData.getPrefixName());
-        param.put("beanSuffix", beanData.getSuffixName());
+        param.put("beanPrefix", repositoryData.getPrefixName());
+        param.put("beanSuffix", repositoryData.getSuffixName());
 
         param.put("restPrefix", restData.getPrefixName());
         param.put("restSuffix", restData.getSuffixName());
@@ -454,8 +458,8 @@ public class RESTGenerator implements Generator {
         expandServerSideComponent(source, entityPackage, EMPTY, EMPTY, ENTITY_TEMPLATES, param);
         //contoller ext
         expandServerSideComponent(source, restData.getPackage(), EMPTY, EMPTY, CONTROLLER_EXT_TEMPLATES, param);
-        //facade
-        expandServerSideComponent(source, beanData.getPackage(), beanData.getPrefixName(), beanData.getSuffixName(), FACADE_TEMPLATES, param);
+        //repository
+        expandServerSideComponent(source, repositoryData.getPackage(), repositoryData.getPrefixName(), repositoryData.getSuffixName(), REPOSITORY_TEMPLATES, param);
         //metrics
         expandServerSideComponent(source, appPackage, EMPTY, EMPTY, METRICS_TEMPLATES, param);
         //logger

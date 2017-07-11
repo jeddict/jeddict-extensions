@@ -27,17 +27,17 @@ import org.netbeans.jpa.source.JavaSourceParserUtil;
 @XmlRootElement(name = "fu")
 public class Future extends Constraint {
 
-    @XmlAttribute(name = "op")
-    private Boolean orPresent;
+//    @XmlAttribute(name = "op")
+//    private Boolean orPresent;
 
     public Future() {
     }
 
-    @Override
-    public void load(AnnotationMirror annotationMirror) {
-        super.load(annotationMirror);
-        this.orPresent = (Boolean) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "orPresent");
-    }
+//    @Override
+//    public void load(AnnotationMirror annotationMirror) {
+//        super.load(annotationMirror);
+//        this.orPresent = (Boolean) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "orPresent");
+//    }
     
     @Override
     public boolean isEmpty() {
@@ -46,20 +46,20 @@ public class Future extends Constraint {
 
     @Override
     protected void clearConstraint(){
-        orPresent = false;
+//        orPresent = false;
     }
-
-    /**
-     * @return the orPresent
-     */
-    public Boolean getOrPresent() {
-        return orPresent;
-    }
-
-    /**
-     * @param orPresent the orPresent to set
-     */
-    public void setOrPresent(Boolean orPresent) {
-        this.orPresent = orPresent;
-    }
+//
+//    /**
+//     * @return the orPresent
+//     */
+//    public Boolean getOrPresent() {
+//        return orPresent;
+//    }
+//
+//    /**
+//     * @param orPresent the orPresent to set
+//     */
+//    public void setOrPresent(Boolean orPresent) {
+//        this.orPresent = orPresent;
+//    }
 }

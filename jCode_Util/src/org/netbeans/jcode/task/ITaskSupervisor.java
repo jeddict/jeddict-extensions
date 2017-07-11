@@ -91,6 +91,8 @@ public interface ITaskSupervisor {
      * @param newline if true, appends newline
      */
     public void log(String msg, boolean newline);
+    
+    public void log(String msg, int padding);
 
     public void log(int level, String msg, boolean newline);
 

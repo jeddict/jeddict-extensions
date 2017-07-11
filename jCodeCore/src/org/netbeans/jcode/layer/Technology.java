@@ -42,14 +42,16 @@ public @interface Technology {
     
     Class<? extends Generator>[] sibling() default {};
     
-    int index() default -1;
+    int tabIndex() default -1;
+    
+    int listIndex() default 100;
 
     String label() default NONE_LABEL;
     
     String description() default "";
     
     enum Type {
-        BUSINESS("Business"), CONTROLLER("Controller"), VIEWER("Viewer"), NONE("Other");
+        BUSINESS("Repository"), CONTROLLER("Controller"), VIEWER("Viewer"), NONE("Other");
 
         private final String displayLabel;
 

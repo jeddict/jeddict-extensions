@@ -1,7 +1,7 @@
 <#if package??>package ${package};</#if>
 
 import ${MailConfig_FQN};
-import ${UserFacade_FQN};
+import ${UserRepository_FQN};
 import ${User_FQN};
 import ${SecurityUtils_FQN};
 import ${MailService_FQN};
@@ -47,7 +47,7 @@ public class ${AccountController} {
     private Logger log;
 
     @Inject
-    private ${UserFacade} ${userFacade};
+    private ${UserRepository} ${userRepository};
 
     @Inject
     private UserService userService;
@@ -82,9 +82,9 @@ public class ${AccountController} {
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
     public Response registerAccount(@Valid ManagedUserDTO managedUserDTO) {
 
-        return ${userFacade}.findOneByLogin(managedUserDTO.getLogin().toLowerCase())
+        return ${userRepository}.findOneByLogin(managedUserDTO.getLogin().toLowerCase())
                 .map(user -> Response.status(BAD_REQUEST).type(TEXT_PLAIN).entity("login already in use").build())
-                .orElseGet(() -> ${userFacade}.findOneByEmail(managedUserDTO.getEmail())
+                .orElseGet(() -> ${userRepository}.findOneByEmail(managedUserDTO.getEmail())
                         .map(user -> Response.status(BAD_REQUEST).type(TEXT_PLAIN).entity("e-mail address already in use").build())
                         .orElseGet(() -> {
                             User user = userService.createUser(managedUserDTO.getLogin(), managedUserDTO.getPassword(),
@@ -192,11 +192,11 @@ public class ${AccountController} {
     @Produces({MediaType.APPLICATION_JSON})
     @Secured
     public Response saveAccount(@Valid UserDTO userDTO) {
-        Optional<User> existingUser = ${userFacade}.findOneByEmail(userDTO.getEmail());
+        Optional<User> existingUser = ${userRepository}.findOneByEmail(userDTO.getEmail());
         if (existingUser.isPresent() && (!existingUser.get().getLogin().equalsIgnoreCase(userDTO.getLogin()))) {
             return HeaderUtil.createFailureAlert(Response.status(BAD_REQUEST), "user-management", "emailexists", "Email already in use").build();
         }
-        return ${userFacade}
+        return ${userRepository}
                 .findOneByLogin(securityUtils.getCurrentUserLogin())
                 .map(u -> {
                     userService.updateUser(userDTO.getFirstName(), userDTO.getLastName(), userDTO.getEmail(),

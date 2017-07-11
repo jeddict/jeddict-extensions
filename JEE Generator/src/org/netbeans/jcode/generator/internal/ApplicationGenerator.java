@@ -23,8 +23,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import org.netbeans.api.project.Project;
 import org.netbeans.jcode.core.util.POMManager;
@@ -73,6 +71,9 @@ public class ApplicationGenerator extends AbstractGenerator {
             //Make necessary changes to the persistence.xml
             new PersistenceHelper(project).configure(entities, !RestUtils.hasJTASupport(project));
             generateCRUD();
+            
+            String profiles = applicationConfigData.getProfiles();
+            handler.addDynamicVariable("profile", profiles.isEmpty()? "":"-P " + profiles);
             finishProgressReporting();
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);

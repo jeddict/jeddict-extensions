@@ -44,5 +44,9 @@ public interface ProgressHandler {
     void help(String title, String message);
 
     void finish();
+    
+    void addDynamicVariable(String key, Object value);
+    
+    void removeDynamicVariable(String key);
 
 }

@@ -4,14 +4,14 @@ import ${User_FQN};
 import static java.util.Collections.singletonMap;
 import java.util.Optional;
 import java.util.List;
-import javax.ejb.Stateless;
-import javax.inject.Named;
+<#if !cdi>import javax.ejb.Stateless;</#if>
+<#if named>import javax.inject.Named;</#if>
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
-@Stateless
-@Named("user")
-public class ${UserFacade} extends ${AbstractFacade}<User, Long> {
+<#if !cdi>@Stateless</#if>
+<#if named>@Named("user")</#if>
+public class ${UserRepository} extends ${AbstractRepository}<User, Long> {
 
     @Inject
     private EntityManager em;
@@ -21,7 +21,7 @@ public class ${UserFacade} extends ${AbstractFacade}<User, Long> {
         return em;
     }
 
-    public ${UserFacade}() {
+    public ${UserRepository}() {
         super(User.class);
     }
 

@@ -21,6 +21,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.netbeans.jcode.mvc.controller.returntype.ControllerReturnType;
 import org.netbeans.jcode.mvc.controller.event.ControllerEventType;
+import org.netbeans.jcode.repository.RepositoryData;
 import org.netbeans.jcode.rest.applicationconfig.RestConfigData;
 import org.netbeans.jcode.stack.config.data.LayerConfigData;
 
@@ -28,7 +29,7 @@ import org.netbeans.jcode.stack.config.data.LayerConfigData;
  *
  * @author Gaurav Gupta
  */
-public class MVCData extends LayerConfigData {
+public class MVCData extends LayerConfigData<RepositoryData> {
 
     private String prefixName;
     private String suffixName;
@@ -198,6 +199,11 @@ public class MVCData extends LayerConfigData {
      */
     public void setAuthentication(boolean authentication) {
         this.authentication = authentication;
+    }
+    
+    @Override
+    protected void onLayerConnection(){
+        getParentLayerConfigData().setNamed(true);
     }
     
     @Override

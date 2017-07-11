@@ -2,7 +2,7 @@ package ${package};
 
 import ${EntityClass_FQN};
 import ${EntityPKClass_FQN};
-import ${EntityFacade_FQN};
+import ${EntityRepository_FQN};
 import ${HeaderUtil_FQN};
 import ${Secured_FQN};
 import org.slf4j.Logger;
@@ -41,7 +41,7 @@ public class ${controllerClass} {
     private Logger log;
 
     @Inject
-    private ${EntityFacade} ${entityFacade};
+    private ${EntityRepository} ${entityRepository};
 
     /**
      * POST : Create a new ${entityInstance}.
@@ -60,9 +60,9 @@ public class ${controllerClass} {
     @POST
     public Response create${EntityClass}(${instanceType} ${instanceName}) throws URISyntaxException {
         log.debug("REST request to save ${EntityClass} : {}", ${instanceName});
-        ${entityFacade}.create(${instanceName});
+        ${entityRepository}.create(${instanceName});
         return HeaderUtil.createEntityCreationAlert(Response.created(new URI("/${applicationPath}/api/${entityApiUrl}")),
-                "${entityInstance}", ${entityFacade}.getIdentifier(${instanceName}).toString())
+                "${entityInstance}", ${entityRepository}.getIdentifier(${instanceName}).toString())
                 .entity(${instanceName}).build();
     }
 
@@ -84,8 +84,8 @@ public class ${controllerClass} {
     @PUT
     public Response update${EntityClass}(${instanceType} ${instanceName}) throws URISyntaxException {
         log.debug("REST request to update ${EntityClass} : {}", ${instanceName});
-        ${entityFacade}.edit(${instanceName});
-        return HeaderUtil.createEntityUpdateAlert(Response.ok(), "${entityInstance}", ${entityFacade}.getIdentifier(${instanceName}).toString())
+        ${entityRepository}.edit(${instanceName});
+        return HeaderUtil.createEntityUpdateAlert(Response.ok(), "${entityInstance}", ${entityRepository}.getIdentifier(${instanceName}).toString())
                 .entity(${instanceName}).build();
     }
 
@@ -105,15 +105,15 @@ public class ${controllerClass} {
     <#if pagination == "no">
     public List<${instanceType}> getAll${EntityClassPlural}() {
         log.debug("REST request to get all ${EntityClassPlural}");
-        List<${EntityClass}> ${entityInstancePlural} = ${entityFacade}.findAll();
+        List<${EntityClass}> ${entityInstancePlural} = ${entityRepository}.findAll();
         return ${entityInstancePlural};
     }
     <#else>
     public Response getAll${EntityClassPlural}(@QueryParam("page") int page, @QueryParam("size") int size) throws URISyntaxException {
         log.debug("REST request to get all ${EntityClassPlural}");
-        List<${EntityClass}> ${entityInstancePlural} = ${entityFacade}.findRange(page * size, size);
+        List<${EntityClass}> ${entityInstancePlural} = ${entityRepository}.findRange(page * size, size);
         ResponseBuilder builder = Response.ok(${entityInstancePlural});
-        PaginationUtil.generatePaginationHttpHeaders(builder, new Page(page, size, ${entityFacade}.count()), "/${applicationPath}/api/${entityApiUrl}");
+        PaginationUtil.generatePaginationHttpHeaders(builder, new Page(page, size, ${entityRepository}.count()), "/${applicationPath}/api/${entityApiUrl}");
         return builder.build();
     }
     </#if>
@@ -134,7 +134,7 @@ public class ${controllerClass} {
     public Response get${EntityClass}(${restParamList}) {
         ${pkType} ${pkName} = new ${pkType}(${restParamNameList});
         log.debug("REST request to get ${EntityClass} : {}", ${pkName});
-        ${instanceType} ${instanceName} = ${entityFacade}.find(${pkName});
+        ${instanceType} ${instanceName} = ${entityRepository}.find(${pkName});
         return Optional.ofNullable(${instanceName})
                 .map(result -> Response.status(Response.Status.OK).entity(${instanceName}).build())
                 .orElse(Response.status(Response.Status.NOT_FOUND).build());
@@ -155,7 +155,7 @@ public class ${controllerClass} {
     public Response remove${EntityClass}(${restParamList}) {
         ${pkType} ${pkName} = new ${pkType}(${restParamNameList});
         log.debug("REST request to delete ${EntityClass} : {}", ${pkName});
-        ${entityFacade}.remove(${entityFacade}.find(${pkName}));
+        ${entityRepository}.remove(${entityRepository}.find(${pkName}));
         return HeaderUtil.createEntityDeletionAlert(Response.ok(), "${entityInstance}", ${pkName}.toString()).build();
     }
 

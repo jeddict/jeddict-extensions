@@ -12,25 +12,29 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+<#if cdi>import javax.transaction.Transactional;</#if>
 
-public abstract class ${AbstractFacade}<E,P> {
+public abstract class ${AbstractRepository}<E,P> {
 
     private final Class<E> entityClass;
 
-    public ${AbstractFacade}(Class<E> entityClass) {
+    public ${AbstractRepository}(Class<E> entityClass) {
         this.entityClass = entityClass;
     }
 
     protected abstract EntityManager getEntityManager();
 
+    <#if cdi>@Transactional</#if>
     public void create(E entity) {
         getEntityManager().persist(entity);
     }
 
+    <#if cdi>@Transactional</#if>
     public E edit(E entity) {
         return getEntityManager().merge(entity);
     }
 
+    <#if cdi>@Transactional</#if>
     public void remove(E entity) {
         getEntityManager().remove(getEntityManager().merge(entity));
     }

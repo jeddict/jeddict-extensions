@@ -1,7 +1,7 @@
 <#if package??>package ${package};</#if>
 
-import ${AuthorityFacade_FQN};
-import ${UserFacade_FQN};
+import ${AuthorityRepository_FQN};
+import ${UserRepository_FQN};
 import ${User_FQN};
 import ${MailService_FQN};
 import ${UserService_FQN};
@@ -57,13 +57,13 @@ public class ${UserController} {
     private Logger log;
 
     @Inject
-    private ${UserFacade} ${userFacade};
+    private ${UserRepository} ${userRepository};
 
     @Inject
     private MailService mailService;
 
     @Inject
-    private ${AuthorityFacade} ${authorityFacade};
+    private ${AuthorityRepository} ${authorityRepository};
 
     @Inject
     private UserService userService;
@@ -99,9 +99,9 @@ public class ${UserController} {
         log.debug("REST request to save User : {}", managedUserDTO);
 
         //Lowercase the user login before comparing with database
-        if (${userFacade}.findOneByLogin(managedUserDTO.getLogin().toLowerCase()).isPresent()) {
+        if (${userRepository}.findOneByLogin(managedUserDTO.getLogin().toLowerCase()).isPresent()) {
             return HeaderUtil.createFailureAlert(Response.status(BAD_REQUEST), "userManagement", "userexists", "Login already in use").build();
-        } else if (${userFacade}.findOneByEmail(managedUserDTO.getEmail()).isPresent()) {
+        } else if (${userRepository}.findOneByEmail(managedUserDTO.getEmail()).isPresent()) {
             return HeaderUtil.createFailureAlert(Response.status(BAD_REQUEST), "userManagement", "emailexists", "Email already in use").build();
         } else {
             User newUser = userService.createUser(managedUserDTO);
@@ -146,15 +146,15 @@ public class ${UserController} {
     @Secured(AuthoritiesConstants.ADMIN)
     public Response updateUser(ManagedUserDTO managedUserDTO) {
         log.debug("REST request to update User : {}", managedUserDTO);
-        Optional<User> existingUser = ${userFacade}.findOneByEmail(managedUserDTO.getEmail());
+        Optional<User> existingUser = ${userRepository}.findOneByEmail(managedUserDTO.getEmail());
         if (existingUser.isPresent() && (!existingUser.get().getId().equals(managedUserDTO.getId()))) {
             return HeaderUtil.createFailureAlert(Response.status(BAD_REQUEST), "userManagement", "emailexists", "E-mail already in use").build();
         }
-        existingUser = ${userFacade}.findOneByLogin(managedUserDTO.getLogin().toLowerCase());
+        existingUser = ${userRepository}.findOneByLogin(managedUserDTO.getLogin().toLowerCase());
         if (existingUser.isPresent() && (!existingUser.get().getId().equals(managedUserDTO.getId()))) {
             return HeaderUtil.createFailureAlert(Response.status(BAD_REQUEST), "userManagement", "userexists", "Login already in use").build();
         }
-        return ${userFacade}
+        return ${userRepository}
                 .findOneById(managedUserDTO.getId())
                 .map(user -> {
                     user.setLogin(managedUserDTO.getLogin());
@@ -163,9 +163,9 @@ public class ${UserController} {
                     user.setEmail(managedUserDTO.getEmail());
                     user.setActivated(managedUserDTO.isActivated());
                     user.setLangKey(managedUserDTO.getLangKey());
-                    user.setAuthorities(managedUserDTO.getAuthorities().stream().map(${authorityFacade}::find).collect(toSet()));
-                    ${userFacade}.edit(user);
-                    return HeaderUtil.createAlert(Response.ok(new ManagedUserDTO(${userFacade}
+                    user.setAuthorities(managedUserDTO.getAuthorities().stream().map(${authorityRepository}::find).collect(toSet()));
+                    ${userRepository}.edit(user);
+                    return HeaderUtil.createAlert(Response.ok(new ManagedUserDTO(${userRepository}
                             .find(managedUserDTO.getId()))), "userManagement.updated", managedUserDTO.getLogin())
                             .build();
                 })
@@ -190,13 +190,13 @@ public class ${UserController} {
     @Produces(MediaType.APPLICATION_JSON)
     @Secured
     public Response getAllUsers(@QueryParam("page") int page, @QueryParam("size") int size) throws URISyntaxException {
-        List<User> userList = ${userFacade}.getUsersWithAuthorities(page * size, size);
+        List<User> userList = ${userRepository}.getUsersWithAuthorities(page * size, size);
         List<ManagedUserDTO> managedUserDTOs = userList.stream()
                 .map(ManagedUserDTO::new)
                 .collect(toList());
 
         ResponseBuilder builder = Response.ok(managedUserDTOs);
-        PaginationUtil.generatePaginationHttpHeaders(builder, new Page(page, size, ${userFacade}.count()), "/${applicationPath}/api/users");
+        PaginationUtil.generatePaginationHttpHeaders(builder, new Page(page, size, ${userRepository}.count()), "/${applicationPath}/api/users");
         return builder.build();
     }
 

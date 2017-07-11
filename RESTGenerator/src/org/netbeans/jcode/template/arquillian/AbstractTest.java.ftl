@@ -1,7 +1,7 @@
 <#if package??>package ${package};</#if>
 
 import ${HeaderUtil_FQN};
-import ${AbstractFacade_FQN};
+import ${AbstractRepository_FQN};
 import ${EntityManagerProducer_FQN};
 import ${LoggerProducer_FQN};
 import java.io.File;
@@ -40,7 +40,7 @@ public abstract class AbstractTest {
         File[] deltaspikeImplFiles = RESOLVER.resolve("org.apache.deltaspike.core:deltaspike-core-impl:1.5.0").withTransitivity().asFile();
 
         final WebArchive archive = ShrinkWrap.create(WebArchive.class);
-        archive.addClass(${AbstractFacade}.class).addPackage(HeaderUtil.class.getPackage())
+        archive.addClass(${AbstractRepository}.class).addPackage(HeaderUtil.class.getPackage())
                 .addClass(EntityManagerProducer.class).addClass(LoggerProducer.class)
                 .addAsLibraries(jacksonFiles).addAsLibraries(deltaspikeFiles).addAsLibraries(deltaspikeImplFiles)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"))

@@ -1,16 +1,16 @@
 <#if package!="">package ${package};</#if>
 
-import javax.ejb.Stateless;
-import javax.inject.Named;
+<#if !cdi>import javax.ejb.Stateless;</#if>
+<#if named>import javax.inject.Named;</#if>
 import javax.persistence.EntityManager;
 import javax.inject.Inject;
 import ${EntityClass_FQN};
-<#if AbstractFacade_FQN!="">import ${AbstractFacade_FQN};</#if>
+<#if AbstractRepository_FQN!="">import ${AbstractRepository_FQN};</#if>
 <#if EntityPKClass_FQN!="">import ${EntityPKClass_FQN};</#if>
 
-@Stateless
-@Named("${entityInstance}")
-public class ${EntityFacade} extends ${AbstractFacade}<${EntityClass}, ${EntityPKClass}> {
+<#if !cdi>@Stateless</#if>
+<#if named>@Named("${entityInstance}")</#if>
+public class ${EntityRepository} extends ${AbstractRepository}<${EntityClass}, ${EntityPKClass}> {
 
     @Inject
     private EntityManager em;
@@ -20,7 +20,7 @@ public class ${EntityFacade} extends ${AbstractFacade}<${EntityClass}, ${EntityP
         return em;
     }
 
-    public ${EntityFacade}() {
+    public ${EntityRepository}() {
         super(${EntityClass}.class);
     }
     

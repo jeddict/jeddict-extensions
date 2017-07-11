@@ -25,7 +25,7 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import static org.valid4j.matchers.http.HttpResponseMatchers.hasHeader;
 import static org.valid4j.matchers.http.HttpResponseMatchers.hasStatus;
-import ${UserFacade_FQN};
+import ${UserRepository_FQN};
 
 /**
  * Test class for the ${UserController} REST controller.
@@ -34,7 +34,7 @@ import ${UserFacade_FQN};
 public class ${UserControllerTest} extends ApplicationTest {
 
     @Inject
-    private ${UserFacade} ${userFacade};
+    private ${UserRepository} ${userRepository};
 
     @Deployment
     public static WebArchive createDeployment() {
@@ -97,7 +97,7 @@ public class ${UserControllerTest} extends ApplicationTest {
         Response errorResponse = target("api/users").post(json(duplicatedUser));
         assertThat(errorResponse, hasStatus(BAD_REQUEST));
 
-        Optional<User> userDup = ${userFacade}.findOneByEmail("alicejr@example.com");
+        Optional<User> userDup = ${userRepository}.findOneByEmail("alicejr@example.com");
         assertFalse(userDup.isPresent());
     }
 
@@ -131,7 +131,7 @@ public class ${UserControllerTest} extends ApplicationTest {
         Response errorResponse = target("api/users").post(json(duplicatedUser));
         assertThat(errorResponse, hasStatus(BAD_REQUEST));
 
-        Optional<User> userDup = ${userFacade}.findOneByLogin("johnjr");
+        Optional<User> userDup = ${userRepository}.findOneByLogin("johnjr");
         assertFalse(userDup.isPresent());
     }
 
@@ -148,7 +148,7 @@ public class ${UserControllerTest} extends ApplicationTest {
         Response response = target("api/users", singletonMap("size", 5)).get();
         assertThat(response, hasStatus(Response.Status.OK));
         List<ManagedUserDTO> users = response.readEntity(List.class);
-        assertThat(users.size(), is(${userFacade}.findAll().size()));
+        assertThat(users.size(), is(${userRepository}.findAll().size()));
     }
 
     @Test

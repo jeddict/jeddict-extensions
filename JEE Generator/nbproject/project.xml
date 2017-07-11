@@ -605,7 +605,6 @@
                 <package>org.netbeans.jcode.cdi.logger</package>
                 <package>org.netbeans.jcode.cdi.resource</package>
                 <package>org.netbeans.jcode.cdi.util</package>
-                <package>org.netbeans.jcode.ejb.facade</package>
                 <package>org.netbeans.jcode.generator</package>
                 <package>org.netbeans.jcode.generator.internal</package>
                 <package>org.netbeans.jcode.generator.internal.util</package>
@@ -615,18 +614,13 @@
                 <package>org.netbeans.jcode.layer</package>
                 <package>org.netbeans.jcode.mvc.core</package>
                 <package>org.netbeans.jcode.mvc.util</package>
+                <package>org.netbeans.jcode.repository</package>
                 <package>org.netbeans.jcode.rest</package>
                 <package>org.netbeans.jcode.rest.applicationconfig</package>
                 <package>org.netbeans.jcode.rest.converter</package>
                 <package>org.netbeans.jcode.rest.util</package>
                 <package>org.netbeans.jcode.security</package>
                 <package>org.netbeans.jcode.servlet.util</package>
-                <package>org.netbeans.jcode.stack.app.generator</package>
-                <package>org.netbeans.jcode.stack.config.data</package>
-                <package>org.netbeans.jcode.stack.config.panel</package>
-                <package>org.netbeans.jcode.stack.ejb</package>
-                <package>org.netbeans.jcode.stack.jsp</package>
-                <package>org.netbeans.jcode.stack.mvc</package>
                 <package>org.netbeans.jcode.util</package>
             </public-packages>
         </data>

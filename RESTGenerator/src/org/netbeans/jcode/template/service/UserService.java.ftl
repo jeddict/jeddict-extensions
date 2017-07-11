@@ -1,7 +1,7 @@
 <#if package??>package ${package};</#if>
 
-import ${AuthorityFacade_FQN};
-import ${UserFacade_FQN};
+import ${AuthorityRepository_FQN};
+import ${UserRepository_FQN};
 import ${AuthoritiesConstants_FQN};
 import ${PasswordEncoder_FQN};
 import ${User_FQN};
@@ -36,19 +36,19 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
     @Inject
-    private ${UserFacade} ${userFacade};
+    private ${UserRepository} ${userRepository};
 
     @Inject
-    private ${AuthorityFacade} ${authorityFacade};
+    private ${AuthorityRepository} ${authorityRepository};
 
     public Optional<User> activateRegistration(String key) {
         log.debug("Activating user for activation key {}", key);
-        return ${userFacade}.findOneByActivationKey(key)
+        return ${userRepository}.findOneByActivationKey(key)
                 .map(user -> {
                     // activate given user for the registration key.
                     user.setActivated(true);
                     user.setActivationKey(null);
-                    ${userFacade}.edit(user);
+                    ${userRepository}.edit(user);
                     log.debug("Activated user: {}", user);
                     return user;
                 });
@@ -57,7 +57,7 @@ public class UserService {
     public Optional<User> completePasswordReset(String newPassword, String key) {
         log.debug("Reset user password for reset key {}", key);
 
-        return ${userFacade}.findOneByResetKey(key)
+        return ${userRepository}.findOneByResetKey(key)
                 .filter(user -> {
                     ZonedDateTime oneDayAgo = ZonedDateTime.now().minusHours(24);
                     ZonedDateTime resetDate = ZonedDateTime.ofInstant(Instant.ofEpochMilli(user.getResetDate().getTime()), ZoneId.systemDefault());
@@ -67,18 +67,18 @@ public class UserService {
                     user.setPassword(passwordEncoder.encode(newPassword));
                     user.setResetKey(null);
                     user.setResetDate(null);
-                    ${userFacade}.edit(user);
+                    ${userRepository}.edit(user);
                     return user;
                 });
     }
 
     public Optional<User> requestPasswordReset(String mail) {
-        return ${userFacade}.findOneByEmail(mail)
+        return ${userRepository}.findOneByEmail(mail)
                 .filter(User::getActivated)
                 .map(user -> {
                     user.setResetKey(RandomUtil.generateResetKey());
                     user.setResetDate(new Date());
-                    ${userFacade}.edit(user);
+                    ${userRepository}.edit(user);
                     return user;
                 });
     }
@@ -87,7 +87,7 @@ public class UserService {
             String langKey) {
 
         User newUser = new User();
-        Authority authority = ${authorityFacade}.find(AuthoritiesConstants.USER);
+        Authority authority = ${authorityRepository}.find(AuthoritiesConstants.USER);
         Set<Authority> authorities = new HashSet<>();
         String encryptedPassword = passwordEncoder.encode(password);
         newUser.setLogin(login);
@@ -105,7 +105,7 @@ public class UserService {
         newUser.setAuthorities(authorities);
         String currentLogin = securityUtils.getCurrentUserLogin();
         newUser.setCreatedBy(currentLogin != null ? currentLogin : AuthoritiesConstants.ANONYMOUS);
-        ${userFacade}.create(newUser);
+        ${userRepository}.create(newUser);
         log.debug("Created Information for User: {}", newUser);
         return newUser;
     }
@@ -122,62 +122,62 @@ public class UserService {
             user.setLangKey(userDTO.getLangKey());
         }
         if (userDTO.getAuthorities() != null) {
-            user.setAuthorities(userDTO.getAuthorities().stream().map(${authorityFacade}::find).collect(toSet()));
+            user.setAuthorities(userDTO.getAuthorities().stream().map(${authorityRepository}::find).collect(toSet()));
         }
         String encryptedPassword = passwordEncoder.encode(RandomUtil.generatePassword());
         user.setPassword(encryptedPassword);
         user.setResetKey(RandomUtil.generateResetKey());
         user.setResetDate(new Date());
         user.setActivated(true);
-        ${userFacade}.create(user);
+        ${userRepository}.create(user);
         log.debug("Created Information for User: {}", user);
         return user;
     }
 
     public void updateUser(String firstName, String lastName, String email, String langKey) {
-        ${userFacade}.findOneByLogin(securityUtils.getCurrentUserLogin()).ifPresent(u -> {
+        ${userRepository}.findOneByLogin(securityUtils.getCurrentUserLogin()).ifPresent(u -> {
             u.setFirstName(firstName);
             u.setLastName(lastName);
             u.setEmail(email);
             u.setLangKey(langKey);
-            ${userFacade}.edit(u);
+            ${userRepository}.edit(u);
             log.debug("Changed Information for User: {}", u);
         });
     }
 
     public void deleteUserInformation(String login) {
-        ${userFacade}.findOneByLogin(login).ifPresent(u -> {
-            ${userFacade}.remove(u);
+        ${userRepository}.findOneByLogin(login).ifPresent(u -> {
+            ${userRepository}.remove(u);
             log.debug("Deleted User: {}", u);
         });
     }
 
     public void changePassword(String password) {
-        ${userFacade}.findOneByLogin(securityUtils.getCurrentUserLogin()).ifPresent(u -> {
+        ${userRepository}.findOneByLogin(securityUtils.getCurrentUserLogin()).ifPresent(u -> {
             String encryptedPassword = passwordEncoder.encode(password);
             u.setPassword(encryptedPassword);
-            ${userFacade}.edit(u);
+            ${userRepository}.edit(u);
             log.debug("Changed password for User: {}", u);
         });
     }
 
     public Optional<User> getUserWithAuthoritiesByLogin(String login) {
-        return ${userFacade}.findOneWithAuthoritiesByLogin(login);
+        return ${userRepository}.findOneWithAuthoritiesByLogin(login);
     }
 
     public User getUserWithAuthorities(Long id) {
-        return ${userFacade}.findOneWithAuthoritiesById(id).orElse(null);
+        return ${userRepository}.findOneWithAuthoritiesById(id).orElse(null);
     }
 
     public User getUserWithAuthorities() {
         if (securityUtils.getCurrentUserLogin() == null) {
             return null;
         }
-        return ${userFacade}.findOneWithAuthoritiesByLogin(securityUtils.getCurrentUserLogin()).orElse(null);
+        return ${userRepository}.findOneWithAuthoritiesByLogin(securityUtils.getCurrentUserLogin()).orElse(null);
     }
 
     public User authenticate(UserAuthenticationToken authenticationToken) throws AuthenticationException {
-        Optional<User> userOptional = ${userFacade}.findOneWithAuthoritiesByLogin(authenticationToken.getPrincipal());
+        Optional<User> userOptional = ${userRepository}.findOneWithAuthoritiesByLogin(authenticationToken.getPrincipal());
         if (userOptional.isPresent() && userOptional.get().getActivated() && userOptional.get().getPassword().equals(passwordEncoder.encode(authenticationToken.getCredentials()))) {
             return userOptional.get();
         } else {
@@ -195,10 +195,10 @@ public class UserService {
 //    @Timeout
 //    public void removeNotActivatedUsers() { todo timer
 //        ZonedDateTime now = ZonedDateTime.now();
-//        List<User> users = ${userFacade}.findAllByActivatedIsFalseAndCreatedDateBefore(now.minusDays(3));
+//        List<User> users = ${userRepository}.findAllByActivatedIsFalseAndCreatedDateBefore(now.minusDays(3));
 //        for (User user : users) {
 //            log.debug("Deleting not activated user {}", user.getLogin());
-//            ${userFacade}.remove(user);
+//            ${userRepository}.remove(user);
 //        }
 //    } -->
 }

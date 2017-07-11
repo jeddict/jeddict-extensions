@@ -84,6 +84,14 @@
                     </run-dependency>
                 </dependency>
                 <dependency>
+                    <code-name-base>org.netbeans.jpa.specification</code-name-base>
+                    <build-prerequisite/>
+                    <compile-dependency/>
+                    <run-dependency>
+                        <specification-version>4.3</specification-version>
+                    </run-dependency>
+                </dependency>
+                <dependency>
                     <code-name-base>org.netbeans.libs.javacapi</code-name-base>
                     <build-prerequisite/>
                     <compile-dependency/>
@@ -631,7 +639,6 @@
                 <package>org.netbeans.jcode.console</package>
                 <package>org.netbeans.jcode.core</package>
                 <package>org.netbeans.jcode.core.util</package>
-                <package>org.netbeans.jcode.ejb.facade</package>
                 <package>org.netbeans.jcode.entity.info</package>
                 <package>org.netbeans.jcode.generator</package>
                 <package>org.netbeans.jcode.helper</package>

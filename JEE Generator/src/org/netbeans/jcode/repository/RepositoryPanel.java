@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.netbeans.jcode.ejb.facade;
+package org.netbeans.jcode.repository;
 
 import java.util.prefs.Preferences;
 import javax.lang.model.SourceVersion;
@@ -33,11 +33,11 @@ import org.openide.util.NbBundle;
  *
  * @author Gaurav Gupta
  */
-public class SessionBeanPanel extends LayerConfigPanel<SessionBeanData> {
+public class RepositoryPanel extends LayerConfigPanel<RepositoryData> {
 
-    private static final String DEFAULT_PACKAGE = "service.facade";
+    private static final String DEFAULT_PACKAGE = "repository";
 
-    public SessionBeanPanel() {
+    public RepositoryPanel() {
         initComponents();
     }
 
@@ -45,18 +45,18 @@ public class SessionBeanPanel extends LayerConfigPanel<SessionBeanData> {
     public boolean hasError() {
         warningLabel.setText("");
         if (!isValidPackageName(getPackage())) {
-            warningLabel.setText(NbBundle.getMessage(SessionBeanPanel.class, "SessionBeanPanel.invalidPackage.message"));
+            warningLabel.setText(NbBundle.getMessage(RepositoryPanel.class, "SessionBeanPanel.invalidPackage.message"));
             return true;
         }
         String prefix = getPrefix();
         String suffix = getSuffix();
         
         if (StringUtils.isNotBlank(prefix) && !SourceVersion.isName(prefix)) {
-            warningLabel.setText(NbBundle.getMessage(SessionBeanPanel.class, "SessionBeanPanel.invalidPrefix.message"));
+            warningLabel.setText(NbBundle.getMessage(RepositoryPanel.class, "SessionBeanPanel.invalidPrefix.message"));
             return true;
         }
         if (StringUtils.isNotBlank(suffix) && !SourceVersion.isName(prefix +'_'+ suffix)) {
-            warningLabel.setText(NbBundle.getMessage(SessionBeanPanel.class, "SessionBeanPanel.invalidSuffix.message"));
+            warningLabel.setText(NbBundle.getMessage(RepositoryPanel.class, "SessionBeanPanel.invalidSuffix.message"));
             return true;
         }
         return false;
@@ -67,7 +67,7 @@ public class SessionBeanPanel extends LayerConfigPanel<SessionBeanData> {
     
     @Override
     public void read(){
-        SessionBeanData data = this.getConfigData();
+        RepositoryData data = this.getConfigData();
         if(StringUtils.isNotBlank(data.getPackage())){
             setPackage(data.getPackage());
         }
@@ -164,7 +164,7 @@ public class SessionBeanPanel extends LayerConfigPanel<SessionBeanData> {
 
         warningLabel.setForeground(new java.awt.Color(200, 0, 0));
         warningLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        org.openide.awt.Mnemonics.setLocalizedText(warningLabel, org.openide.util.NbBundle.getMessage(SessionBeanPanel.class, "SessionBeanPanel.warningLabel.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(warningLabel, org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.warningLabel.text")); // NOI18N
         warningPanel.add(warningLabel, java.awt.BorderLayout.CENTER);
 
         jPanel1.setLayout(new java.awt.GridLayout(2, 0, 0, 15));
@@ -174,8 +174,8 @@ public class SessionBeanPanel extends LayerConfigPanel<SessionBeanData> {
         namePane.setLayout(new javax.swing.BoxLayout(namePane, javax.swing.BoxLayout.LINE_AXIS));
 
         prefixField.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        prefixField.setText(org.openide.util.NbBundle.getMessage(SessionBeanPanel.class, "SessionBeanPanel.prefixField.text")); // NOI18N
-        prefixField.setToolTipText(org.openide.util.NbBundle.getMessage(SessionBeanPanel.class, "SessionBeanPanel.prefixField.toolTipText")); // NOI18N
+        prefixField.setText(org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.prefixField.text")); // NOI18N
+        prefixField.setToolTipText(org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.prefixField.toolTipText")); // NOI18N
         prefixField.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
             public void propertyChange(java.beans.PropertyChangeEvent evt) {
                 prefixFieldPropertyChange(evt);
@@ -185,13 +185,13 @@ public class SessionBeanPanel extends LayerConfigPanel<SessionBeanData> {
 
         entityLabel.setForeground(javax.swing.UIManager.getDefaults().getColor("Button.shadow"));
         entityLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        org.openide.awt.Mnemonics.setLocalizedText(entityLabel, org.openide.util.NbBundle.getMessage(SessionBeanPanel.class, "SessionBeanPanel.entityLabel.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(entityLabel, org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.entityLabel.text")); // NOI18N
         entityLabel.setPreferredSize(new java.awt.Dimension(58, 27));
         entityLabel.setRequestFocusEnabled(false);
         namePane.add(entityLabel);
 
-        suffixField.setText(org.openide.util.NbBundle.getMessage(SessionBeanPanel.class, "SessionBeanPanel.suffixField.text")); // NOI18N
-        suffixField.setToolTipText(org.openide.util.NbBundle.getMessage(SessionBeanPanel.class, "SessionBeanPanel.suffixField.toolTipText")); // NOI18N
+        suffixField.setText(org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.suffixField.text")); // NOI18N
+        suffixField.setToolTipText(org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.suffixField.toolTipText")); // NOI18N
         suffixField.setPreferredSize(new java.awt.Dimension(100, 27));
         suffixField.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
             public void propertyChange(java.beans.PropertyChangeEvent evt) {
@@ -203,7 +203,7 @@ public class SessionBeanPanel extends LayerConfigPanel<SessionBeanData> {
         suffixPanel.add(namePane, java.awt.BorderLayout.CENTER);
 
         nameLabel.setLabelFor(suffixField);
-        org.openide.awt.Mnemonics.setLocalizedText(nameLabel, org.openide.util.NbBundle.getMessage(SessionBeanPanel.class, "SessionBeanPanel.nameLabel.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(nameLabel, org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.nameLabel.text")); // NOI18N
         nameLabel.setPreferredSize(new java.awt.Dimension(100, 17));
         suffixPanel.add(nameLabel, java.awt.BorderLayout.WEST);
 
@@ -212,7 +212,7 @@ public class SessionBeanPanel extends LayerConfigPanel<SessionBeanData> {
         packagePanel.setLayout(new java.awt.BorderLayout(10, 0));
 
         packageLabel.setLabelFor(packageCombo);
-        org.openide.awt.Mnemonics.setLocalizedText(packageLabel, org.openide.util.NbBundle.getMessage(SessionBeanPanel.class, "SessionBeanPanel.packageLabel.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(packageLabel, org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.packageLabel.text")); // NOI18N
         packageLabel.setPreferredSize(new java.awt.Dimension(100, 17));
         packagePanel.add(packageLabel, java.awt.BorderLayout.LINE_START);
 

@@ -79,7 +79,6 @@ import static org.netbeans.jcode.core.util.Constants.VOID;
 import org.netbeans.jcode.core.util.Inflector;
 import org.netbeans.jcode.core.util.POMManager;
 import org.netbeans.jcode.core.util.StringHelper;
-import org.netbeans.jcode.ejb.facade.SessionBeanData;
 import org.netbeans.jcode.mvc.MVCConstants;
 import static org.netbeans.jcode.mvc.MVCConstants.MODELS;
 import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
@@ -100,7 +99,6 @@ import static org.netbeans.jcode.rest.RestConstants.RESPONSE;
 import static org.netbeans.jcode.rest.RestConstants.RESPONSE_UNQF;
 import org.netbeans.jcode.rest.util.RestUtils;
 import org.netbeans.jcode.core.util.SourceGroupSupport;
-import org.netbeans.jcode.ejb.facade.EjbFacadeGenerator;
 import org.netbeans.jcode.layer.ConfigData;
 import org.netbeans.jcode.layer.Generator;
 import org.netbeans.jcode.layer.Technology;
@@ -110,6 +108,8 @@ import org.netbeans.jcode.mvc.auth.controller.AuthMechanismGenerator;
 import org.netbeans.jcode.mvc.auth.controller.LoginControllerGenerator;
 import static org.netbeans.jcode.mvc.controller.ValidationUtilGenerator.VALIDATION_UTIL_CLASS;
 import org.netbeans.jcode.mvc.controller.event.ControllerEventGenerator;
+import org.netbeans.jcode.repository.RepositoryData;
+import org.netbeans.jcode.repository.RepositoryGenerator;
 import static org.netbeans.jcode.rest.RestConstants.FORM_PARAM;
 import static org.netbeans.jcode.security.SecurityConstants.CALLER_NAME;
 import org.netbeans.jcode.rest.converter.ParamConvertorGenerator;
@@ -135,7 +135,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Gaurav Gupta
  */
 @ServiceProvider(service = Generator.class)
-@Technology(type = CONTROLLER, label = "MVC 1.0", panel = MVCPanel.class, parents = {EjbFacadeGenerator.class})
+@Technology(type = CONTROLLER, label = "MVC 1.0", panel = MVCPanel.class, parents = {RepositoryGenerator.class})
 
 public class MVCControllerGenerator implements Generator {
 
@@ -147,13 +147,13 @@ public class MVCControllerGenerator implements Generator {
     public final static String UTIL_PACKAGE = "util";
 
     private final static String MODEL_VAR_DECLARATION = "model";
-    private final static String SESSION_BEAN_VAR_DECLARATION = "facade";
+    private final static String REPOSITORY_REF_DECLARATION = "repository";
     private final static String VALIDATION_FILTER = "       if (validationResult.isFailed()) {\n"
                                                   + "            return ValidationUtil.getResponse(validationResult, error);\n"
                                                   + "        }\n\n";
 
     @ConfigData
-    private SessionBeanData beanData;
+    private RepositoryData beanData;
     @ConfigData
     private JSPData jspData;
     @ConfigData
@@ -200,8 +200,8 @@ public class MVCControllerGenerator implements Generator {
         final String listVariableName = Inflector.getInstance().pluralize(variableName);
 //        final String constantName = StringHelper.toConstant(entitySimpleName);
 
-        String facadeFileName = beanData.getPrefixName() + entitySimpleName + beanData.getSuffixName();
-        String fqFacadeFileName = entity.getAbsolutePackage(beanData.getPackage()) + '.' + facadeFileName;
+        String repositoryFileName = beanData.getPrefixName() + entitySimpleName + beanData.getSuffixName();
+        String fqRepositoryFileName = entity.getAbsolutePackage(beanData.getPackage()) + '.' + repositoryFileName;
 
         String controllerFileName = mvcData.getPrefixName() + entitySimpleName + mvcData.getSuffixName();
         handler.progress(controllerFileName);
@@ -230,7 +230,7 @@ public class MVCControllerGenerator implements Generator {
 
         
 
-        // add implements and extends clauses to the facade
+        // add implements and extends clauses to the repository
         final Task<WorkingCopy> modificationTask = (WorkingCopy wc) -> {
             wc.toPhase(Phase.RESOLVED);
             TypeElement classElement = SourceUtils.getPublicTopLevelElement(wc);
@@ -255,7 +255,7 @@ public class MVCControllerGenerator implements Generator {
                     MODEL_VAR_DECLARATION, genUtils.createType(MODELS, classElement), null));
 
             members.add(maker.Variable(maker.addModifiersAnnotation(genUtils.createModifiers(Modifier.PRIVATE), genUtils.createAnnotation(INJECT)),
-                    SESSION_BEAN_VAR_DECLARATION, genUtils.createType(fqFacadeFileName, classElement), null));
+                    REPOSITORY_REF_DECLARATION, genUtils.createType(fqRepositoryFileName, classElement), null));
 
             if (mvcData.isBeanValidation()) {
                 members.add(maker.Variable(maker.addModifiersAnnotation(genUtils.createModifiers(Modifier.PRIVATE), genUtils.createAnnotation(INJECT)),
@@ -266,7 +266,7 @@ public class MVCControllerGenerator implements Generator {
             }
 
             List<RestGenerationOptions> restGenerationOptions
-                    = getRestFacadeMethodOptions(entityFQN, idClass);
+                    = getRestRepositoryMethodOptions(entityFQN, idClass);
 
             ModifiersTree publicModifiers = genUtils.createModifiers(
                     Modifier.PUBLIC);
@@ -734,7 +734,7 @@ public class MVCControllerGenerator implements Generator {
         return maker.addClassMember(newTree, methodTree);
     }
 
-    private List<RestGenerationOptions> getRestFacadeMethodOptions(String entityFQN, String idClass) {
+    private List<RestGenerationOptions> getRestRepositoryMethodOptions(String entityFQN, String idClass) {
         String paramArg = "java.lang.Character".equals(idClass)? "id.charAt(0)" : "id";
         String idType = "id".equals(paramArg) ? idClass : "java.lang.String";
         String entityClass = JavaIdentifiers.unqualify(entityFQN);
@@ -758,7 +758,7 @@ public class MVCControllerGenerator implements Generator {
         createOptions.setParameterAnnoations(new String[]{BEAN_PARAM});
         createOptions.setParameterAnnoationValues(new String[]{null});
         createOptions.setConsumes(new String[]{MimeType.XML.toString(), MimeType.JSON.toString()});
-        createOptions.setBody("facade.create(").append(ENTITY_NAME_EXP).append(");");
+        createOptions.setBody("repository.create(").append(ENTITY_NAME_EXP).append(");");
 
         RestGenerationOptions redirectUpdateOptions = new RestGenerationOptions();
         redirectUpdateOptions.setRestMethod(Operation.REDIRECT_TO_UPDATE);
@@ -776,7 +776,7 @@ public class MVCControllerGenerator implements Generator {
             redirectUpdateOptions.setParameterTypes(new String[]{idType});
         }
         StringBuilder updateBody = new StringBuilder(builder);
-        updateBody.append("model.put(\"").append(KEY_NAME).append("\" ,facade.find(");
+        updateBody.append("model.put(\"").append(KEY_NAME).append("\" ,repository.find(");
         updateBody.append(paramArg);
         updateBody.append("));");
         redirectUpdateOptions.setBody(updateBody);
@@ -789,7 +789,7 @@ public class MVCControllerGenerator implements Generator {
         updateOptions.setParameterAnnoationValues(new String[]{null});
         updateOptions.setParameterTypes(new String[]{entityFQN});
         updateOptions.setConsumes(new String[]{MimeType.XML.toString(), MimeType.JSON.toString()});
-        updateOptions.setBody("facade.edit(").append(ENTITY_NAME_EXP).append(");");
+        updateOptions.setBody("repository.edit(").append(ENTITY_NAME_EXP).append(");");
 
         RestGenerationOptions destroyOptions = new RestGenerationOptions();
         destroyOptions.setRestMethod(Operation.REMOVE);
@@ -803,7 +803,7 @@ public class MVCControllerGenerator implements Generator {
             destroyOptions.setParameterTypes(new String[]{idType});
         }
         StringBuilder removeBody = new StringBuilder(builder);
-        removeBody.append("facade.remove(facade.find(");
+        removeBody.append("repository.remove(repository.find(");
         removeBody.append(paramArg);
         removeBody.append("));");
         destroyOptions.setBody(removeBody);
@@ -821,7 +821,7 @@ public class MVCControllerGenerator implements Generator {
             findOptions.setParameterTypes(new String[]{idType});
         }
         StringBuilder findBody = new StringBuilder(builder);
-        findBody.append("model.put(\"").append(KEY_NAME).append("\" ,facade.find(");
+        findBody.append("model.put(\"").append(KEY_NAME).append("\" ,repository.find(");
         findBody.append(paramArg);
         findBody.append("));");
         findOptions.setBody(findBody);
@@ -830,7 +830,7 @@ public class MVCControllerGenerator implements Generator {
         findAllOptions.setRestMethod(Operation.FIND_ALL);
         findAllOptions.setReturnType(VOID);
         findAllOptions.setProduces(new String[]{MimeType.XML.toString(), MimeType.JSON.toString()});
-        findAllOptions.setBody("model.put(\"").append(KEY_NAME).append("_LIST\",facade.findAll());");
+        findAllOptions.setBody("model.put(\"").append(KEY_NAME).append("_LIST\",repository.findAll());");
 
         return Arrays.<RestGenerationOptions>asList(
                 redirectCreateOptions,

@@ -67,7 +67,7 @@ import org.openide.util.NbBundle;
  * @author Gaurav Gupta
  */
 @ServiceProvider(service = Generator.class)
-@Technology(label = "Infra", panel = DockerConfigPanel.class, index = 1)
+@Technology(label = "Infra", panel = DockerConfigPanel.class, tabIndex = 1)
 public class DockerGenerator implements Generator {
 
     private static final String TEMPLATE = "org/jcode/docker/template/";
@@ -128,7 +128,8 @@ public class DockerGenerator implements Generator {
             if (POMManager.isMavenProject(project)) {
                 POMManager pomManager = new POMManager(TEMPLATE + "fabric8io/pom/_pom.xml", project);
                 pomManager.commit();
-                handler.info("Profile", "Use \"docker\" profile to create and run Docker image");
+                appConfigData.addProfile("docker");
+                handler.info("Docker", "Use \"docker\" profile to create and run Docker image");
 
                 Properties properties = new Properties();
                 if (StringUtils.isBlank(config.getDockerMachine())) {

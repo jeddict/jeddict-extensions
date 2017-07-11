@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import org.openide.util.Lookup;
 
@@ -107,6 +108,8 @@ public interface Generator {
             }
         });
         codeGenerators.addAll(customCodeGenerators);
-        return codeGenerators;
+        return codeGenerators.stream()
+                .sorted((t1,t2) -> Integer.compare(t1.getTechnology().listIndex() , t2.getTechnology().listIndex()))
+                .collect(toList());
     }
 }

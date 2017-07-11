@@ -22,6 +22,11 @@
                     <groupId>org.reflections</groupId>
                     <artifactId>reflections</artifactId>
                 </exclusion>
+                <!--HttpHeaders.LINK not available-->
+                <exclusion>
+                    <groupId>javax.ws.rs</groupId>
+                    <artifactId>jsr311-api</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
     </dependencies>

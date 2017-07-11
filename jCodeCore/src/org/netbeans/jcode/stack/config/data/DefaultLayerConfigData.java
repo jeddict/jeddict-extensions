@@ -13,23 +13,20 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.netbeans.jcode.layer;
+package org.netbeans.jcode.stack.config.data;
 
-import java.io.IOException;
-import static org.netbeans.jcode.layer.Technology.Type.CONTROLLER;
-import org.openide.util.lookup.ServiceProvider;
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
- * @author jGauravGupta <gaurav.gupta.jc@gmail.com>
+ * @author Gaurav Gupta
  */
-@ServiceProvider(service=Generator.class)
-@Technology(type=CONTROLLER, listIndex = 0)
-public class DefaultControllerLayer implements Generator {
+public class DefaultLayerConfigData extends LayerConfigData{
 
     @Override
-    public void execute() throws IOException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public List<String> getUsageDetails(){
+        return Collections.EMPTY_LIST;
     }
     
 }

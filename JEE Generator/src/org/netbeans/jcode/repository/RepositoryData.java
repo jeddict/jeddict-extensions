@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.netbeans.jcode.ejb.facade;
+package org.netbeans.jcode.repository;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,12 +24,14 @@ import org.netbeans.jcode.stack.config.data.LayerConfigData;
  *
  * @author Gaurav Gupta
  */
-public class SessionBeanData extends LayerConfigData {
+public class RepositoryData extends LayerConfigData {
 
     private String prefixName;
     private String suffixName;
     private String _package;
-
+    private boolean isNamed;
+    private boolean cdi = true;
+    
     /**
      * @return the _package
      */
@@ -49,7 +51,7 @@ public class SessionBeanData extends LayerConfigData {
      */
     public String getSuffixName() {
         if(StringUtils.isBlank(suffixName)){
-            suffixName = "Facade";
+            suffixName = "Repository";
         }
         return suffixName;
     }
@@ -73,6 +75,34 @@ public class SessionBeanData extends LayerConfigData {
      */
     public void setPrefixName(String prefixName) {
         this.prefixName = prefixName;
+    }
+
+    /**
+     * @return the isNamed
+     */
+    public boolean isNamed() {
+        return isNamed;
+    }
+
+    /**
+     * @param isNamed the isNamed to set
+     */
+    public void setNamed(boolean isNamed) {
+        this.isNamed = isNamed;
+    }
+
+    /**
+     * @return the isCDI
+     */
+    public boolean isCDI() {
+        return cdi;
+    }
+
+    /**
+     * @param cdi the cdi to set
+     */
+    public void setCDI(boolean cdi) {
+        this.cdi = cdi;
     }
     
     @Override

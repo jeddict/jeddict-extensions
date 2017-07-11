@@ -16,6 +16,8 @@
 package org.netbeans.jcode.stack.config.data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.layer.TechContext;
@@ -35,6 +37,21 @@ public class ApplicationConfigData implements Serializable {
     private TechContext bussinesTechContext;
     private TechContext controllerTechContext;
     private TechContext viewerTechContext;
+    
+    private List<String> profiles = new ArrayList<>();
+    
+    
+    public void addProfile(String profile){
+        profiles.add(profile);
+    }
+    
+    public void removeProfile(String profile){
+        profiles.remove(profile);
+    }
+    
+   public String getProfiles(){
+        return String.join(",", profiles);
+    }
 
     public TechContext getBussinesTechContext() {
         return bussinesTechContext;

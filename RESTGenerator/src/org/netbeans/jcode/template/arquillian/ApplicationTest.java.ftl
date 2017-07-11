@@ -13,8 +13,8 @@ import ${AbstractAuditingEntity_FQN};
 import ${AuditListner_FQN};
 import ${Authority_FQN};
 import ${User_FQN};
-import ${AuthorityFacade_FQN};
-import ${UserFacade_FQN};
+import ${AuthorityRepository_FQN};
+import ${UserRepository_FQN};
 import static ${package}.AbstractTest.buildArchive;
 import java.util.Map;
 import javax.ws.rs.client.Entity;
@@ -42,7 +42,7 @@ public abstract class ApplicationTest extends AbstractTest {
     public static WebArchive buildApplication() {
         return buildArchive().addPackages(true, ConfigResource.class.getPackage(), MailService.class.getPackage(), UserDTO.class.getPackage(), SecurityUtils.class.getPackage(), RandomUtil.class.getPackage())
                 .addClass(User.class).addClass(Authority.class).addClass(AbstractAuditingEntity.class).addClass(AuditListner.class)
-                .addClass(${UserFacade}.class).addClass(${AuthorityFacade}.class).addClass(${UserService}.class)
+                .addClass(${UserRepository}.class).addClass(${AuthorityRepository}.class).addClass(${UserService}.class)
                 .addAsResource(new ClassLoaderAsset("config/application.properties"), "config/application.properties")
                 .addAsResource(new ClassLoaderAsset("i18n/messages.properties"), "i18n/messages.properties")
                 .addClass(${UserJWTController}.class).addPackage(JWTAuthenticationFilter.class.getPackage());

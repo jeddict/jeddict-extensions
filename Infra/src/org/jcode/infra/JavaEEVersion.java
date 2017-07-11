@@ -55,5 +55,9 @@ public enum JavaEEVersion implements Enumy {
     public Enumy getDefault() {
         return JAVA_EE_7;
     }
+    
+    public static JavaEEVersion getDefaultVersion() {
+        return JAVA_EE_7;
+    }
 
 }

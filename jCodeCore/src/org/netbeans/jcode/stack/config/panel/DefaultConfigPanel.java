@@ -18,13 +18,13 @@ package org.netbeans.jcode.stack.config.panel;
 import javax.swing.event.ChangeEvent;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
-import org.netbeans.jcode.stack.config.data.LayerConfigData;
+import org.netbeans.jcode.stack.config.data.DefaultLayerConfigData;
 
 /**
  *
  * @author Gaurav Gupta
  */
-public class DefaultConfigPanel extends LayerConfigPanel<LayerConfigData> {
+public class DefaultConfigPanel extends LayerConfigPanel<DefaultLayerConfigData> {
 
     @Override
     public boolean hasError() {

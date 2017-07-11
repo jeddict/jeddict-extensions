@@ -611,7 +611,6 @@
                 <package>org.netbeans.jcode.beanvalidation</package>
                 <package>org.netbeans.jcode.cdi</package>
                 <package>org.netbeans.jcode.cdi.logger</package>
-                <package>org.netbeans.jcode.ejb.facade</package>
                 <package>org.netbeans.jcode.jpa</package>
                 <package>org.netbeans.jcode.mvc</package>
                 <package>org.netbeans.jcode.mvc.controller</package>

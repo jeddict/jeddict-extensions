@@ -1,8 +1,8 @@
 <#if package??>package ${package};</#if>
 
 import ${AuthoritiesConstants_FQN};
-import ${AuthorityFacade_FQN};
-import ${UserFacade_FQN};
+import ${AuthorityRepository_FQN};
+import ${UserRepository_FQN};
 import ${KeyAndPasswordDTO_FQN};
 import ${ManagedUserDTO_FQN};
 import ${UserDTO_FQN};
@@ -39,10 +39,10 @@ import static org.valid4j.matchers.http.HttpResponseMatchers.hasStatus;
 public class ${AccountControllerTest} extends ApplicationTest {
 
     @Inject
-    private ${UserFacade} ${userFacade};
+    private ${UserRepository} ${userRepository};
 
     @Inject
-    private ${AuthorityFacade} ${authorityFacade};
+    private ${AuthorityRepository} ${authorityRepository};
 
     @Deployment
     public static WebArchive createDeployment() {
@@ -85,7 +85,7 @@ public class ${AccountControllerTest} extends ApplicationTest {
         Response response = target("api/register").post(json(validUser));
         assertThat(response, hasStatus(CREATED));
 
-        Optional<User> user = ${userFacade}.findOneByLogin("joe");
+        Optional<User> user = ${userRepository}.findOneByLogin("joe");
         assertTrue(user.isPresent());
     }
 
@@ -111,7 +111,7 @@ public class ${AccountControllerTest} extends ApplicationTest {
         Response response = target("api/register").post(json(invalidUser));
         assertThat(response, hasStatus(BAD_REQUEST));
 
-        Optional<User> user = ${userFacade}.findOneByEmail("funky@example.com");
+        Optional<User> user = ${userRepository}.findOneByEmail("funky@example.com");
         assertFalse(user.isPresent());
     }
 
@@ -136,7 +136,7 @@ public class ${AccountControllerTest} extends ApplicationTest {
         Response response = target("api/register").post(json(invalidUser));
         assertThat(response, hasStatus(BAD_REQUEST));
 
-        Optional<User> user = ${userFacade}.findOneByLogin("bob");
+        Optional<User> user = ${userRepository}.findOneByLogin("bob");
         assertFalse(user.isPresent());
 
     }
@@ -162,7 +162,7 @@ public class ${AccountControllerTest} extends ApplicationTest {
         Response response = target("api/register").post(json(invalidUser));
         assertThat(response, hasStatus(BAD_REQUEST));
 
-        Optional<User> user = ${userFacade}.findOneByLogin("bob");
+        Optional<User> user = ${userRepository}.findOneByLogin("bob");
         assertFalse(user.isPresent());
 
     }
@@ -183,7 +183,7 @@ public class ${AccountControllerTest} extends ApplicationTest {
         Response response = target("api/account").post(json(invalidUser));
         assertThat(response, hasStatus(BAD_REQUEST));
 
-        Optional<User> user = ${userFacade}.findOneByEmail("funky@example.com");
+        Optional<User> user = ${userRepository}.findOneByEmail("funky@example.com");
         assertFalse(user.isPresent());
     }
 -->
@@ -217,7 +217,7 @@ public class ${AccountControllerTest} extends ApplicationTest {
         Response errorResponse = target("api/register").post(json(duplicatedUser));
         assertThat(errorResponse, hasStatus(BAD_REQUEST));
 
-        Optional<User> userDup = ${userFacade}.findOneByEmail("alicejr@example.com");
+        Optional<User> userDup = ${userRepository}.findOneByEmail("alicejr@example.com");
         assertFalse(userDup.isPresent());
     }
 
@@ -251,7 +251,7 @@ public class ${AccountControllerTest} extends ApplicationTest {
         Response errorResponse = target("api/register").post(json(duplicatedUser));
         assertThat(errorResponse, hasStatus(BAD_REQUEST));
 
-        Optional<User> userDup = ${userFacade}.findOneByLogin("johnjr");
+        Optional<User> userDup = ${userRepository}.findOneByLogin("johnjr");
         assertFalse(userDup.isPresent());
     }
 
@@ -275,10 +275,10 @@ public class ${AccountControllerTest} extends ApplicationTest {
         Response response = target("api/register").post(json(validUser));
         assertThat(response, hasStatus(CREATED));
 
-        Optional<User> userDup = ${userFacade}.findOneByLogin("badguy");
+        Optional<User> userDup = ${userRepository}.findOneByLogin("badguy");
         assertTrue(userDup.isPresent());
         assertThat(userDup.get().getAuthorities().size(), is(1));
-        assertThat(userDup.get().getAuthorities(), hasItems(${authorityFacade}.find(AuthoritiesConstants.USER)));
+        assertThat(userDup.get().getAuthorities(), hasItems(${authorityRepository}.find(AuthoritiesConstants.USER)));
 
     }
 

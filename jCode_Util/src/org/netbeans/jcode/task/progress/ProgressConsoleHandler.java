@@ -15,7 +15,9 @@
  */
 package org.netbeans.jcode.task.progress;
 
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import org.netbeans.jcode.console.Console;
@@ -31,6 +33,7 @@ import static org.netbeans.jcode.console.Console.FG_MAGENTA;
 import static org.netbeans.jcode.console.Console.FG_RED;
 import static org.netbeans.jcode.console.Console.FG_WHITE;
 import static org.netbeans.jcode.console.Console.UNDERLINE;
+import static org.netbeans.jcode.core.util.FileUtil.expandTemplate;
 import org.netbeans.jcode.task.ITaskSupervisor;
 import org.openide.filesystems.FileObject;
 
@@ -47,6 +50,7 @@ public class ProgressConsoleHandler implements ProgressHandler {
     private final Set<Message> warningMessage = new LinkedHashSet<>();
     private final Set<Message> infoMessage = new LinkedHashSet<>();
     private final Set<Message> helpMessage = new LinkedHashSet<>();
+    private final Map<String, Object> dynamicVariables = new HashMap<>();
 
     public ProgressConsoleHandler(ITaskSupervisor taskSupervisor) {
         this.taskSupervisor = taskSupervisor;
@@ -58,6 +62,16 @@ public class ProgressConsoleHandler implements ProgressHandler {
         this.taskLimit = taskLimit;
     }
 
+    @Override
+    public void addDynamicVariable(String key, Object value){
+        dynamicVariables.put(key, value);
+    }
+    
+    @Override
+    public void removeDynamicVariable(String key){
+        dynamicVariables.remove(key);
+    }
+    
     @Override
     public void progress(String message) {
         if (++state < taskLimit) {
@@ -129,7 +143,7 @@ public class ProgressConsoleHandler implements ProgressHandler {
                 String currentHelpMessage = null;
                 taskSupervisor.log(Console.wrap(message.getTitle() + " > \t", fgColor, BOLD, UNDERLINE), false);
                 String parsedMessage[] = message.getDescription().split("#");
-                taskSupervisor.log(parsedMessage[0], true);
+                taskSupervisor.log(expandTemplate(parsedMessage[0], dynamicVariables), true);
                 if(parsedMessage.length>1){
                     currentHelpMessage = parsedMessage[1];
                 }
