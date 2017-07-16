@@ -156,7 +156,7 @@ public class RESTGenerator implements Generator {
         CONFIG_TEMPLATES.add(new Template("config/ConfigResource.java.ftl", "ConfigResource", "config"));
         CONFIG_TEMPLATES.add(new Template("config/Constants.java.ftl", "Constants", "config"));
         CONFIG_TEMPLATES.add(new Template("config/MailConfig.java.ftl", "MailConfig", "config"));
-        CONFIG_TEMPLATES.add(new Template("config/MessageResource.java.ftl", "MessageResource", "config"));
+//        CONFIG_TEMPLATES.add(new Template("config/MessageResource.java.ftl", "MessageResource", "config"));
         CONFIG_TEMPLATES.add(new Template("config/SecurityConfig.java.ftl", "SecurityConfig", "config"));
 
         CONTROLLER_EXT_TEMPLATES.add(new Template("rest/util/HeaderUtil.java.ftl", "HeaderUtil", "util"));

@@ -176,10 +176,17 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
     @XmlAttribute
     protected Boolean cacheable;
     
+    //ui properties start
+    
     @XmlAttribute(name = "lbl-ref")
     @XmlIDREF
     private Attribute labelAttribute;//to display value in UI
 
+    @XmlAttribute(name = "uil")
+    private String label;
+
+    //ui properties end
+        
     @Override
     public void load(EntityMappings entityMappings, TypeElement element, boolean fieldAccess) {
         super.load(entityMappings, element, fieldAccess);
@@ -775,6 +782,20 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
         this.labelAttribute = labelAttribute;
     }
 
+    /**
+     * @return the label
+     */
+    public String getLabel() {
+        return label;
+    }
+
+    /**
+     * @param label the label to set
+     */
+    public void setLabel(String label) {
+        this.label = label;
+    }
+    
     /**
      * @param primaryKeyJoinColumn the primaryKeyJoinColumn to set
      */

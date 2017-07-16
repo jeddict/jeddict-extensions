@@ -73,9 +73,15 @@ public abstract class BaseAttribute extends Attribute {
     public boolean isTextAttributeType() {
         return isTextAttributeType(getAttributeType());
     }
+    
+    public boolean isBlobAttributeType() {
+        return isBlobAttributeType(getAttributeType());
+    }
+    
     public boolean isPrecisionAttributeType() {
         return isPrecisionAttributeType(getAttributeType());
     }
+    
     public boolean isScaleAttributeType() {
         return isScaleAttributeType(getAttributeType());
     }

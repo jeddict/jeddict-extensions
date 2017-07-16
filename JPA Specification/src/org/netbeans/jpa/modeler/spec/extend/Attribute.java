@@ -70,6 +70,7 @@ import static org.netbeans.jcode.core.util.AttributeType.BIGINTEGER;
 import static org.netbeans.jcode.core.util.AttributeType.BOOLEAN;
 import static org.netbeans.jcode.core.util.AttributeType.BOOLEAN_WRAPPER;
 import static org.netbeans.jcode.core.util.AttributeType.BYTE;
+import static org.netbeans.jcode.core.util.AttributeType.BYTE_BUFFER;
 import static org.netbeans.jcode.core.util.AttributeType.BYTE_WRAPPER;
 import static org.netbeans.jcode.core.util.AttributeType.CALENDAR;
 import static org.netbeans.jcode.core.util.AttributeType.DATE;
@@ -94,6 +95,7 @@ import static org.netbeans.jcode.core.util.AttributeType.THAI_BUDDHIST_DATE;
 import static org.netbeans.jcode.core.util.AttributeType.YEAR;
 import static org.netbeans.jcode.core.util.AttributeType.YEAR_MONTH;
 import static org.netbeans.jcode.core.util.AttributeType.ZONED_DATE_TIME;
+import static org.netbeans.jcode.core.util.AttributeType.getArrayType;
 import static org.netbeans.jcode.core.util.AttributeType.isArray;
 import static org.netbeans.jcode.jsonb.JSONBConstants.JSONB_PROPERTY_FQN;
 import static org.netbeans.jcode.jsonb.JSONBConstants.JSONB_TYPE_ADAPTER_FQN;
@@ -147,9 +149,19 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
     @XmlAttribute(name = "dv")
     protected String defaultValue;
 
+    //ui properties start
+    
     @XmlAttribute(name = "ui")
     private Boolean includeInUI;
+    
+    @XmlAttribute(name = "uil")
+    private String label;
+    
+    @XmlAttribute(name = "bt")
+    private BlobContentType blobContentType;
 
+    //ui properties end
+    
     @XmlAttribute(name = "ft")
     private Boolean functionalType;
 
@@ -594,8 +606,45 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
         this.includeInUI = includeInUI;
     }
 
+    /**
+     * @return the label
+     */
+    public String getLabel() {
+        return label;
+    }
+
+    /**
+     * @param label the label to set
+     */
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    /**
+     * @return the blobContentType
+     */
+    public BlobContentType getBlobContentType() {
+        return blobContentType;
+    }
+
+    /**
+     * @param blobContentType the blobContentType to set
+     */
+    public void setBlobContentType(BlobContentType blobContentType) {
+        this.blobContentType = blobContentType;
+    }
+
     public boolean isTextAttributeType(String attributeType) {
         return STRING.equals(attributeType) || STRING_FQN.equals(attributeType);
+    }
+    
+    public boolean isBlobAttributeType(String attributeType) {
+        if (isArray(attributeType)) {
+            String dataType = getArrayType(attributeType);
+            return BYTE.equals(dataType) || BYTE_WRAPPER.equals(dataType);
+        } else {
+            return BYTE_BUFFER.equals(attributeType);
+        }
     }
 
     public boolean isPrecisionAttributeType(String attributeType) {

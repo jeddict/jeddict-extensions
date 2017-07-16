@@ -246,7 +246,6 @@ public class ${AccountController} {
         @ApiResponse(code = 400, message = "Bad Request")})</#if>
     @Path("/account/reset_password/init")
     @POST
-    @Consumes({MediaType.TEXT_PLAIN})
     @Produces({MediaType.TEXT_PLAIN})
     public Response requestPasswordReset(String mail) {
         return userService.requestPasswordReset(mail)

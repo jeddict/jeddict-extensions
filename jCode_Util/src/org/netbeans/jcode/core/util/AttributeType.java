@@ -68,6 +68,7 @@ public class AttributeType {
     public static final String UUID = "java.util.UUID";
     public static final String URL = "java.net.URL";
     public static final String URI = "java.net.URI";  
+    public static final String BYTE_BUFFER = "java.nio.ByteBuffer";  
     
     public static final String INSTANT = "java.time.Instant";
     public static final String DURATION = "java.time.Duration";

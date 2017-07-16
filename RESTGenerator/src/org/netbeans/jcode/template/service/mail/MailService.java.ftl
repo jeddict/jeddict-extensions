@@ -1,10 +1,10 @@
 <#if package??>package ${package};</#if>
 
 import ${MailConfig_FQN};
-import ${MessageResource_FQN};
 import ${User_FQN};
 
 import java.io.StringWriter;
+import java.util.Locale;
 import java.util.function.Function;
 import org.slf4j.Logger;
 import javax.ejb.Asynchronous;
@@ -12,7 +12,8 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.HtmlEmail;
-import org.apache.deltaspike.core.api.config.ConfigResolver;
+import org.apache.deltaspike.core.api.message.Message;
+import org.apache.deltaspike.core.api.message.MessageContext;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -26,16 +27,18 @@ import org.apache.velocity.app.VelocityEngine;
 @Stateless
 public class MailService {
 
+    private static final String USER = "user";
+    private static final String BASE_URL = "baseUrl";
+    
     @Inject
     private Logger log;
 
-    private static final String USER = "user";
-    private static final String BASE_URL = "baseUrl";
-
     @Inject
     private VelocityEngine engine;
+    
     @Inject
-    private MessageResource messageResource;
+    private MessageContext messageContext;
+    
     @Inject
     private MailConfig mailConfig;
 
@@ -60,42 +63,48 @@ public class MailService {
         }
     }
 
-
-    @Asynchronous
+  @Asynchronous
     public void sendActivationEmail(User user, String baseUrl) {
         log.debug("Sending activation e-mail to '{}'", user.getEmail());
-<#--//        Locale locale = Locale.forLanguageTag(user.getLangKey());-->
-        String subject = messageResource.getActivationTitle();
-        <#--// messageSource.getMessage("email.activation.title", null, locale);-->
-        String content = getContent(user, baseUrl, "activationEmail");
+        Message message = getMessage(user);
+        String subject = message.template("{email.activation.title}").toString();
+        String content = getContent("activationEmail", user, baseUrl, message);
         sendEmail(user.getEmail(), subject, content, false, true);
     }
 
     @Asynchronous
     public void sendCreationEmail(User user, String baseUrl) {
         log.debug("Sending creation e-mail to '{}'", user.getEmail());
-        String subject = messageResource.getCreationTitle();
-        String content = getContent(user, baseUrl, "creationEmail");
+        Message message = getMessage(user);
+        String subject = message.template("{email.creation.title}").toString();
+        String content = getContent("creationEmail", user, baseUrl, message);
         sendEmail(user.getEmail(), subject, content, false, true);
     }
-
+    
     @Asynchronous
     public void sendPasswordResetMail(User user, String baseUrl) {
         log.debug("Sending password reset e-mail to '{}'", user.getEmail());
-        String subject = messageResource.getResetTitle();
-        String content = getContent(user, baseUrl, "passwordResetEmail");
+        Message message = getMessage(user);
+        String subject = message.template("{email.reset.title}").toString();
+        String content = getContent("passwordResetEmail", user, baseUrl, message);
         sendEmail(user.getEmail(), subject, content, false, true);
     }
 
-    private String getContent(User user, String baseUrl, String template) {
+    private String getContent(String template, User user, String baseUrl, Message message) {
         Template t = engine.getTemplate(String.format("mails/%s.html", template));
         VelocityContext context = new VelocityContext();
         context.put(USER, user);
         context.put(BASE_URL, baseUrl);
-        context.put("props", (Function<String, String>) ConfigResolver::getPropertyValue);
+        context.put("props", (Function<String, Message>)message::template);
         StringWriter writer = new StringWriter();
         t.merge(context, writer);
         return writer.toString();
+    }
+    
+    private Message getMessage(User user){
+        return messageContext.messageSource("i18n.messages")
+                .localeResolver(() -> Locale.forLanguageTag(user.getLangKey()))
+                .message();
     }
 
 }

@@ -1017,6 +1017,11 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
             return isTextAttributeType(getAttributeType());
         }
     }
+    
+    @Override
+    public boolean isBlobAttributeType() {
+        return isBlobAttributeType(getAttributeType());
+    }
 
     @Override
     public boolean isPrecisionAttributeType() {

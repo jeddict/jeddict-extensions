@@ -49,7 +49,7 @@ public class LoginController {
         return Response.ok("redirect:app/home").build();
     }
 
-    @View("home.jsp")
+    @View("/home.jsp")
     @GET
     @Path("home")
     public void home() {
