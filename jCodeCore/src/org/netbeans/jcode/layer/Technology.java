@@ -50,6 +50,8 @@ public @interface Technology {
     
     String description() default "";
     
+    boolean entityGenerator() default true;
+    
     enum Type {
         BUSINESS("Repository"), CONTROLLER("Controller"), VIEWER("Viewer"), NONE("Other");
 

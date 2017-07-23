@@ -67,7 +67,7 @@ import org.openide.util.NbBundle;
  * @author Gaurav Gupta
  */
 @ServiceProvider(service = Generator.class)
-@Technology(label = "Infra", panel = DockerConfigPanel.class, tabIndex = 1)
+@Technology(label = "Infra", panel = DockerConfigPanel.class, entityGenerator = false, tabIndex = 1)
 public class DockerGenerator implements Generator {
 
     private static final String TEMPLATE = "org/jcode/docker/template/";
