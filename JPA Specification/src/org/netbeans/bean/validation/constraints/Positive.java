@@ -21,20 +21,19 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author Gaurav Gupta
  */
-@XmlRootElement(name = "fu")
-public class Future extends Constraint {
+@XmlRootElement(name="po")
+public class Positive extends Constraint {
 
-    public Future() {
+    public Positive() {
     }
-    
+ 
     @Override
-    public boolean isEmpty() {
+    public boolean isEmpty(){
         return false;
     }
-
+    
     @Override
     protected void clearConstraint(){
-
+        
     }
-    
 }

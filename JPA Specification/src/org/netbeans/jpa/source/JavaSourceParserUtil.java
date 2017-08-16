@@ -73,7 +73,6 @@ import static org.netbeans.jcode.jpa.JPAConstants.VERSION_FQN;
 import org.netbeans.jpa.modeler.spec.Embeddable;
 import org.netbeans.jpa.modeler.spec.Entity;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
-import org.netbeans.jpa.modeler.spec.extend.BaseAttribute;
 import org.netbeans.jpa.modeler.spec.extend.annotation.Annotation;
 import org.netbeans.bean.validation.constraints.AssertFalse;
 import org.netbeans.bean.validation.constraints.AssertTrue;
@@ -81,12 +80,21 @@ import org.netbeans.bean.validation.constraints.Constraint;
 import org.netbeans.bean.validation.constraints.DecimalMax;
 import org.netbeans.bean.validation.constraints.DecimalMin;
 import org.netbeans.bean.validation.constraints.Digits;
+import org.netbeans.bean.validation.constraints.Email;
 import org.netbeans.bean.validation.constraints.Future;
+import org.netbeans.bean.validation.constraints.FutureOrPresent;
 import org.netbeans.bean.validation.constraints.Max;
 import org.netbeans.bean.validation.constraints.Min;
+import org.netbeans.bean.validation.constraints.Negative;
+import org.netbeans.bean.validation.constraints.NegativeOrZero;
+import org.netbeans.bean.validation.constraints.NotBlank;
+import org.netbeans.bean.validation.constraints.NotEmpty;
 import org.netbeans.bean.validation.constraints.NotNull;
 import org.netbeans.bean.validation.constraints.Null;
 import org.netbeans.bean.validation.constraints.Past;
+import org.netbeans.bean.validation.constraints.PastOrPresent;
+import org.netbeans.bean.validation.constraints.Positive;
+import org.netbeans.bean.validation.constraints.PositiveOrZero;
 import org.netbeans.bean.validation.constraints.Size;
 import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
@@ -171,8 +179,13 @@ public class JavaSourceParserUtil {
     //"javax.persistence|javax.xml.bind.annotation"
     private static final Pattern JPA_PACKAGE_PATTERN = Pattern.compile(PERSISTENCE_PACKAGE);
     private static final Class[] BEAN_VALIDATION_REVENG_CLASS_LIST = new Class[]{
-        AssertFalse.class, AssertTrue.class, Null.class, NotNull.class, Size.class, DecimalMax.class, DecimalMin.class,
-        Max.class, Min.class, Digits.class, Future.class, Past.class, Pattern.class};
+        AssertFalse.class, AssertTrue.class, 
+        Null.class, NotNull.class, NotEmpty.class, NotBlank.class,
+        Size.class, Pattern.class, Email.class,
+        DecimalMax.class, DecimalMin.class,
+        Max.class, Min.class, Digits.class, 
+        Positive.class, PositiveOrZero.class, Negative.class, NegativeOrZero.class,
+        Future.class, Past.class, FutureOrPresent.class, PastOrPresent.class,};
     private static final Map<String, Class<? extends Constraint>> SUPPORTED_BV_REVENG_CLASS_SET = new HashMap<>();
 
     static {

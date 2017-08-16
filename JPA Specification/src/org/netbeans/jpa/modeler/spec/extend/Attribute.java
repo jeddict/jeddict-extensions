@@ -18,7 +18,9 @@ package org.netbeans.jpa.modeler.spec.extend;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import static java.util.Collections.EMPTY_SET;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -57,13 +59,22 @@ import org.netbeans.bean.validation.constraints.ConstraintsValidator;
 import org.netbeans.bean.validation.constraints.DecimalMax;
 import org.netbeans.bean.validation.constraints.DecimalMin;
 import org.netbeans.bean.validation.constraints.Digits;
+import org.netbeans.bean.validation.constraints.Email;
 import org.netbeans.bean.validation.constraints.Future;
+import org.netbeans.bean.validation.constraints.FutureOrPresent;
 import org.netbeans.bean.validation.constraints.Max;
 import org.netbeans.bean.validation.constraints.Min;
+import org.netbeans.bean.validation.constraints.Negative;
+import org.netbeans.bean.validation.constraints.NegativeOrZero;
+import org.netbeans.bean.validation.constraints.NotBlank;
+import org.netbeans.bean.validation.constraints.NotEmpty;
 import org.netbeans.bean.validation.constraints.NotNull;
 import org.netbeans.bean.validation.constraints.Null;
 import org.netbeans.bean.validation.constraints.Past;
+import org.netbeans.bean.validation.constraints.PastOrPresent;
 import org.netbeans.bean.validation.constraints.Pattern;
+import org.netbeans.bean.validation.constraints.Positive;
+import org.netbeans.bean.validation.constraints.PositiveOrZero;
 import org.netbeans.bean.validation.constraints.Size;
 import static org.netbeans.jcode.core.util.AttributeType.BIGDECIMAL;
 import static org.netbeans.jcode.core.util.AttributeType.BIGINTEGER;
@@ -212,17 +223,27 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
         ,
         @XmlElement(name = "nn", type = NotNull.class)
         ,
+        @XmlElement(name = "nb", type = NotBlank.class)
+        ,
+        @XmlElement(name = "ne", type = NotEmpty.class)
+        ,
         @XmlElement(name = "af", type = AssertFalse.class)
         ,
         @XmlElement(name = "at", type = AssertTrue.class)
         ,
         @XmlElement(name = "pa", type = Past.class)
         ,
+        @XmlElement(name = "pp", type = PastOrPresent.class)
+        ,
         @XmlElement(name = "fu", type = Future.class)
+        ,
+        @XmlElement(name = "fp", type = FutureOrPresent.class)
         ,
         @XmlElement(name = "si", type = Size.class)
         ,
         @XmlElement(name = "pt", type = Pattern.class)
+        ,
+        @XmlElement(name = "em", type = Email.class)
         ,
         @XmlElement(name = "mi", type = Min.class)
         ,
@@ -233,6 +254,14 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
         @XmlElement(name = "dma", type = DecimalMax.class)
         ,
         @XmlElement(name = "di", type = Digits.class)
+        ,
+        @XmlElement(name = "ng", type = Negative.class)
+        ,
+        @XmlElement(name = "nz", type = NegativeOrZero.class)
+        ,
+        @XmlElement(name = "po", type = Positive.class)
+        ,
+        @XmlElement(name = "pz", type = PositiveOrZero.class)
     })
     private Set<Constraint> attributeConstraints;
 
@@ -247,17 +276,27 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
         ,
         @XmlElement(name = "nn", type = NotNull.class)
         ,
+        @XmlElement(name = "nb", type = NotBlank.class)
+        ,
+        @XmlElement(name = "ne", type = NotEmpty.class)
+        ,
         @XmlElement(name = "af", type = AssertFalse.class)
         ,
         @XmlElement(name = "at", type = AssertTrue.class)
         ,
         @XmlElement(name = "pa", type = Past.class)
         ,
+        @XmlElement(name = "pp", type = PastOrPresent.class)
+        ,
         @XmlElement(name = "fu", type = Future.class)
+        ,
+        @XmlElement(name = "fp", type = FutureOrPresent.class)
         ,
         @XmlElement(name = "si", type = Size.class)
         ,
         @XmlElement(name = "pt", type = Pattern.class)
+        ,
+        @XmlElement(name = "em", type = Email.class)
         ,
         @XmlElement(name = "mi", type = Min.class)
         ,
@@ -268,6 +307,14 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
         @XmlElement(name = "dma", type = DecimalMax.class)
         ,
         @XmlElement(name = "di", type = Digits.class)
+        ,
+        @XmlElement(name = "ng", type = Negative.class)
+        ,
+        @XmlElement(name = "nz", type = NegativeOrZero.class)
+        ,
+        @XmlElement(name = "po", type = Positive.class)
+        ,
+        @XmlElement(name = "pz", type = PositiveOrZero.class)
     })
     private Set<Constraint> keyConstraints;
 
@@ -282,17 +329,27 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
         ,
         @XmlElement(name = "nn", type = NotNull.class)
         ,
+        @XmlElement(name = "nb", type = NotBlank.class)
+        ,
+        @XmlElement(name = "ne", type = NotEmpty.class)
+        ,
         @XmlElement(name = "af", type = AssertFalse.class)
         ,
         @XmlElement(name = "at", type = AssertTrue.class)
         ,
         @XmlElement(name = "pa", type = Past.class)
         ,
+        @XmlElement(name = "pp", type = PastOrPresent.class)
+        ,
         @XmlElement(name = "fu", type = Future.class)
+        ,
+        @XmlElement(name = "fp", type = FutureOrPresent.class)
         ,
         @XmlElement(name = "si", type = Size.class)
         ,
         @XmlElement(name = "pt", type = Pattern.class)
+        ,
+        @XmlElement(name = "em", type = Email.class)
         ,
         @XmlElement(name = "mi", type = Min.class)
         ,
@@ -303,6 +360,14 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
         @XmlElement(name = "dma", type = DecimalMax.class)
         ,
         @XmlElement(name = "di", type = Digits.class)
+        ,
+        @XmlElement(name = "ng", type = Negative.class)
+        ,
+        @XmlElement(name = "nz", type = NegativeOrZero.class)
+        ,
+        @XmlElement(name = "po", type = Positive.class)
+        ,
+        @XmlElement(name = "pz", type = PositiveOrZero.class)
     })
     private Set<Constraint> valueConstraints;
 
@@ -312,7 +377,11 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
     private String valueConstraintsDataTypeBinding;
 
     public final static Map<Class<? extends Constraint>, Integer> ALL_CONSTRAINTS = getAllConstraintsClass(); //Applicable Constraint template for datatype
-    public final static Supplier<Set<Constraint>> CONSTRAINTS_SUPPLIER = () -> new TreeSet<>((a, b) -> ALL_CONSTRAINTS.getOrDefault(a.getClass(), 0).compareTo(ALL_CONSTRAINTS.getOrDefault(b.getClass(), 0)));
+    public final static Supplier<Set<Constraint>> CONSTRAINTS_SUPPLIER = () -> new TreeSet<>(
+            (a, b) -> ALL_CONSTRAINTS
+                    .getOrDefault(a.getClass(), 0)
+                    .compareTo(ALL_CONSTRAINTS.getOrDefault(b.getClass(), 0))
+    );
 
     protected void loadAttribute(Element element, VariableElement variableElement, ExecutableElement getterElement) {
         this.setId(NBModelerUtil.getAutoGeneratedStringId());
@@ -728,7 +797,11 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
             Set<Class<? extends Constraint>> allowedConstraintsClass = getAttributeConstraintsClass();
             attributeConstraintsMap = allowedConstraintsClass
                     .stream()
-                    .collect(Collectors.toMap(c -> c.getSimpleName(), c -> completeConstraintsMap.get(c.getSimpleName()), (c1, c2) -> c1));
+                    .collect(Collectors.toMap(
+                            c -> c.getSimpleName(),
+                            c -> completeConstraintsMap.get(c.getSimpleName()),
+                            (c1, c2) -> c1
+                    ));
             attributeConstraintsDataTypeBinding = cleanUnusedConstraint(attributeConstraintsDataTypeBinding, allConstraintsClass, completeConstraintsMap);
         }
         return attributeConstraintsMap;
@@ -780,8 +853,9 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
      * @return the complete list of Constraint (old datatype Constraint instance
      * and new created Constraint instance)
      */
-    private void bootAllConstraints(Set<Constraint> constraints) {
+    private Set<Constraint> bootAllConstraints(Set<Constraint> constraints) {
         Set<Class<? extends Constraint>> existingConstraints = constraints.stream().map(c -> c.getClass()).collect(toSet());
+        
         for (Class<? extends Constraint> constraintClass : ALL_CONSTRAINTS.keySet()) {
             if (!existingConstraints.contains(constraintClass)) {
                 try {
@@ -791,6 +865,9 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
                 }
             }
         }
+        Set<Constraint> constraintsWrapper = CONSTRAINTS_SUPPLIER.get();
+        constraintsWrapper.addAll(constraints);
+        return constraintsWrapper;
     }
 
     /**
@@ -798,19 +875,28 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
      */
     private static Map<Class<? extends Constraint>, Integer> getAllConstraintsClass() {
         Map<Class<? extends Constraint>, Integer> classes = new HashMap<>();
-        classes.put(Null.class, 1);
-        classes.put(NotNull.class, 2);
-        classes.put(AssertFalse.class, 3);
-        classes.put(AssertTrue.class, 4);
-        classes.put(Past.class, 5);
-        classes.put(Future.class, 6);
-        classes.put(Size.class, 7);
-        classes.put(Pattern.class, 8);
-        classes.put(Min.class, 9);
-        classes.put(Max.class, 10);
-        classes.put(DecimalMin.class, 11);
-        classes.put(DecimalMax.class, 12);
-        classes.put(Digits.class, 13);
+        classes.put(Null.class,             1);
+        classes.put(NotNull.class,          2);
+        classes.put(NotEmpty.class,         3);
+        classes.put(NotBlank.class,         4);
+        classes.put(AssertFalse.class,      5);
+        classes.put(AssertTrue.class,       6);
+        classes.put(Past.class,             7);
+        classes.put(PastOrPresent.class,    8);
+        classes.put(Future.class,           9);
+        classes.put(FutureOrPresent.class,  10);
+        classes.put(Size.class,             11);
+        classes.put(Pattern.class,          12);
+        classes.put(Email.class,            13);
+        classes.put(Min.class,              14);
+        classes.put(Max.class,              15);
+        classes.put(DecimalMin.class,       16);
+        classes.put(DecimalMax.class,       17);
+        classes.put(Digits.class,           18);
+        classes.put(Negative.class,         19);
+        classes.put(NegativeOrZero.class,   20);
+        classes.put(Positive.class,         21);
+        classes.put(PositiveOrZero.class,   22);
         return classes;
     }
 
@@ -833,6 +919,7 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
     /**
      * Filtered constraint class based on data type
      *
+     * @param attribute
      * @return
      */
     protected Set<Class<? extends Constraint>> getConstraintsClass(String attribute) {
@@ -845,6 +932,9 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
                 case STRING_FQN:
                     classes.add(Size.class);//array, collection, map pending
                     classes.add(Pattern.class);
+                    classes.add(Email.class);
+                    classes.add(NotBlank.class);
+                    classes.add(NotEmpty.class);
                     classes.add(DecimalMin.class);
                     classes.add(DecimalMax.class);
                     classes.add(Digits.class);
@@ -864,6 +954,19 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
                     classes.add(DecimalMin.class);
                     classes.add(DecimalMax.class);
                     classes.add(Digits.class);
+                    classes.add(Negative.class);
+                    classes.add(NegativeOrZero.class);
+                    classes.add(Positive.class);
+                    classes.add(PositiveOrZero.class);
+                    break;
+                case FLOAT:
+                case DOUBLE:
+                case FLOAT_WRAPPER:
+                case DOUBLE_WRAPPER:                    
+                    classes.add(Negative.class);
+                    classes.add(NegativeOrZero.class);
+                    classes.add(Positive.class);
+                    classes.add(PositiveOrZero.class);
                     break;
                 case BOOLEAN:
                 case BOOLEAN_WRAPPER:
@@ -887,7 +990,9 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
                 case MINGUO_DATE:
                 case THAI_BUDDHIST_DATE:
                     classes.add(Past.class);
+                    classes.add(PastOrPresent.class);
                     classes.add(Future.class);
+                    classes.add(FutureOrPresent.class);
                     break;
                 default:
                     if(isArray(attribute)){
@@ -907,7 +1012,6 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
     }
   
     /**
-     * @param constraints
      * @return the constraints
      */
     public Set<Constraint> getAttributeConstraints() {
@@ -915,7 +1019,7 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
             attributeConstraints = CONSTRAINTS_SUPPLIER.get();
         }
         if (ALL_CONSTRAINTS.size() != attributeConstraints.size()) {
-            bootAllConstraints(attributeConstraints);
+            attributeConstraints = bootAllConstraints(attributeConstraints);
         }
         return attributeConstraints;
     }
@@ -928,7 +1032,7 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
             keyConstraints = CONSTRAINTS_SUPPLIER.get();
         }
         if (ALL_CONSTRAINTS.size() != keyConstraints.size()) {
-            bootAllConstraints(keyConstraints);
+            keyConstraints = bootAllConstraints(keyConstraints);
         }
         return keyConstraints;
     }
@@ -941,7 +1045,7 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
             valueConstraints = CONSTRAINTS_SUPPLIER.get();
         }
         if (ALL_CONSTRAINTS.size() != valueConstraints.size()) {
-            bootAllConstraints(valueConstraints);
+            valueConstraints = bootAllConstraints(valueConstraints);
         }
         return valueConstraints;
     }

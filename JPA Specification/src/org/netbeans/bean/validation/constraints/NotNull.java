@@ -27,9 +27,6 @@ public class NotNull extends Constraint {
     public NotNull() {
     }
  
-//    public NotNull(Attribute attribute, Boolean selected) {
-//        super( attribute, selected);
-//    }
     @Override
     public boolean isEmpty(){
         return false;

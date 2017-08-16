@@ -26,8 +26,8 @@ import org.netbeans.jpa.source.JavaSourceParserUtil;
  *
  * @author Gaurav Gupta
  */
-@XmlRootElement(name = "pt")
-public class Pattern extends Constraint {
+@XmlRootElement(name = "em")
+public class Email extends Constraint {
 
     @XmlAttribute(name = "r")
     private String regexp;
@@ -51,7 +51,7 @@ public class Pattern extends Constraint {
 
     @Override
     public boolean isEmpty() {
-        return StringUtils.isBlank(regexp);
+        return false;
     }
 
     @Override
