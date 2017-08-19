@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
 
 /**
@@ -26,7 +27,7 @@ public class UserDTO implements Serializable {
     @Size(max = 50)
     private String lastName;
 
-    @Pattern(regexp = Constants.EMAIL_REGEX, message = Constants.EMAIL_REGEX_MESSAGE)
+    @Email(regexp = Constants.EMAIL_REGEX, message = Constants.EMAIL_REGEX_MESSAGE)
     @Size(min = 5, max = 100)
     private String email;
 

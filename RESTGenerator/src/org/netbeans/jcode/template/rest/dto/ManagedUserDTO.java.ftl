@@ -2,7 +2,7 @@
 
 import java.util.Set;
 import ${entityPackage}.User;
-import java.util.Date;
+import java.time.Instant;
 import javax.validation.constraints.Size;
 
 /**
@@ -16,11 +16,11 @@ public class ManagedUserDTO extends UserDTO {
 
     private Long id;
 
-    private Date createdDate;
+    private Instant createdDate;
 
     private String lastModifiedBy;
 
-    private Date lastModifiedDate;
+    private Instant lastModifiedDate;
 
     @Size(min = PASSWORD_MIN_LENGTH, max = PASSWORD_MAX_LENGTH)
     private String password;
@@ -38,7 +38,7 @@ public class ManagedUserDTO extends UserDTO {
     }
 
     public ManagedUserDTO(Long id, String login, String password, String firstName, String lastName,
-            String email, boolean activated, String langKey, Set<String> authorities, Date createdDate, String lastModifiedBy, Date lastModifiedDate) {
+            String email, boolean activated, String langKey, Set<String> authorities, Instant createdDate, String lastModifiedBy, Instant lastModifiedDate) {
         super(login, firstName, lastName, email, activated, langKey, authorities);
         this.id = id;
         this.createdDate = createdDate;
@@ -55,11 +55,11 @@ public class ManagedUserDTO extends UserDTO {
         this.id = id;
     }
 
-    public Date getCreatedDate() {
+    public Instant getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(Date createdDate) {
+    public void setCreatedDate(Instant createdDate) {
         this.createdDate = createdDate;
     }
 
@@ -71,11 +71,11 @@ public class ManagedUserDTO extends UserDTO {
         this.lastModifiedBy = lastModifiedBy;
     }
 
-    public Date getLastModifiedDate() {
+    public Instant getLastModifiedDate() {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(Instant lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 

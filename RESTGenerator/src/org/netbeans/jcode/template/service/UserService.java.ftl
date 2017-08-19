@@ -48,7 +48,6 @@ public class UserService {
                     // activate given user for the registration key.
                     user.setActivated(true);
                     user.setActivationKey(null);
-                    ${userRepository}.edit(user);
                     log.debug("Activated user: {}", user);
                     return user;
                 });
@@ -58,16 +57,11 @@ public class UserService {
         log.debug("Reset user password for reset key {}", key);
 
         return ${userRepository}.findOneByResetKey(key)
-                .filter(user -> {
-                    ZonedDateTime oneDayAgo = ZonedDateTime.now().minusHours(24);
-                    ZonedDateTime resetDate = ZonedDateTime.ofInstant(Instant.ofEpochMilli(user.getResetDate().getTime()), ZoneId.systemDefault());
-                    return resetDate.isAfter(oneDayAgo);
-                })
+                .filter(user -> user.getResetDate().isAfter(Instant.now().minusSeconds(86400))) // minus 24 hours
                 .map(user -> {
                     user.setPassword(passwordEncoder.encode(newPassword));
                     user.setResetKey(null);
                     user.setResetDate(null);
-                    ${userRepository}.edit(user);
                     return user;
                 });
     }
@@ -77,8 +71,7 @@ public class UserService {
                 .filter(User::getActivated)
                 .map(user -> {
                     user.setResetKey(RandomUtil.generateResetKey());
-                    user.setResetDate(new Date());
-                    ${userRepository}.edit(user);
+                    user.setResetDate(Instant.now());
                     return user;
                 });
     }
@@ -127,7 +120,7 @@ public class UserService {
         String encryptedPassword = passwordEncoder.encode(RandomUtil.generatePassword());
         user.setPassword(encryptedPassword);
         user.setResetKey(RandomUtil.generateResetKey());
-        user.setResetDate(new Date());
+        user.setResetDate(Instant.now());
         user.setActivated(true);
         ${userRepository}.create(user);
         log.debug("Created Information for User: {}", user);
@@ -140,7 +133,6 @@ public class UserService {
             u.setLastName(lastName);
             u.setEmail(email);
             u.setLangKey(langKey);
-            ${userRepository}.edit(u);
             log.debug("Changed Information for User: {}", u);
         });
     }
@@ -153,11 +145,10 @@ public class UserService {
     }
 
     public void changePassword(String password) {
-        ${userRepository}.findOneByLogin(securityUtils.getCurrentUserLogin()).ifPresent(u -> {
+        ${userRepository}.findOneByLogin(securityUtils.getCurrentUserLogin()).ifPresent(user -> {
             String encryptedPassword = passwordEncoder.encode(password);
-            u.setPassword(encryptedPassword);
-            ${userRepository}.edit(u);
-            log.debug("Changed password for User: {}", u);
+            user.setPassword(encryptedPassword);
+            log.debug("Changed password for User: {}", user);
         });
     }
 

@@ -75,8 +75,7 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @Column(name = "reset_key", length = 20)
     private String resetKey;
 
-    @Column(name = "reset_date", nullable = true)
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Column(name = "reset_date")
     private Instant resetDate = null;
 
     @JsonbTransient

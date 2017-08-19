@@ -1,10 +1,10 @@
 <#if package??>package ${package};</#if>
 
-import java.util.Date;
 import javax.inject.Inject;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import ${SecurityUtils_FQN};
+import java.time.Instant;
 
 /**
  * Entity listener class for audit info
@@ -18,13 +18,13 @@ public class AuditListner {
 
     @PrePersist
     void onCreate(AbstractAuditingEntity entity) {
-        entity.setCreatedDate(new Date());
+        entity.setCreatedDate(Instant.now());
         <#if wf>//</#if>entity.setCreatedBy(securityUtils.getCurrentUserLogin());
     }
 
     @PreUpdate
     void onUpdate(AbstractAuditingEntity entity) {
-        entity.setLastModifiedDate(new Date());
+        entity.setLastModifiedDate(Instant.now());
         <#if wf>//</#if>entity.setLastModifiedBy(securityUtils.getCurrentUserLogin());
     }
 }
