@@ -2,7 +2,7 @@
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import org.apache.deltaspike.core.api.config.ConfigProperty;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
 public class MetricsConfig {
