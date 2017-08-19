@@ -12,8 +12,11 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-<#if cdi>import javax.transaction.Transactional;</#if>
+<#if cdi>import javax.transaction.Transactional;
+import static javax.transaction.Transactional.TxType.REQUIRED;
+import static javax.transaction.Transactional.TxType.SUPPORTS;</#if>
 
+<#if cdi>@Transactional(SUPPORTS)</#if>
 public abstract class ${AbstractRepository}<E,P> {
 
     private final Class<E> entityClass;
@@ -24,17 +27,17 @@ public abstract class ${AbstractRepository}<E,P> {
 
     protected abstract EntityManager getEntityManager();
 
-    <#if cdi>@Transactional</#if>
+    <#if cdi>@Transactional(REQUIRED)</#if>
     public void create(E entity) {
         getEntityManager().persist(entity);
     }
 
-    <#if cdi>@Transactional</#if>
+    <#if cdi>@Transactional(REQUIRED)</#if>
     public E edit(E entity) {
         return getEntityManager().merge(entity);
     }
 
-    <#if cdi>@Transactional</#if>
+    <#if cdi>@Transactional(REQUIRED)</#if>
     public void remove(E entity) {
         getEntityManager().remove(getEntityManager().merge(entity));
     }
@@ -70,11 +73,11 @@ public abstract class ${AbstractRepository}<E,P> {
     }
 
     public int count() {
-        CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
-        Root<E> rt = cq.from(entityClass);
-        cq.select(getEntityManager().getCriteriaBuilder().count(rt));
-        Query q = getEntityManager().createQuery(cq);
-        return ((Long) q.getSingleResult()).intValue();
+        CriteriaQuery criteriaQuery = getEntityManager().getCriteriaBuilder().createQuery();
+        Root<E> root = criteriaQuery.from(entityClass);
+        criteriaQuery.select(getEntityManager().getCriteriaBuilder().count(root));
+        Query query = getEntityManager().createQuery(criteriaQuery);
+        return ((Long) query.getSingleResult()).intValue();
     }
 
     public Optional<E> findSingleByNamedQuery(String namedQueryName) {
@@ -88,7 +91,7 @@ public abstract class ${AbstractRepository}<E,P> {
     public Optional<E> findSingleByNamedQuery(String namedQueryName, String entityGraph, Map<String, Object> parameters) {
         Set<Entry<String, Object>> rawParameters = parameters.entrySet();
         TypedQuery<E> query = getEntityManager().createNamedQuery(namedQueryName, entityClass);
-        rawParameters.stream().forEach((entry) -> {
+        rawParameters.forEach((entry) -> {
             query.setParameter(entry.getKey(), entry.getValue());
         });
         if(entityGraph != null){
@@ -115,7 +118,7 @@ public abstract class ${AbstractRepository}<E,P> {
         if (resultLimit > 0) {
             query.setMaxResults(resultLimit);
         }
-        rawParameters.stream().forEach((entry) -> {
+        rawParameters.forEach((entry) -> {
             query.setParameter(entry.getKey(), entry.getValue());
         });
         return query.getResultList();

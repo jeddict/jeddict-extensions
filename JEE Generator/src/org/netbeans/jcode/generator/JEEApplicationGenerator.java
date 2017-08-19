@@ -15,11 +15,9 @@
  */
 package org.netbeans.jcode.generator;
 
-import java.io.IOException;
 import org.netbeans.jcode.generator.internal.ApplicationGeneratorFactory;
 import org.netbeans.jcode.stack.config.data.*;
 import org.netbeans.jcode.task.progress.ProgressHandler;
-import org.openide.util.Exceptions;
 
 /**
  *

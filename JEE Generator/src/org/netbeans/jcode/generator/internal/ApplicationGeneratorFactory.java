@@ -16,8 +16,6 @@
 package org.netbeans.jcode.generator.internal;
 
 import org.netbeans.api.project.Project;
-import org.netbeans.jcode.core.util.ProjectHelper;
-import org.netbeans.jcode.core.util.ProjectType;
 import org.netbeans.jcode.generator.AbstractGenerator;
 
 /**
@@ -27,12 +25,6 @@ import org.netbeans.jcode.generator.AbstractGenerator;
 public class ApplicationGeneratorFactory {
 
     public static AbstractGenerator newInstance(Project project) {
-
-        if(ProjectHelper.getProjectType(project) != ProjectType.JAR ) {
-//        if (MiscUtilities.isJavaEE6AndHigher(project)) {//removed to provide support for Gradle project
-            return new ApplicationGenerator();
-        } else {
-            throw new IllegalStateException("JEE6+ supported");
-        }
+        return new ApplicationGenerator();
     }
 }
