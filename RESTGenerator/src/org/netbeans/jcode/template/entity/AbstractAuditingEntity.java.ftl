@@ -2,8 +2,8 @@
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Date;
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
@@ -19,21 +19,21 @@ public abstract class AbstractAuditingEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @JsonbTransient
     @Column(name = "created_by", length = 50, updatable = false)
-    @JsonIgnore
     private String createdBy;
 
+    @JsonbTransient
     @Column(name = "created_date", nullable = false, updatable = false)
-    @JsonIgnore
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date createdDate = new Date();
 
+    @JsonbTransient
     @Column(name = "last_modified_by", length = 50)
-    @JsonIgnore
     private String lastModifiedBy;
 
+    @JsonbTransient
     @Column(name = "last_modified_date")
-    @JsonIgnore
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date lastModifiedDate = new Date();
 

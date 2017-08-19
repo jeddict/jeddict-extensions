@@ -1,6 +1,6 @@
 <#if package??>package ${package};</#if>
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.json.bind.annotation.JsonbProperty;
 
 /**
  * Object to return as body in JWT Authentication.
@@ -13,7 +13,7 @@ public class JWTToken {
         this.idToken = idToken;
     }
 
-    @JsonProperty("id_token")
+    @JsonbProperty("id_token")
     public String getIdToken() {
         return idToken;
     }

@@ -153,10 +153,8 @@ public class RESTGenerator implements Generator {
         REPOSITORY_TEMPLATES.add(new Template("repository/AuthorityRepository.java.ftl", "Authority"));
         REPOSITORY_TEMPLATES.add(new Template("repository/UserRepository.java.ftl", "User"));
 
-        CONFIG_TEMPLATES.add(new Template("config/ConfigResource.java.ftl", "ConfigResource", "config"));
         CONFIG_TEMPLATES.add(new Template("config/Constants.java.ftl", "Constants", "config"));
         CONFIG_TEMPLATES.add(new Template("config/MailConfig.java.ftl", "MailConfig", "config"));
-//        CONFIG_TEMPLATES.add(new Template("config/MessageResource.java.ftl", "MessageResource", "config"));
         CONFIG_TEMPLATES.add(new Template("config/SecurityConfig.java.ftl", "SecurityConfig", "config"));
 
         CONTROLLER_EXT_TEMPLATES.add(new Template("rest/util/HeaderUtil.java.ftl", "HeaderUtil", "util"));
@@ -217,8 +215,8 @@ public class RESTGenerator implements Generator {
         handler.progress(Console.wrap(RESTGenerator.class, "MSG_Progress_Generating_REST", FG_RED, BOLD, UNDERLINE));
         entityPackage = entityMapping.getPackage();
         Map<String, Object> param = new HashMap<>();
-            param.putAll(generateServerSideComponent());
         if (appConfigData.isCompleteApplication()) {
+            param.putAll(generateServerSideComponent());
             generateUtil();
             CDIUtil.createDD(project);
             generateProducer(param);
@@ -554,7 +552,6 @@ public class RESTGenerator implements Generator {
         FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, restData.getPackage(), true);
         List<RestApp> singletonClasses = new ArrayList<>();
         List<String> providerClasses = new ArrayList<>();
-        singletonClasses.add(RestApp.JACKSON);
         if (restData.isMetrics()) {
             singletonClasses.add(RestApp.METRICS);
         }

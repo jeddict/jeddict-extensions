@@ -14,7 +14,6 @@
         <version.jsonwebtoken>0.6.0</version.jsonwebtoken>
         <version.commons.lang>3.3.2</version.commons.lang>
         <version.commons.email>1.4</version.commons.email>
-        <version.jackson>2.7.5</version.jackson>
     </properties>
     
     <dependencies>
@@ -61,17 +60,6 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-email</artifactId>
             <version>${version.commons.email}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.jaxrs</groupId>
-            <artifactId>jackson-jaxrs-json-provider</artifactId>
-            <version>${version.jackson}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>${version.jackson}</version>
-            <type>jar</type>
         </dependency>
     </dependencies>
 </project>

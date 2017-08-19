@@ -1,29 +1,28 @@
 <#if package??>package ${package};</#if>
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import ${Constants_FQN};
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import javax.json.bind.annotation.JsonbTransient;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.Pattern;
+import java.time.Instant;
 
 /**
  * A user.
  */
 @Entity
 @Table(name = "account")
-@NamedQueries({
-    @NamedQuery(name = "findUserByLogin", query = "select u from User u where u.login = :login"),
-    @NamedQuery(name = "findUserByEmail", query = "select u from User u where u.email = :email"),
-    @NamedQuery(name = "findUserByResetKey", query = "select u from User u where u.resetKey = :resetKey"),
-    @NamedQuery(name = "findUserByActivationKey", query = "select u from User u where u.activationKey = :activationKey"),
-    @NamedQuery(name = "findUserByUserId", query = "select u from User u where u.id = :id")
-})
+@NamedQuery(name = "findUserByLogin", query = "select u from User u where u.login = :login")
+@NamedQuery(name = "findUserByEmail", query = "select u from User u where u.email = :email")
+@NamedQuery(name = "findUserByResetKey", query = "select u from User u where u.resetKey = :resetKey")
+@NamedQuery(name = "findUserByActivationKey", query = "select u from User u where u.activationKey = :activationKey")
+@NamedQuery(name = "findUserByUserId", query = "select u from User u where u.id = :id")
 @NamedEntityGraph(name = "graph.user.authorities", attributeNodes = @NamedAttributeNode("authorities"))
 public class User extends AbstractAuditingEntity implements Serializable {
 
@@ -39,10 +38,10 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @Column(length = 50, unique = true, nullable = false)
     private String login;
 
-    @JsonIgnore
+    @JsonbTransient
     @NotNull
-    @Size(min = 32, max = 32)
-    @Column(name = "password_hash", length = 32)
+    @Size(min = 60, max = 60)
+    @Column(name = "password_hash", length = 60)
     private String password;
 
     @Size(max = 50)
@@ -53,8 +52,8 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @Column(name = "last_name", length = 50)
     private String lastName;
 
-    @Pattern(regexp = Constants.EMAIL_REGEX, message = Constants.EMAIL_REGEX_MESSAGE)
-    @Size(max = 100)
+    @Email(regexp = Constants.EMAIL_REGEX, message = Constants.EMAIL_REGEX_MESSAGE)
+    @Size(min = 5, max = 100)
     @Column(length = 100, unique = true)
     private String email;
 
@@ -66,20 +65,21 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @Column(name = "lang_key", length = 5)
     private String langKey;
 
+    @JsonbTransient
     @Size(max = 20)
     @Column(name = "activation_key", length = 20)
-    @JsonIgnore
     private String activationKey;
 
+    @JsonbTransient
     @Size(max = 20)
     @Column(name = "reset_key", length = 20)
     private String resetKey;
 
     @Column(name = "reset_date", nullable = true)
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
-    private Date resetDate = null;
+    private Instant resetDate = null;
 
-    @JsonIgnore
+    @JsonbTransient
     @ManyToMany
     @JoinTable(name = "user_authority",
             joinColumns = {
@@ -161,11 +161,11 @@ public class User extends AbstractAuditingEntity implements Serializable {
         this.resetKey = resetKey;
     }
 
-    public Date getResetDate() {
+    public Instant getResetDate() {
         return resetDate;
     }
 
-    public void setResetDate(Date resetDate) {
+    public void setResetDate(Instant resetDate) {
         this.resetDate = resetDate;
     }
 

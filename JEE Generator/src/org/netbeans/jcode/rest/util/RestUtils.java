@@ -466,13 +466,10 @@ public class RestUtils {
         StringBuilder builder = new StringBuilder();
         builder.append('{');
         builder.append("Set<Class<?>> resources = new java.util.HashSet<>();");// NOI18N
-        if (!restSupport.hasJersey2(true)) {
-            builder.append(MiscPrivateUtilities.getJacksonProviderSnippet(restSupport));
-        }
-        if(provideClasses!=null){
-        for(String _class : provideClasses){
-            builder.append("resources.add(").append(_class).append(".class);");
-        }
+        if (provideClasses != null) {
+            for (String _class : provideClasses) {
+                builder.append("resources.add(").append(_class).append(".class);");
+            }
         }
         builder.append(RestConstants.GET_REST_RESOURCE_CLASSES2+"(resources);");
         builder.append("return resources;}");

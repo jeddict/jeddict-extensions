@@ -24,7 +24,6 @@ import java.util.List;
  */
 public enum RestApp {
     
-    JACKSON("new JacksonJsonProvider()", Arrays.asList("com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider")), 
     METRICS("new InstrumentedResourceMethodApplicationListener (metricsConfigurer.getMetricRegistry())", Arrays.asList("com.codahale.metrics.jersey2.InstrumentedResourceMethodApplicationListener;"));
     
     private final String body;

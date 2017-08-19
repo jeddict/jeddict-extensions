@@ -35,14 +35,13 @@ public abstract class AbstractTest {
     protected final static MavenResolverSystem RESOLVER = Maven.resolver();
 
     public static WebArchive buildArchive() {
-        File[] jacksonFiles = RESOLVER.resolve("com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.7.5").withTransitivity().asFile();
         File[] deltaspikeFiles = RESOLVER.resolve("org.apache.deltaspike.core:deltaspike-core-api:1.5.0").withTransitivity().asFile();
         File[] deltaspikeImplFiles = RESOLVER.resolve("org.apache.deltaspike.core:deltaspike-core-impl:1.5.0").withTransitivity().asFile();
 
         final WebArchive archive = ShrinkWrap.create(WebArchive.class);
         archive.addClass(${AbstractRepository}.class).addPackage(HeaderUtil.class.getPackage())
                 .addClass(EntityManagerProducer.class).addClass(LoggerProducer.class)
-                .addAsLibraries(jacksonFiles).addAsLibraries(deltaspikeFiles).addAsLibraries(deltaspikeImplFiles)
+                .addAsLibraries(deltaspikeFiles).addAsLibraries(deltaspikeImplFiles)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"))
                 .addAsResource("test-persistence.xml", "META-INF/persistence.xml")
                 .addAsResource(new ClassLoaderAsset("META-INF/sql/insert.sql"), "META-INF/sql/insert.sql")
