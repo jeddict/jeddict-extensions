@@ -61,8 +61,6 @@ import org.openide.util.Parameters;
 
 public class SourceGroupSupport {
 
-    private static final Logger LOGGER = Logger.getLogger(SourceGroupSupport.class.getName());
-
     private SourceGroupSupport() {
     }
 

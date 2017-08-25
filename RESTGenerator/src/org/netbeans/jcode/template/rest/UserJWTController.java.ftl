@@ -1,7 +1,6 @@
 <#if package??>package ${package};</#if>
 
-import ${JWTToken_FQN};
-import ${Constants_FQN};
+import static ${Constants_FQN}.*;
 import ${entityPackage}.User;
 import javax.inject.Inject;
 import ${LoginDTO_FQN};
@@ -17,6 +16,8 @@ import ${AuthenticationException_FQN};
 import ${TokenProvider_FQN};
 import ${UserAuthenticationToken_FQN};
 import ${UserService_FQN};
+import javax.json.Json;
+import javax.json.JsonObject;
 import javax.validation.Valid;
 <#if metrics>import com.codahale.metrics.annotation.Timed;</#if>
 <#if docs>import com.wordnik.swagger.annotations.Api;
@@ -41,8 +42,9 @@ public class ${UserJWTController} {
      * </p>
      *
      * @param loginDTO the login details to authenticate
-     * @return the Response with status 200 (OK) and with body the
-     * new jwt token, or with status 401 (Unauthorized) if the authentication fails
+     * @return the Response with status 200 (OK) and with body the new jwt
+     * token, or with status 401 (Unauthorized) if the authentication fails
+     * @throws javax.servlet.ServletException
      */
     <#if metrics>@Timed</#if>
     <#if docs>@ApiOperation(value = "authenticate the credential" )
@@ -56,12 +58,15 @@ public class ${UserJWTController} {
     public Response login(@Valid LoginDTO loginDTO) throws ServletException {
 
         UserAuthenticationToken authenticationToken = new UserAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword());
-
         try {
             User user = userService.authenticate(authenticationToken);
             boolean rememberMe = (loginDTO.isRememberMe() == null) ? false : loginDTO.isRememberMe();
-            String jwt = tokenProvider.createToken(user, rememberMe);
-            return Response.ok(new JWTToken(jwt)).header(Constants.AUTHORIZATION_HEADER, "Bearer " + jwt).build();
+            String token = tokenProvider.createToken(user, rememberMe);
+            return Response.ok(Json.createObjectBuilder()
+                                    .add(TOKEN_PROPERTY, token)
+                                    .build())
+                    .header(AUTHORIZATION_HEADER, BEARER_PREFIX + token)
+                    .build();
         } catch (AuthenticationException exception) {
             return Response.status(Status.UNAUTHORIZED).header("AuthenticationException", exception.getLocalizedMessage()).build();
         }

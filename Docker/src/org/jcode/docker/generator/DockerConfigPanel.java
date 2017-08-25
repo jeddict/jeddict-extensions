@@ -312,11 +312,13 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
 
         Component buildInstanceLabel = buildInstanceVisual.getComponent(0);
         if(buildInstanceLabel instanceof JLabel){
-            ((JLabel) buildInstanceLabel).setText("Docker host :       ");
+            //((JLabel) buildInstanceLabel).setText("Docker host :       ");
+            ((JLabel) buildInstanceLabel).setText("Docker machine : ");
         }
         Component buildInstanceCombo = buildInstanceVisual.getComponent(1);
         if(buildInstanceCombo instanceof JComboBox){
             ((JComboBox)buildInstanceCombo).addActionListener(e -> checkDockerStatus());
+            //((JComboBox)buildInstanceCombo).setEditable(true);
         }
         dovckubeLayeredPane.add(buildInstanceVisual, java.awt.BorderLayout.CENTER);
 
@@ -621,8 +623,8 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
     private boolean checkDockerStatus() {
         if (!dockerMachineCheckBox.isSelected()) {
             infoLabel.setText(getMessage(DockerConfigPanel.class, "DOCKER_DISABLED_MESSAGE"));
-        } else if (buildInstanceVisual.getInstance() == null) {
-            infoLabel.setText(getMessage(DockerConfigPanel.class, "DOCKER_DISABLED", getMessage(DockerConfigPanel.class, "DOKER_MACHINE_REQUIRED")));
+//        } else if (buildInstanceVisual.getInstance() == null) {
+//            infoLabel.setText(getMessage(DockerConfigPanel.class, "DOCKER_DISABLED", getMessage(DockerConfigPanel.class, "DOKER_MACHINE_REQUIRED")));
         } else if (getServerType() == null || getServerType() == NONE) {
             infoLabel.setText(getMessage(DockerConfigPanel.class, "DOCKER_DISABLED", getMessage(DockerConfigPanel.class, "SERVER_REQUIRED")));
         } else {
@@ -633,7 +635,11 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
     }
 
     private void loadServerTypeModel() {
-        serverComboBox.setModel(new DefaultComboBoxModel(Stream.of(ServerType.values()).toArray(ServerType[]::new)));
+        serverComboBox.setModel(new DefaultComboBoxModel(
+                Stream.of(ServerType.values())
+                        .filter(ServerType::isVisible)
+                        .toArray(ServerType[]::new))
+        );
     }
 
     private void loadDatabaseTypeModel() {

@@ -120,7 +120,7 @@ public final class RepositoryGenerator implements Generator {
     }
 
     private FileObject generateProducer() throws IOException {
-        String _package = repositoryData.getPackage() + ".producer";
+        String _package = repositoryData.getAppPackage() + ".producer";
         FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, _package, true);
         String fileName = "EntityManagerProducer";
         FileObject afFO = targetFolder.getFileObject(fileName, JAVA_EXT);//skips here

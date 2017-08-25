@@ -40,8 +40,8 @@ public class User extends AbstractAuditingEntity implements Serializable {
 
     @JsonbTransient
     @NotNull
-    @Size(min = 60, max = 60)
-    @Column(name = "password_hash", length = 60)
+    @Size(min = 32, max = 32)
+    @Column(name = "password_hash", length = 32)
     private String password;
 
     @Size(max = 50)

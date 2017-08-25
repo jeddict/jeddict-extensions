@@ -22,6 +22,7 @@ import org.openide.util.NbBundle;
  *
  * @author Gaurav Gupta
  */
+@Deprecated
 public enum FilterType {
 
     PRE_MATCHING(RestConstants.PRE_MATCHING,

@@ -1,5 +1,8 @@
 <#if package??>package ${package};</#if>
 
+/**
+ * DTO for storing the user's key and password.
+ */
 public class KeyAndPasswordDTO {
 
     private String key;

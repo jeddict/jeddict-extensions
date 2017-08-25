@@ -53,7 +53,9 @@ public class ${controllerClass}Test extends ApplicationTest {
 
     @Deployment
     public static WebArchive createDeployment() {
-        return buildApplication()<#list connectedClasses as connectedClass>.addClass(${connectedClass}.class)</#list>.addClass(${EntityRepository}.class).addClass(${controllerClass}.class);
+        return buildApplication()<#list connectedClasses as connectedClass>.addClass(${connectedClass}.class)</#list>
+                .addClass(${EntityRepository}.class)
+                .addClass(${controllerClass}.class);
     }
 
     private static ${instanceType} ${instanceName};

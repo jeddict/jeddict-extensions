@@ -32,15 +32,15 @@ import static org.netbeans.jcode.jpa.PersistenceProviderType.HIBERNATE;
  */
 public enum ServerType {
     
-    NONE(null, "<No Server Selected>", null, null, false,
+    NONE(true, null, "<No Server Selected>", null, null, false,
             null, null, EMPTY_LIST),
-    PAYARA(PAYARA_FAMILY, "Payara (recommended)", ECLIPSELINK, DERBY, false,
+    PAYARA(true, PAYARA_FAMILY, "Payara (recommended)", ECLIPSELINK, DERBY, false,
            "${build.name}.war", "DockerFile_PAYARA.ftl", Arrays.asList("latest", "161", "161.1")),
-    PAYARA_MICRO(PAYARA_FAMILY, "Payara Micro (recommended)", ECLIPSELINK, DERBY, false,
+    PAYARA_MICRO(true, PAYARA_FAMILY, "Payara Micro (recommended)", ECLIPSELINK, DERBY, false,
            "${build.name}.jar", "DockerFile_JAVA.ftl", EMPTY_LIST),
-    WILDFLY(WILDFLY_FAMILY, "Wildfly", HIBERNATE, H2, false,
+    WILDFLY(false, WILDFLY_FAMILY, "Wildfly", HIBERNATE, H2, false,
            "${build.name}.war", "DockerFile_WILDFLY.ftl", Arrays.asList("latest", "8.1.0.Final", "8.2.1.Final", "8.2.0.Final", "9.0.0.Final", "10.1.0.Final", "9.0.1.Final", "9.0.2.Final", "10.0.0.Final")),
-    WILDFLY_SWARM(WILDFLY_FAMILY, "Wildfly Swarm", HIBERNATE, H2, true,
+    WILDFLY_SWARM(false, WILDFLY_FAMILY, "Wildfly Swarm", HIBERNATE, H2, true,
           "${build.name}-swarm.jar", "DockerFile_JAVA.ftl", EMPTY_LIST);
 //    GLASSFISH("Glassfish", Arrays.asList("4.1.1","4.1.1-web")),
 
@@ -52,11 +52,17 @@ public enum ServerType {
     private final PersistenceProviderType persistenceProviderType;
     private final DatabaseType embeddedDB;
     private final boolean embeddedDBDriverRequired;
-    
+    private final boolean visible;
 
-    private ServerType(ServerFamily family, String displayName, 
-            PersistenceProviderType persistenceProviderType, DatabaseType embeddedDB, boolean embeddedDBDriverRequired,
-            String binary, String template, List<String> version) {
+    private ServerType (boolean                 visible,
+                        ServerFamily            family, 
+                        String                  displayName, 
+                        PersistenceProviderType persistenceProviderType, 
+                        DatabaseType            embeddedDB, 
+                        boolean                 embeddedDBDriverRequired,
+                        String                  binary, 
+                        String                  template, 
+                        List<String>            version) {
         this.family = family;
         this.displayName = displayName;
         this.embeddedDB = embeddedDB;
@@ -65,6 +71,7 @@ public enum ServerType {
         this.template = template;
         this.version = version;
         this.persistenceProviderType = persistenceProviderType;
+        this.visible = visible;
     }
 
     public String getDisplayName() {
@@ -120,6 +127,13 @@ public enum ServerType {
      */
     public boolean isEmbeddedDBDriverRequired() {
         return embeddedDBDriverRequired;
+    }
+
+    /**
+     * @return the visible
+     */
+    public boolean isVisible() {
+        return visible;
     }
 
 }

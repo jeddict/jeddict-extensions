@@ -12,13 +12,11 @@ import ${AuthenticationException_FQN};
 import ${UserAuthenticationToken_FQN};
 import ${UserDTO_FQN};
 import java.time.Instant;
-import java.time.ZoneId;
 import org.slf4j.Logger;
-import java.time.ZonedDateTime;
 import javax.inject.Inject;
 import java.util.*;
 import javax.ejb.Stateless;
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.*;
 
 /**
  * Service class for managing users.
@@ -55,7 +53,6 @@ public class UserService {
 
     public Optional<User> completePasswordReset(String newPassword, String key) {
         log.debug("Reset user password for reset key {}", key);
-
         return ${userRepository}.findOneByResetKey(key)
                 .filter(user -> user.getResetDate().isAfter(Instant.now().minusSeconds(86400))) // minus 24 hours
                 .map(user -> {
@@ -128,19 +125,41 @@ public class UserService {
     }
 
     public void updateUser(String firstName, String lastName, String email, String langKey) {
-        ${userRepository}.findOneByLogin(securityUtils.getCurrentUserLogin()).ifPresent(u -> {
-            u.setFirstName(firstName);
-            u.setLastName(lastName);
-            u.setEmail(email);
-            u.setLangKey(langKey);
-            log.debug("Changed Information for User: {}", u);
-        });
+        ${userRepository}.findOneByLogin(securityUtils.getCurrentUserLogin())
+            .ifPresent(user -> {
+                user.setFirstName(firstName);
+                user.setLastName(lastName);
+                user.setEmail(email);
+                user.setLangKey(langKey);
+                log.debug("Changed Information for User: {}", user);
+            });
     }
 
-    public void deleteUserInformation(String login) {
-        ${userRepository}.findOneByLogin(login).ifPresent(u -> {
-            ${userRepository}.remove(u);
-            log.debug("Deleted User: {}", u);
+    public Optional<UserDTO> updateUser(UserDTO userDTO) {
+        return Optional.of(${userRepository}
+                .find(userDTO.getId()))
+                .map(user -> {
+                    user.setLogin(userDTO.getLogin());
+                    user.setFirstName(userDTO.getFirstName());
+                    user.setLastName(userDTO.getLastName());
+                    user.setEmail(userDTO.getEmail());
+                    user.setActivated(userDTO.isActivated());
+                    user.setLangKey(userDTO.getLangKey());
+                    user.setAuthorities(userDTO.getAuthorities()
+                            .stream()
+                            .map(${authorityRepository}::find)
+                            .collect(toSet())
+                    );
+                    log.debug("Changed Information for User: {}", user);
+                    return user;
+                })
+                .map(UserDTO::new);
+    }
+
+    public void deleteUser(String login) {
+        ${userRepository}.findOneByLogin(login).ifPresent(user -> {
+            ${userRepository}.remove(user);
+            log.debug("Deleted User: {}", user);
         });
     }
 
@@ -161,9 +180,6 @@ public class UserService {
     }
 
     public User getUserWithAuthorities() {
-        if (securityUtils.getCurrentUserLogin() == null) {
-            return null;
-        }
         return ${userRepository}.findOneWithAuthoritiesByLogin(securityUtils.getCurrentUserLogin()).orElse(null);
     }
 
@@ -174,6 +190,16 @@ public class UserService {
         } else {
             throw new AuthenticationException();
         }
+    }
+
+    /**
+     * @return a list of all the authorities
+     */
+    public List<String> getAuthorities() {
+        return ${authorityRepository}.findAll()
+                .stream()
+                .map(Authority::getName)
+                .collect(toList());
     }
 
 <#--    /**

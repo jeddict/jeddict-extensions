@@ -31,6 +31,10 @@ public class MailConfig {
     @ConfigProperty(name = "service.mail.from")
     private String from;
 
+    @Inject
+    @ConfigProperty(name = "service.mail.baseurl")
+    private String baseUrl;
+
     /**
      * @return the enable
      */
@@ -43,6 +47,13 @@ public class MailConfig {
      */
     public String getHost() {
         return host;
+    }
+
+    /**
+     * @return the port
+     */
+    public int getPort() {
+        return port;
     }
 
     /**
@@ -67,10 +78,10 @@ public class MailConfig {
     }
 
     /**
-     * @return the port
+     * @return the from
      */
-    public int getPort() {
-        return port;
+    public String getBaseUrl() {
+        return baseUrl;
     }
 
 }

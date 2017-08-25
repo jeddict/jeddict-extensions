@@ -88,9 +88,6 @@
                                     </run>
                                 </image>-->
                             </images>
-                            <machine>
-                             <name>${docker.machine}</name>
-                           </machine>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -103,8 +100,6 @@
                 <docker.binary>maven/${binary}</docker.binary>
                 
                 <docker.image>${project.groupId}/${project.artifactId}:${project.version}</docker.image>
-                <docker.machine>default</docker.machine>
-                
             </properties>
         </profile>
     </profiles>

@@ -34,7 +34,6 @@ public class RESTData extends LayerConfigData<RepositoryData> {
     private String prefixName;
     private String suffixName;
     private String _package;
-    private String appPackage;
     private RestConfigData restConfigData;
     private ControllerReturnType returnType;
     private List<FilterType> filterTypes;
@@ -103,10 +102,12 @@ public class RESTData extends LayerConfigData<RepositoryData> {
         this.restConfigData = restConfigData;
     }
 
+    @Deprecated
     public ControllerReturnType getReturnType() {
         return returnType;
     }
 
+    @Deprecated
     public void setReturnType(ControllerReturnType returnType) {
         this.returnType = returnType;
     }
@@ -114,6 +115,7 @@ public class RESTData extends LayerConfigData<RepositoryData> {
     /**
      * @return the filterTypes
      */
+    @Deprecated
     public List<FilterType> getFilterTypes() {
         if (filterTypes == null) {
             filterTypes = new ArrayList<>();
@@ -124,30 +126,19 @@ public class RESTData extends LayerConfigData<RepositoryData> {
     /**
      * @param filterTypes the filterTypes to set
      */
+    @Deprecated
     public void setFilterTypes(List<FilterType> filterTypes) {
         this.filterTypes = filterTypes;
     }
 
+    @Deprecated
     public boolean addFilterType(FilterType filterType) {
         return getFilterTypes().add(filterType);
     }
 
+    @Deprecated
     public boolean removeFilterType(FilterType filterType) {
         return getFilterTypes().remove(filterType);
-    }
-
-    /**
-     * @return the appPackage
-     */
-    public String getAppPackage() {
-        return appPackage;
-    }
-
-    /**
-     * @param appPackage the appPackage to set
-     */
-    public void setAppPackage(String appPackage) {
-        this.appPackage = appPackage;
     }
 
     /**

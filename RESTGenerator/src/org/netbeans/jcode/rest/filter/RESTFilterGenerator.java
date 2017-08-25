@@ -22,11 +22,9 @@ import java.util.Map;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import static org.netbeans.jcode.core.util.Constants.JAVA_EXT_SUFFIX;
-import org.netbeans.jcode.core.util.FileUtil;
 import static org.netbeans.jcode.core.util.FileUtil.expandTemplate;
 import static org.netbeans.jcode.core.util.SourceGroupSupport.getPackageForFolder;
 import org.netbeans.jcode.task.progress.ProgressHandler;
-import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
 import static org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers.unqualify;
 import org.openide.filesystems.FileObject;
 
@@ -34,6 +32,7 @@ import org.openide.filesystems.FileObject;
  *
  * @author Gaurav Gupta
  */
+@Deprecated
 public class RESTFilterGenerator {
 
     private static final String TEMPLATE_PATH = "/org/netbeans/jcode/rest/filter/resources/";

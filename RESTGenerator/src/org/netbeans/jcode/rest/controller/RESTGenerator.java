@@ -36,7 +36,6 @@ import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import static org.netbeans.bean.validation.constraints.ConstraintUtil.getAttributeDefaultValue;
 import static org.netbeans.bean.validation.constraints.ConstraintUtil.getAttributeUpdateValue;
-import org.netbeans.jcode.cdi.logger.LoggerProducerGenerator;
 import org.netbeans.jcode.cdi.util.CDIUtil;
 import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.BOLD;
@@ -186,10 +185,9 @@ public class RESTGenerator implements Generator {
 
         SERVICE_TEMPLATES.add(new Template("security/TokenProvider.java.ftl", "TokenProvider", "security.jwt"));
         SERVICE_TEMPLATES.add(new Template("security/JWTAuthenticationFilter.java.ftl", "JWTAuthenticationFilter", "security.jwt"));
-        SERVICE_TEMPLATES.add(new Template("security/JWTToken.java.ftl", "JWTToken", "security.jwt"));
 
-        SERVICE_TEMPLATES.add(new Template("service/mail/TemplateEngineProvider.java.ftl", "TemplateEngineProvider", "service.mail"));
-        SERVICE_TEMPLATES.add(new Template("service/mail/MailService.java.ftl", "MailService", "service.mail"));
+        SERVICE_TEMPLATES.add(new Template("producer/TemplateEngineProducer.java.ftl", "TemplateEngineProducer", "producer"));
+        SERVICE_TEMPLATES.add(new Template("service/MailService.java.ftl", "MailService", "service"));
         SERVICE_TEMPLATES.add(new Template("util/RandomUtil.java.ftl", "RandomUtil", "util"));
         SERVICE_TEMPLATES.add(new Template("service/UserService.java.ftl", "UserService", "service"));
 
@@ -240,13 +238,13 @@ public class RESTGenerator implements Generator {
     }
 
     private FileObject generateProducer(Map<String, Object> appParam) throws IOException {
-        String _package = repositoryData.getPackage() + ".producer";
+        String _package = repositoryData.getAppPackage() + ".producer";
         FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, _package, true);
         String fileName = "LoggerProducer";
         FileObject afFO = targetFolder.getFileObject(fileName, JAVA_EXT);
         if (afFO == null) {
             handler.progress(fileName);
-            afFO = org.netbeans.jcode.core.util.FileUtil.expandTemplate("org/netbeans/jcode/template/service/producer/LoggerProducer.java.ftl", targetFolder, fileName + '.' + JAVA_EXT, Collections.singletonMap("package", _package));
+            afFO = org.netbeans.jcode.core.util.FileUtil.expandTemplate(TEMPLATE+ "producer/LoggerProducer.java.ftl", targetFolder, fileName + '.' + JAVA_EXT, Collections.singletonMap("package", _package));
         }
         return afFO;
     }
@@ -421,7 +419,7 @@ public class RESTGenerator implements Generator {
         registerTemplates();
 
         Map<String, Object> param = new HashMap<>();
-        String appPackage = restData.getAppPackage();
+        String appPackage = repositoryData.getAppPackage();
 
         final String abstractRepository = repositoryData.getPrefixName() + REPOSITORY_ABSTRACT + repositoryData.getSuffixName();
         param.put("cdi", repositoryData.isCDI());
@@ -429,8 +427,8 @@ public class RESTGenerator implements Generator {
         
         param.put("AbstractRepository", abstractRepository);
         param.put("AbstractRepository_FQN", repositoryData.getPackage() + '.' + abstractRepository);
-        param.put("EntityManagerProducer_FQN", repositoryData.getPackage() + ".producer.EntityManagerProducer");
-        param.put("LoggerProducer_FQN", repositoryData.getPackage() + ".producer.LoggerProducer");
+        param.put("EntityManagerProducer_FQN", repositoryData.getAppPackage() + ".producer.EntityManagerProducer");
+        param.put("LoggerProducer_FQN", repositoryData.getAppPackage() + ".producer.LoggerProducer");
 
         param.put("entityPackage", entityPackage);
         param.put("PU", entityMapping.getPersistenceUnitName());
@@ -480,8 +478,10 @@ public class RESTGenerator implements Generator {
             if (configRoot == null) {//non-maven project
                 configRoot = source.getRootFolder();
             }
-            expandTemplate(TEMPLATE + "config/resource/insert.sql.ftl", getFolderForPackage(configRoot, "META-INF.sql", true), "insert.sql", singletonMap("database", dockerConfigData.getDatabaseType() != null ? dockerConfigData.getDatabaseType() : "Derby"));
-            FileUtil.copyStaticResource(TEMPLATE + "config/resource/config-resources.zip", configRoot, null, handler);
+            expandTemplate(TEMPLATE + "config/resource/META-INF/sql/insert.sql.ftl", getFolderForPackage(configRoot, "META-INF.sql", true), "insert.sql", singletonMap("database", dockerConfigData.getDatabaseType() != null ? dockerConfigData.getDatabaseType() : "Derby"));
+            expandTemplate(TEMPLATE + "config/resource/META-INF/microprofile-config.properties.ftl", getFolderForPackage(configRoot, "META-INF", true), "microprofile-config.properties", param);
+            expandTemplate(TEMPLATE + "config/resource/i18n/messages.properties.ftl", getFolderForPackage(configRoot, "i18n", true), "messages.properties", EMPTY_MAP);
+            FileUtil.copyStaticResource(TEMPLATE + "config/resource/mail-resources.zip", configRoot, null, handler);
             updatePersistenceXml(Arrays.asList(entityPackage + ".User", entityPackage + ".Authority"));
 
             if (restData.isTestCase()) {
@@ -490,7 +490,7 @@ public class RESTGenerator implements Generator {
 //              expandTemplate(TEMPLATE + "arquillian/config/glassfish-resources.xml.ftl", configRoot, "glassfish-resources.xml", EMPTY_MAP);
                 expandTemplate(TEMPLATE + "arquillian/config/web.xml.ftl", configRoot, "web.xml", EMPTY_MAP);
                 expandTemplate(TEMPLATE + "arquillian/config/test-persistence.xml.ftl", configRoot, "test-persistence.xml", Collections.singletonMap("PU_NAME", entityMapping.getPersistenceUnitName()));
-                expandTemplate(TEMPLATE + "config/resource/insert.sql.ftl", getFolderForPackage(configRoot, "META-INF.sql", true), "insert.sql", singletonMap("database", "Derby"));
+                expandTemplate(TEMPLATE + "config/resource/META-INF/sql/insert.sql.ftl", getFolderForPackage(configRoot, "META-INF.sql", true), "insert.sql", singletonMap("database", "Derby"));
             }
         }
         return param;
@@ -566,7 +566,6 @@ public class RESTGenerator implements Generator {
         if (!restData.getFilterTypes().isEmpty()) {
             String UTIL_PACKAGE = "util";
             FileObject utilFolder = SourceGroupSupport.getFolderForPackage(targetFolder, UTIL_PACKAGE, true);
-            LoggerProducerGenerator.generate(utilFolder, handler);
             RESTFilterGenerator.generate(project, source, utilFolder, restData.getFilterTypes(), handler);
         }
 
@@ -593,7 +592,7 @@ public class RESTGenerator implements Generator {
         try {
             if (restAppPack != null && restData.getRestConfigData().getApplicationClass() != null) {
                 RestUtils.createApplicationConfigClass(restSupport, restData.getRestConfigData(),
-                        restAppPack, restData.getAppPackage(), singletonClasses, providerClasses, handler);
+                        restAppPack, repositoryData.getAppPackage(), singletonClasses, providerClasses, handler);
             }
             RestUtils.disableRestServicesChangeListner(project);
             restSupport.configure("Jeddict - REST support");

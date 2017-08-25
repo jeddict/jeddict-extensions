@@ -39,9 +39,12 @@ public abstract class AbstractTest {
         File[] deltaspikeImplFiles = RESOLVER.resolve("org.apache.deltaspike.core:deltaspike-core-impl:1.5.0").withTransitivity().asFile();
 
         final WebArchive archive = ShrinkWrap.create(WebArchive.class);
-        archive.addClass(${AbstractRepository}.class).addPackage(HeaderUtil.class.getPackage())
-                .addClass(EntityManagerProducer.class).addClass(LoggerProducer.class)
-                .addAsLibraries(deltaspikeFiles).addAsLibraries(deltaspikeImplFiles)
+        archive.addClass(${AbstractRepository}.class)
+                .addPackage(HeaderUtil.class.getPackage())
+                .addClass(EntityManagerProducer.class)
+                .addClass(LoggerProducer.class)
+                .addAsLibraries(deltaspikeFiles)
+                .addAsLibraries(deltaspikeImplFiles)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"))
                 .addAsResource("test-persistence.xml", "META-INF/persistence.xml")
                 .addAsResource(new ClassLoaderAsset("META-INF/sql/insert.sql"), "META-INF/sql/insert.sql")

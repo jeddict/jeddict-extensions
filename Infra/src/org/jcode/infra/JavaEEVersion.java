@@ -53,11 +53,11 @@ public enum JavaEEVersion implements Enumy {
 
     @Override
     public Enumy getDefault() {
-        return JAVA_EE_7;
+        return JAVA_EE_8;
     }
     
     public static JavaEEVersion getDefaultVersion() {
-        return JAVA_EE_7;
+        return JAVA_EE_8;
     }
 
 }

@@ -21,6 +21,7 @@ import org.openide.util.NbBundle;
  *
  * @author Gaurav Gupta
  */
+@Deprecated
 public enum ControllerReturnType {
 
     JAXRS_RESPONSE("JAX-RS Response ", NbBundle.getMessage(ControllerReturnType.class, "REST.returnType.Response")),

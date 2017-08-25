@@ -29,6 +29,7 @@ public class RepositoryData extends LayerConfigData {
     private String prefixName;
     private String suffixName;
     private String _package;
+    private String appPackage;
     private boolean isNamed;
     private boolean cdi = true;
     
@@ -45,8 +46,22 @@ public class RepositoryData extends LayerConfigData {
     public void setPackage(String _package) {
         this._package = _package;
     }
+
+    /**
+     * @return the appPackage
+     */
+    public String getAppPackage() {
+        return appPackage;
+    }
+
+    /**
+     * @param appPackage the appPackage to set
+     */
+    public void setAppPackage(String appPackage) {
+        this.appPackage = appPackage;
+    }
     
-        /**
+    /**
      * @return the suffixName
      */
     public String getSuffixName() {

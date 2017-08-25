@@ -16,10 +16,8 @@ import org.slf4j.Logger;
 import javax.inject.Inject;
 import java.net.URI;
 import java.net.URISyntaxException;
-import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -29,12 +27,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 <#if metrics>import com.codahale.metrics.annotation.Timed;</#if>
 <#if docs>import com.wordnik.swagger.annotations.Api;
@@ -67,9 +63,6 @@ public class ${UserController} {
 
     @Inject
     private UserService userService;
-
-    @Context
-    private HttpServletRequest request;
 
     /**
      * POST /users : Creates a new user.
@@ -105,20 +98,7 @@ public class ${UserController} {
             return HeaderUtil.createFailureAlert(Response.status(BAD_REQUEST), "userManagement", "emailexists", "Email already in use").build();
         } else {
             User newUser = userService.createUser(managedUserDTO);
-            String baseUrl = request.getScheme()
-                    + // "http"
-                    "://"
-                    + // "://"
-                    request.getServerName()
-                    + // "myhost"
-                    ":"
-                    + // ":"
-                    request.getServerPort()
-                    + // "80"
-                    request.getContextPath();              
-                    // "/myContextPath" or "" if deployed in root context
-                    
-            mailService.sendCreationEmail(newUser, baseUrl);
+            mailService.sendCreationEmail(newUser);
             return HeaderUtil.createAlert(Response.created(new URI("/${applicationPath}/api/users/" + newUser.getLogin())),
                     "userManagement.created", newUser.getLogin()).entity(new UserDTO(newUser)).build();
         }
@@ -148,29 +128,17 @@ public class ${UserController} {
         log.debug("REST request to update User : {}", managedUserDTO);
         Optional<User> existingUser = ${userRepository}.findOneByEmail(managedUserDTO.getEmail());
         if (existingUser.isPresent() && (!existingUser.get().getId().equals(managedUserDTO.getId()))) {
-            return HeaderUtil.createFailureAlert(Response.status(BAD_REQUEST), "userManagement", "emailexists", "E-mail already in use").build();
+            return HeaderUtil.createFailureAlert(Response.status(BAD_REQUEST), "userManagement", "emailexists", "Email already in use").build();
         }
         existingUser = ${userRepository}.findOneByLogin(managedUserDTO.getLogin().toLowerCase());
         if (existingUser.isPresent() && (!existingUser.get().getId().equals(managedUserDTO.getId()))) {
             return HeaderUtil.createFailureAlert(Response.status(BAD_REQUEST), "userManagement", "userexists", "Login already in use").build();
         }
-        return ${userRepository}
-                .findOneById(managedUserDTO.getId())
-                .map(user -> {
-                    user.setLogin(managedUserDTO.getLogin());
-                    user.setFirstName(managedUserDTO.getFirstName());
-                    user.setLastName(managedUserDTO.getLastName());
-                    user.setEmail(managedUserDTO.getEmail());
-                    user.setActivated(managedUserDTO.isActivated());
-                    user.setLangKey(managedUserDTO.getLangKey());
-                    user.setAuthorities(managedUserDTO.getAuthorities().stream().map(${authorityRepository}::find).collect(toSet()));
-                    ${userRepository}.edit(user);
-                    return HeaderUtil.createAlert(Response.ok(new ManagedUserDTO(${userRepository}
-                            .find(managedUserDTO.getId()))), "userManagement.updated", managedUserDTO.getLogin())
-                            .build();
-                })
-                .orElseGet(() -> Response.status(INTERNAL_SERVER_ERROR).build());
-
+        Optional<UserDTO> updatedUser = userService.updateUser(managedUserDTO);
+        
+        return updatedUser.map(userDTO -> HeaderUtil.createAlert(Response.ok(userDTO),
+                "userManagement.updated", managedUserDTO.getLogin()).build())
+                .orElseGet(() -> Response.status(NOT_FOUND).build());
     }
 
     /**
@@ -191,15 +159,29 @@ public class ${UserController} {
     @Secured
     public Response getAllUsers(@QueryParam("page") int page, @QueryParam("size") int size) throws URISyntaxException {
         List<User> userList = ${userRepository}.getUsersWithAuthorities(page * size, size);
-        List<ManagedUserDTO> managedUserDTOs = userList.stream()
-                .map(ManagedUserDTO::new)
+        List<UserDTO> userDTOs = userList.stream()
+                .map(UserDTO::new)
                 .collect(toList());
 
-        ResponseBuilder builder = Response.ok(managedUserDTOs);
+        ResponseBuilder builder = Response.ok(userDTOs);
         PaginationUtil.generatePaginationHttpHeaders(builder, new Page(page, size, ${userRepository}.count()), "/${applicationPath}/api/users");
         return builder.build();
     }
 
+    /**
+     * @return a string list of the all of the roles
+     */
+    <#if metrics>@Timed</#if>
+    <#if docs>@ApiOperation(value = "get roles")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK")})</#if>
+    @Path("/users/authorities")
+    @GET
+    @Secured(AuthoritiesConstants.ADMIN)
+    public List<String> getAuthorities() {
+        return userService.getAuthorities();
+    }
+    
     /**
      * GET /users/:login : get the "login" user.
      *
@@ -219,16 +201,16 @@ public class ${UserController} {
     public Response getUser(@PathParam("login") String login) {
         log.debug("REST request to get User : {}", login);
         return userService.getUserWithAuthoritiesByLogin(login)
-                .map(ManagedUserDTO::new)
-                .map(managedUserDTO -> Response.ok(managedUserDTO).build())
+                .map(UserDTO::new)
+                .map(userDTO -> Response.ok(userDTO).build())
                 .orElse(Response.status(NOT_FOUND).build());
     }
 
     /**
-     * DELETE USER :login : remove the "login" User.
+     * DELETE /users/:login : delete the "login" User.
      *
-     * @param login the login of the user to remove
-     * @return the Response with status 200 (OK) or with status 404 (Not Found)
+     * @param login the login of the user to delete
+     * @return the Response with status 200 (OK)
      */
     <#if metrics>@Timed</#if>
     <#if docs>@ApiOperation(value = "remove the user" )
@@ -241,7 +223,7 @@ public class ${UserController} {
     @Secured(AuthoritiesConstants.ADMIN)
     public Response deleteUser(@PathParam("login") String login) {
         log.debug("REST request to delete User: {}", login);
-        userService.deleteUserInformation(login);
+        userService.deleteUser(login);
         return HeaderUtil.createAlert(Response.ok(), "userManagement.deleted", login).build();
     }
 }

@@ -15,19 +15,19 @@
  */
 package org.netbeans.jcode.repository;
 
-import java.util.prefs.Preferences;
 import javax.lang.model.SourceVersion;
 import javax.swing.ComboBoxModel;
+import javax.swing.JComboBox;
 import javax.swing.text.JTextComponent;
 import org.apache.commons.lang.StringUtils;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import org.netbeans.api.project.Project;
-import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.SourceGroup;
 import static org.netbeans.jcode.core.util.JavaSourceHelper.isValidPackageName;
 import org.netbeans.jcode.stack.config.panel.LayerConfigPanel;
-import org.netbeans.jcode.util.PreferenceUtils;
 import org.netbeans.spi.java.project.support.ui.PackageView;
 import org.openide.util.NbBundle;
+import static org.openide.util.NbBundle.getMessage;
 
 /**
  *
@@ -36,6 +36,7 @@ import org.openide.util.NbBundle;
 public class RepositoryPanel extends LayerConfigPanel<RepositoryData> {
 
     private static final String DEFAULT_PACKAGE = "repository";
+    private static final String DEFAULT_APP_PACKAGE = "app";
 
     public RepositoryPanel() {
         initComponents();
@@ -45,31 +46,36 @@ public class RepositoryPanel extends LayerConfigPanel<RepositoryData> {
     public boolean hasError() {
         warningLabel.setText("");
         if (!isValidPackageName(getPackage())) {
-            warningLabel.setText(NbBundle.getMessage(RepositoryPanel.class, "SessionBeanPanel.invalidPackage.message"));
+            warningLabel.setText(NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.invalidPackage.message"));
+            return true;
+        }
+        if (!isValidPackageName(getAppPackage())) {
+            warningLabel.setText(getMessage(RepositoryPanel.class, "RepositoryPanel.invalidAppPackage.message"));
             return true;
         }
         String prefix = getPrefix();
         String suffix = getSuffix();
         
         if (StringUtils.isNotBlank(prefix) && !SourceVersion.isName(prefix)) {
-            warningLabel.setText(NbBundle.getMessage(RepositoryPanel.class, "SessionBeanPanel.invalidPrefix.message"));
+            warningLabel.setText(NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.invalidPrefix.message"));
             return true;
         }
         if (StringUtils.isNotBlank(suffix) && !SourceVersion.isName(prefix +'_'+ suffix)) {
-            warningLabel.setText(NbBundle.getMessage(RepositoryPanel.class, "SessionBeanPanel.invalidSuffix.message"));
+            warningLabel.setText(NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.invalidSuffix.message"));
             return true;
         }
         return false;
     }
-    
         
-    
-    
     @Override
     public void read(){
         RepositoryData data = this.getConfigData();
         if(StringUtils.isNotBlank(data.getPackage())){
             setPackage(data.getPackage());
+        }
+        
+        if(isNotBlank(data.getAppPackage())){
+            setAppPackage(data.getAppPackage());
         }
         
         if(StringUtils.isNotBlank(data.getPrefixName())){
@@ -83,25 +89,40 @@ public class RepositoryPanel extends LayerConfigPanel<RepositoryData> {
     }
     @Override
     public void store(){
-        this.getConfigData().setPrefixName(getPrefix());
-        this.getConfigData().setSuffixName(getSuffix());
-        this.getConfigData().setPackage(getPackage());
+        RepositoryData data = this.getConfigData();
+        data.setPrefixName(getPrefix());
+        data.setSuffixName(getSuffix());
+        data.setPackage(getPackage());
+        data.setAppPackage(getAppPackage());
+        
     }
-    
-    @Override
-    public void init(String _package, Project project, SourceGroup sourceGroup) {
-        if (sourceGroup != null) {
-            packageCombo.setRenderer(PackageView.listRenderer());
+    private Project project;
+    private SourceGroup sourceGroup;
+
+        private void setPackageType(JComboBox comboBox){
+            comboBox.setRenderer(PackageView.listRenderer());
             ComboBoxModel model = PackageView.createListView(sourceGroup);
             if (model.getSize() > 0) {
                 model.setSelectedItem(model.getElementAt(0));
             }
-            packageCombo.setModel(model);
-            addChangeListener(packageCombo);
+            comboBox.setModel(model);
+            addChangeListener(comboBox); 
+    }
+        
+    @Override
+    public void init(String _package, Project project, SourceGroup sourceGroup) {
+         this.project = project;
+        this.sourceGroup = sourceGroup;
+        if (sourceGroup != null) {
+            setPackageType(packageCombo);
+            setPackageType(appPackageCombo);
+
             if (StringUtils.isBlank(_package)) {
                 setPackage(DEFAULT_PACKAGE);
+                setAppPackage(DEFAULT_APP_PACKAGE);
             } else {
                 setPackage(_package + '.' + DEFAULT_PACKAGE);
+                setAppPackage(_package);
             }
         }
         addChangeListener(prefixField);
@@ -110,6 +131,9 @@ public class RepositoryPanel extends LayerConfigPanel<RepositoryData> {
 
     public String getPackage() {
         return ((JTextComponent) packageCombo.getEditor().getEditorComponent()).getText().trim();
+    }
+        public String getAppPackage() {
+        return ((JTextComponent) appPackageCombo.getEditor().getEditorComponent()).getText().trim();
     }
 
     private void setPackage(String _package) {
@@ -123,6 +147,17 @@ public class RepositoryPanel extends LayerConfigPanel<RepositoryData> {
         ((JTextComponent) packageCombo.getEditor().getEditorComponent()).setText(_package);
     }
     
+        private void setAppPackage(String _package) {
+        ComboBoxModel model = appPackageCombo.getModel();
+        for (int i = 0; i < model.getSize(); i++) {
+            if (model.getElementAt(i).toString().equals(_package)) {
+                model.setSelectedItem(model.getElementAt(i));
+                break;
+            }
+        }
+        ((JTextComponent) appPackageCombo.getEditor().getEditorComponent()).setText(_package);
+    }
+        
     public String getSuffix() {
         return suffixField.getText().trim();
     }
@@ -159,6 +194,10 @@ public class RepositoryPanel extends LayerConfigPanel<RepositoryData> {
         packagePanel = new javax.swing.JPanel();
         packageLabel = new javax.swing.JLabel();
         packageCombo = new javax.swing.JComboBox();
+        appPackagePanel = new javax.swing.JPanel();
+        appPackageLabel = new javax.swing.JLabel();
+        appPackageCombo = new javax.swing.JComboBox();
+        jLabel1 = new javax.swing.JLabel();
 
         warningPanel.setLayout(new java.awt.BorderLayout(10, 0));
 
@@ -167,7 +206,7 @@ public class RepositoryPanel extends LayerConfigPanel<RepositoryData> {
         org.openide.awt.Mnemonics.setLocalizedText(warningLabel, org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.warningLabel.text")); // NOI18N
         warningPanel.add(warningLabel, java.awt.BorderLayout.CENTER);
 
-        jPanel1.setLayout(new java.awt.GridLayout(2, 0, 0, 15));
+        jPanel1.setLayout(new java.awt.GridLayout(4, 0, 0, 15));
 
         suffixPanel.setLayout(new java.awt.BorderLayout(10, 0));
 
@@ -231,6 +270,33 @@ public class RepositoryPanel extends LayerConfigPanel<RepositoryData> {
 
         jPanel1.add(packagePanel);
 
+        appPackagePanel.setLayout(new java.awt.BorderLayout(10, 0));
+
+        org.openide.awt.Mnemonics.setLocalizedText(appPackageLabel, org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.appPackageLabel.text")); // NOI18N
+        appPackageLabel.setToolTipText(org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.appPackageLabel.toolTipText")); // NOI18N
+        appPackageLabel.setPreferredSize(new java.awt.Dimension(100, 17));
+        appPackagePanel.add(appPackageLabel, java.awt.BorderLayout.LINE_START);
+
+        packageCombo.setEditable(true);
+        appPackageCombo.setEditable(true);
+        appPackageCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { " " }));
+        appPackageCombo.setPreferredSize(new java.awt.Dimension(60, 27));
+        appPackageCombo.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                appPackageComboPropertyChange(evt);
+            }
+        });
+        appPackagePanel.add(appPackageCombo, java.awt.BorderLayout.CENTER);
+
+        jPanel1.add(appPackagePanel);
+
+        jLabel1.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.jLabel1.text")); // NOI18N
+        jLabel1.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jLabel1.setAlignmentY(0.0F);
+        jPanel1.add(jLabel1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -249,17 +315,17 @@ public class RepositoryPanel extends LayerConfigPanel<RepositoryData> {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 132, Short.MAX_VALUE)
+            .addGap(0, 187, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                    .addContainerGap(101, Short.MAX_VALUE)
+                    .addContainerGap(156, Short.MAX_VALUE)
                     .addComponent(warningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap()))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(61, Short.MAX_VALUE)))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(50, Short.MAX_VALUE)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -274,10 +340,18 @@ public class RepositoryPanel extends LayerConfigPanel<RepositoryData> {
     private void prefixFieldPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_prefixFieldPropertyChange
         fire();
     }//GEN-LAST:event_prefixFieldPropertyChange
+
+    private void appPackageComboPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_appPackageComboPropertyChange
+        // TODO add your handling code here:
+    }//GEN-LAST:event_appPackageComboPropertyChange
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox appPackageCombo;
+    private javax.swing.JLabel appPackageLabel;
+    private javax.swing.JPanel appPackagePanel;
     private javax.swing.JLabel entityLabel;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel nameLabel;
     private javax.swing.JLayeredPane namePane;

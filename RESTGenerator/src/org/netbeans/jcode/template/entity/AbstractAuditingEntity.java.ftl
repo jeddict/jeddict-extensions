@@ -18,11 +18,11 @@ public abstract class AbstractAuditingEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @JsonbTransient
-    @Column(name = "created_by", nullable = false, length = 50, updatable = false)
+    @Column(name = "created_by", length = 50, updatable = false)
     private String createdBy;
 
     @JsonbTransient
-    @Column(name = "created_date", nullable = false, updatable = false)
+    @Column(name = "created_date", updatable = false)
     private Instant createdDate = Instant.now();
 
     @JsonbTransient

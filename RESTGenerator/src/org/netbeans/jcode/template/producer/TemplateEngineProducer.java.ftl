@@ -7,7 +7,7 @@ import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 
 @ApplicationScoped
-public class TemplateEngineProvider {
+public class TemplateEngineProducer {
 
     @Produces
     public VelocityEngine getTemplateEngine() {

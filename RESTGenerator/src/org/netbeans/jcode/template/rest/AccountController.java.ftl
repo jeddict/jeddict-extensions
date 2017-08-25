@@ -1,6 +1,5 @@
 <#if package??>package ${package};</#if>
 
-import ${MailConfig_FQN};
 import ${UserRepository_FQN};
 import ${User_FQN};
 import ${SecurityUtils_FQN};
@@ -29,6 +28,7 @@ import javax.ws.rs.core.Response;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.CREATED;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static app.config.Constants.INCORRECT_PASSWORD_MESSAGE;
 import org.apache.commons.lang3.StringUtils;
 <#if metrics>import com.codahale.metrics.annotation.Timed;</#if>
 <#if docs>import com.wordnik.swagger.annotations.Api;
@@ -58,9 +58,6 @@ public class ${AccountController} {
     @Inject
     private SecurityUtils securityUtils;
 
-    @Inject
-    private MailConfig mailConfig;
-
     @Context
     private HttpServletRequest request;
 
@@ -81,32 +78,18 @@ public class ${AccountController} {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
     public Response registerAccount(@Valid ManagedUserDTO managedUserDTO) {
-
+        if (!checkPasswordLength(managedUserDTO.getPassword())) {
+            return Response.status(BAD_REQUEST).entity(INCORRECT_PASSWORD_MESSAGE).build();
+        }
         return ${userRepository}.findOneByLogin(managedUserDTO.getLogin().toLowerCase())
                 .map(user -> Response.status(BAD_REQUEST).type(TEXT_PLAIN).entity("login already in use").build())
                 .orElseGet(() -> ${userRepository}.findOneByEmail(managedUserDTO.getEmail())
                         .map(user -> Response.status(BAD_REQUEST).type(TEXT_PLAIN).entity("e-mail address already in use").build())
                         .orElseGet(() -> {
                             User user = userService.createUser(managedUserDTO.getLogin(), managedUserDTO.getPassword(),
-                                    managedUserDTO.getFirstName(), managedUserDTO.getLastName(), managedUserDTO.getEmail().toLowerCase(),
-                                    managedUserDTO.getLangKey());
-                            String baseUrl = request.getScheme()
-                                    + // "http"
-                                    "://"
-                                    + // "://"
-                                    request.getServerName()
-                                    + // "myhost"
-                                    ":"
-                                    + // ":"
-                                    request.getServerPort()
-                                    + // "80"
-                                    request.getContextPath();
-                                    // "/myContextPath" or "" if deployed in root context
-
-                            if (mailConfig.isEnable()) {
-                                mailService.sendActivationEmail(user, baseUrl);
-                            }
-
+                                    managedUserDTO.getFirstName(), managedUserDTO.getLastName(),
+                                    managedUserDTO.getEmail().toLowerCase(), managedUserDTO.getLangKey());
+                                mailService.sendActivationEmail(user);
                             return Response.status(CREATED).build();
                         })
                 );
@@ -116,9 +99,8 @@ public class ${AccountController} {
      * GET /activate : activate the registered user.
      *
      * @param key the activation key
-     * @return the Response with status 200 (OK) and the activated user in
-     * body, or status 500 (Internal Server Error) if the user couldn't be
-     * activated
+     * @return the Response with status 200 (OK) and the activated user in body,
+     * or status 500 (Internal Server Error) if the user couldn't be activated
      */
     <#if metrics>@Timed</#if>
     <#if docs>@ApiOperation(value = "activate the registered user" )
@@ -154,9 +136,8 @@ public class ${AccountController} {
     /**
      * GET /account : get the current user.
      *
-     * @return the Response with status 200 (OK) and the current user in
-     * body, or status 500 (Internal Server Error) if the user couldn't be
-     * returned
+     * @return the Response with status 200 (OK) and the current user in body,
+     * or status 500 (Internal Server Error) if the user couldn't be returned
      */
     <#if metrics>@Timed</#if>
     <#if docs>@ApiOperation(value = "get the current user" )
@@ -192,13 +173,14 @@ public class ${AccountController} {
     @Produces({MediaType.APPLICATION_JSON})
     @Secured
     public Response saveAccount(@Valid UserDTO userDTO) {
+        final String userLogin = securityUtils.getCurrentUserLogin();
         Optional<User> existingUser = ${userRepository}.findOneByEmail(userDTO.getEmail());
-        if (existingUser.isPresent() && (!existingUser.get().getLogin().equalsIgnoreCase(userDTO.getLogin()))) {
+        if (existingUser.isPresent() && (!existingUser.get().getLogin().equalsIgnoreCase(userLogin))) {
             return HeaderUtil.createFailureAlert(Response.status(BAD_REQUEST), "user-management", "emailexists", "Email already in use").build();
         }
         return ${userRepository}
-                .findOneByLogin(securityUtils.getCurrentUserLogin())
-                .map(u -> {
+                .findOneByLogin(userLogin)
+                .map(user -> {
                     userService.updateUser(userDTO.getFirstName(), userDTO.getLastName(), userDTO.getEmail(),
                             userDTO.getLangKey());
                     return Response.ok().build();
@@ -225,7 +207,7 @@ public class ${AccountController} {
     @Secured
     public Response changePassword(String password) {
         if (!checkPasswordLength(password)) {
-            return Response.status(BAD_REQUEST).entity("Incorrect password").build();
+            return Response.status(BAD_REQUEST).entity(INCORRECT_PASSWORD_MESSAGE).build();
         }
         userService.changePassword(password);
         return Response.ok().build();
@@ -250,15 +232,9 @@ public class ${AccountController} {
     public Response requestPasswordReset(String mail) {
         return userService.requestPasswordReset(mail)
                 .map(user -> {
-                    String baseUrl = request.getScheme()
-                            + "://"
-                            + request.getServerName()
-                            + ":"
-                            + request.getServerPort()
-                            + request.getContextPath();
-                    mailService.sendPasswordResetMail(user, baseUrl);
-                    return Response.ok("e-mail was sent").build();
-                }).orElse(Response.status(BAD_REQUEST).entity("e-mail address not registered").build());
+                    mailService.sendPasswordResetMail(user);
+                    return Response.ok("email was sent").build();
+                }).orElse(Response.status(BAD_REQUEST).entity("email address not registered").build());
     }
 
     /**
@@ -282,7 +258,7 @@ public class ${AccountController} {
     @Produces({MediaType.TEXT_PLAIN})
     public Response finishPasswordReset(KeyAndPasswordDTO keyAndPassword) {
         if (!checkPasswordLength(keyAndPassword.getNewPassword())) {
-            return Response.status(BAD_REQUEST).entity("Incorrect password").build();
+            return Response.status(BAD_REQUEST).entity(INCORRECT_PASSWORD_MESSAGE).build();
         }
         return userService.completePasswordReset(keyAndPassword.getNewPassword(), keyAndPassword.getKey())
                 .map(user -> Response.ok().build())
@@ -290,8 +266,8 @@ public class ${AccountController} {
     }
 
     private boolean checkPasswordLength(String password) {
-        return (!StringUtils.isEmpty(password)
+        return !StringUtils.isEmpty(password)
                 && password.length() >= ManagedUserDTO.PASSWORD_MIN_LENGTH
-                && password.length() <= ManagedUserDTO.PASSWORD_MAX_LENGTH);
+                && password.length() <= ManagedUserDTO.PASSWORD_MAX_LENGTH;
     }
 }

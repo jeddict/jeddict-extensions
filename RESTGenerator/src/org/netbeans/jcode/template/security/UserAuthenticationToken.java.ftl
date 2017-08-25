@@ -5,19 +5,21 @@ import java.util.Set;
 public class UserAuthenticationToken {
 
     private final String credentials;
+    
     private final String principal;
 
     private final Set<String> authorities;
-    private boolean authenticated = false;
 
+    private boolean authenticated;
+
+    public UserAuthenticationToken(String principal, String credentials) {
+        this(principal, credentials, null);
+    }
+        
     public UserAuthenticationToken(String principal, String credentials, Set<String> authorities) {
         this.principal = principal;
         this.credentials = credentials;
         this.authorities = authorities;
-    }
-
-    public UserAuthenticationToken(String principal, String credentials) {
-        this(principal, credentials, null);
     }
 
     /**

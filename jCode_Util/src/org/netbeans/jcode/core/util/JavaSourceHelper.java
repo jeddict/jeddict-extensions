@@ -866,6 +866,15 @@ public class JavaSourceHelper {
         }
         return null;
     }
+    
+    public static List<VariableElement> getEnumVariableElements(Project project, String fqClassName) throws IOException {
+        JavaSource javaSource = SourceGroupSupport.getJavaSource(project, fqClassName);
+        if(javaSource == null){
+            throw new IOException();
+        }
+        TypeElement typeElement = JavaSourceHelper.getTypeElement(javaSource);
+        return ElementFilter.fieldsIn(typeElement.getEnclosedElements());
+    }
 
     public static List<? extends AnnotationMirror> getClassAnnotations(JavaSource source) {
         final List<? extends AnnotationMirror>[] classAnons = new List[1];

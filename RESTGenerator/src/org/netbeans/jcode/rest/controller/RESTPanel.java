@@ -20,27 +20,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.prefs.Preferences;
 import static javax.lang.model.SourceVersion.isName;
 import javax.swing.ComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.OK_OPTION;
 import javax.swing.text.JTextComponent;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.netbeans.api.java.source.ui.ScanDialog.runWhenScanFinished;
 import org.netbeans.api.project.Project;
-import static org.netbeans.api.project.ProjectUtils.getPreferences;
 import org.netbeans.api.project.SourceGroup;
 import static org.netbeans.jcode.core.util.JavaSourceHelper.isValidPackageName;
 import org.netbeans.jcode.rest.filter.FilterType;
 import org.netbeans.jcode.rest.applicationconfig.RestConfigData;
 import org.netbeans.jcode.rest.applicationconfig.RestConfigDialog;
 import org.netbeans.jcode.stack.config.panel.*;
-import static org.netbeans.jcode.util.PreferenceUtils.get;
-import static org.netbeans.jcode.util.PreferenceUtils.set;
 import org.netbeans.modules.websvc.rest.spi.RestSupport;
 import org.netbeans.spi.java.project.support.ui.PackageView;
 import static org.openide.util.NbBundle.getMessage;
@@ -52,7 +47,6 @@ import static org.openide.util.NbBundle.getMessage;
 public class RESTPanel extends LayerConfigPanel<RESTData> {
 
     private static final String DEFAULT_PACKAGE = "controller";
-    private static final String DEFAULT_APP_PACKAGE = "app";
     private RestConfigDialog configDialog;
     private final Map<JCheckBox, FilterType> eventTypeBoxs = new HashMap<>();
 
@@ -65,10 +59,6 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         warningLabel.setText("");
         if (!isValidPackageName(getPackage())) {
             warningLabel.setText(getMessage(RESTPanel.class, "RESTPanel.invalidRestPackage.message"));
-            return true;
-        }
-        if (!isValidPackageName(getAppPackage())) {
-            warningLabel.setText(getMessage(RESTPanel.class, "RESTPanel.invalidAppPackage.message"));
             return true;
         }
         String prefix = getPrefix();
@@ -90,10 +80,6 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         RESTData data = this.getConfigData();
         if(isNotBlank(data.getPackage())){
             setPackage(data.getPackage());
-        }
-        
-        if(isNotBlank(data.getAppPackage())){
-            setAppPackage(data.getAppPackage());
         }
         
         if(isNotBlank(data.getPrefixName())){
@@ -118,7 +104,6 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         data.setPrefixName(getPrefix());
         data.setSuffixName(getSuffix());
         data.setPackage(getPackage());
-        data.setAppPackage(getAppPackage());
         if (data.getRestConfigData() == null ) {//&& !useJersey// && !configuredREST){
             RestConfigData restConfigData = new RestConfigData();
             restConfigData.setPackage(getPackage());
@@ -152,18 +137,14 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
 
         if (sourceGroup != null) {
             setPackageType(packageCombo);
-            setPackageType(appPackageCombo);
 
-            String _package, appPackage;
+            String _package;
             if (isBlank(modelerPackage)) {
                 _package = DEFAULT_PACKAGE;
-                appPackage = DEFAULT_APP_PACKAGE;
             } else {
                 _package = modelerPackage + '.' + DEFAULT_PACKAGE;
-                appPackage = modelerPackage;
             }
             setPackage(_package);
-            setAppPackage(appPackage);
         }
         addChangeListener(prefixField);
         addChangeListener(suffixField);
@@ -172,14 +153,6 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
     public String getPackage() {
         return ((JTextComponent) packageCombo.getEditor().getEditorComponent()).getText().trim();
     }
-    public String getAppPackage() {
-        return ((JTextComponent) appPackageCombo.getEditor().getEditorComponent()).getText().trim();
-    }
-
-//
-//    public ControllerReturnType getReturnType() {
-//        return (ControllerReturnType) viewCombo.getSelectedItem();
-//    }
 
     private void setPackage(String _package) {
         ComboBoxModel model = packageCombo.getModel();
@@ -191,19 +164,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         }
         ((JTextComponent) packageCombo.getEditor().getEditorComponent()).setText(_package);
     }
-    
-    private void setAppPackage(String _package) {
-        ComboBoxModel model = appPackageCombo.getModel();
-        for (int i = 0; i < model.getSize(); i++) {
-            if (model.getElementAt(i).toString().equals(_package)) {
-                model.setSelectedItem(model.getElementAt(i));
-                break;
-            }
-        }
-        ((JTextComponent) appPackageCombo.getEditor().getEditorComponent()).setText(_package);
-    }
-
-    
+        
     public String getSuffix() {
         return suffixField.getText().trim();
     }
@@ -291,10 +252,6 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         packagePanel = new javax.swing.JPanel();
         packageLabel = new javax.swing.JLabel();
         packageCombo = new javax.swing.JComboBox();
-        appPackagePanel = new javax.swing.JPanel();
-        appPackageLabel = new javax.swing.JLabel();
-        appPackageCombo = new javax.swing.JComboBox();
-        jLabel1 = new javax.swing.JLabel();
         appPanel = new javax.swing.JPanel();
         testcaseCheckBox = new javax.swing.JCheckBox();
         applicationConfigButton = new javax.swing.JButton();
@@ -311,7 +268,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         org.openide.awt.Mnemonics.setLocalizedText(warningLabel, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.warningLabel.text")); // NOI18N
         warningPanel.add(warningLabel, java.awt.BorderLayout.CENTER);
 
-        jPanel1.setLayout(new java.awt.GridLayout(7, 0, 0, 10));
+        jPanel1.setLayout(new java.awt.GridLayout(5, 0, 0, 10));
 
         suffixPanel.setPreferredSize(new java.awt.Dimension(200, 27));
         suffixPanel.setLayout(new java.awt.BorderLayout(10, 0));
@@ -373,34 +330,6 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         packagePanel.add(packageCombo, java.awt.BorderLayout.CENTER);
 
         jPanel1.add(packagePanel);
-
-        appPackagePanel.setLayout(new java.awt.BorderLayout(10, 0));
-
-        appPackageLabel.setLabelFor(packageCombo);
-        org.openide.awt.Mnemonics.setLocalizedText(appPackageLabel, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.appPackageLabel.text")); // NOI18N
-        appPackageLabel.setToolTipText(org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.appPackageLabel.toolTipText")); // NOI18N
-        appPackageLabel.setPreferredSize(new java.awt.Dimension(100, 17));
-        appPackagePanel.add(appPackageLabel, java.awt.BorderLayout.LINE_START);
-
-        packageCombo.setEditable(true);
-        appPackageCombo.setEditable(true);
-        appPackageCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { " " }));
-        appPackageCombo.setPreferredSize(new java.awt.Dimension(60, 27));
-        appPackageCombo.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                appPackageComboPropertyChange(evt);
-            }
-        });
-        appPackagePanel.add(appPackageCombo, java.awt.BorderLayout.CENTER);
-
-        jPanel1.add(appPackagePanel);
-
-        jLabel1.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.jLabel1.text")); // NOI18N
-        jLabel1.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        jLabel1.setAlignmentY(0.0F);
-        jPanel1.add(jLabel1);
 
         testcaseCheckBox.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(testcaseCheckBox, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.testcaseCheckBox.text")); // NOI18N
@@ -496,8 +425,8 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 74, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(warningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -535,10 +464,6 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
 //        }
     }//GEN-LAST:event_applicationConfigButtonActionPerformed
 
-    private void appPackageComboPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_appPackageComboPropertyChange
-        // TODO add your handling code here:
-    }//GEN-LAST:event_appPackageComboPropertyChange
-
     private void docsCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_docsCheckBoxActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_docsCheckBoxActionPerformed
@@ -561,14 +486,10 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         }
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox appPackageCombo;
-    private javax.swing.JLabel appPackageLabel;
-    private javax.swing.JPanel appPackagePanel;
     private javax.swing.JPanel appPanel;
     private javax.swing.JButton applicationConfigButton;
     private javax.swing.JCheckBox docsCheckBox;
     private javax.swing.JLabel entityLabel;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JCheckBox loggerCheckBox;
     private javax.swing.JCheckBox metricsCheckbox;

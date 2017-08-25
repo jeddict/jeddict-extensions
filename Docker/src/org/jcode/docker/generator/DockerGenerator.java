@@ -132,13 +132,14 @@ public class DockerGenerator implements Generator {
                 handler.info("Docker", "Use \"docker\" profile to create and run Docker image");
 
                 Properties properties = new Properties();
-                if (StringUtils.isBlank(config.getDockerMachine())) {
-                    handler.warning(NbBundle.getMessage(DockerGenerator.class, "TITLE_Docker_Machine_Not_Found"),
-                            NbBundle.getMessage(DockerGenerator.class, "MSG_Docker_Machine_Not_Found"));
+//                    handler.warning(NbBundle.getMessage(DockerGenerator.class, "TITLE_Docker_Machine_Not_Found"),
+//                            NbBundle.getMessage(DockerGenerator.class, "MSG_Docker_Machine_Not_Found"));
+//                    properties.put(DOCKER_MACHINE_PROPERTY, "local");
+//                if (!StringUtils.isBlank(config.getDockerMachine())) {
+                    pomManager = new POMManager(TEMPLATE + "fabric8io/pom/docker_machine_pom.xml", project);
+                    pomManager.commit();
                     properties.put(DOCKER_MACHINE_PROPERTY, "local");
-                } else {
-                    properties.put(DOCKER_MACHINE_PROPERTY, config.getDockerMachine());
-                }
+//                } 
                 properties.put(BINARY, config.getServerType().getBinary());
                 properties.put(DOCKER_IMAGE, config.getDockerNamespace()
                         + "/" + config.getDockerRepository() + ":${project.version}");

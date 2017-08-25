@@ -1,6 +1,6 @@
 <#if package??>package ${package};</#if>
 
-import ${ConfigResource_FQN};
+import ${SecurityConfig_FQN};
 import ${Constants_FQN};
 import ${SecurityUtils_FQN};
 import ${JWTAuthenticationFilter_FQN};
@@ -40,12 +40,24 @@ public abstract class ApplicationTest extends AbstractTest {
     protected String tokenId;
 
     public static WebArchive buildApplication() {
-        return buildArchive().addPackages(true, ConfigResource.class.getPackage(), MailService.class.getPackage(), UserDTO.class.getPackage(), SecurityUtils.class.getPackage(), RandomUtil.class.getPackage())
-                .addClass(User.class).addClass(Authority.class).addClass(AbstractAuditingEntity.class).addClass(AuditListner.class)
-                .addClass(${UserRepository}.class).addClass(${AuthorityRepository}.class).addClass(${UserService}.class)
-                .addAsResource(new ClassLoaderAsset("config/application.properties"), "config/application.properties")
-                .addAsResource(new ClassLoaderAsset("i18n/messages.properties"), "i18n/messages.properties")
-                .addClass(${UserJWTController}.class).addPackage(JWTAuthenticationFilter.class.getPackage());
+        return buildArchive()
+                .addPackages(true, 
+                        SecurityConfig.class.getPackage(), 
+                        MailService.class.getPackage(), 
+                        UserDTO.class.getPackage(), 
+                        SecurityUtils.class.getPackage(), 
+                        JWTAuthenticationFilter.class.getPackage(),
+                        RandomUtil.class.getPackage())
+                .addClass(User.class)
+                .addClass(Authority.class)
+                .addClass(AbstractAuditingEntity.class)
+                .addClass(AuditListner.class)
+                .addClass(${UserRepository}.class)
+                .addClass(${AuthorityRepository}.class)
+                .addClass(${UserService}.class)
+                .addClass(${UserJWTController}.class)
+                .addAsResource(new ClassLoaderAsset("META-INF/microprofile-config.properties"), "META-INF/microprofile-config.properties")
+                .addAsResource(new ClassLoaderAsset("i18n/messages.properties"), "i18n/messages.properties");
     }
 
     @Before

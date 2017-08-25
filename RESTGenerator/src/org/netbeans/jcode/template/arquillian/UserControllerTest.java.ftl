@@ -53,10 +53,11 @@ public class ${UserControllerTest} extends ApplicationTest {
                 "joe@example.com", // e-mail
                 true, // activated
                 "en", // langKey
-                new HashSet<>(Arrays.asList(AuthoritiesConstants.USER)),
+                null, // createdBy
                 null, // createdDate
                 null, // lastModifiedBy
-                null // lastModifiedDate
+                null, // lastModifiedDate
+                new HashSet<>(Arrays.asList(AuthoritiesConstants.USER))
         );
 
         Response response = target("api/users").post(json(validUser));
@@ -79,15 +80,22 @@ public class ${UserControllerTest} extends ApplicationTest {
                 "alice@example.com", // e-mail
                 true, // activated
                 "en", // langKey
-                new HashSet<>(Arrays.asList(AuthoritiesConstants.USER)),
+                null, // createdBy
                 null, // createdDate
                 null, // lastModifiedBy
-                null // lastModifiedDate
+                null, // lastModifiedDate
+                new HashSet<>(Arrays.asList(AuthoritiesConstants.USER))
         );
 
         // Duplicate login, different e-mail
-        ManagedUserDTO duplicatedUser = new ManagedUserDTO(validUser.getId(), validUser.getLogin(), validUser.getPassword(), validUser.getLogin(), validUser.getLastName(),
-                "alicejr@example.com", true, validUser.getLangKey(), validUser.getAuthorities(), validUser.getCreatedDate(), validUser.getLastModifiedBy(), validUser.getLastModifiedDate());
+        ManagedUserDTO duplicatedUser = new ManagedUserDTO(
+                validUser.getId(), validUser.getLogin(), validUser.getPassword(), 
+                validUser.getFirstName(), validUser.getLastName(),
+                "alicejr@example.com", validUser.isActivated(), validUser.getLangKey(), 
+                validUser.getCreatedBy(), validUser.getCreatedDate(), 
+                validUser.getLastModifiedBy(), validUser.getLastModifiedDate(),
+                validUser.getAuthorities()
+        );
 
         // Good user
         Response response = target("api/users").post(json(validUser));
@@ -113,15 +121,22 @@ public class ${UserControllerTest} extends ApplicationTest {
                 "john@example.com", // e-mail
                 true, // activated
                 "en", // langKey
-                new HashSet<>(Arrays.asList(AuthoritiesConstants.USER)),
+                null, // createdBy
                 null, // createdDate
                 null, // lastModifiedBy
-                null // lastModifiedDate
+                null, // lastModifiedDate
+                new HashSet<>(Arrays.asList(AuthoritiesConstants.USER))
         );
 
         // Duplicate e-mail, different login
-        ManagedUserDTO duplicatedUser = new ManagedUserDTO(validUser.getId(), "johnjr", validUser.getPassword(), validUser.getLogin(), validUser.getLastName(),
-                validUser.getEmail(), true, validUser.getLangKey(), validUser.getAuthorities(), validUser.getCreatedDate(), validUser.getLastModifiedBy(), validUser.getLastModifiedDate());
+        ManagedUserDTO duplicatedUser = new ManagedUserDTO(
+                validUser.getId(), "johnjr", validUser.getPassword(), 
+                validUser.getFirstName(), validUser.getLastName(),
+                validUser.getEmail(), validUser.isActivated(), validUser.getLangKey(),
+                validUser.getCreatedBy(), validUser.getCreatedDate(), 
+                validUser.getLastModifiedBy(), validUser.getLastModifiedDate(),
+                validUser.getAuthorities()
+        );
 
         // Good user
         Response response = target("api/users").post(json(validUser));
