@@ -15,7 +15,6 @@
  */
 package org.netbeans.jpa.modeler.spec.validator;
 
-import org.apache.commons.lang.StringUtils;
 import org.netbeans.jpa.modeler.spec.EntityListeners;
 
 public class EntityListenersValidator extends MarshalValidator<EntityListeners> {

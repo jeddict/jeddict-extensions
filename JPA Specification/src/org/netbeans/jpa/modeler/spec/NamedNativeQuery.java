@@ -13,7 +13,6 @@ import javax.lang.model.element.Element;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 import org.netbeans.jpa.modeler.spec.extend.QueryMapping;
 import org.netbeans.jpa.source.JavaSourceParserUtil;

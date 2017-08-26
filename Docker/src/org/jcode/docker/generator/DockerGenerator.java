@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import org.apache.commons.lang.StringUtils;
 import org.jcode.infra.ServerFamily;
 import static org.jcode.infra.ServerFamily.PAYARA_FAMILY;
 import static org.jcode.infra.ServerFamily.WILDFLY_FAMILY;

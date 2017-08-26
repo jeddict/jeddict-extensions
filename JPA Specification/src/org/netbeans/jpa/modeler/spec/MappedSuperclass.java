@@ -6,7 +6,6 @@
 //
 package org.netbeans.jpa.modeler.spec;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.lang.model.element.TypeElement;

@@ -16,10 +16,6 @@
 
 package org.netbeans.jpa.modeler.spec.extend.adapter;
 
-import java.util.*;
-import java.util.Map.Entry;
-import javax.xml.bind.annotation.*;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import java.util.HashMap;
 import java.util.Map;
