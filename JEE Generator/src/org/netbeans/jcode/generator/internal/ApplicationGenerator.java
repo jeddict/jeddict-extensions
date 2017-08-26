@@ -31,7 +31,6 @@ import org.netbeans.jcode.jpa.util.PersistenceHelper;
 import org.netbeans.jcode.layer.ConfigData;
 import org.netbeans.jcode.layer.Generator;
 import org.netbeans.jcode.layer.TechContext;
-
 import org.netbeans.jcode.rest.util.RestUtils;
 import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
 import org.netbeans.jcode.stack.config.data.LayerConfigData;

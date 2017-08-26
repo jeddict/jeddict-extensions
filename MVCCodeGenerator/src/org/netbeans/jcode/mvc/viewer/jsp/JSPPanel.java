@@ -17,8 +17,6 @@ package org.netbeans.jcode.mvc.viewer.jsp;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.prefs.Preferences;
-import javax.swing.event.ChangeEvent;
 import org.apache.commons.lang.StringUtils;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectUtils;
@@ -28,7 +26,6 @@ import static org.netbeans.jcode.core.util.WebUtil.isInternetReachable;
 import static org.netbeans.jcode.mvc.viewer.jsp.JSPData.DEFAULT_FOLDER;
 import org.netbeans.jcode.stack.config.panel.*;
 import org.netbeans.jcode.ui.browse.BrowseFolders;
-import org.netbeans.jcode.util.PreferenceUtils;
 import org.netbeans.modules.web.api.webmodule.WebProjectConstants;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;

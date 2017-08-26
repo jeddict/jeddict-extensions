@@ -37,11 +37,11 @@ import org.netbeans.jpa.modeler.db.accessor.EmbeddedIdSpecAccessor;
 import org.netbeans.jpa.modeler.db.accessor.IdSpecAccessor;
 import org.netbeans.jpa.modeler.db.accessor.VersionSpecAccessor;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
-import org.netbeans.jpa.modeler.spec.extend.PersistenceAttributes;
-import org.netbeans.jpa.modeler.spec.extend.JavaClass;
-import org.netbeans.jpa.source.JavaSourceParserUtil;
 import org.netbeans.jpa.modeler.spec.extend.IPrimaryKeyAttributes;
+import org.netbeans.jpa.modeler.spec.extend.JavaClass;
+import org.netbeans.jpa.modeler.spec.extend.PersistenceAttributes;
 import org.netbeans.jpa.modeler.spec.workspace.WorkSpace;
+import org.netbeans.jpa.source.JavaSourceParserUtil;
 import static org.netbeans.jpa.source.JavaSourceParserUtil.getElements;
 
 /**

@@ -35,15 +35,14 @@ import org.netbeans.jpa.modeler.spec.design.Diagram;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import org.netbeans.jpa.modeler.spec.extend.BaseElement;
 import org.netbeans.jpa.modeler.spec.extend.ClassSnippet;
+import org.netbeans.jpa.modeler.spec.extend.ClassSnippetLocationType;
+import org.netbeans.jpa.modeler.spec.extend.IPersistenceAttributes;
 import org.netbeans.jpa.modeler.spec.extend.JavaClass;
 import org.netbeans.jpa.modeler.spec.extend.MapKeyHandler;
+import org.netbeans.jpa.modeler.spec.extend.MapKeyType;
 import org.netbeans.jpa.modeler.spec.extend.MultiRelationAttribute;
 import org.netbeans.jpa.modeler.spec.extend.ReferenceClass;
 import org.netbeans.jpa.modeler.spec.extend.RelationAttribute;
-import org.netbeans.jpa.modeler.spec.extend.ClassSnippetLocationType;
-import org.netbeans.jpa.modeler.spec.extend.IPersistenceAttributes;
-import org.netbeans.jpa.modeler.spec.extend.MapKeyType;
-import org.netbeans.modeler.specification.version.SoftwareVersion;
 import org.netbeans.jpa.modeler.spec.extend.cache.Cache;
 import org.netbeans.jpa.modeler.spec.jsonb.JsonbDateFormat;
 import org.netbeans.jpa.modeler.spec.jsonb.JsonbNumberFormat;
@@ -57,6 +56,7 @@ import org.netbeans.modeler.core.exception.InvalidElmentException;
 import org.netbeans.modeler.specification.model.document.IDefinitionElement;
 import org.netbeans.modeler.specification.model.document.IRootElement;
 import org.netbeans.modeler.specification.model.document.core.IBaseElement;
+import org.netbeans.modeler.specification.version.SoftwareVersion;
 import org.openide.windows.InputOutput;
 
 /**

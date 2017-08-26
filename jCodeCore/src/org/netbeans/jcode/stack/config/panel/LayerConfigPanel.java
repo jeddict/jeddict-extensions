@@ -28,7 +28,6 @@ import javax.swing.text.JTextComponent;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.stack.config.data.LayerConfigData;
-import org.netbeans.jcode.util.PreferenceUtils;
 import org.openide.util.ChangeSupport;
 
 /**

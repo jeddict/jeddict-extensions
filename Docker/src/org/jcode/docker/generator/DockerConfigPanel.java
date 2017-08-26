@@ -15,8 +15,6 @@
  */
 package org.jcode.docker.generator;
 
-import org.jcode.infra.ServerType;
-import org.jcode.infra.DatabaseType;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.util.Arrays;
@@ -25,18 +23,20 @@ import java.util.stream.Stream;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import org.netbeans.modules.docker.api.DockerInstance;
 import org.apache.commons.lang.StringUtils;
+import org.jcode.infra.DatabaseType;
+import org.jcode.infra.ServerType;
 import static org.jcode.infra.ServerType.NONE;
-import org.netbeans.api.project.Project;
-import org.netbeans.api.project.SourceGroup;
-import org.netbeans.jcode.stack.config.panel.LayerConfigPanel;
-import org.netbeans.modules.docker.api.DockerSupport;
-import static org.openide.util.NbBundle.getMessage;
 import org.netbeans.api.db.explorer.ConnectionManager;
 import org.netbeans.api.db.explorer.DatabaseConnection;
 import org.netbeans.api.db.explorer.support.DatabaseExplorerUIs;
+import org.netbeans.api.project.Project;
+import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.core.util.JdbcUrl;
+import org.netbeans.jcode.stack.config.panel.LayerConfigPanel;
+import org.netbeans.modules.docker.api.DockerInstance;
+import org.netbeans.modules.docker.api.DockerSupport;
+import static org.openide.util.NbBundle.getMessage;
 
 /**
  *

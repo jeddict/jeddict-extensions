@@ -23,7 +23,6 @@ import java.util.Set;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import org.jcode.docker.generator.DockerGenerator;
-import org.netbeans.jpa.modeler.spec.Entity;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.console.Console;
@@ -40,19 +39,20 @@ import static org.netbeans.jcode.core.util.StringHelper.firstLower;
 import static org.netbeans.jcode.core.util.StringHelper.firstUpper;
 import static org.netbeans.jcode.core.util.StringHelper.pluralize;
 import org.netbeans.jcode.layer.ConfigData;
+import org.netbeans.jcode.layer.Generator;
 import org.netbeans.jcode.layer.Technology;
 import static org.netbeans.jcode.layer.Technology.Type.BUSINESS;
+import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
 import org.netbeans.jcode.task.progress.ProgressHandler;
+import org.netbeans.jpa.modeler.spec.DefaultAttribute;
+import org.netbeans.jpa.modeler.spec.EmbeddedId;
+import org.netbeans.jpa.modeler.spec.Entity;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
+import org.netbeans.jpa.modeler.spec.Id;
+import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
-import org.netbeans.jcode.layer.Generator;
-import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
-import org.netbeans.jpa.modeler.spec.DefaultAttribute;
-import org.netbeans.jpa.modeler.spec.EmbeddedId;
-import org.netbeans.jpa.modeler.spec.Id;
-import org.netbeans.jpa.modeler.spec.extend.Attribute;
 
 /**
  * Generates repository for entity classes.

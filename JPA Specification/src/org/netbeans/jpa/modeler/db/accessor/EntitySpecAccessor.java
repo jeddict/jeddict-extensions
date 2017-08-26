@@ -25,17 +25,17 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAcc
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.SecondaryTableMetadata;
+import org.netbeans.db.modeler.exception.DBValidationException;
+import org.netbeans.jpa.modeler.spec.Convert;
 import org.netbeans.jpa.modeler.spec.Entity;
+import org.netbeans.jpa.modeler.spec.Inheritance;
 import org.netbeans.jpa.modeler.spec.MappedSuperclass;
 import org.netbeans.jpa.modeler.spec.PrimaryKeyJoinColumn;
 import org.netbeans.jpa.modeler.spec.SecondaryTable;
 import org.netbeans.jpa.modeler.spec.extend.JavaClass;
+import org.netbeans.jpa.modeler.spec.validator.column.PrimaryKeyJoinColumnValidator;
 import org.netbeans.jpa.modeler.spec.validator.override.AssociationValidator;
 import org.netbeans.jpa.modeler.spec.validator.override.AttributeValidator;
-import org.netbeans.jpa.modeler.spec.validator.column.PrimaryKeyJoinColumnValidator;
-import org.netbeans.db.modeler.exception.DBValidationException;
-import org.netbeans.jpa.modeler.spec.Convert;
-import org.netbeans.jpa.modeler.spec.Inheritance;
 import org.netbeans.jpa.modeler.spec.workspace.WorkSpace;
 
 /**

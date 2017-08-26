@@ -22,8 +22,8 @@ import static org.netbeans.jcode.jpa.JPAConstants.PRIMARY_KEY_JOIN_COLUMNS_FQN;
 import static org.netbeans.jcode.jpa.JPAConstants.PRIMARY_KEY_JOIN_COLUMN_FQN;
 import org.netbeans.jpa.modeler.spec.extend.IJoinColumn;
 import org.netbeans.jpa.modeler.spec.validator.column.ForeignKeyValidator;
-import org.netbeans.jpa.source.JavaSourceParserUtil;
 import org.netbeans.jpa.modeler.spec.validator.column.PrimaryKeyJoinColumnValidator;
+import org.netbeans.jpa.source.JavaSourceParserUtil;
 /**
  *
  *

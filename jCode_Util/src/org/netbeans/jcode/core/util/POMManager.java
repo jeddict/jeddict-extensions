@@ -18,12 +18,13 @@ package org.netbeans.jcode.core.util;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import static java.util.stream.Collectors.toSet;
+import javax.swing.SwingUtilities;
 import javax.xml.namespace.QName;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.ModelReader;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
@@ -52,13 +53,11 @@ import org.netbeans.modules.maven.model.pom.Profile;
 import org.netbeans.modules.maven.model.pom.Properties;
 import org.netbeans.modules.maven.model.pom.Repository;
 import org.netbeans.modules.maven.model.pom.RepositoryPolicy;
+import org.netbeans.modules.maven.model.pom.spi.POMExtensibilityElementBase;
 import org.openide.filesystems.FileObject;
+import static org.openide.filesystems.FileUtil.toFileObject;
 import org.openide.util.Exceptions;
 import org.openide.util.RequestProcessor;
-import javax.swing.SwingUtilities;
-import org.apache.commons.lang.StringUtils;
-import org.netbeans.modules.maven.model.pom.spi.POMExtensibilityElementBase;
-import static org.openide.filesystems.FileUtil.toFileObject;
 
 /**
  *

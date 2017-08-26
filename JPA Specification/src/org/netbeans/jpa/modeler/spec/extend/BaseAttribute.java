@@ -19,10 +19,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import static org.netbeans.jcode.core.util.AttributeType.isArray;
-import org.netbeans.jpa.modeler.spec.jaxb.JaxbVariableType;
 import org.netbeans.bean.validation.constraints.Constraint;
 import static org.netbeans.jcode.core.util.AttributeType.getArrayType;
+import static org.netbeans.jcode.core.util.AttributeType.isArray;
+import org.netbeans.jpa.modeler.spec.jaxb.JaxbVariableType;
 
 /**
  *

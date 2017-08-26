@@ -20,11 +20,9 @@ package org.netbeans.jpa.modeler.spec.extend.adapter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

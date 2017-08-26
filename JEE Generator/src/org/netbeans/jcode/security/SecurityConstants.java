@@ -15,8 +15,6 @@
  */
 package org.netbeans.jcode.security;
 
-import org.netbeans.jcode.cdi.*;
-
 /**
  *
  * @author Gaurav Gupta

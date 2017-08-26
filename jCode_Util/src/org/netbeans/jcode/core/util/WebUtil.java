@@ -15,7 +15,6 @@
  */
 package org.netbeans.jcode.core.util;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashSet;

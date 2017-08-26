@@ -35,16 +35,16 @@ import static org.netbeans.jcode.jpa.JPAConstants.NAMED_QUERIES_FQN;
 import static org.netbeans.jcode.jpa.JPAConstants.NAMED_QUERY_FQN;
 import static org.netbeans.jcode.jpa.JPAConstants.SQL_RESULTSET_MAPPINGS_FQN;
 import static org.netbeans.jcode.jpa.JPAConstants.SQL_RESULTSET_MAPPING_FQN;
+import org.netbeans.jpa.modeler.settings.code.CodePanel;
 import static org.netbeans.jpa.modeler.spec.NamedQuery.FIND_BY;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import org.netbeans.jpa.modeler.spec.extend.CompositePrimaryKeyType;
-import org.netbeans.jpa.modeler.spec.extend.PrimaryKeyContainer;
-import org.netbeans.jpa.source.JavaSourceParserUtil;
-import org.netbeans.jpa.modeler.settings.code.CodePanel;
 import org.netbeans.jpa.modeler.spec.extend.IPrimaryKeyAttributes;
+import org.netbeans.jpa.modeler.spec.extend.PrimaryKeyContainer;
 import org.netbeans.jpa.modeler.spec.extend.ReferenceClass;
 import org.netbeans.jpa.modeler.spec.extend.SingleRelationAttribute;
 import org.netbeans.jpa.modeler.spec.validation.adapter.CompositePrimaryKeyAdapter;
+import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 public abstract class IdentifiableClass extends ManagedClass<IPrimaryKeyAttributes> implements PrimaryKeyContainer {
 

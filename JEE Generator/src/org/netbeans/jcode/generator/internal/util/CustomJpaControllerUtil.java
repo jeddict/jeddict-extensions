@@ -15,7 +15,6 @@
  */
 package org.netbeans.jcode.generator.internal.util;
 
-import org.netbeans.jcode.core.util.StringHelper;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,6 +33,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
+import org.netbeans.jcode.core.util.StringHelper;
 import org.netbeans.modules.j2ee.persistence.wizard.jpacontroller.JpaControllerUtil;
 
 public class CustomJpaControllerUtil extends JpaControllerUtil {

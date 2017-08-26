@@ -31,10 +31,10 @@ import org.netbeans.jpa.modeler.spec.extend.AssociationOverrideHandler;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import org.netbeans.jpa.modeler.spec.extend.AttributeOverrideHandler;
 import org.netbeans.jpa.modeler.spec.extend.ConvertContainerHandler;
+import org.netbeans.jpa.modeler.spec.extend.InheritanceHandler;
 import org.netbeans.jpa.modeler.spec.validator.override.AssociationValidator;
 import org.netbeans.jpa.modeler.spec.validator.override.AttributeValidator;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
-import org.netbeans.jpa.modeler.spec.extend.InheritanceHandler;
 
 /**
  *

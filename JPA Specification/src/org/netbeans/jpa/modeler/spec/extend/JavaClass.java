@@ -49,9 +49,9 @@ import org.netbeans.jpa.modeler.spec.jsonb.JsonbDateFormat;
 import org.netbeans.jpa.modeler.spec.jsonb.JsonbNumberFormat;
 import org.netbeans.jpa.modeler.spec.jsonb.JsonbTypeHandler;
 import org.netbeans.jpa.modeler.spec.jsonb.JsonbVisibilityHandler;
+import org.netbeans.jpa.source.JCRELoader;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 import org.netbeans.modeler.core.NBModelerUtil;
-import org.netbeans.jpa.source.JCRELoader;
 import org.netbeans.modeler.properties.type.Embedded;
 import org.openide.filesystems.FileObject;
 

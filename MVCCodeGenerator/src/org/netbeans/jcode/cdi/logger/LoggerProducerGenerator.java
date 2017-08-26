@@ -35,7 +35,6 @@ import org.netbeans.api.java.source.WorkingCopy;
 import static org.netbeans.jcode.cdi.CDIConstants.INJECTION_POINT;
 import static org.netbeans.jcode.cdi.CDIConstants.PRODUCES;
 import static org.netbeans.jcode.core.util.Constants.JAVA_EXT;
-import static org.netbeans.jcode.core.util.Constants.JAVA_EXT_SUFFIX;
 import static org.netbeans.jcode.core.util.Constants.LOGGER;
 import org.netbeans.jcode.core.util.JavaSourceHelper;
 import org.netbeans.jcode.task.progress.ProgressHandler;

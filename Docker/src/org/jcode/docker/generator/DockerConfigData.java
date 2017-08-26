@@ -15,11 +15,11 @@
  */
 package org.jcode.docker.generator;
 
-import org.jcode.infra.ServerType;
-import org.jcode.infra.DatabaseType;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
+import org.jcode.infra.DatabaseType;
+import org.jcode.infra.ServerType;
 import org.netbeans.jcode.stack.config.data.LayerConfigData;
 
 /**

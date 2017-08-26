@@ -15,17 +15,17 @@
  */
 package org.jcode.docker.generator;
 
-import org.jcode.infra.DatabaseDriver;
-import org.jcode.infra.ServerType;
-import org.jcode.infra.DatabaseType;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import org.jcode.infra.DatabaseDriver;
+import org.jcode.infra.DatabaseType;
 import org.jcode.infra.ServerFamily;
 import static org.jcode.infra.ServerFamily.PAYARA_FAMILY;
 import static org.jcode.infra.ServerFamily.WILDFLY_FAMILY;
+import org.jcode.infra.ServerType;
 import static org.jcode.infra.ServerType.NONE;
 import static org.jcode.infra.ServerType.PAYARA;
 import static org.jcode.infra.ServerType.WILDFLY;
@@ -55,10 +55,10 @@ import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.jcode.web.dd.util.WebDDUtil;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
-import org.openide.filesystems.FileObject;
-import org.openide.util.lookup.ServiceProvider;
 import org.netbeans.modules.j2ee.persistence.dd.common.PersistenceUnit;
+import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  * Generates Docker image.

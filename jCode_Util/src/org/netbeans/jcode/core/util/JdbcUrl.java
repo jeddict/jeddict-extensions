@@ -20,7 +20,6 @@ package org.netbeans.jcode.core.util;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
