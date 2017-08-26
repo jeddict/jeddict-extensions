@@ -170,9 +170,10 @@ public class AssociationOverride implements Comparable<AssociationOverride>, Joi
      *
      *
      */
+    @Override
     public List<JoinColumn> getJoinColumn() {
         if (joinColumn == null) {
-            setJoinColumn(new ArrayList<JoinColumn>());
+            setJoinColumn(new ArrayList<>());
         }
         return this.joinColumn;
     }
@@ -183,6 +184,7 @@ public class AssociationOverride implements Comparable<AssociationOverride>, Joi
      * @return possible object is {@link ForeignKey }
      *
      */
+    @Override
     public ForeignKey getForeignKey() {
         if(foreignKey==null){
             foreignKey = new ForeignKey();
@@ -196,6 +198,7 @@ public class AssociationOverride implements Comparable<AssociationOverride>, Joi
      * @param value allowed object is {@link ForeignKey }
      *
      */
+    @Override
     public void setForeignKey(ForeignKey value) {
         this.foreignKey = value;
     }
@@ -206,6 +209,7 @@ public class AssociationOverride implements Comparable<AssociationOverride>, Joi
      * @return possible object is {@link JoinTable }
      *
      */
+    @Override
     public JoinTable getJoinTable() {
         if (joinTable == null) {
             joinTable = new JoinTable();
@@ -219,6 +223,7 @@ public class AssociationOverride implements Comparable<AssociationOverride>, Joi
      * @param value allowed object is {@link JoinTable }
      *
      */
+    @Override
     public void setJoinTable(JoinTable value) {
         this.joinTable = value;
     }

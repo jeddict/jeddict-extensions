@@ -349,7 +349,7 @@ public class JavaSourceParserUtil {
     }
 
     public static List<AnnotationMirror> findNestedAnnotations(AnnotationMirror annotationMirror, String annotationFqn) {
-        List<AnnotationMirror> result = new ArrayList<AnnotationMirror>();
+        List<AnnotationMirror> result = new ArrayList<>();
         findNestedAnnotationsInternal(annotationMirror, annotationFqn, result);
         return result;
     }
@@ -732,7 +732,7 @@ public class JavaSourceParserUtil {
         if (desiredMethodElement == null) {
             throw new IllegalArgumentException("Could not find " + methodName + " in " + fqClass);
         }
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         List<? extends TypeMirror> thrownTypes = desiredMethodElement.getThrownTypes();
         for (TypeMirror thrownType : thrownTypes) {
             if (thrownType.getKind() == TypeKind.DECLARED) {
@@ -770,7 +770,7 @@ public class JavaSourceParserUtil {
     }
 
     private static List<VariableElement> removeSerialVersionUid(List<VariableElement> fieldsIn) {
-        List<VariableElement> result = new LinkedList<VariableElement>();
+        List<VariableElement> result = new LinkedList<>();
         for (VariableElement variableElement : fieldsIn) {
             if (!variableElement.getSimpleName().toString().equals("serialVersionUID")) {
                 result.add(variableElement);

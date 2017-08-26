@@ -163,7 +163,7 @@ public class OneToMany extends MultiRelationAttribute implements JoinColumnHandl
     @Override
     public List<JoinColumn> getJoinColumn() {
         if (joinColumn == null) {
-            joinColumn = new ArrayList<JoinColumn>();
+            joinColumn = new ArrayList<>();
         }
         return this.joinColumn;
     }

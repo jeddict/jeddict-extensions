@@ -118,6 +118,7 @@ public class EmbeddableAttributes extends PersistenceAttributes<Embeddable> {
         return updateAccessor(workSpace, attr);
     }
 
+    @Override
     public XMLAttributes getAccessor(WorkSpace workSpace, boolean inherit) {//inherit not supported
         XMLAttributes attr = super.getAccessor(workSpace);
         return attr;

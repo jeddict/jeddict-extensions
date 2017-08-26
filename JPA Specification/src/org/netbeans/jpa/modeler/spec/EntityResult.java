@@ -103,7 +103,7 @@ public class EntityResult {
      */
     public List<FieldResult> getFieldResult() {
         if (fieldResult == null) {
-            fieldResult = new ArrayList<FieldResult>();
+            fieldResult = new ArrayList<>();
         }
         return this.fieldResult;
     }

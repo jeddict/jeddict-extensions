@@ -30,7 +30,7 @@ public class WebUtil {
 
     public static boolean isValidUri(String uri) {
         StringTokenizer segments = new StringTokenizer(uri, "/ "); //NOI18N
-        Set<String> uriParts = new HashSet<String>();
+        Set<String> uriParts = new HashSet<>();
         while (segments.hasMoreTokens()) {
             String segment = segments.nextToken();
             if (segment.startsWith("{")) { //NOI18N

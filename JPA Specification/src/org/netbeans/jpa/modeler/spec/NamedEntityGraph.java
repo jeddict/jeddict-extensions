@@ -101,7 +101,7 @@ public class NamedEntityGraph extends DataMapping {
     }
 
     public static List<NamedEntityGraph> load(Element element) {
-        List<NamedEntityGraph> namedEntityGraphs = new ArrayList<NamedEntityGraph>();
+        List<NamedEntityGraph> namedEntityGraphs = new ArrayList<>();
 
         AnnotationMirror namedEntityGraphsMirror = JavaSourceParserUtil.findAnnotation(element, NAMED_ENTITY_GRAPHS_FQN);
         if (namedEntityGraphsMirror != null) {
@@ -144,14 +144,14 @@ public class NamedEntityGraph extends DataMapping {
      */
     public List<NamedAttributeNode> getNamedAttributeNode() {
         if (namedAttributeNode == null) {
-            namedAttributeNode = new ArrayList<NamedAttributeNode>();
+            namedAttributeNode = new ArrayList<>();
         }
         return this.namedAttributeNode;
     }
 
     public NamedAttributeNode findNamedAttributeNode(String name) {
         if (namedAttributeNode == null) {
-            namedAttributeNode = new ArrayList<NamedAttributeNode>();
+            namedAttributeNode = new ArrayList<>();
         }
 
         for (NamedAttributeNode namedAttributeNodeInst : namedAttributeNode) {
@@ -165,14 +165,14 @@ public class NamedEntityGraph extends DataMapping {
 
     public void addNamedAttributeNode(NamedAttributeNode node) {
         if (namedAttributeNode == null) {
-            namedAttributeNode = new ArrayList<NamedAttributeNode>();
+            namedAttributeNode = new ArrayList<>();
         }
         this.namedAttributeNode.add(node);
     }
 
     public void removeNamedAttributeNode(NamedAttributeNode node) {
         if (namedAttributeNode == null) {
-            namedAttributeNode = new ArrayList<NamedAttributeNode>();
+            namedAttributeNode = new ArrayList<>();
         }
         this.namedAttributeNode.remove(node);
     }
@@ -201,14 +201,14 @@ public class NamedEntityGraph extends DataMapping {
      */
     public List<NamedSubgraph> getSubgraph() {
         if (subgraph == null) {
-            subgraph = new ArrayList<NamedSubgraph>();
+            subgraph = new ArrayList<>();
         }
         return this.subgraph;
     }
 
     public NamedSubgraph findSubgraph(String name) {
         if (subgraph == null) {
-            subgraph = new ArrayList<NamedSubgraph>();
+            subgraph = new ArrayList<>();
         }
 
         for (NamedSubgraph subgraphInst : subgraph) {
@@ -222,14 +222,14 @@ public class NamedEntityGraph extends DataMapping {
 
     public void addSubgraph(NamedSubgraph graph) {
         if (subgraph == null) {
-            subgraph = new ArrayList<NamedSubgraph>();
+            subgraph = new ArrayList<>();
         }
         this.subgraph.add(graph);
     }
 
     public void removeSubgraph(NamedSubgraph graph) {
         if (subgraph == null) {
-            subgraph = new ArrayList<NamedSubgraph>();
+            subgraph = new ArrayList<>();
         }
         this.subgraph.remove(graph);
     }
@@ -258,7 +258,7 @@ public class NamedEntityGraph extends DataMapping {
      */
     public List<NamedSubgraph> getSubclassSubgraph() {
         if (subclassSubgraph == null) {
-            subclassSubgraph = new ArrayList<NamedSubgraph>();
+            subclassSubgraph = new ArrayList<>();
         }
         return this.subclassSubgraph;
     }

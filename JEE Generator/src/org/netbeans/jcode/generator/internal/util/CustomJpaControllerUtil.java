@@ -43,9 +43,9 @@ public class CustomJpaControllerUtil extends JpaControllerUtil {
      * classes or mapped superclasses in order of superclasses.
      */
     public static ExecutableElement[] getEntityMethodsBySuperClass(TypeElement entityTypeElement) {
-        List<ExecutableElement> result = new LinkedList<ExecutableElement>();
+        List<ExecutableElement> result = new LinkedList<>();
         TypeElement typeElement = entityTypeElement;
-        List<TypeElement> typeElements = new LinkedList<TypeElement>();
+        List<TypeElement> typeElements = new LinkedList<>();
 
         // First we will traverse up the element chain to get to the super classes
         while (typeElement != null) {
@@ -96,7 +96,7 @@ public class CustomJpaControllerUtil extends JpaControllerUtil {
         // Try to find a matching setter method from a list of methods in the
         // enclosing type element
         TypeElement enclosingElementType = (TypeElement) getterMethod.getEnclosingElement();
-        List<ExecutableElement> enclosedMethods = new LinkedList<ExecutableElement>();
+        List<ExecutableElement> enclosedMethods = new LinkedList<>();
         enclosedMethods.addAll(ElementFilter.methodsIn(enclosingElementType.getEnclosedElements()));
         for (ExecutableElement method : enclosedMethods) {
             if (method.getSimpleName().toString().equals(setterMethod)) {
@@ -111,7 +111,7 @@ public class CustomJpaControllerUtil extends JpaControllerUtil {
 
     public static class CustomEmbeddedPkSupport extends EmbeddedPkSupport {
 
-        private Map<TypeElement, EmbeddedPkSupportInfo> typeToInfo = new HashMap<TypeElement, EmbeddedPkSupportInfo>();
+        private Map<TypeElement, EmbeddedPkSupportInfo> typeToInfo = new HashMap<>();
 
         @Override
         public Set<ExecutableElement> getPkAccessorMethods(TypeElement type) {
@@ -185,14 +185,14 @@ public class CustomJpaControllerUtil extends JpaControllerUtil {
 
     private static class EmbeddedPkSupportInfo {
 
-        private Map<String, ExecutableElement> joinColumnNameToRelationshipMethod = new LinkedHashMap<String, ExecutableElement>();
-        private Map<ExecutableElement, List<String>> relationshipMethodToJoinColumnNames = new LinkedHashMap<ExecutableElement, List<String>>(); //used only in isRedundantWithPkFields
-        private Map<String, String> joinColumnNameToReferencedColumnName = new LinkedHashMap<String, String>();
-        private Map<String, String> columnNameToAccessorString = new LinkedHashMap<String, String>();
-        private Map<String, String> columnNameToSetterString = new LinkedHashMap<String, String>();
-        private Map<ExecutableElement, String> pkAccessorMethodToColumnName = new LinkedHashMap<ExecutableElement, String>();
-        private Map<ExecutableElement, String> pkSetterMethodToColumnName = new LinkedHashMap<ExecutableElement, String>();
-        private Map<ExecutableElement, String> pkAccessorMethodToPopulationCode = new LinkedHashMap<ExecutableElement, String>(); //derived
+        private Map<String, ExecutableElement> joinColumnNameToRelationshipMethod = new LinkedHashMap<>();
+        private Map<ExecutableElement, List<String>> relationshipMethodToJoinColumnNames = new LinkedHashMap<>(); //used only in isRedundantWithPkFields
+        private Map<String, String> joinColumnNameToReferencedColumnName = new LinkedHashMap<>();
+        private Map<String, String> columnNameToAccessorString = new LinkedHashMap<>();
+        private Map<String, String> columnNameToSetterString = new LinkedHashMap<>();
+        private Map<ExecutableElement, String> pkAccessorMethodToColumnName = new LinkedHashMap<>();
+        private Map<ExecutableElement, String> pkSetterMethodToColumnName = new LinkedHashMap<>();
+        private Map<ExecutableElement, String> pkAccessorMethodToPopulationCode = new LinkedHashMap<>(); //derived
         private boolean isFieldAccess;
 
         public Set<ExecutableElement> getPkAccessorMethods() {
@@ -346,7 +346,7 @@ public class CustomJpaControllerUtil extends JpaControllerUtil {
         private void populateJoinColumnNameMaps(ExecutableElement m, String columnAnnotationFqn, AnnotationMirror columnAnnotation) {
             List<AnnotationMirror> joinColumnAnnotations;
             if ("javax.persistence.JoinColumn".equals(columnAnnotationFqn)) {
-                joinColumnAnnotations = new ArrayList<AnnotationMirror>();
+                joinColumnAnnotations = new ArrayList<>();
                 joinColumnAnnotations.add(columnAnnotation);
             } else {  //columnAnnotation is a javax.persistence.JoinColumns
                 joinColumnAnnotations = findNestedAnnotations(columnAnnotation, "javax.persistence.JoinColumn"); //NOI18N
@@ -359,7 +359,7 @@ public class CustomJpaControllerUtil extends JpaControllerUtil {
                     joinColumnNameToReferencedColumnName.put(columnName, referencedColumnName);
                     List<String> joinColumnNameList = relationshipMethodToJoinColumnNames.get(m);
                     if (joinColumnNameList == null) {
-                        joinColumnNameList = new ArrayList<String>();
+                        joinColumnNameList = new ArrayList<>();
                         relationshipMethodToJoinColumnNames.put(m, joinColumnNameList);
                     }
                     joinColumnNameList.add(columnName);

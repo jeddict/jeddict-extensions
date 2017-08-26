@@ -111,6 +111,7 @@ public abstract class PersistenceAttributes<T extends ManagedClass> extends Attr
         return this.basic;
     }
     
+    @Override
     public List<Basic> getSuperBasic(){
         List<Basic> superVersion = new ArrayList();
         JavaClass currentClass = getJavaClass();
@@ -124,6 +125,7 @@ public abstract class PersistenceAttributes<T extends ManagedClass> extends Attr
         return superVersion;
     }
 
+    @Override
     public Optional<Basic> getBasic(String id) {
         if (basic != null) {
             return basic.stream().filter(a -> a.getId().equals(id)).findFirst();
@@ -174,6 +176,7 @@ public abstract class PersistenceAttributes<T extends ManagedClass> extends Attr
         return this.manyToOne;
     }
 
+    @Override
     public Optional<ManyToOne> getManyToOne(String id) {
         if (manyToOne != null) {
             return manyToOne.stream().filter(a -> a.getId().equals(id)).findFirst();
@@ -181,6 +184,7 @@ public abstract class PersistenceAttributes<T extends ManagedClass> extends Attr
         return null;
     }
 
+    @Override
     public void addManyToOne(ManyToOne manyToOne) {
         getManyToOne().add(manyToOne);
         manyToOne.setAttributes(this);
@@ -220,6 +224,7 @@ public abstract class PersistenceAttributes<T extends ManagedClass> extends Attr
         return this.oneToMany;
     }
 
+    @Override
     public Optional<OneToMany> getOneToMany(String id) {
         if (oneToMany != null) {
             return oneToMany.stream().filter(a -> a.getId().equals(id)).findFirst();
@@ -227,6 +232,7 @@ public abstract class PersistenceAttributes<T extends ManagedClass> extends Attr
         return null;
     }
 
+    @Override
     public void addOneToMany(OneToMany oneToMany) {
         getOneToMany().add(oneToMany);
         oneToMany.setAttributes(this);
@@ -262,11 +268,13 @@ public abstract class PersistenceAttributes<T extends ManagedClass> extends Attr
         return this.oneToOne;
     }
 
+    @Override
     public void addOneToOne(OneToOne oneToOne) {
         getOneToOne().add(oneToOne);
         oneToOne.setAttributes(this);
     }
 
+    @Override
     public Optional<OneToOne> getOneToOne(String id) {
         if (oneToOne != null) {
             return oneToOne.stream().filter(a -> a.getId().equals(id)).findFirst();
@@ -304,6 +312,7 @@ public abstract class PersistenceAttributes<T extends ManagedClass> extends Attr
         return this.manyToMany;
     }
 
+    @Override
     public Optional<ManyToMany> getManyToMany(String id) {
         if (manyToMany != null) {
             return manyToMany.stream().filter(a -> a.getId().equals(id)).findFirst();
@@ -311,6 +320,7 @@ public abstract class PersistenceAttributes<T extends ManagedClass> extends Attr
         return null;
     }
 
+    @Override
     public void addManyToMany(ManyToMany manyToMany) {
         getManyToMany().add(manyToMany);
         manyToMany.setAttributes(this);
@@ -346,6 +356,7 @@ public abstract class PersistenceAttributes<T extends ManagedClass> extends Attr
         return this.elementCollection;
     }
 
+    @Override
     public Optional<ElementCollection> getElementCollection(String id) {
         if (elementCollection != null) {
             return elementCollection.stream().filter(a -> a.getId().equals(id)).findFirst();
@@ -450,6 +461,7 @@ public abstract class PersistenceAttributes<T extends ManagedClass> extends Attr
         return this._transient;
     }
 
+    @Override
     public Optional<Transient> getTransient(String id) {
         if (_transient != null) {
             return _transient.stream().filter(a -> a.getId().equals(id)).findFirst();
@@ -479,6 +491,7 @@ public abstract class PersistenceAttributes<T extends ManagedClass> extends Attr
         return relationAttributes;
     }
     
+    @Override
     public List<SingleRelationAttribute> getDerivedRelationAttributes() {
         List<SingleRelationAttribute> relationAttributeWidget = new ArrayList<>();
         relationAttributeWidget.addAll(
@@ -579,6 +592,7 @@ public abstract class PersistenceAttributes<T extends ManagedClass> extends Attr
         return javaClasses;
     }
     
+    @Override
     public Optional<RelationAttribute> getRelationAttribute(String id) {
         return getRelationAttributes().stream().filter(a -> a.getId().equals(id)).findFirst();
     }
@@ -766,6 +780,7 @@ public abstract class PersistenceAttributes<T extends ManagedClass> extends Attr
         return attributes;
     }
 
+    @Override
     public XMLAttributes getAccessor(WorkSpace workSpace) {
         XMLAttributes attr = new XMLAttributes();
         attr.setBasicCollections(new ArrayList<>());
@@ -875,6 +890,7 @@ public abstract class PersistenceAttributes<T extends ManagedClass> extends Attr
     /**
      * @param embedded the embedded to set
      */
+    @Override
     public void setEmbedded(List<Embedded> embedded) {
         this.embedded = embedded;
     }
@@ -886,12 +902,14 @@ public abstract class PersistenceAttributes<T extends ManagedClass> extends Attr
         this._transient = _transient;
     }
 
+    @Override
     public List<Attribute> getNonRelationAttributes() {
         List<Attribute> attributes = new ArrayList<>(this.getBasic());
         attributes.addAll(this.getElementCollection().stream().filter(ec -> ec.getConnectedClass() == null).collect(toList()));
         return attributes;
     }
 
+    @Override
     public Set<String> getAllConvert(){
         Set<String> converts = new HashSet();
         for (Basic bc : getBasic()) {

@@ -498,7 +498,7 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
     @Override
     public Set<AttributeOverride> getAttributeOverride() {
         if (attributeOverride == null) {
-            attributeOverride = new TreeSet<AttributeOverride>();
+            attributeOverride = new TreeSet<>();
         }
         return this.attributeOverride;
     }
@@ -581,6 +581,7 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
         return attributeOverride_TMP;
     }
 
+    @Override
     public AttributeOverride findAttributeOverride(String name) {
         for (AttributeOverride attributeOverride : getAttributeOverride()) {
             if (StringUtils.equals(name, attributeOverride.getName())) {
@@ -590,10 +591,12 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
         return null;
     }
 
+    @Override
     public boolean addAttributeOverride(AttributeOverride attributeOverride) {
         return getAttributeOverride().add(attributeOverride);
     }
 
+    @Override
     public boolean removeAttributeOverride(AttributeOverride attributeOverride) {
         return getAttributeOverride().remove(attributeOverride);
     }
@@ -613,6 +616,7 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
         return attributeOverride_TMP;
     }
 
+    @Override
     public AssociationOverride findAssociationOverride(String name) {
         for (AssociationOverride associationOverride : getAssociationOverride()) {
             if (StringUtils.equals(name, associationOverride.getName())) {
@@ -622,10 +626,12 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
         return null;
     }
 
+    @Override
     public boolean addAssociationOverride(AssociationOverride associationOverride) {
         return getAssociationOverride().add(associationOverride);
     }
 
+    @Override
     public boolean removeAssociationOverride(AssociationOverride associationOverride) {
         return getAssociationOverride().remove(associationOverride);
     }
@@ -663,13 +669,15 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
      *
      *
      */
+    @Override
     public List<Convert> getConverts() {
         if (convert == null) {
-            convert = new ArrayList<Convert>();
+            convert = new ArrayList<>();
         }
         return this.convert;
     }
 
+    @Override
      public void setConverts(List<Convert> converts){
         this.convert = converts;
     }

@@ -114,21 +114,21 @@ public class NamedSubgraph {
      */
     public List<NamedAttributeNode> getNamedAttributeNode() {
         if (namedAttributeNode == null) {
-            namedAttributeNode = new ArrayList<NamedAttributeNode>();
+            namedAttributeNode = new ArrayList<>();
         }
         return this.namedAttributeNode;
     }
 
     public void addNamedAttributeNode(NamedAttributeNode node) {
         if (namedAttributeNode == null) {
-            namedAttributeNode = new ArrayList<NamedAttributeNode>();
+            namedAttributeNode = new ArrayList<>();
         }
         this.namedAttributeNode.add(node);
     }
 
     public void removeNamedAttributeNode(NamedAttributeNode node) {
         if (namedAttributeNode == null) {
-            namedAttributeNode = new ArrayList<NamedAttributeNode>();
+            namedAttributeNode = new ArrayList<>();
         }
         this.namedAttributeNode.remove(node);
     }
@@ -175,7 +175,7 @@ public class NamedSubgraph {
 
     public NamedAttributeNode findNamedAttributeNode(String name) {
         if (namedAttributeNode == null) {
-            namedAttributeNode = new ArrayList<NamedAttributeNode>();
+            namedAttributeNode = new ArrayList<>();
         }
 
         for (NamedAttributeNode namedAttributeNodeInst : namedAttributeNode) {

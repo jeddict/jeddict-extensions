@@ -133,6 +133,7 @@ public abstract class RelationAttribute extends Attribute implements AccessTypeH
      * @return possible object is {@link JoinTable }
      *
      */
+    @Override
     public JoinTable getJoinTable() {
         if (joinTable == null) {
             joinTable = new JoinTable();
@@ -146,6 +147,7 @@ public abstract class RelationAttribute extends Attribute implements AccessTypeH
      * @param value allowed object is {@link JoinTable }
      *
      */
+    @Override
     public void setJoinTable(JoinTable value) {
         this.joinTable = value;
     }

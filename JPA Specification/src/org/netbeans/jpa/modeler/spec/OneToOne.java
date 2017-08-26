@@ -130,7 +130,7 @@ public class OneToOne extends SingleRelationAttribute {
      */
     public List<PrimaryKeyJoinColumn> getPrimaryKeyJoinColumn() {
         if (primaryKeyJoinColumn == null) {
-            primaryKeyJoinColumn = new ArrayList<PrimaryKeyJoinColumn>();
+            primaryKeyJoinColumn = new ArrayList<>();
         }
         return this.primaryKeyJoinColumn;
     }
@@ -210,6 +210,7 @@ public class OneToOne extends SingleRelationAttribute {
     /**
      * @return the owner
      */
+    @Override
     public boolean isOwner() {
         if (owner == null) {
             return Boolean.FALSE;
@@ -220,6 +221,7 @@ public class OneToOne extends SingleRelationAttribute {
     /**
      * @param owner the owner to set
      */
+    @Override
     public void setOwner(boolean owner) {
         this.owner = owner;
         if(owner){

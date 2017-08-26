@@ -1212,6 +1212,7 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
     /**
      * @return the jsonbTypeAdapter
      */
+    @Override
     public ReferenceClass getJsonbTypeAdapter() {
         return jsonbTypeAdapter;
     }
@@ -1219,6 +1220,7 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
     /**
      * @param jsonbTypeAdapter the jsonbTypeAdapter to set
      */
+    @Override
     public void setJsonbTypeAdapter(ReferenceClass jsonbTypeAdapter) {
         this.jsonbTypeAdapter = jsonbTypeAdapter;
     }
@@ -1260,6 +1262,7 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
     /**
      * @return the jsonbTypeDeserializer
      */
+    @Override
     public ReferenceClass getJsonbTypeDeserializer() {
         return jsonbTypeDeserializer;
     }
@@ -1267,6 +1270,7 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
     /**
      * @param jsonbTypeDeserializer the jsonbTypeDeserializer to set
      */
+    @Override
     public void setJsonbTypeDeserializer(ReferenceClass jsonbTypeDeserializer) {
         this.jsonbTypeDeserializer = jsonbTypeDeserializer;
     }
@@ -1274,6 +1278,7 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
     /**
      * @return the JsonbTypeSerializer
      */
+    @Override
     public ReferenceClass getJsonbTypeSerializer() {
         return jsonbTypeSerializer;
     }
@@ -1281,6 +1286,7 @@ public abstract class Attribute extends FlowPin implements JaxbVariableTypeHandl
     /**
      * @param JsonbTypeSerializer the JsonbTypeSerializer to set
      */
+    @Override
     public void setJsonbTypeSerializer(ReferenceClass jsonbTypeSerializer) {
         this.jsonbTypeSerializer = jsonbTypeSerializer;
     }

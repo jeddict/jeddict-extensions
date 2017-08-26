@@ -148,7 +148,7 @@ public class SecondaryTable extends Table {
      */
     public List<PrimaryKeyJoinColumn> getPrimaryKeyJoinColumn() {
         if (primaryKeyJoinColumn == null) {
-            primaryKeyJoinColumn = new ArrayList<PrimaryKeyJoinColumn>();
+            primaryKeyJoinColumn = new ArrayList<>();
         }
         return this.primaryKeyJoinColumn;
     }

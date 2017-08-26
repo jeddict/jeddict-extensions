@@ -93,7 +93,7 @@ public class Diagram extends AbstractDiagram {
      */
     public List<JPALabelStyle> getLabelStyle() {
         if (labelStyle == null) {
-            labelStyle = new ArrayList<JPALabelStyle>();
+            labelStyle = new ArrayList<>();
         }
         return this.labelStyle;
     }

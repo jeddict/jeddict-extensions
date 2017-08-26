@@ -131,6 +131,7 @@ public class EmbeddedId extends CompositionAttribute<DefaultClass> {
         return this.attributeOverride;
     }
 
+    @Override
     public AttributeOverride findAttributeOverride(String name) {
         for (AttributeOverride attributeOverride : getAttributeOverride()) {
             if (StringUtils.equals(name, attributeOverride.getName())) {
@@ -140,10 +141,12 @@ public class EmbeddedId extends CompositionAttribute<DefaultClass> {
         return null;
     }
 
+    @Override
     public boolean addAttributeOverride(AttributeOverride attributeOverride) {
         return getAttributeOverride().add(attributeOverride);
     }
 
+    @Override
     public boolean removeAttributeOverride(AttributeOverride attributeOverride) {
         return getAttributeOverride().remove(attributeOverride);
     }

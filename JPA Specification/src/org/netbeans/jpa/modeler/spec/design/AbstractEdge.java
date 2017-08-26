@@ -83,16 +83,16 @@ public abstract class AbstractEdge
      */
     public List<Point> getWaypoint() {
         if (waypoint == null) {
-            setWaypoint(new ArrayList<Point>());
+            setWaypoint(new ArrayList<>());
         }
         return this.waypoint;
     }
 
     public List<java.awt.Point> getWaypointCollection() {
         if (waypoint == null) {
-            setWaypoint(new ArrayList<Point>());
+            setWaypoint(new ArrayList<>());
         }
-        List<java.awt.Point> point_Col = new LinkedList<java.awt.Point>();
+        List<java.awt.Point> point_Col = new LinkedList<>();
         for (Point point : getWaypoint()) {
             point_Col.add(new java.awt.Point((int) point.getX(), (int) point.getY()));
         }
@@ -108,14 +108,14 @@ public abstract class AbstractEdge
 
     public void addWaypoint(Point waypoint_In) {
         if (waypoint == null) {
-            setWaypoint(new ArrayList<Point>());
+            setWaypoint(new ArrayList<>());
         }
         this.waypoint.add(waypoint_In);
     }
 
     public void addWaypoint(java.awt.Point waypoint_In) {
         if (waypoint == null) {
-            setWaypoint(new ArrayList<Point>());
+            setWaypoint(new ArrayList<>());
         }
         this.waypoint.add(new Point(waypoint_In));
     }

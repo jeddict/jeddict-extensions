@@ -155,7 +155,7 @@ public class PersistenceHelper {
     }
 
     private void addEntityClasses(Collection<String> classNames) throws IOException {
-        List<String> toAdd = new ArrayList<String>(classNames);
+        List<String> toAdd = new ArrayList<>(classNames);
         Element puElement = helper.findElement(PERSISTENCE_UNIT_TAG);
         NodeList nodes = puElement.getElementsByTagName(CLASS_TAG);
         int length = nodes.getLength();

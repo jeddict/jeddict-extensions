@@ -144,7 +144,7 @@ public class CollectionTable extends Table {
      */
     public List<JoinColumn> getJoinColumn() {
         if (joinColumn == null) {
-            joinColumn = new ArrayList<JoinColumn>();
+            joinColumn = new ArrayList<>();
         }
         return this.joinColumn;
     }
@@ -172,6 +172,7 @@ public class CollectionTable extends Table {
         this.foreignKey = value;
     }
 
+    @Override
     public CollectionTableMetadata getAccessor() {
         CollectionTableMetadata accessor = new CollectionTableMetadata();
         super.getAccessor(accessor);

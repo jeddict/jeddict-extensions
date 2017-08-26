@@ -44,7 +44,7 @@ public final class Version implements Comparable<Version> {
     }
 
     private void setVersionArtifacts() {
-        versionArtifacts = new ArrayList<Integer>();
+        versionArtifacts = new ArrayList<>();
         for (String artifact : this.version.split(this.delimiter)) {
             if (artifact.contains(ARTIFACT_DELIMITER)) {
                 artifact = artifact.substring(0, artifact.indexOf(ARTIFACT_DELIMITER));

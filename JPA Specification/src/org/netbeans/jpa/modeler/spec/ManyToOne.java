@@ -79,6 +79,7 @@ public class ManyToOne extends SingleRelationAttribute {
     /**
      * @return the owner
      */
+    @Override
     public boolean isOwner() {
         return true;//always owner
     }
@@ -86,6 +87,7 @@ public class ManyToOne extends SingleRelationAttribute {
     /**
      * @param owner the owner to set
      */
+    @Override
     public void setOwner(boolean owner) {
         //skip
     }

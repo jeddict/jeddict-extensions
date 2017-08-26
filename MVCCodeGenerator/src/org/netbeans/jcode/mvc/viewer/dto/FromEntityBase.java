@@ -218,7 +218,7 @@ public abstract class FromEntityBase {
         String keyTypeValue = "UNDEFINED_PK_TYPE";
         Boolean keyEmbeddedValue = Boolean.FALSE;        //
         Boolean keyDerivedValue = Boolean.FALSE;
-        List<EmbeddedDesc> embeddedFields = new ArrayList<EmbeddedDesc>();
+        List<EmbeddedDesc> embeddedFields = new ArrayList<>();
         if (primaryGetter != null) {
             TypeMirror idType = primaryGetter.getReturnType();
             ExecutableElement primaryGetterDerived = null;
@@ -483,7 +483,7 @@ public abstract class FromEntityBase {
                         int parseInt;
                         try {
                             parseInt = Integer.parseInt(stringMemberValue);
-                            return Integer.valueOf(parseInt);
+                            return parseInt;
                         } catch (NumberFormatException ex) {
                             return null;
                         }
@@ -511,9 +511,9 @@ public abstract class FromEntityBase {
 
         private boolean isFieldAccess() {
             if (fieldAccess == null) {
-                fieldAccess = Boolean.valueOf(CustomJpaControllerUtil.isFieldAccess(bean));
+                fieldAccess = CustomJpaControllerUtil.isFieldAccess(bean);
             }
-            return fieldAccess.booleanValue();
+            return fieldAccess;
         }
 
         public boolean isReadOnly() {
@@ -540,9 +540,9 @@ public abstract class FromEntityBase {
 
         public int getRelationship() {
             if (relationship == null) {
-                relationship = Integer.valueOf(CustomJpaControllerUtil.isRelationship(method, isFieldAccess()));
+                relationship = CustomJpaControllerUtil.isRelationship(method, isFieldAccess());
             }
-            return relationship.intValue();
+            return relationship;
         }
 
         public String getDateTimeFormat() {

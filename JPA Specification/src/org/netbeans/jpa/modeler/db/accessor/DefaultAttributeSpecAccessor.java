@@ -42,6 +42,7 @@ public class DefaultAttributeSpecAccessor extends BasicAccessor {
         return accessor;
     }
 
+    @Override
     public void process() {
         super.process();
         getMapping().setProperty(Attribute.class, attribute);

@@ -115,6 +115,7 @@ public class PrimaryKeyJoinColumn implements IJoinColumn {
      * @return possible object is {@link String }
      *
      */
+    @Override
     public String getName() {
         return name;
     }
@@ -125,6 +126,7 @@ public class PrimaryKeyJoinColumn implements IJoinColumn {
      * @param value allowed object is {@link String }
      *
      */
+    @Override
     public void setName(String value) {
         if (value != null) {
             value = value.toUpperCase();
@@ -138,6 +140,7 @@ public class PrimaryKeyJoinColumn implements IJoinColumn {
      * @return possible object is {@link String }
      *
      */
+    @Override
     public String getReferencedColumnName() {
         return referencedColumnName;
     }
@@ -148,6 +151,7 @@ public class PrimaryKeyJoinColumn implements IJoinColumn {
      * @param value allowed object is {@link String }
      *
      */
+    @Override
     public void setReferencedColumnName(String value) {
         if (value != null) {
             value = value.toUpperCase();
@@ -161,6 +165,7 @@ public class PrimaryKeyJoinColumn implements IJoinColumn {
      * @return possible object is {@link String }
      *
      */
+    @Override
     public String getColumnDefinition() {
         return columnDefinition;
     }
@@ -171,6 +176,7 @@ public class PrimaryKeyJoinColumn implements IJoinColumn {
      * @param value allowed object is {@link String }
      *
      */
+    @Override
     public void setColumnDefinition(String value) {
         this.columnDefinition = value;
     }
@@ -178,6 +184,7 @@ public class PrimaryKeyJoinColumn implements IJoinColumn {
     /**
      * @return the foreignKey
      */
+    @Override
     public ForeignKey getForeignKey() {
         if (foreignKey == null) {
             foreignKey = new ForeignKey();
@@ -188,6 +195,7 @@ public class PrimaryKeyJoinColumn implements IJoinColumn {
     /**
      * @param foreignKey the foreignKey to set
      */
+    @Override
     public void setForeignKey(ForeignKey foreignKey) {
         this.foreignKey = foreignKey;
     }
@@ -195,6 +203,7 @@ public class PrimaryKeyJoinColumn implements IJoinColumn {
     /**
      * @return the implicitName
      */
+    @Override
     public String getImplicitName() {
         return implicitName;
     }
@@ -202,6 +211,7 @@ public class PrimaryKeyJoinColumn implements IJoinColumn {
     /**
      * @param implicitName the implicitName to set
      */
+    @Override
     public void setImplicitName(String implicitName) {
         this.implicitName = implicitName;
     }

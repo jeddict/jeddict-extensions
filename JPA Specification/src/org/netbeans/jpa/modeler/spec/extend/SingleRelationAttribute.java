@@ -164,6 +164,7 @@ public abstract class SingleRelationAttribute extends RelationAttribute implemen
      * @return possible object is {@link ForeignKey }
      *
      */
+    @Override
     public ForeignKey getForeignKey() {
         if(foreignKey==null){
             foreignKey = new ForeignKey();
@@ -177,6 +178,7 @@ public abstract class SingleRelationAttribute extends RelationAttribute implemen
      * @param value allowed object is {@link ForeignKey }
      *
      */
+    @Override
     public void setForeignKey(ForeignKey value) {
         this.foreignKey = value;
     }

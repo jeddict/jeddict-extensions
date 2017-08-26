@@ -345,6 +345,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
      * @return possible object is {@link String }
      *
      */
+    @Override
     public OrderBy getOrderBy() {
         return orderBy;
     }
@@ -355,6 +356,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
      * @param value allowed object is {@link String }
      *
      */
+    @Override
     public void setOrderBy(OrderBy value) {
         this.orderBy = value;
     }
@@ -365,6 +367,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
      * @return possible object is {@link OrderColumn }
      *
      */
+    @Override
     public OrderColumn getOrderColumn() {
         return orderColumn;
     }
@@ -375,6 +378,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
      * @param value allowed object is {@link OrderColumn }
      *
      */
+    @Override
     public void setOrderColumn(OrderColumn value) {
         this.orderColumn = value;
     }
@@ -385,6 +389,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
      * @return possible object is {@link MapKey }
      *
      */
+    @Override
     public MapKey getMapKey() {
         return mapKey;
     }
@@ -395,6 +400,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
      * @param value allowed object is {@link MapKey }
      *
      */
+    @Override
     public void setMapKey(MapKey value) {
         this.mapKey = value;
     }
@@ -424,6 +430,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
      * @return possible object is {@link TemporalType }
      *
      */
+    @Override
     public TemporalType getMapKeyTemporal() {
         return mapKeyTemporal;
     }
@@ -434,6 +441,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
      * @param value allowed object is {@link TemporalType }
      *
      */
+    @Override
     public void setMapKeyTemporal(TemporalType value) {
         this.mapKeyTemporal = value;
     }
@@ -444,6 +452,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
      * @return possible object is {@link EnumType }
      *
      */
+    @Override
     public EnumType getMapKeyEnumerated() {
         return mapKeyEnumerated;
     }
@@ -454,6 +463,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
      * @param value allowed object is {@link EnumType }
      *
      */
+    @Override
     public void setMapKeyEnumerated(EnumType value) {
         this.mapKeyEnumerated = value;
     }
@@ -481,6 +491,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
      *
      * @return
      */
+    @Override
     public Set<AttributeOverride> getMapKeyAttributeOverride() {
         if (mapKeyAttributeOverride == null) {
             mapKeyAttributeOverride = new TreeSet<>();
@@ -496,6 +507,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
      * @return possible object is {@link MapKeyColumn }
      *
      */
+    @Override
     public Column getMapKeyColumn() {
         if (mapKeyColumn == null) {
             mapKeyColumn = new Column();
@@ -509,6 +521,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
      * @param value allowed object is {@link MapKeyColumn }
      *
      */
+    @Override
     public void setMapKeyColumn(Column value) {
         this.mapKeyColumn = value;
     }
@@ -535,6 +548,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
      *
      *
      */
+    @Override
     public List<JoinColumn> getMapKeyJoinColumn() {
         if (mapKeyJoinColumn == null) {
             mapKeyJoinColumn = new ArrayList<>();
@@ -548,6 +562,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
      * @return possible object is {@link ForeignKey }
      *
      */
+    @Override
     public ForeignKey getMapKeyForeignKey() {
         return mapKeyForeignKey;
     }
@@ -558,6 +573,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
      * @param value allowed object is {@link ForeignKey }
      *
      */
+    @Override
     public void setMapKeyForeignKey(ForeignKey value) {
         this.mapKeyForeignKey = value;
     }
@@ -568,6 +584,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
      * @return possible object is {@link Column }
      *
      */
+    @Override
     public Column getColumn() {
         if (column == null) {
             column = new Column();
@@ -581,6 +598,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
      * @param value allowed object is {@link Column }
      *
      */
+    @Override
     public void setColumn(Column value) {
         this.column = value;
     }
@@ -591,6 +609,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
      * @return possible object is {@link TemporalType }
      *
      */
+    @Override
     public TemporalType getTemporal() {
         return temporal;
     }
@@ -601,6 +620,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
      * @param value allowed object is {@link TemporalType }
      *
      */
+    @Override
     public void setTemporal(TemporalType value) {
         this.temporal = value;
     }
@@ -611,6 +631,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
      * @return possible object is {@link EnumType }
      *
      */
+    @Override
     public EnumType getEnumerated() {
         return enumerated;
     }
@@ -621,6 +642,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
      * @param value allowed object is {@link EnumType }
      *
      */
+    @Override
     public void setEnumerated(EnumType value) {
         this.enumerated = value;
     }
@@ -670,11 +692,12 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
     @Override
     public Set<AttributeOverride> getAttributeOverride() {
         if (attributeOverride == null) {
-            attributeOverride = new TreeSet<AttributeOverride>();
+            attributeOverride = new TreeSet<>();
         }
         return this.attributeOverride;
     }
 
+    @Override
     public AttributeOverride findAttributeOverride(String name) {
         for (AttributeOverride attributeOverride : getAttributeOverride()) {
             if (StringUtils.equals(name, attributeOverride.getName())) {
@@ -684,10 +707,12 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
         return null;
     }
 
+    @Override
     public boolean addAttributeOverride(AttributeOverride attributeOverride) {
         return getAttributeOverride().add(attributeOverride);
     }
 
+    @Override
     public boolean removeAttributeOverride(AttributeOverride attributeOverride) {
         return getAttributeOverride().remove(attributeOverride);
     }
@@ -722,6 +747,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
         return this.associationOverride;
     }
 
+    @Override
     public AssociationOverride findAssociationOverride(String name) {
         for (AssociationOverride associationOverride : getAssociationOverride()) {
             if (StringUtils.equals(name, associationOverride.getName())) {
@@ -731,10 +757,12 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
         return null;
     }
 
+    @Override
     public boolean addAssociationOverride(AssociationOverride associationOverride) {
         return getAssociationOverride().add(associationOverride);
     }
 
+    @Override
     public boolean removeAssociationOverride(AssociationOverride associationOverride) {
         return getAssociationOverride().remove(associationOverride);
     }
@@ -818,7 +846,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
     @Override
     public List<Convert> getMapKeyConverts() {
         if (mapKeyConvert == null) {
-            mapKeyConvert = new ArrayList<Convert>();
+            mapKeyConvert = new ArrayList<>();
         }
         return this.mapKeyConvert;
     }
@@ -1045,27 +1073,33 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
         }
     }
 
+    @Override
     public String getDefaultColumnName() {
         return this.getName().toUpperCase();
     }
 
+    @Override
     public String getDefaultMapKeyColumnName() {
         return this.getName().toUpperCase()+"_KEY";
     }
     
         //used in db modeler element-config.xml expression
+    @Override
     public boolean isTextMapKeyAttributeType() {
         return isTextAttributeType(getMapKeyAttributeType());
     }
 
+    @Override
     public boolean isPrecisionpMapKeyAttributeType() {
         return isPrecisionAttributeType(getMapKeyAttributeType());
     }
 
+    @Override
     public boolean isScaleMapKeyAttributeType() {
         return isScaleAttributeType(getMapKeyAttributeType());
     }
     
+    @Override
     public String getColumnName() {
         if (this.getColumn() != null && StringUtils.isNotBlank(this.getColumn().getName())) {
             return getColumn().getName();
@@ -1086,6 +1120,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
     /**
      * @return the mapKeyAttribute
      */
+    @Override
     public Attribute getMapKeyAttribute() {
         return mapKeyAttribute;
     }
@@ -1093,11 +1128,13 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
     /**
      * @param mapKeyAttribute the mapKeyAttribute to set
      */
+    @Override
     public void setMapKeyAttribute(Attribute mapKeyAttribute) {
         resetMapAttributeExceptExisting();
         this.mapKeyAttribute = mapKeyAttribute;
     }
 
+    @Override
     public MapKeyType getValidatedMapKeyType() {
         if (mapKeyAttribute != null) {
             return MapKeyType.EXT;
@@ -1110,6 +1147,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
     /**
      * @return the mapKeyType
      */
+    @Override
     public MapKeyType getMapKeyType() {
         if (mapKeyType == null) {
             return MapKeyType.EXT;
@@ -1125,6 +1163,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
     /**
      * @return the mapKeyAttributeType
      */
+    @Override
     public String getMapKeyAttributeType() {
         return mapKeyAttributeType;
     }
@@ -1132,6 +1171,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
     /**
      * @param mapKeyAttributeType the mapKeyAttributeType to set
      */
+    @Override
     public void setMapKeyAttributeType(String mapKeyAttributeType) {
         this.mapKeyAttributeType = mapKeyAttributeType;
     }
@@ -1139,6 +1179,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
     /**
      * @return the mapKeyEntity
      */
+    @Override
     public Entity getMapKeyEntity() {
         return mapKeyEntity;
     }
@@ -1146,6 +1187,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
     /**
      * @param mapKeyEntity the mapKeyEntity to set
      */
+    @Override
     public void setMapKeyEntity(Entity mapKeyEntity) {
         resetMapAttributeExceptEntity();
         this.mapKeyEntity = mapKeyEntity;
@@ -1154,6 +1196,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
     /**
      * @return the mapKeyEmbeddable
      */
+    @Override
     public Embeddable getMapKeyEmbeddable() {
         return mapKeyEmbeddable;
     }
@@ -1161,6 +1204,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
     /**
      * @param mapKeyEmbeddable the mapKeyEmbeddable to set
      */
+    @Override
     public void setMapKeyEmbeddable(Embeddable mapKeyEmbeddable) {
         resetMapAttributeExceptEmbeddable();
         this.mapKeyEmbeddable = mapKeyEmbeddable;

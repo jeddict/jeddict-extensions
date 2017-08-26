@@ -47,6 +47,7 @@ public class JsonbNumberFormat extends JsonbFormat {
     private static final Set<String> SUPPORTED_TYPE = new HashSet<>(Arrays.asList(SHORT, INT, LONG, FLOAT, DOUBLE,
             SHORT_WRAPPER, INT_WRAPPER, LONG_WRAPPER, FLOAT_WRAPPER, DOUBLE_WRAPPER, BIGINTEGER, BIGDECIMAL));
 
+    @Override
     public boolean isSupportedFormat(String type) {
         return SUPPORTED_TYPE.contains(type);
     }

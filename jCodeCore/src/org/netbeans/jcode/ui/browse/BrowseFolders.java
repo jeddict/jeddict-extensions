@@ -84,26 +84,23 @@ public class BrowseFolders extends JPanel implements ExplorerManager.Provider, L
         btv.setRootVisible( false );
         btv.setSelectionMode( javax.swing.tree.TreeSelectionModel.SINGLE_TREE_SELECTION );
         btv.setBorder( SAMPLE_SCROLL_PANE.getBorder() );
-        manager.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                if (evt.getPropertyName().equals(ExplorerManager.PROP_SELECTED_NODES)) {
-                    Node[] oldnodes = (Node[]) evt.getOldValue();
-                    if(oldnodes != null) {
-                        for (Node oldnode : oldnodes) {
-                            DataObject dobj = oldnode.getLookup().lookup(DataObject.class);
-                            if(dobj != null) {
-                                selectionContent.remove(dobj.getPrimaryFile());
-                            }
+        manager.addPropertyChangeListener((PropertyChangeEvent evt) -> {
+            if (evt.getPropertyName().equals(ExplorerManager.PROP_SELECTED_NODES)) {
+                Node[] oldnodes = (Node[]) evt.getOldValue();
+                if(oldnodes != null) {
+                    for (Node oldnode : oldnodes) {
+                        DataObject dobj = oldnode.getLookup().lookup(DataObject.class);
+                        if(dobj != null) {
+                            selectionContent.remove(dobj.getPrimaryFile());
                         }
                     }
-                    Node[] newnodes = (Node[]) evt.getNewValue();
-                    if(newnodes != null) {
-                        for (Node newnode : newnodes) {
-                            DataObject dobj = newnode.getLookup().lookup(DataObject.class);
-                            if(dobj != null) {
-                                selectionContent.add(dobj.getPrimaryFile());
-                            }
+                }
+                Node[] newnodes = (Node[]) evt.getNewValue();
+                if(newnodes != null) {
+                    for (Node newnode : newnodes) {
+                        DataObject dobj = newnode.getLookup().lookup(DataObject.class);
+                        if(dobj != null) {
+                            selectionContent.add(dobj.getPrimaryFile());
                         }
                     }
                 }
@@ -116,6 +113,7 @@ public class BrowseFolders extends JPanel implements ExplorerManager.Provider, L
         
     // ExplorerManager.Provider implementation ---------------------------------
     
+    @Override
     public ExplorerManager getExplorerManager() {
         return manager;
     }
@@ -293,6 +291,7 @@ public class BrowseFolders extends JPanel implements ExplorerManager.Provider, L
             super.removeNotify();
         }
         
+        @Override
         protected Node[] createNodes(Object key) {
             FileObject fObj = null;
             SourceGroup group = null;
@@ -375,6 +374,7 @@ public class BrowseFolders extends JPanel implements ExplorerManager.Provider, L
     }
 
     private static class FileObjectComparator implements Comparator<FileObject> {
+        @Override
         public int compare(FileObject fo1, FileObject fo2) {
             return fo1.getName().compareTo(fo2.getName());
         }
@@ -395,6 +395,7 @@ public class BrowseFolders extends JPanel implements ExplorerManager.Provider, L
             this.target=target;
         }
         
+        @Override
         public void actionPerformed( ActionEvent e ) {
             String command = e.getActionCommand();
 

@@ -69,10 +69,12 @@ public abstract class PersistenceBaseAttribute extends BaseAttribute implements 
         }
     }
     
+    @Override
     public String getDefaultColumnName() {
         return this.getName().toUpperCase();
     }
 
+    @Override
     public String getColumnName() {
         if (this.getColumn() != null && StringUtils.isNotBlank(this.getColumn().getName())) {
             return getColumn().getName();
@@ -87,6 +89,7 @@ public abstract class PersistenceBaseAttribute extends BaseAttribute implements 
      * @return possible object is {@link TemporalType }
      *
      */
+    @Override
     public TemporalType getTemporal() {
         return temporal;
     }
@@ -97,6 +100,7 @@ public abstract class PersistenceBaseAttribute extends BaseAttribute implements 
      * @param value allowed object is {@link TemporalType }
      *
      */
+    @Override
     public void setTemporal(TemporalType value) {
         this.temporal = value;
     }

@@ -211,6 +211,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
      * @return possible object is {@link String }
      *
      */
+    @Override
     public OrderBy getOrderBy() {
         return orderBy;
     }
@@ -221,6 +222,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
      * @param value allowed object is {@link String }
      *
      */
+    @Override
     public void setOrderBy(OrderBy value) {
         this.orderBy = value;
     }
@@ -231,6 +233,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
      * @return possible object is {@link OrderColumn }
      *
      */
+    @Override
     public OrderColumn getOrderColumn() {
         return orderColumn;
     }
@@ -241,6 +244,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
      * @param value allowed object is {@link OrderColumn }
      *
      */
+    @Override
     public void setOrderColumn(OrderColumn value) {
         this.orderColumn = value;
     }
@@ -251,6 +255,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
      * @return possible object is {@link MapKey }
      *
      */
+    @Override
     public MapKey getMapKey() {
         return mapKey;
     }
@@ -261,6 +266,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
      * @param value allowed object is {@link MapKey }
      *
      */
+    @Override
     public void setMapKey(MapKey value) {
         this.mapKey = value;
     }
@@ -272,6 +278,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
      * @return possible object is {@link TemporalType }
      *
      */
+    @Override
     public TemporalType getMapKeyTemporal() {
         return mapKeyTemporal;
     }
@@ -282,6 +289,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
      * @param value allowed object is {@link TemporalType }
      *
      */
+    @Override
     public void setMapKeyTemporal(TemporalType value) {
         this.mapKeyTemporal = value;
     }
@@ -292,6 +300,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
      * @return possible object is {@link EnumType }
      *
      */
+    @Override
     public EnumType getMapKeyEnumerated() {
         return mapKeyEnumerated;
     }
@@ -302,6 +311,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
      * @param value allowed object is {@link EnumType }
      *
      */
+    @Override
     public void setMapKeyEnumerated(EnumType value) {
         this.mapKeyEnumerated = value;
     }
@@ -329,6 +339,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
      *
      * @return
      */
+    @Override
     public Set<AttributeOverride> getMapKeyAttributeOverride() {
         if (mapKeyAttributeOverride == null) {
             mapKeyAttributeOverride = new TreeSet<>();
@@ -397,6 +408,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
      * @return possible object is {@link MapKeyColumn }
      *
      */
+    @Override
     public Column getMapKeyColumn() {
         if(mapKeyColumn==null){
             mapKeyColumn = new Column();
@@ -410,6 +422,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
      * @param value allowed object is {@link MapKeyColumn }
      *
      */
+    @Override
     public void setMapKeyColumn(Column value) {
         this.mapKeyColumn = value;
     }
@@ -436,6 +449,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
      *
      *
      */
+    @Override
     public List<JoinColumn> getMapKeyJoinColumn() {
         if (mapKeyJoinColumn == null) {
             mapKeyJoinColumn = new ArrayList<>();
@@ -449,6 +463,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
      * @return possible object is {@link ForeignKey }
      *
      */
+    @Override
     public ForeignKey getMapKeyForeignKey() {
         return mapKeyForeignKey;
     }
@@ -459,6 +474,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
      * @param value allowed object is {@link ForeignKey }
      *
      */
+    @Override
     public void setMapKeyForeignKey(ForeignKey value) {
         this.mapKeyForeignKey = value;
     }
@@ -562,6 +578,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
         /**
      * @return the mapKeyAttribute
      */
+    @Override
     public Attribute getMapKeyAttribute() {
         return mapKeyAttribute;
     }
@@ -569,11 +586,13 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
     /**
      * @param mapKeyAttribute the mapKeyAttribute to set
      */
+    @Override
     public void setMapKeyAttribute(Attribute mapKeyAttribute) {
         resetMapAttributeExceptExisting();
         this.mapKeyAttribute = mapKeyAttribute;
     }
     
+    @Override
     public MapKeyType getValidatedMapKeyType() {
         if(mapKeyAttribute != null){
             return MapKeyType.EXT;
@@ -586,6 +605,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
     /**
      * @return the mapKeyType
      */
+    @Override
     public MapKeyType getMapKeyType() {
         if(mapKeyType==null){
             return MapKeyType.EXT;
@@ -601,6 +621,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
     /**
      * @return the mapKeyAttributeType
      */
+    @Override
     public String getMapKeyAttributeType() {
         return mapKeyAttributeType;
     }
@@ -608,6 +629,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
     /**
      * @param mapKeyAttributeType the mapKeyAttributeType to set
      */
+    @Override
     public void setMapKeyAttributeType(String mapKeyAttributeType) {
         this.mapKeyAttributeType = mapKeyAttributeType;
     }
@@ -615,6 +637,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
     /**
      * @return the mapKeyEntity
      */
+    @Override
     public Entity getMapKeyEntity() {
         return mapKeyEntity;
     }
@@ -622,6 +645,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
     /**
      * @param mapKeyEntity the mapKeyEntity to set
      */
+    @Override
     public void setMapKeyEntity(Entity mapKeyEntity) {
         resetMapAttributeExceptEntity();
         this.mapKeyEntity = mapKeyEntity;
@@ -630,6 +654,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
     /**
      * @return the mapKeyEmbeddable
      */
+    @Override
     public Embeddable getMapKeyEmbeddable() {
         return mapKeyEmbeddable;
     }
@@ -637,6 +662,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
     /**
      * @param mapKeyEmbeddable the mapKeyEmbeddable to set
      */
+    @Override
     public void setMapKeyEmbeddable(Embeddable mapKeyEmbeddable) {
         resetMapAttributeExceptEmbeddable();
         this.mapKeyEmbeddable = mapKeyEmbeddable;
@@ -718,18 +744,22 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
     }
     
     //used in db modeler element-config.xml expression
+    @Override
     public boolean isTextMapKeyAttributeType() {
         return isTextAttributeType(getMapKeyAttributeType());
     }
 
+    @Override
     public boolean isPrecisionpMapKeyAttributeType() {
         return isPrecisionAttributeType(getMapKeyAttributeType());
     }
 
+    @Override
     public boolean isScaleMapKeyAttributeType() {
         return isScaleAttributeType(getMapKeyAttributeType());
     }
     
+    @Override
         public String getDefaultMapKeyColumnName() {
         return this.getName().toUpperCase()+"_KEY";
     }

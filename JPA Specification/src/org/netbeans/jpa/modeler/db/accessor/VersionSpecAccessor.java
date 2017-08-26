@@ -44,6 +44,7 @@ public class VersionSpecAccessor extends VersionAccessor {
         return accessor;
     }
 
+    @Override
     public void process() {
         super.process();
         getMapping().setProperty(Attribute.class, version);

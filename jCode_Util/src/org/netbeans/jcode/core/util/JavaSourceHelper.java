@@ -122,7 +122,7 @@ public class JavaSourceHelper {
 
     public static List<JavaSource> getEntityClasses(Project project) {
         List<JavaSource> sources = getJavaSources(project);
-        List<JavaSource> entityClasses = new ArrayList<JavaSource>();
+        List<JavaSource> entityClasses = new ArrayList<>();
 
         for (JavaSource source : sources) {
             if (isEntity(source)) {
@@ -279,7 +279,7 @@ public class JavaSourceHelper {
     }
 
     public static Collection<String> getImports(CompilationController controller) {
-        Set<String> imports = new HashSet<String>();
+        Set<String> imports = new HashSet<>();
         CompilationUnitTree cu = controller.getCompilationUnit();
 
         if (cu != null) {
@@ -315,7 +315,7 @@ public class JavaSourceHelper {
             return null;
         }
         List<ExecutableElement> methods = ElementFilter.methodsIn(classElement.getEnclosedElements());
-        List<MethodTree> found = new ArrayList<MethodTree>();
+        List<MethodTree> found = new ArrayList<>();
         for (ExecutableElement method : methods) {
             if (method.getSimpleName().toString().equals(methodName)) {
                 found.add(controller.getTrees().getTree(method));
@@ -388,7 +388,7 @@ public class JavaSourceHelper {
         DataObject templateDO = DataObject.find(templateFO);
         DataFolder dataFolder = DataFolder.findFolder(targetFolder);
 
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("package", packageName);
         if (params != null) {
             for (Entry<String, String> entry : params.entrySet()) {
@@ -413,7 +413,7 @@ public class JavaSourceHelper {
             Object attr = annotationAttrs[i];
 
             if (attr != null) {
-                attrTrees = new ArrayList<ExpressionTree>();
+                attrTrees = new ArrayList<>();
 
                 if (attr instanceof ExpressionTree) {
                     attrTrees.add((ExpressionTree) attr);
@@ -524,7 +524,7 @@ public class JavaSourceHelper {
         TreeMaker maker = copy.getTreeMaker();
         ModifiersTree modifiersTree = createModifiersTree(copy, modifiers, null, null);
         ModifiersTree paramModTree = maker.Modifiers(Collections.<Modifier>emptySet());
-        List<VariableTree> paramTrees = new ArrayList<VariableTree>();
+        List<VariableTree> paramTrees = new ArrayList<>();
 
         if (parameters != null) {
             for (int i = 0; i < parameters.length; i++) {
@@ -562,7 +562,7 @@ public class JavaSourceHelper {
 
         Tree returnTypeTree = createTypeTree(copy, returnType);
 
-        List<VariableTree> paramTrees = new ArrayList<VariableTree>();
+        List<VariableTree> paramTrees = new ArrayList<>();
 
         if (parameters != null) {
             for (int i = 0; i < parameters.length; i++) {
@@ -642,7 +642,7 @@ public class JavaSourceHelper {
     public static Tree createParameterizedTypeTree(WorkingCopy copy, String type, String[] typeArgs) {
         TreeMaker maker = copy.getTreeMaker();
         Tree typeTree = createTypeTree(copy, type);
-        List<ExpressionTree> typeArgTrees = new ArrayList<ExpressionTree>();
+        List<ExpressionTree> typeArgTrees = new ArrayList<>();
 
         for (String arg : typeArgs) {
             typeArgTrees.add((ExpressionTree) createTypeTree(copy, arg));
@@ -653,7 +653,7 @@ public class JavaSourceHelper {
 
     public static ModifiersTree createModifiersTree(WorkingCopy copy, Modifier[] modifiers, String[] annotations, Object[] annotationAttrs) {
         TreeMaker maker = copy.getTreeMaker();
-        Set<Modifier> modifierSet = new HashSet<Modifier>();
+        Set<Modifier> modifierSet = new HashSet<>();
 
         for (Modifier modifier : modifiers) {
             modifierSet.add(modifier);
@@ -669,7 +669,7 @@ public class JavaSourceHelper {
         List<AnnotationTree> annotationTrees = null;
 
         if (annotations != null) {
-            annotationTrees = new ArrayList<AnnotationTree>();
+            annotationTrees = new ArrayList<>();
 
             for (int i = 0; i < annotations.length; i++) {
                 String annotation = annotations[i];
@@ -680,7 +680,7 @@ public class JavaSourceHelper {
                     Object attr = annotationAttrs[i];
 
                     if (attr != null) {
-                        expressionTrees = new ArrayList<ExpressionTree>();
+                        expressionTrees = new ArrayList<>();
 
                         if (attr instanceof ExpressionTree) {
                             expressionTrees.add((ExpressionTree) attr);
@@ -918,7 +918,7 @@ public class JavaSourceHelper {
     }
 
     public static List<MethodTree> getAllMethods(JavaSource source) {
-        final List<MethodTree> allMethods = new ArrayList<MethodTree>();
+        final List<MethodTree> allMethods = new ArrayList<>();
 
         try {
             source.runUserActionTask(new AbstractTask<CompilationController>() {
@@ -943,7 +943,7 @@ public class JavaSourceHelper {
 
     public static Collection<String> getAnnotationValuesForAllMethods(JavaSource source,
             final String annotation) {
-        final Collection<String> results = new HashSet<String>();
+        final Collection<String> results = new HashSet<>();
         try {
             source.runUserActionTask(new AbstractTask<CompilationController>() {
 
@@ -1077,14 +1077,11 @@ public class JavaSourceHelper {
 
             reformat.lock();
             try {
-                NbDocument.runAtomicAsUser(doc, new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            reformat.reformat(0, doc.getLength());
-                        } catch (BadLocationException ex) {
-                            Exceptions.printStackTrace(ex);
-                        }
+                NbDocument.runAtomicAsUser(doc, () -> {
+                    try {
+                        reformat.reformat(0, doc.getLength());
+                    } catch (BadLocationException ex) {
+                        Exceptions.printStackTrace(ex);
                     }
                 });
             } catch (BadLocationException ex) {

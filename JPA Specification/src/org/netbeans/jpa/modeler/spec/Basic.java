@@ -118,6 +118,7 @@ public class Basic extends PersistenceBaseAttribute implements AccessTypeHandler
      * @return possible object is {@link EnumType }
      *
      */
+    @Override
     public EnumType getEnumerated() {
         return enumerated;
     }
@@ -128,6 +129,7 @@ public class Basic extends PersistenceBaseAttribute implements AccessTypeHandler
      * @param value allowed object is {@link EnumType }
      *
      */
+    @Override
     public void setEnumerated(EnumType value) {
         this.enumerated = value;
     }
@@ -152,6 +154,7 @@ public class Basic extends PersistenceBaseAttribute implements AccessTypeHandler
      * @param value allowed object is {@link Convert }
      *
      */
+    @Override
     public void setConvert(Convert value) {
         this.convert = value;
     }

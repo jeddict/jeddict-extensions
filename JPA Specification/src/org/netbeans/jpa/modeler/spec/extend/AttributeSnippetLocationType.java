@@ -31,6 +31,7 @@ public enum AttributeSnippetLocationType implements SnippetLocation {
         this.title = title;
     }
 
+    @Override
     public String getTitle() {
         return title;
     }

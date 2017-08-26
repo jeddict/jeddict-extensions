@@ -184,7 +184,7 @@ public class JoinTable {
      */
     public List<JoinColumn> getJoinColumn() {
         if (joinColumn == null) {
-            setJoinColumn(new ArrayList<JoinColumn>());
+            setJoinColumn(new ArrayList<>());
         }
         return this.joinColumn;
     }
@@ -236,7 +236,7 @@ public class JoinTable {
      */
     public List<JoinColumn> getInverseJoinColumn() {
         if (inverseJoinColumn == null) {
-            setInverseJoinColumn(new ArrayList<JoinColumn>());
+            setInverseJoinColumn(new ArrayList<>());
         }
         return this.inverseJoinColumn;
     }
@@ -316,7 +316,7 @@ public class JoinTable {
      */
     public List<Index> getIndex() {
         if (index == null) {
-            index = new ArrayList<Index>();
+            index = new ArrayList<>();
         }
         return this.index;
     }

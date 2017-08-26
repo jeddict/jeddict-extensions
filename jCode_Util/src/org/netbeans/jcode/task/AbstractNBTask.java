@@ -495,7 +495,7 @@ public abstract class AbstractNBTask extends Thread
     }
 
     private Vector<ITaskFinishListener> listeners
-            = new Vector<ITaskFinishListener>();
+            = new Vector<>();
 
     private void notifyTaskFinishListeners() {
         for (ITaskFinishListener listener : listeners) {

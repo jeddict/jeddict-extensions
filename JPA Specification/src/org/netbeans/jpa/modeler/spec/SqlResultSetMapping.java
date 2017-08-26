@@ -168,7 +168,7 @@ public class SqlResultSetMapping {
      */
     public List<EntityResult> getEntityResult() {
         if (entityResult == null) {
-            entityResult = new ArrayList<EntityResult>();
+            entityResult = new ArrayList<>();
         }
         return this.entityResult;
     }
@@ -197,7 +197,7 @@ public class SqlResultSetMapping {
      */
     public List<ConstructorResult> getConstructorResult() {
         if (constructorResult == null) {
-            constructorResult = new ArrayList<ConstructorResult>();
+            constructorResult = new ArrayList<>();
         }
         return this.constructorResult;
     }
@@ -226,7 +226,7 @@ public class SqlResultSetMapping {
      */
     public List<ColumnResult> getColumnResult() {
         if (columnResult == null) {
-            columnResult = new ArrayList<ColumnResult>();
+            columnResult = new ArrayList<>();
         }
         return this.columnResult;
     }

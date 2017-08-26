@@ -471,7 +471,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
      */
     public List<SequenceGenerator> getSequenceGenerator() {
         if (sequenceGenerator == null) {
-            sequenceGenerator = new ArrayList<SequenceGenerator>();
+            sequenceGenerator = new ArrayList<>();
         }
         return this.sequenceGenerator;
     }
@@ -500,7 +500,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
      */
     public List<TableGenerator> getTableGenerator() {
         if (tableGenerator == null) {
-            tableGenerator = new ArrayList<TableGenerator>();
+            tableGenerator = new ArrayList<>();
         }
         return this.tableGenerator;
     }
@@ -529,7 +529,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
      */
     public List<NamedQuery> getNamedQuery() {
         if (namedQuery == null) {
-            namedQuery = new ArrayList<NamedQuery>();
+            namedQuery = new ArrayList<>();
         }
         return this.namedQuery;
     }
@@ -558,7 +558,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
      */
     public List<NamedNativeQuery> getNamedNativeQuery() {
         if (namedNativeQuery == null) {
-            namedNativeQuery = new ArrayList<NamedNativeQuery>();
+            namedNativeQuery = new ArrayList<>();
         }
         return this.namedNativeQuery;
     }
@@ -587,7 +587,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
      */
     public List<NamedStoredProcedureQuery> getNamedStoredProcedureQuery() {
         if (namedStoredProcedureQuery == null) {
-            namedStoredProcedureQuery = new ArrayList<NamedStoredProcedureQuery>();
+            namedStoredProcedureQuery = new ArrayList<>();
         }
         return this.namedStoredProcedureQuery;
     }
@@ -616,7 +616,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
      */
     public Set<SqlResultSetMapping> getSqlResultSetMapping() {
         if (sqlResultSetMapping == null) {
-            sqlResultSetMapping = new HashSet<SqlResultSetMapping>();
+            sqlResultSetMapping = new HashSet<>();
         }
         return this.sqlResultSetMapping;
     }
@@ -645,7 +645,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
      */
     public List<MappedSuperclass> getMappedSuperclass() {
         if (mappedSuperclass == null) {
-            mappedSuperclass = new ArrayList<MappedSuperclass>();
+            mappedSuperclass = new ArrayList<>();
         }
         return this.mappedSuperclass;
     }
@@ -746,7 +746,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
      */
     public List<Embeddable> getEmbeddable() {
         if (embeddable == null) {
-            embeddable = new ArrayList<Embeddable>();
+            embeddable = new ArrayList<>();
         }
         return this.embeddable;
     }
@@ -949,7 +949,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         if (StringUtils.isBlank(entityName)) {
             return null;
         }
-        List<Entity> entities = new ArrayList<Entity>();
+        List<Entity> entities = new ArrayList<>();
         if (entity != null) {
             for (Entity entity_In : entity) {
                 if (entityName.equals(entity_In.getClazz())) {
@@ -1056,7 +1056,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
      */
     public List<DefaultClass> getDefaultClass() {
         if (this.defaultClass == null) {
-            this.defaultClass = new ArrayList<DefaultClass>();
+            this.defaultClass = new ArrayList<>();
         }
         return defaultClass;
     }
@@ -1429,7 +1429,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     }
 
     public List<JavaClass> getSubClass(String classId) {
-        List<JavaClass> javaClassList = new ArrayList<JavaClass>(this.getEntity());
+        List<JavaClass> javaClassList = new ArrayList<>(this.getEntity());
         this.getJavaClass().stream().filter((javaClass) -> (classId.equals(javaClass.getSuperclass().getId()))).forEach((javaClass) -> {
             javaClassList.add(javaClass);
         });
@@ -1940,6 +1940,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     /**
      * @return the jsonbVisibility
      */
+    @Override
     public ReferenceClass getJsonbVisibility() {
         return jsonbVisibility;
     }
@@ -1947,6 +1948,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     /**
      * @param jsonbVisibility the jsonbVisibility to set
      */
+    @Override
     public void setJsonbVisibility(ReferenceClass jsonbVisibility) {
         this.jsonbVisibility = jsonbVisibility;
     }

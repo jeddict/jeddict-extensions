@@ -87,7 +87,7 @@ public abstract class AbstractPlane
      */
     public List<DiagramElement> getDiagramElement() {
         if (diagramElement == null) {
-            diagramElement = new ArrayList<DiagramElement>();
+            diagramElement = new ArrayList<>();
         }
         return this.diagramElement;
     }
@@ -110,7 +110,7 @@ public abstract class AbstractPlane
 
     public void addDiagramElement(DiagramElement diagramElement_In) {
         if (diagramElement == null) {
-            diagramElement = new ArrayList<DiagramElement>();
+            diagramElement = new ArrayList<>();
         }
         this.diagramElement.add(diagramElement_In);
     }

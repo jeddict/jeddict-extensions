@@ -52,6 +52,7 @@ public class JsonbDateFormat extends JsonbFormat {
             INSTANT,DURATION,PERIOD,LOCAL_DATE,LOCAL_TIME,LOCAL_DATE_TIME,
             ZONED_DATE_TIME,ZONE_ID,ZONE_OFFSET,OFFSET_DATE_TIME,OFFSET_TIME));
     
+    @Override
     public boolean isSupportedFormat(String type) {
         return SUPPORTED_TYPE.contains(type);
     }

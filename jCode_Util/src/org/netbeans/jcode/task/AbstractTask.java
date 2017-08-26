@@ -25,6 +25,7 @@ public abstract class AbstractTask<P> implements CancellableTask<P> {
     public AbstractTask() {
     }
 
+    @Override
     public void cancel() {
     }
 ;

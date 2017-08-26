@@ -740,6 +740,7 @@ public abstract class JavaClass<T extends IAttributes> extends FlowNode implemen
     /**
      * @return the jsonbTypeAdapter
      */
+    @Override
     public ReferenceClass getJsonbTypeAdapter() {
         return jsonbTypeAdapter;
     }
@@ -747,6 +748,7 @@ public abstract class JavaClass<T extends IAttributes> extends FlowNode implemen
     /**
      * @param jsonbTypeAdapter the jsonbTypeAdapter to set
      */
+    @Override
     public void setJsonbTypeAdapter(ReferenceClass jsonbTypeAdapter) {
         this.jsonbTypeAdapter = jsonbTypeAdapter;
     }
@@ -788,6 +790,7 @@ public abstract class JavaClass<T extends IAttributes> extends FlowNode implemen
     /**
      * @return the jsonbTypeDeserializer
      */
+    @Override
     public ReferenceClass getJsonbTypeDeserializer() {
         return jsonbTypeDeserializer;
     }
@@ -795,6 +798,7 @@ public abstract class JavaClass<T extends IAttributes> extends FlowNode implemen
     /**
      * @param jsonbTypeDeserializer the jsonbTypeDeserializer to set
      */
+    @Override
     public void setJsonbTypeDeserializer(ReferenceClass jsonbTypeDeserializer) {
         this.jsonbTypeDeserializer = jsonbTypeDeserializer;
     }
@@ -802,6 +806,7 @@ public abstract class JavaClass<T extends IAttributes> extends FlowNode implemen
     /**
      * @return the jsonbTypeSerializer
      */
+    @Override
     public ReferenceClass getJsonbTypeSerializer() {
         return jsonbTypeSerializer;
     }
@@ -809,6 +814,7 @@ public abstract class JavaClass<T extends IAttributes> extends FlowNode implemen
     /**
      * @param jsonbTypeSerializer the jsonbTypeSerializer to set
      */
+    @Override
     public void setJsonbTypeSerializer(ReferenceClass jsonbTypeSerializer) {
         this.jsonbTypeSerializer = jsonbTypeSerializer;
     }
@@ -816,6 +822,7 @@ public abstract class JavaClass<T extends IAttributes> extends FlowNode implemen
     /**
      * @return the jsonbVisibility
      */
+    @Override
     public ReferenceClass getJsonbVisibility() {
         return jsonbVisibility;
     }
@@ -823,6 +830,7 @@ public abstract class JavaClass<T extends IAttributes> extends FlowNode implemen
     /**
      * @param jsonbVisibility the jsonbVisibility to set
      */
+    @Override
     public void setJsonbVisibility(ReferenceClass jsonbVisibility) {
         this.jsonbVisibility = jsonbVisibility;
     }

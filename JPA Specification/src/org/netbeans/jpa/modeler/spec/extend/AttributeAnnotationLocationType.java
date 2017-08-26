@@ -26,6 +26,7 @@ public enum AttributeAnnotationLocationType implements AnnotationLocation {
         this.title = title;
     }
 
+    @Override
     public String getTitle() {
         return title;
     }

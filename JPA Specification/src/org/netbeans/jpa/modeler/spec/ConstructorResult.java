@@ -98,7 +98,7 @@ public class ConstructorResult {
      */
     public List<ColumnResult> getColumn() {
         if (column == null) {
-            column = new ArrayList<ColumnResult>();
+            column = new ArrayList<>();
         }
         return this.column;
     }

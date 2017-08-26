@@ -51,7 +51,7 @@ public class OrderColumnAdapter extends XmlAdapter<AdaptedMap, Map<String, Strin
 
     @Override
     public Map<String, String> unmarshal(AdaptedMap adaptedMap) throws Exception {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         Element rootElement = (Element) adaptedMap.getValue();
         NodeList childNodes = rootElement.getChildNodes();
         for(int x=0,size=childNodes.getLength(); x<size; x++) {

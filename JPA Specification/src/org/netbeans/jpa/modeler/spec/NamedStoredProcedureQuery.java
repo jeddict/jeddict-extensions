@@ -121,7 +121,7 @@ public class NamedStoredProcedureQuery {//TODO extend to DataMapping and remove 
     }
 
     public static List<NamedStoredProcedureQuery> load(Element element) {
-        List<NamedStoredProcedureQuery> namedStoredProcedureQueries = new ArrayList<NamedStoredProcedureQuery>();
+        List<NamedStoredProcedureQuery> namedStoredProcedureQueries = new ArrayList<>();
 
         AnnotationMirror namedStoredProcedureQueriesMirror = JavaSourceParserUtil.findAnnotation(element, NAMED_STORED_PROCEDURE_QUERIES_FQN);
         if (namedStoredProcedureQueriesMirror != null) {
@@ -184,7 +184,7 @@ public class NamedStoredProcedureQuery {//TODO extend to DataMapping and remove 
      */
     public List<StoredProcedureParameter> getParameter() {
         if (parameter == null) {
-            parameter = new ArrayList<StoredProcedureParameter>();
+            parameter = new ArrayList<>();
         }
         return this.parameter;
     }
@@ -212,7 +212,7 @@ public class NamedStoredProcedureQuery {//TODO extend to DataMapping and remove 
      */
     public List<String> getResultClass() {
         if (resultClass == null) {
-            resultClass = new ArrayList<String>();
+            resultClass = new ArrayList<>();
         }
         return this.resultClass;
     }
@@ -244,7 +244,7 @@ public class NamedStoredProcedureQuery {//TODO extend to DataMapping and remove 
      */
     public List<String> getResultSetMapping() {
         if (resultSetMapping == null) {
-            resultSetMapping = new ArrayList<String>();
+            resultSetMapping = new ArrayList<>();
         }
         return this.resultSetMapping;
     }
@@ -273,7 +273,7 @@ public class NamedStoredProcedureQuery {//TODO extend to DataMapping and remove 
      */
     public List<QueryHint> getHint() {
         if (hint == null) {
-            hint = new ArrayList<QueryHint>();
+            hint = new ArrayList<>();
         }
         return this.hint;
     }

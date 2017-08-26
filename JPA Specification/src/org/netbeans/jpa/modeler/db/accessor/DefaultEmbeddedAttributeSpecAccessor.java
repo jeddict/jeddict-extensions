@@ -42,16 +42,19 @@ public class DefaultEmbeddedAttributeSpecAccessor extends EmbeddedAccessor {
         return accessor;
     }
 
+    @Override
     public void process() {
         super.process();
         getMapping().setProperty(Attribute.class, attribute);
         getMapping().setProperty(Inheritance.class, inherit);//Remove inherit functionality , once eclipse support dynamic mapped super class
     }
     
+    @Override
     protected void setMapping(DatabaseMapping mapping) {
         super.setMapping(mapping);
     }
 
+    @Override
     public boolean isDerivedIdClass() {//Hack : if u etend EmbeddedIdAccessor it shows error @Id & @EmbeddedId cannot be together , If u override isEmbedded then EmbeddedAccessor cannot be cast into EmbeddedIdAccessor error
         return true;
     }

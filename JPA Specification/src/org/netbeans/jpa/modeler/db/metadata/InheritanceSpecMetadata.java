@@ -44,6 +44,7 @@ public class InheritanceSpecMetadata extends InheritanceMetadata {
      * cannot be shared. Otherwise the processing of those accessor will only be
      * performed once by their 'real' owning entity accessor.
      */
+    @Override
     public void addTablePerClassParentMappings(MetadataDescriptor startingDescriptor, MetadataDescriptor realDescriptor) {
         EntityAccessor reloadedParentEntity = null;
         MetadataDescriptor realParentDescriptor = null;

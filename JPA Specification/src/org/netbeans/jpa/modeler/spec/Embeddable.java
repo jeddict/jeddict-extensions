@@ -93,6 +93,7 @@ public class Embeddable extends ManagedClass<EmbeddableAttributes> {
      * @param value allowed object is {@link EmbeddableAttributes }
      *
      */
+    @Override
     public void setAttributes(EmbeddableAttributes value) {
         this.attributes = value;
     }

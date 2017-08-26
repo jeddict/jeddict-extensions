@@ -459,8 +459,8 @@ public class SourceGroupSupport {
     }
 
     public static List<ClassPath> gerClassPath(Project project) {
-        List<ClassPath> paths = new ArrayList<ClassPath>();
-        List<SourceGroup> groups = new ArrayList<SourceGroup>();
+        List<ClassPath> paths = new ArrayList<>();
+        List<SourceGroup> groups = new ArrayList<>();
         groups.addAll(Arrays.asList(ProjectUtils.getSources(project).getSourceGroups(JavaProjectConstants.SOURCES_TYPE_JAVA)));
         ClassPathProvider cpp = project.getLookup().lookup(ClassPathProvider.class);
         for (SourceGroup group : groups) {

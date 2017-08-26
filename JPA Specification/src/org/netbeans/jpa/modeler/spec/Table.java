@@ -157,7 +157,7 @@ public class Table {
      */
     public List<Index> getIndex() {
         if (index == null) {
-            index = new ArrayList<Index>();
+            index = new ArrayList<>();
         }
         return this.index;
     }
