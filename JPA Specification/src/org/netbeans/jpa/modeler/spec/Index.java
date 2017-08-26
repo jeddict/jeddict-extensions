@@ -87,7 +87,7 @@ public class Index {
             String columnList = (String) JavaSourceParserUtil.findAnnotationValue(annotationMirror, "columnList");
             if (StringUtils.isNotBlank(columnList)) {
                 for (String coulmnExp : columnList.split(",")) {
-                    String[] coulmnExpParam = coulmnExp.split(" ");
+                    String[] coulmnExpParam = coulmnExp.trim().split(" ");
                     if (coulmnExpParam.length > 1) {
                         index.getColumnList().add(new OrderbyItem(coulmnExpParam[0], OrderType.valueOf(coulmnExpParam[1])));
                     } else {

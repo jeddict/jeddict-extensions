@@ -29,6 +29,7 @@ import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import org.netbeans.jpa.modeler.spec.extend.PersistenceAttributes;
 import org.netbeans.jpa.modeler.spec.workspace.WorkSpace;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
+import static org.netbeans.jpa.source.JavaSourceParserUtil.getElements;
 
 /**
  * <p>
@@ -65,60 +66,45 @@ public class EmbeddableAttributes extends PersistenceAttributes<Embeddable> {
 
     @Override
     public void load(EntityMappings entityMappings, TypeElement typeElement, boolean fieldAccess) {
+        List<Element> elements = getElements(typeElement, fieldAccess);
 
-        for (ExecutableElement method : JavaSourceParserUtil.getMethods(typeElement)) {
-            String methodName = method.getSimpleName().toString();
-            if (methodName.startsWith("get") || methodName.startsWith("is")) {
-                Element element;
-                VariableElement variableElement = JavaSourceParserUtil.guessField(method);
-                // Issue Fix #5976 Start
-                /**
-                 * #5976 FIX fixed NPE when method is not attached to field
-                 * Transient or in
-                 *
-                 * @author Juraj Balaz <georgeeb@java.net>
-                 * @since Thu, 17 Apr 2014 14:07:11 +0000
-                 */
-                // skip processing if the method is not joined with field
-                // might be transient method or method implementation from some interface
-                if (variableElement == null) {
-                    continue;
-                }
-                // Issue Fix #5976 End
-                if (fieldAccess) {
-                    element = variableElement;
-                } else {
-                    element = method;
-                }
+        for (Element element : elements) {
+            VariableElement variableElement;
+            ExecutableElement getterElement;
+            if (element instanceof VariableElement) {
+                variableElement = (VariableElement) element;
+                getterElement = JavaSourceParserUtil.guessGetter(variableElement);
+            } else {
+                variableElement = JavaSourceParserUtil.guessField((ExecutableElement) element);
+                getterElement = (ExecutableElement) element;
+            }
 
-                if (JavaSourceParserUtil.isAnnotatedWith(element, BASIC_FQN)) {
-                    this.addBasic(Basic.load(element, variableElement, method));
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, TRANSIENT_FQN)) {
-                    this.addTransient(Transient.load(element, variableElement, method));
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, ELEMENT_COLLECTION_FQN)) {
-                    this.addElementCollection(ElementCollection.load(entityMappings, element, variableElement, method));
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, ONE_TO_ONE_FQN)) {
-                    OneToOne oneToOneObj = new OneToOne();
-                    this.addOneToOne(oneToOneObj);
-                    oneToOneObj.load(entityMappings, element, variableElement, method, null);
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, MANY_TO_ONE_FQN)) {
-                    ManyToOne manyToOneObj = new ManyToOne();
-                    this.addManyToOne(manyToOneObj);
-                    manyToOneObj.load(entityMappings, element, variableElement, method, null);
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, ONE_TO_MANY_FQN)) {
-                    OneToMany oneToManyObj = new OneToMany();
-                    this.addOneToMany(oneToManyObj);
-                    oneToManyObj.load(entityMappings, element, variableElement, method, null);
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, MANY_TO_MANY_FQN)) {
-                    ManyToMany manyToManyObj = new ManyToMany();
-                    this.addManyToMany(manyToManyObj);
-                    manyToManyObj.load(entityMappings, element, variableElement, method, null);
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, EMBEDDED_FQN)) {
-                    this.addEmbedded(Embedded.load(entityMappings, element, variableElement, method));
-                } else {
-                    this.addBasic(Basic.load(element, variableElement, method)); //Default Annotation
-                }
-
+            if (JavaSourceParserUtil.isAnnotatedWith(element, BASIC_FQN)) {
+                this.addBasic(Basic.load(element, variableElement, getterElement));
+            } else if (JavaSourceParserUtil.isAnnotatedWith(element, TRANSIENT_FQN)) {
+                this.addTransient(Transient.load(element, variableElement, getterElement));
+            } else if (JavaSourceParserUtil.isAnnotatedWith(element, ELEMENT_COLLECTION_FQN)) {
+                this.addElementCollection(ElementCollection.load(entityMappings, element, variableElement, getterElement));
+            } else if (JavaSourceParserUtil.isAnnotatedWith(element, ONE_TO_ONE_FQN)) {
+                OneToOne oneToOneObj = new OneToOne();
+                this.addOneToOne(oneToOneObj);
+                oneToOneObj.load(entityMappings, element, variableElement, getterElement, null);
+            } else if (JavaSourceParserUtil.isAnnotatedWith(element, MANY_TO_ONE_FQN)) {
+                ManyToOne manyToOneObj = new ManyToOne();
+                this.addManyToOne(manyToOneObj);
+                manyToOneObj.load(entityMappings, element, variableElement, getterElement, null);
+            } else if (JavaSourceParserUtil.isAnnotatedWith(element, ONE_TO_MANY_FQN)) {
+                OneToMany oneToManyObj = new OneToMany();
+                this.addOneToMany(oneToManyObj);
+                oneToManyObj.load(entityMappings, element, variableElement, getterElement, null);
+            } else if (JavaSourceParserUtil.isAnnotatedWith(element, MANY_TO_MANY_FQN)) {
+                ManyToMany manyToManyObj = new ManyToMany();
+                this.addManyToMany(manyToManyObj);
+                manyToManyObj.load(entityMappings, element, variableElement, getterElement, null);
+            } else if (JavaSourceParserUtil.isAnnotatedWith(element, EMBEDDED_FQN)) {
+                this.addEmbedded(Embedded.load(entityMappings, element, variableElement, getterElement));
+            } else {
+                this.addBasic(Basic.load(element, variableElement, getterElement)); //Default Annotation
             }
         }
 
@@ -131,7 +117,7 @@ public class EmbeddableAttributes extends PersistenceAttributes<Embeddable> {
         attr.setVersions(new ArrayList<>());
         return updateAccessor(workSpace, attr);
     }
-    
+
     public XMLAttributes getAccessor(WorkSpace workSpace, boolean inherit) {//inherit not supported
         XMLAttributes attr = super.getAccessor(workSpace);
         return attr;
@@ -141,7 +127,7 @@ public class EmbeddableAttributes extends PersistenceAttributes<Embeddable> {
         super.updateAccessor(workSpace, attr, false);
         return attr;
     }
-    
+
     public static List<String> getPaths(String prefix, Embedded embedded, Predicate<Attribute> filter) {
         final String leafPrefix = prefix.isEmpty() ? embedded.getName() : (prefix + '.' + embedded.getName());
         List<Attribute> attributes = embedded.getConnectedClass().getAttributes().getAllAttribute(true);
@@ -157,5 +143,5 @@ public class EmbeddableAttributes extends PersistenceAttributes<Embeddable> {
                 .collect(ArrayList<String>::new, ArrayList::add, ArrayList::addAll));
         return paths;
     }
-    
+
 }

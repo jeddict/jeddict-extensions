@@ -387,6 +387,7 @@ public abstract class PersistenceAttributes<T extends ManagedClass> extends Attr
      * {@link Embedded }
      *
      *
+     * @return 
      */
     @Override
     public List<Embedded> getEmbedded() {
@@ -396,6 +397,7 @@ public abstract class PersistenceAttributes<T extends ManagedClass> extends Attr
         return this.embedded;
     }
 
+    @Override
     public Optional<Embedded> getEmbedded(String id) {
         if (embedded != null) {
             return embedded.stream().filter(a -> a.getId().equals(id)).findFirst();
@@ -405,9 +407,11 @@ public abstract class PersistenceAttributes<T extends ManagedClass> extends Attr
 
     @Override
     public void addEmbedded(Embedded embedded) {
-        this.getEmbedded().add(embedded);
-        notifyListeners(embedded, "addAttribute", null, null);
-        embedded.setAttributes(this);
+        if (embedded != null) {
+            this.getEmbedded().add(embedded);
+            notifyListeners(embedded, "addAttribute", null, null);
+            embedded.setAttributes(this);
+        }
     }
 
     @Override

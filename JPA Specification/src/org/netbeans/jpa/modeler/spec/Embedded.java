@@ -94,9 +94,7 @@ public class Embedded extends CompositionAttribute<Embeddable> implements Associ
         embedded.loadAttribute(element, variableElement, getterElement);
         embedded.getAttributeOverride().addAll(AttributeOverride.load(element));
         embedded.getAssociationOverride().addAll(AssociationOverride.load(element));
-
-        embedded.access = AccessType.load(element);
-
+        embedded.setAccess(AccessType.load(element));
         DeclaredType declaredType = (DeclaredType) variableElement.asType();
 
         Optional<org.netbeans.jpa.modeler.spec.Embeddable> embeddableClassSpecOpt = entityMappings.findEmbeddable(declaredType.asElement().getSimpleName().toString());
@@ -108,13 +106,16 @@ public class Embedded extends CompositionAttribute<Embeddable> implements Associ
             }
             embeddableClassSpec = new org.netbeans.jpa.modeler.spec.Embeddable();
             TypeElement embeddableTypeElement = JavaSourceParserUtil.getAttributeTypeElement(variableElement);
+            if(embeddableTypeElement==null){
+                return null;
+            }
             embeddableClassSpec.load(entityMappings, embeddableTypeElement, fieldAccess);
             entityMappings.addEmbeddable(embeddableClassSpec);
         } else {
             embeddableClassSpec = embeddableClassSpecOpt.get();
         }
         embedded.setConnectedClass(embeddableClassSpec);
-        embedded.convert = Convert.load(element);
+        embedded.setConverts(Convert.load(element));
         embedded.setAttributeConstraints(JavaSourceParserUtil.getBeanValidation(element));
         return embedded;
     }

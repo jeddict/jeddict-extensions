@@ -42,6 +42,7 @@ import org.netbeans.jpa.modeler.spec.extend.JavaClass;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 import org.netbeans.jpa.modeler.spec.extend.IPrimaryKeyAttributes;
 import org.netbeans.jpa.modeler.spec.workspace.WorkSpace;
+import static org.netbeans.jpa.source.JavaSourceParserUtil.getElements;
 
 /**
  *
@@ -99,105 +100,73 @@ public class PrimaryKeyAttributes extends PersistenceAttributes<IdentifiableClas
     protected String description;
     protected List<Id> id;
     @XmlElement(name = "embedded-id")
-    protected EmbeddedId embeddedId; 
+    protected EmbeddedId embeddedId;
     protected List<Version> version;
 
     @Override
     public void load(EntityMappings entityMappings, TypeElement typeElement, boolean fieldAccess) {
         Set<String> mapsId = new HashSet<>();
         VariableElement embeddedIdVariableElement = null;
-        List<Element> elements = new ArrayList<>();
-        for (ExecutableElement method : JavaSourceParserUtil.getMethods(typeElement)) {
-            try {
-            String methodName = method.getSimpleName().toString();
-            if (methodName.startsWith("get") || methodName.startsWith("is")) {
-                Element element;
-                VariableElement variableElement = JavaSourceParserUtil.guessField(method);
-                 // Issue Fix #5976 Start
-                /**
-                 * #5976 FIX fixed NPE when method is not attached to field
-                 * Transient or in                 *
-                 * @author Juraj Balaz <georgeeb@java.net>
-                 * @since Thu, 17 Apr 2014 14:07:11 +0000
-                 */
-                // skip processing if the method is not joined with field
-                // might be transient method or method implementation from some interface
-                if (variableElement == null) {
-                    continue;
-                }
-                // Issue Fix #5976 End
-                if (fieldAccess) {
-                    element = variableElement;
-                } else {
-                    element = method;
-                }
-                elements.add(element);
-            } 
-            }catch(TypeNotPresentException ex){
-                //Ignore Erroneous variable Type : ClassA have relation with List<ClassB>. And ClassB does not exist on classpath 
-                //LOG TODO access to IO
-            }
-        }
+        List<Element> elements = getElements(typeElement, fieldAccess);
+
         //this is not manadatory but provided support for blog snippet which have no method
-        if(!fieldAccess && elements.isEmpty()){//if no elements then add all fields
+        if (!fieldAccess && elements.isEmpty()) {//if no elements then add all fields
             elements.addAll(JavaSourceParserUtil.getFields(typeElement));
         }
-        for(Element element : elements){
-                VariableElement variableElement ;
-                ExecutableElement getterElement;
-                if(element instanceof VariableElement){
-                   variableElement = (VariableElement)element;
-                   getterElement = JavaSourceParserUtil.guessGetter(variableElement);
-                } else {
-                    variableElement = JavaSourceParserUtil.guessField((ExecutableElement)element);
-                    getterElement = (ExecutableElement)element;
-                }
-                 
-                if (JavaSourceParserUtil.isAnnotatedWith(element, ID_FQN)
-                        && !(JavaSourceParserUtil.isAnnotatedWith(element, ONE_TO_ONE_FQN)
-                        || JavaSourceParserUtil.isAnnotatedWith(element, MANY_TO_ONE_FQN))) {
-                    this.addId(Id.load(element, variableElement, getterElement));
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, BASIC_FQN)) {
-                    this.addBasic(Basic.load(element, variableElement, getterElement));
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, TRANSIENT_FQN)) {
-                    this.addTransient(Transient.load(element, variableElement, getterElement));
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, VERSION_FQN)) {
-                    this.addVersion(Version.load(element, variableElement, getterElement));
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, ELEMENT_COLLECTION_FQN)) {
-                    this.addElementCollection(ElementCollection.load(entityMappings, element, variableElement, getterElement));
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, ONE_TO_ONE_FQN)) {
-                    OneToOne oneToOneObj = new OneToOne().load(entityMappings, element, variableElement, getterElement, null);
-                    this.addOneToOne(oneToOneObj);
-                    if(StringUtils.isNotBlank(oneToOneObj.getMapsId())){
-                        mapsId.add(oneToOneObj.getMapsId());
-                    } else {
-                        mapsId.add(oneToOneObj.getName());
-                    }
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, MANY_TO_ONE_FQN)) {
-                    ManyToOne manyToOneObj = new ManyToOne().load(entityMappings, element, variableElement, getterElement, null);
-                    this.addManyToOne(manyToOneObj);
-                    if(StringUtils.isNotBlank(manyToOneObj.getMapsId())){
-                        mapsId.add(manyToOneObj.getMapsId());
-                    } else {
-                        mapsId.add(manyToOneObj.getName());
-                    }
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, ONE_TO_MANY_FQN)) {
-                    OneToMany oneToManyObj = new OneToMany().load(entityMappings, element, variableElement, getterElement, null);
-                    this.addOneToMany(oneToManyObj);
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, MANY_TO_MANY_FQN)) {
-                    ManyToMany manyToManyObj = new ManyToMany().load(entityMappings, element, variableElement, getterElement, null);
-                    this.addManyToMany(manyToManyObj);
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, EMBEDDED_ID_FQN)) {
-                    this.setEmbeddedId(EmbeddedId.load(entityMappings, element, variableElement, getterElement));
-                    embeddedIdVariableElement = variableElement;
-                } else if (JavaSourceParserUtil.isAnnotatedWith(element, EMBEDDED_FQN)) {
-                    this.addEmbedded(Embedded.load(entityMappings, element, variableElement, getterElement));
-                } else {
-                    this.addBasic(Basic.load(element, variableElement, getterElement)); //Default Annotation
-                }
+        for (Element element : elements) {
+            VariableElement variableElement;
+            ExecutableElement getterElement;
+            if (element instanceof VariableElement) {
+                variableElement = (VariableElement) element;
+                getterElement = JavaSourceParserUtil.guessGetter(variableElement);
+            } else {
+                variableElement = JavaSourceParserUtil.guessField((ExecutableElement) element);
+                getterElement = (ExecutableElement) element;
+            }
 
+            if (JavaSourceParserUtil.isAnnotatedWith(element, ID_FQN)
+                    && !(JavaSourceParserUtil.isAnnotatedWith(element, ONE_TO_ONE_FQN)
+                    || JavaSourceParserUtil.isAnnotatedWith(element, MANY_TO_ONE_FQN))) {
+                this.addId(Id.load(element, variableElement, getterElement));
+            } else if (JavaSourceParserUtil.isAnnotatedWith(element, BASIC_FQN)) {
+                this.addBasic(Basic.load(element, variableElement, getterElement));
+            } else if (JavaSourceParserUtil.isAnnotatedWith(element, TRANSIENT_FQN)) {
+                this.addTransient(Transient.load(element, variableElement, getterElement));
+            } else if (JavaSourceParserUtil.isAnnotatedWith(element, VERSION_FQN)) {
+                this.addVersion(Version.load(element, variableElement, getterElement));
+            } else if (JavaSourceParserUtil.isAnnotatedWith(element, ELEMENT_COLLECTION_FQN)) {
+                this.addElementCollection(ElementCollection.load(entityMappings, element, variableElement, getterElement));
+            } else if (JavaSourceParserUtil.isAnnotatedWith(element, ONE_TO_ONE_FQN)) {
+                OneToOne oneToOneObj = new OneToOne().load(entityMappings, element, variableElement, getterElement, null);
+                this.addOneToOne(oneToOneObj);
+                if (StringUtils.isNotBlank(oneToOneObj.getMapsId())) {
+                    mapsId.add(oneToOneObj.getMapsId());
+                } else {
+                    mapsId.add(oneToOneObj.getName());
+                }
+            } else if (JavaSourceParserUtil.isAnnotatedWith(element, MANY_TO_ONE_FQN)) {
+                ManyToOne manyToOneObj = new ManyToOne().load(entityMappings, element, variableElement, getterElement, null);
+                this.addManyToOne(manyToOneObj);
+                if (StringUtils.isNotBlank(manyToOneObj.getMapsId())) {
+                    mapsId.add(manyToOneObj.getMapsId());
+                } else {
+                    mapsId.add(manyToOneObj.getName());
+                }
+            } else if (JavaSourceParserUtil.isAnnotatedWith(element, ONE_TO_MANY_FQN)) {
+                OneToMany oneToManyObj = new OneToMany().load(entityMappings, element, variableElement, getterElement, null);
+                this.addOneToMany(oneToManyObj);
+            } else if (JavaSourceParserUtil.isAnnotatedWith(element, MANY_TO_MANY_FQN)) {
+                ManyToMany manyToManyObj = new ManyToMany().load(entityMappings, element, variableElement, getterElement, null);
+                this.addManyToMany(manyToManyObj);
+            } else if (JavaSourceParserUtil.isAnnotatedWith(element, EMBEDDED_ID_FQN)) {
+                this.setEmbeddedId(EmbeddedId.load(entityMappings, element, variableElement, getterElement));
+                embeddedIdVariableElement = variableElement;
+            } else if (JavaSourceParserUtil.isAnnotatedWith(element, EMBEDDED_FQN)) {
+                this.addEmbedded(Embedded.load(entityMappings, element, variableElement, getterElement));
+            } else {
+                this.addBasic(Basic.load(element, variableElement, getterElement)); //Default Annotation
+            }
         }
-        
 
         if (this.getEmbeddedId() != null) {
             for (VariableElement variableElement : JavaSourceParserUtil.getFields(JavaSourceParserUtil.getAttributeTypeElement(embeddedIdVariableElement))) {
@@ -210,10 +179,9 @@ public class PrimaryKeyAttributes extends PersistenceAttributes<IdentifiableClas
 
     }
 
-   
     @Override
-    public List<Attribute> findAllAttribute(String name,boolean includeParentClassAttibute) {
-       List<Attribute> attributes = super.findAllAttribute(name,includeParentClassAttibute);
+    public List<Attribute> findAllAttribute(String name, boolean includeParentClassAttibute) {
+        List<Attribute> attributes = super.findAllAttribute(name, includeParentClassAttibute);
         if (id != null) {
             for (Id id_TMP : id) {
                 if (id_TMP.getName() != null && id_TMP.getName().equals(name)) {
@@ -385,6 +353,7 @@ public class PrimaryKeyAttributes extends PersistenceAttributes<IdentifiableClas
      * Objects of the following type(s) are allowed in the list {@link Version }
      *
      *
+     * @return 
      */
     @Override
     public List<Version> getVersion() {
@@ -393,20 +362,21 @@ public class PrimaryKeyAttributes extends PersistenceAttributes<IdentifiableClas
         }
         return this.version;
     }
-    
-    public List<Version> getSuperVersion(){
+
+    @Override
+    public List<Version> getSuperVersion() {
         List<Version> superVersion = new ArrayList();
         JavaClass currentManagedClass = getJavaClass();
         do {
-            if(currentManagedClass instanceof IdentifiableClass){
-               IdentifiableClass identifiableClass = (IdentifiableClass)currentManagedClass;
-               superVersion.addAll(identifiableClass.getAttributes().getVersion());
+            if (currentManagedClass instanceof IdentifiableClass) {
+                IdentifiableClass identifiableClass = (IdentifiableClass) currentManagedClass;
+                superVersion.addAll(identifiableClass.getAttributes().getVersion());
             }
             currentManagedClass = currentManagedClass.getSuperclass();
-        } while(currentManagedClass != null);
+        } while (currentManagedClass != null);
         return superVersion;
     }
-    
+
     @Override
     public void addVersion(Version version) {
         this.getVersion().add(version);
@@ -426,7 +396,7 @@ public class PrimaryKeyAttributes extends PersistenceAttributes<IdentifiableClas
         }
         return null;
     }
-    
+
     @Override
     public List<Attribute> getAllAttribute(boolean includeParentClassAttibute) {
         List<Attribute> attributes = new ArrayList<>();
@@ -438,7 +408,7 @@ public class PrimaryKeyAttributes extends PersistenceAttributes<IdentifiableClas
         attributes.addAll(this.getVersion());
         return attributes;
     }
-    
+
     @Override
     public XMLAttributes getAccessor(WorkSpace workSpace) {
         return getAccessor(workSpace, false);
@@ -480,26 +450,29 @@ public class PrimaryKeyAttributes extends PersistenceAttributes<IdentifiableClas
         return attr;
     }
 
+    @Override
     public List<Attribute> getNonRelationAttributes() {
-        List<Attribute> attributes = new ArrayList<Attribute>(this.getId());
+        List<Attribute> attributes = new ArrayList<>(this.getId());
         attributes.addAll(this.getBasic());
         attributes.addAll(this.getElementCollection().stream().filter(ec -> ec.getConnectedClass() == null).collect(toList()));
         attributes.addAll(this.getVersion());
         return attributes;
     }
-    
-    public boolean hasCompositePrimaryKey(){
-        return this.getId().size() + (this.getEmbeddedId()!=null? 1: 0) +
-        this.getOneToOne().stream().filter(attr -> attr.isPrimaryKey()).count() +
-        this.getManyToOne().stream().filter(attr -> attr.isPrimaryKey()).count() > 1;
+
+    public boolean hasCompositePrimaryKey() {
+        return this.getId().size() + (this.getEmbeddedId() != null ? 1 : 0)
+                + this.getOneToOne().stream().filter(attr -> attr.isPrimaryKey()).count()
+                + this.getManyToOne().stream().filter(attr -> attr.isPrimaryKey()).count() > 1;
     }
-    
+
+    @Override
     public Attribute getIdField() {
         List<Id> superIds = this.getSuperId();
-        IdClass idClass;EmbeddedId superEmbeddedId;
+        IdClass idClass;
+        EmbeddedId superEmbeddedId;
         if (superIds.size() == 1) {
             return superIds.get(0);
-        } else if ((superEmbeddedId = this.getSuperEmbeddedId()) != null) { 
+        } else if ((superEmbeddedId = this.getSuperEmbeddedId()) != null) {
             return superEmbeddedId;
         } else if ((idClass = this.getSuperIdClass()) != null) {
             DefaultAttribute pkFindEntity = new DefaultAttribute();
@@ -510,82 +483,83 @@ public class PrimaryKeyAttributes extends PersistenceAttributes<IdentifiableClas
             return null;
         }
     }
-    
-    public List<Id> getSuperId(){
+
+    @Override
+    public List<Id> getSuperId() {
         List<Id> superIds = new ArrayList();
         JavaClass currentManagedClass = getJavaClass();
         do {
-            if(currentManagedClass instanceof IdentifiableClass){
-               IdentifiableClass identifiableClass = (IdentifiableClass)currentManagedClass;
-               superIds.addAll(identifiableClass.getAttributes().getId());
+            if (currentManagedClass instanceof IdentifiableClass) {
+                IdentifiableClass identifiableClass = (IdentifiableClass) currentManagedClass;
+                superIds.addAll(identifiableClass.getAttributes().getId());
             }
             currentManagedClass = currentManagedClass.getSuperclass();
-        } while(currentManagedClass != null);
+        } while (currentManagedClass != null);
         return superIds;
     }
-    
-    public List<Attribute> getPrimaryKeyAttributes(){
+
+    @Override
+    public List<Attribute> getPrimaryKeyAttributes() {
         List<Attribute> superPrimaryKeys = new ArrayList();
         JavaClass currentManagedClass = getJavaClass();
         do {
-            if(currentManagedClass instanceof IdentifiableClass){
-               IdentifiableClass identifiableClass = (IdentifiableClass)currentManagedClass;
-               superPrimaryKeys.addAll(identifiableClass.getAttributes().getId());
-               superPrimaryKeys.addAll(identifiableClass.getAttributes().getDerivedRelationAttributes());
+            if (currentManagedClass instanceof IdentifiableClass) {
+                IdentifiableClass identifiableClass = (IdentifiableClass) currentManagedClass;
+                superPrimaryKeys.addAll(identifiableClass.getAttributes().getId());
+                superPrimaryKeys.addAll(identifiableClass.getAttributes().getDerivedRelationAttributes());
             }
             currentManagedClass = currentManagedClass.getSuperclass();
-        } while(currentManagedClass != null);
+        } while (currentManagedClass != null);
         return superPrimaryKeys;
     }
-    
-    public EmbeddedId getSuperEmbeddedId(){
+
+    public EmbeddedId getSuperEmbeddedId() {
         JavaClass currentManagedClass = getJavaClass();
         do {
-            if(currentManagedClass instanceof IdentifiableClass){
-               IdentifiableClass identifiableClass = (IdentifiableClass)currentManagedClass;
-               if(identifiableClass.getAttributes().getEmbeddedId() != null){
-                   return identifiableClass.getAttributes().getEmbeddedId();
-               }
+            if (currentManagedClass instanceof IdentifiableClass) {
+                IdentifiableClass identifiableClass = (IdentifiableClass) currentManagedClass;
+                if (identifiableClass.getAttributes().getEmbeddedId() != null) {
+                    return identifiableClass.getAttributes().getEmbeddedId();
+                }
             }
             currentManagedClass = currentManagedClass.getSuperclass();
-        } while(currentManagedClass != null);
+        } while (currentManagedClass != null);
         return null;
     }
-    
-    public IdClass getSuperIdClass(){
+
+    public IdClass getSuperIdClass() {
         JavaClass currentManagedClass = getJavaClass();
         do {
-            if(currentManagedClass instanceof IdentifiableClass){
-               IdentifiableClass identifiableClass = (IdentifiableClass)currentManagedClass;
-               if(identifiableClass.getIdClass() != null){
-                   return identifiableClass.getIdClass();
-               }
+            if (currentManagedClass instanceof IdentifiableClass) {
+                IdentifiableClass identifiableClass = (IdentifiableClass) currentManagedClass;
+                if (identifiableClass.getIdClass() != null) {
+                    return identifiableClass.getIdClass();
+                }
             }
             currentManagedClass = currentManagedClass.getSuperclass();
-        } while(currentManagedClass != null);
+        } while (currentManagedClass != null);
         return null;
     }
-   
+
     @Override
-    public Set<String> getConnectedClass(){
+    public Set<String> getConnectedClass() {
         Set<String> javaClasses = new HashSet<>(super.getConnectedClass());
         getCompositeKeyConnectedClass().ifPresent(jc -> javaClasses.add(jc));
         return javaClasses;
     }
-    
-    public Optional<String> getCompositeKeyConnectedClass(){
-            List<Id> superIds = this.getSuperId(); 
-         if(superIds.size() > 1) {
-             EmbeddedId superEmbeddedId = this.getSuperEmbeddedId();
-             if(superEmbeddedId!=null){
-                 return Optional.of(superEmbeddedId.getConnectedClass().getFQN());
-             } else {
-                 IdClass idClass = this.getSuperIdClass();
-                 return Optional.of(getJavaClass().getRootPackage() + '.' +idClass.getClazz());
-             }
-         }
+
+    public Optional<String> getCompositeKeyConnectedClass() {
+        List<Id> superIds = this.getSuperId();
+        if (superIds.size() > 1) {
+            EmbeddedId superEmbeddedId = this.getSuperEmbeddedId();
+            if (superEmbeddedId != null) {
+                return Optional.of(superEmbeddedId.getConnectedClass().getFQN());
+            } else {
+                IdClass idClass = this.getSuperIdClass();
+                return Optional.of(getJavaClass().getRootPackage() + '.' + idClass.getClazz());
+            }
+        }
         return Optional.empty();
     }
-    
+
 }
-  

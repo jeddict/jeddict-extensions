@@ -105,6 +105,8 @@ import org.openide.util.Utilities;
  * @author Gaurav Gupta
  */
 public class JavaSourceParserUtil {
+    
+    private static final String CONSTANT_VAR = "^[A-Z_$][A-Z_$0-9]*$";
 
     public static String simpleClassName(String fqn) {
         int lastDot = fqn.lastIndexOf('.');
@@ -396,6 +398,51 @@ public class JavaSourceParserUtil {
         }
         boolean makeFirstLower = name.length() < 5 || (!Character.isUpperCase(name.charAt(4)));
         return makeFirstLower ? name.substring(3, 4).toLowerCase() + name.substring(4) : name.substring(3);
+    }
+    
+    public static List<Element> getElements(TypeElement typeElement, boolean fieldAccess){
+        List<Element> elements = new ArrayList<>();
+        if(!isLombokSupport(typeElement)){
+            for (ExecutableElement method : JavaSourceParserUtil.getMethods(typeElement)) {
+                try {
+                    String methodName = method.getSimpleName().toString();
+                    if (methodName.startsWith("get") || methodName.startsWith("is")) {
+                        Element element;
+                        VariableElement variableElement = JavaSourceParserUtil.guessField(method);
+                        // skip processing if the method is not joined with field
+                        // might be transient method or method implementation from some interface
+                        if (variableElement == null) {
+                            continue;
+                        }
+                        if (fieldAccess) {
+                            element = variableElement;
+                        } else {
+                            element = method;
+                        }
+                        elements.add(element);
+                    }
+                } catch (TypeNotPresentException ex) {
+                    //Ignore Erroneous variable Type : ClassA have relation with List<ClassB>. And ClassB does not exist on classpath 
+                    //LOG TODO access to IO
+                }
+            }
+        } else {
+            //if no method available then add var element e.g in case of lombok
+            for (VariableElement variableElement : JavaSourceParserUtil.getFields(typeElement)) {
+                if(variableElement.toString().matches(CONSTANT_VAR)){//skip constant variable
+                    continue;
+                }
+                elements.add(variableElement);
+            }
+        }
+        return elements;
+    }
+    
+    private static boolean isLombokSupport(TypeElement typeElement){
+        return typeElement.getAnnotationMirrors()
+                .stream()
+                .map(Object::toString)
+                .anyMatch(annot -> annot.contains("@lombok.Getter"));
     }
 
     public static boolean isEmbeddableClass(Element typeElement) {//TypeElement
@@ -703,9 +750,8 @@ public class JavaSourceParserUtil {
     public static List<ExecutableElement> getMethods(TypeElement typeElement) {
         List<ExecutableElement> result = new LinkedList<>();
         result.addAll(ElementFilter.methodsIn(typeElement.getEnclosedElements()));
-        return result;//.toArray(new ExecutableElement[result.size()]);
+        return result;
     }
-    // Issue Fix #5977 Start
 
     /**
      * #5977 FIX fixed serialVersionUID in output reversed model (class)

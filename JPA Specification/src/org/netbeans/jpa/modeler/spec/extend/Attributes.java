@@ -36,7 +36,7 @@ public abstract class Attributes<T extends JavaClass> implements IAttributes {
     @XmlTransient
     private T _class;
     
-    private transient List<PropertyChangeListener> listener = new ArrayList<>();
+    private final transient List<PropertyChangeListener> listener = new ArrayList<>();
 
     
     @Override
@@ -52,10 +52,12 @@ public abstract class Attributes<T extends JavaClass> implements IAttributes {
         return attributes;
     }
 
+    @Override
     public List<Attribute> getAllSortedAttribute() {
         return getAllSortedAttribute(false);
     }
     
+    @Override
     public List<Attribute> getAllSortedAttribute(boolean includeParentClassAttibute) {
         List<Attribute> attributeWidgets = getAllAttribute(includeParentClassAttibute);
         attributeWidgets.sort(new AttributeLocationComparator());
@@ -90,10 +92,12 @@ public abstract class Attributes<T extends JavaClass> implements IAttributes {
         return getConnectedClass(new HashSet<>());
     }
     
+    @Override
     public Set<String> getConnectedClass(Set<String> javaClasses){
         return javaClasses;
     }
     
+    @Override
     public T getJavaClass() {
         return _class;
     }
