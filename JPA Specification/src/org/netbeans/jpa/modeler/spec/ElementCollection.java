@@ -939,9 +939,10 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
     /**
      * @return the collectionType
      */
+    @Override
     public String getCollectionType() {
         if (collectionType == null) {
-            collectionType = "java.util.List";
+            collectionType = List.class.getName();
         }
         return collectionType;
     }
@@ -949,6 +950,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
     /**
      * @param collectionType the collectionType to set
      */
+    @Override
     public void setCollectionType(String collectionType) {
         this.collectionType = collectionType;
     }
@@ -956,6 +958,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
     /**
      * @return the collectionImplType
      */
+    @Override
     public String getCollectionImplType() {
         return collectionImplType;
     }
@@ -963,6 +966,7 @@ public class ElementCollection extends CompositionAttribute<Embeddable> implemen
     /**
      * @param collectionImplType the collectionImplementationType to set
      */
+    @Override
     public void setCollectionImplType(String collectionImplType) {
         this.collectionImplType = collectionImplType;
     }

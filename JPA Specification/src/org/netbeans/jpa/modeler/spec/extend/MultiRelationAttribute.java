@@ -495,9 +495,10 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
     /**
      * @return the collectionType
      */
+    @Override
     public String getCollectionType() {
         if (collectionType == null) {
-            collectionType = "java.util.List";
+            collectionType = List.class.getName();
         }
         return collectionType;
     }
@@ -505,6 +506,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
     /**
      * @param collectionType the collectionType to set
      */
+    @Override
     public void setCollectionType(String collectionType) {
         this.collectionType = collectionType;
     }
@@ -512,6 +514,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
     /**
      * @return the collectionImplType
      */
+    @Override
     public String getCollectionImplType() {
         return collectionImplType;
     }
@@ -519,6 +522,7 @@ public abstract class MultiRelationAttribute extends RelationAttribute implement
     /**
      * @param collectionImplType the collectionImplType to set
      */
+    @Override
     public void setCollectionImplType(String collectionImplType) {
         this.collectionImplType = collectionImplType;
     }
