@@ -845,7 +845,6 @@ public class MVCControllerGenerator implements Generator {
         if (POMManager.isMavenProject(project)) {
             POMManager pomManager = new POMManager(TEMPLATE + "pom/_pom.xml", project);
             pomManager.setSourceVersion("1.8");
-            
             pomManager.commit();
         } else {
             handler.warning(NbBundle.getMessage(MVCControllerGenerator.class, "TITLE_Maven_Project_Not_Found"),

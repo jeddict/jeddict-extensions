@@ -90,7 +90,7 @@
         <profile>
             <properties>
                 <version.payara.arquillian>1.0.0.Final</version.payara.arquillian>
-                <version.payara.embedded>4.1.1.164</version.payara.embedded>
+                <version.payara.embedded>5.0.0.173-SNAPSHOT</version.payara.embedded>
                 <version.jersey>2.24</version.jersey>
             </properties>
             <activation>

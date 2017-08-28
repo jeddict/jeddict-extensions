@@ -194,7 +194,6 @@ public class POMManager {
             registerBuild();
             registerProfile();
         }
-        pomModel.endTransaction();
     }
 
     private Properties registerProperties(java.util.Properties source, Properties target) {
@@ -411,7 +410,12 @@ public class POMManager {
     private void registerRepository() {
         if (sourceModel.getRepositories().size() > 0) {
             operations.add(pomModel -> {
-                Set<String> existingRepositories = getPOMProject().getRepositories() != null ? getPOMProject().getRepositories().stream().map(r -> r.getId()).collect(toSet()) : Collections.EMPTY_SET;
+                Set<String> existingRepositories = getPOMProject().getRepositories() != null ? 
+                        getPOMProject().getRepositories()
+                                .stream()
+                                .map(Repository::getId)
+                                .collect(toSet()) 
+                        : Collections.EMPTY_SET;
                 for (org.apache.maven.model.Repository repository : sourceModel.getRepositories()) {
                     if (!existingRepositories.contains(repository.getId())) {
                         Repository repo = pomModel.getFactory().createRepository();
@@ -446,7 +450,7 @@ public class POMManager {
         if (operations.size() > 0) {
             Utilities.performPOMModelOperations(pomFileObject, operations);
         }
-//        downloadDependency();
+        pomModel.endTransaction();
     }
 //    
 //    public static void reloadProject(Project project){

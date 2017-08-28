@@ -11,7 +11,7 @@
         <version.deltaspike>1.5.0</version.deltaspike>
         <version.velocity>1.7</version.velocity>
         <version.slf4j>1.7.21</version.slf4j>
-        <version.jsonwebtoken>0.6.0</version.jsonwebtoken>
+        <version.jsonwebtoken>0.7.0</version.jsonwebtoken>
         <version.commons.lang>3.3.2</version.commons.lang>
         <version.commons.email>1.4</version.commons.email>
     </properties>

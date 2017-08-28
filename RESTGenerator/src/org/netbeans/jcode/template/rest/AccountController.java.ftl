@@ -28,7 +28,7 @@ import javax.ws.rs.core.Response;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.CREATED;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
-import static app.config.Constants.INCORRECT_PASSWORD_MESSAGE;
+import static ${Constants_FQN}.INCORRECT_PASSWORD_MESSAGE;
 import org.apache.commons.lang3.StringUtils;
 <#if metrics>import com.codahale.metrics.annotation.Timed;</#if>
 <#if docs>import com.wordnik.swagger.annotations.Api;

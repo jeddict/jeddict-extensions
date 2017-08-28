@@ -34,9 +34,9 @@ public enum ServerType {
     
     NONE(true, null, "<No Server Selected>", null, null, false,
             null, null, EMPTY_LIST),
-    PAYARA(true, PAYARA_FAMILY, "Payara (recommended)", ECLIPSELINK, DERBY, false,
+    PAYARA(true, PAYARA_FAMILY, "Payara", ECLIPSELINK, DERBY, false,
            "${build.name}.war", "DockerFile_PAYARA.ftl", Arrays.asList("latest", "161", "161.1")),
-    PAYARA_MICRO(true, PAYARA_FAMILY, "Payara Micro (recommended)", ECLIPSELINK, DERBY, false,
+    PAYARA_MICRO(true, PAYARA_FAMILY, "Payara Micro", ECLIPSELINK, DERBY, false,
            "${build.name}.jar", "DockerFile_JAVA.ftl", EMPTY_LIST),
     WILDFLY(false, WILDFLY_FAMILY, "Wildfly", HIBERNATE, H2, false,
            "${build.name}.war", "DockerFile_WILDFLY.ftl", Arrays.asList("latest", "8.1.0.Final", "8.2.1.Final", "8.2.0.Final", "9.0.0.Final", "10.1.0.Final", "9.0.1.Final", "9.0.2.Final", "10.0.0.Final")),

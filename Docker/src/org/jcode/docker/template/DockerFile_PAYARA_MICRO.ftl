@@ -1,4 +1,4 @@
-FROM payara/micro:latest
+FROM payara/micro:5-SNAPSHOT
 WORKDIR $PAYARA_PATH
 
 ARG BINARY

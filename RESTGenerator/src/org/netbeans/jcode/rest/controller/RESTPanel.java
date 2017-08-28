@@ -114,7 +114,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         data.setMetrics(isMetrics());
         data.setLogger(isLogger());
         data.setDocsEnable(isDocsEnable());
-        data.setTestCase(isTestCase());
+        data.setTestCase(false);
     }
 
     private Project project;
@@ -331,7 +331,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
 
         jPanel1.add(packagePanel);
 
-        testcaseCheckBox.setSelected(true);
+        testcaseCheckBox.setVisible(false);
         org.openide.awt.Mnemonics.setLocalizedText(testcaseCheckBox, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.testcaseCheckBox.text")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(applicationConfigButton, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.applicationConfigButton.text")); // NOI18N

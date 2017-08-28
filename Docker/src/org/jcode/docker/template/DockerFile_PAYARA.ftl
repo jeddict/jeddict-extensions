@@ -1,4 +1,4 @@
-FROM payara/server-full:latest
+FROM payara/server-full:5-SNAPSHOT
 WORKDIR $PAYARA_PATH/bin
 # User: admin & Password: admin
 RUN echo "AS_ADMIN_PASSWORD=admin" > /tmp/pwdfile
