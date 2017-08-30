@@ -70,11 +70,6 @@ public class DefaultAttribute extends Attribute {
     public String getDataTypeLabel() {
         return getAttributeType();
     }
-    
-    @Override
-    public boolean isOptionalReturnType() {
-        return false;
-    }
 
     /**
      * @return the column
