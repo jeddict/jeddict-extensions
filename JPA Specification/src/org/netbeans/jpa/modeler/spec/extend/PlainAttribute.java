@@ -1,5 +1,6 @@
-package org.netbeans.jpa.modeler.spec;
+package org.netbeans.jpa.modeler.spec.extend;
 
+import org.netbeans.jpa.modeler.spec.*;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -8,7 +9,7 @@ import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import org.netbeans.jpa.modeler.spec.extend.ColumnHandler;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class DefaultAttribute extends Attribute {
+public class PlainAttribute extends Attribute {
 
     @XmlAttribute(name = "attribute-type")
     private String attributeType;
@@ -19,16 +20,12 @@ public class DefaultAttribute extends Attribute {
     @XmlAttribute(name = "derived")
     private boolean derived;
     
-    private Column column;
 
-    public DefaultAttribute() {//to represent IdClass
+    public PlainAttribute() {
     }
 
-    public DefaultAttribute(Attribute connectedAttribute) {
+    public PlainAttribute(Attribute connectedAttribute) {
         this.connectedAttribute = connectedAttribute;
-        if(connectedAttribute instanceof ColumnHandler){ // to load embeddable attribute @Column
-            column = ((ColumnHandler)connectedAttribute).getColumn();
-        }
     }
 
     /**
@@ -69,23 +66,6 @@ public class DefaultAttribute extends Attribute {
     @Override
     public String getDataTypeLabel() {
         return getAttributeType();
-    }
-
-    /**
-     * @return the column
-     */
-    public Column getColumn() {
-        if (column == null) {
-            column = new Column();
-        }
-        return column;
-    }
-
-    /**
-     * @param column the column to set
-     */
-    public void setColumn(Column column) {
-        this.column = column;
     }
     
 }

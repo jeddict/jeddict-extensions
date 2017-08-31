@@ -23,24 +23,18 @@ import javax.lang.model.element.TypeElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import org.netbeans.jpa.modeler.spec.DefaultAttribute;
-import org.netbeans.jpa.modeler.spec.DefaultClass;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
 
-/**
- *
- * @author Shiwani Gupta <jShiwaniGupta@gmail.com>
- */
 @XmlAccessorType(XmlAccessType.FIELD)
-public class DefaultAttributes extends Attributes<DefaultClass> {
+public class PlainAttributes extends Attributes<PlainClass> {
 
     @XmlElement(name = "attr")
-    private List<DefaultAttribute> defaultAttributes;
+    private List<PlainAttribute> attributes;
         
     @Override
     public List<Attribute> getAllAttribute(boolean includeParentClassAttibute) {
         List<Attribute> attributes = super.getAllAttribute(includeParentClassAttibute);
-        attributes.addAll(this.getDefaultAttributes());
+        attributes.addAll(this.getAttributes());
         return attributes;
     }
     
@@ -48,7 +42,7 @@ public class DefaultAttributes extends Attributes<DefaultClass> {
     public List<Attribute> findAllAttribute(String name, boolean includeParentClassAttibute) {
         List<Attribute> attributes = super.findAllAttribute(name, includeParentClassAttibute);
 
-        for (DefaultAttribute defaultAttribute : getDefaultAttributes()) {
+        for (PlainAttribute defaultAttribute : getAttributes()) {
             if (defaultAttribute.getName() != null && defaultAttribute.getName().equals(name)) {
                 attributes.add(defaultAttribute);
             }
@@ -58,27 +52,27 @@ public class DefaultAttributes extends Attributes<DefaultClass> {
     /**
      * @return the defaultAttributes
      */
-    public List<DefaultAttribute> getDefaultAttributes() {
-        if (this.defaultAttributes == null) {
-            this.defaultAttributes = new ArrayList<>();
+    public List<PlainAttribute> getAttributes() {
+        if (this.attributes == null) {
+            this.attributes = new ArrayList<>();
         }
-        return defaultAttributes;
+        return attributes;
     }
 
     /**
      * @param attributes the defaultAttributes to set
      */
-    public void setDefaultAttributes(List<DefaultAttribute> attributes) {
-        this.defaultAttributes = attributes;
+    public void setAttributes(List<PlainAttribute> attributes) {
+        this.attributes = attributes;
     }
 
-    public void addDefaultAttribute(DefaultAttribute attribute) {
-        getDefaultAttributes().add(attribute);
+    public void addAttribute(PlainAttribute attribute) {
+        getAttributes().add(attribute);
         attribute.setAttributes(this);
     }
 
-    public void removeDefaultAttribute(DefaultAttribute attribute) {
-        getDefaultAttributes().remove(attribute);
+    public void removeAttribute(PlainAttribute attribute) {
+        getAttributes().remove(attribute);
         attribute.setAttributes(null);
     }
 
@@ -90,7 +84,7 @@ public class DefaultAttributes extends Attributes<DefaultClass> {
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 97 * hash + Objects.hashCode(this.defaultAttributes);
+        hash = 97 * hash + Objects.hashCode(this.attributes);
         return hash;
     }
 
@@ -105,8 +99,8 @@ public class DefaultAttributes extends Attributes<DefaultClass> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final DefaultAttributes other = (DefaultAttributes) obj;
-        if (!Objects.equals(new HashSet(this.defaultAttributes), new HashSet(other.defaultAttributes))) {
+        final PlainAttributes other = (PlainAttributes) obj;
+        if (!Objects.equals(new HashSet(this.attributes), new HashSet(other.attributes))) {
             return false;
         }
         return true;

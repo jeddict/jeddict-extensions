@@ -13,65 +13,41 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.netbeans.jpa.modeler.spec;
+package org.netbeans.jpa.modeler.spec.extend;
 
-import java.util.ArrayList;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.XMLAttributes;
-import org.netbeans.jpa.modeler.db.accessor.DefaultAttributeSpecAccessor;
-import org.netbeans.jpa.modeler.db.accessor.DefaultEmbeddedAttributeSpecAccessor;
-import org.netbeans.jpa.modeler.spec.extend.DefaultAttributes;
-import org.netbeans.jpa.modeler.spec.extend.JavaClass;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "class", propOrder = {
-    "embeddable",
-    "description",
     "attributes"
 })
-public class DefaultClass extends JavaClass<DefaultAttributes> {
-
-    private boolean embeddable;
+public class PlainClass extends JavaClass<PlainAttributes> {
 
     @XmlElement(name = "attrs")
-    private DefaultAttributes attributes;
+    private PlainAttributes attributes;
 
-    public DefaultClass() {
+    public PlainClass() {
     }
 
-    public DefaultClass(String clazz) {
+    public PlainClass(String clazz) {
         this.clazz = clazz;
     }
 
     @Override
-    public DefaultAttributes getAttributes() {
+    public PlainAttributes getAttributes() {
         if (attributes == null) {
-            attributes = new DefaultAttributes();
+            attributes = new PlainAttributes();
             attributes.setJavaClass(this);
         }
         return attributes;
     }
 
     @Override
-    public void setAttributes(DefaultAttributes attributes) {
+    public void setAttributes(PlainAttributes attributes) {
         this.attributes = attributes;
-    }
-
-    /**
-     * @return the embeddable
-     */
-    public boolean isEmbeddable() {
-        return embeddable;
-    }
-
-    /**
-     * @param embeddable the embeddable to set
-     */
-    public void setEmbeddable(boolean embeddable) {
-        this.embeddable = embeddable;
     }
 
     @Override
@@ -82,38 +58,6 @@ public class DefaultClass extends JavaClass<DefaultAttributes> {
     @Override
     public void setName(String name) {
         this.clazz = clazz;
-    }
-
-    public XMLAttributes getAccessor() {
-        XMLAttributes attr = new XMLAttributes();
-        attr.setBasicCollections(new ArrayList<>());
-        attr.setBasicMaps(new ArrayList<>());
-        attr.setTransformations(new ArrayList<>());
-        attr.setVariableOneToOnes(new ArrayList<>());
-        attr.setStructures(new ArrayList<>());
-        attr.setArrays(new ArrayList<>());
-        attr.setBasics(new ArrayList<>());
-        attr.setElementCollections(new ArrayList<>());
-        attr.setEmbeddeds(new ArrayList<>());
-        attr.setTransients(new ArrayList<>());
-        attr.setManyToManys(new ArrayList<>());
-        attr.setManyToOnes(new ArrayList<>());
-        attr.setOneToManys(new ArrayList<>());
-        attr.setOneToOnes(new ArrayList<>());
-        attr.setIds(new ArrayList<>());
-        attr.setVersions(new ArrayList<>());
-        return updateAccessor(attr);
-    }
-
-    public XMLAttributes updateAccessor(XMLAttributes attr) {
-        for (DefaultAttribute attribute : getAttributes().getDefaultAttributes()) {
-            if (attribute.isDerived()) {
-                attr.getEmbeddeds().add(DefaultEmbeddedAttributeSpecAccessor.getInstance(attribute, false));
-            } else {
-                attr.getBasics().add(DefaultAttributeSpecAccessor.getInstance(attribute, false));
-            }
-        }
-        return attr;
     }
 
 }

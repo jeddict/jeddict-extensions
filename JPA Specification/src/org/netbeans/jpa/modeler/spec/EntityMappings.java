@@ -41,6 +41,7 @@ import org.netbeans.jpa.modeler.spec.extend.JavaClass;
 import org.netbeans.jpa.modeler.spec.extend.MapKeyHandler;
 import org.netbeans.jpa.modeler.spec.extend.MapKeyType;
 import org.netbeans.jpa.modeler.spec.extend.MultiRelationAttribute;
+import org.netbeans.jpa.modeler.spec.extend.PlainClass;
 import org.netbeans.jpa.modeler.spec.extend.ReferenceClass;
 import org.netbeans.jpa.modeler.spec.extend.RelationAttribute;
 import org.netbeans.jpa.modeler.spec.extend.cache.Cache;
@@ -141,6 +142,7 @@ import org.openide.windows.InputOutput;
     "mappedSuperclass",
     "entity",
     "embeddable",
+    "plainClass",
     "converter",
     "snippets",
     "interfaces",
@@ -183,6 +185,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     protected List<MappedSuperclass> mappedSuperclass;
     protected List<Entity> entity;
     protected List<Embeddable> embeddable;
+    protected List<PlainClass> plainClass;
     protected List<Converter> converter;//NREVENG 
     @XmlAttribute(name = "v", required = true)
     protected String version;
@@ -867,6 +870,8 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
                 this.addMappedSuperclass((MappedSuperclass) baseElement_In);
             } else if (baseElement_In instanceof Embeddable) {
                 this.addEmbeddable((Embeddable) baseElement_In);
+            } else if (baseElement_In instanceof PlainClass) {
+                this.addPlainClass((PlainClass) baseElement_In);
             } else {
                 throw new InvalidElmentException("Invalid JPA Element");
             }
@@ -1012,6 +1017,35 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
             for (Embeddable embeddable_In : embeddable) {
                 if (embeddableName.equals(embeddable_In.getClazz())) {
                     return Optional.of(embeddable_In);
+                }
+            }
+        }
+        return Optional.empty();
+    }
+    
+    public void removePlainClass(PlainClass class_In) {
+        if (plainClass != null) {
+            this.plainClass.remove(class_In);
+            class_In.setRootElement(null);
+        }
+    }
+
+    public void addPlainClass(PlainClass class_In) {
+        if (plainClass == null) {
+            plainClass = new ArrayList<>();
+        }
+        this.plainClass.add(class_In);
+        class_In.setRootElement(this);
+    }
+
+    public Optional<PlainClass> findPlainClass(String className) {
+        if (StringUtils.isBlank(className)) {
+            return Optional.empty();
+        }
+        if (plainClass != null) {
+            for (PlainClass class_In : plainClass) {
+                if (className.equals(class_In.getClazz())) {
+                    return Optional.of(class_In);
                 }
             }
         }
