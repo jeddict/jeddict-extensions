@@ -6,26 +6,15 @@ services:
             dockerfile: DockerFile
             args:
                 BINARY: ${r"${docker.binary}"}
-                <#if SERVER_TYPE != "PAYARA_MICRO" && SERVER_TYPE != "WILDFLY_SWARM">
-                DB_DATASOURCE: '${DATASOURCE}'
-                DB_NAME: '${r"${db.name}"}'
-                DB_USER: '${r"${db.user}"}'
-                DB_PASS: '${r"${db.password}"}'
-                DB_SVC: '${r"${db.svc}"}'
-                DB_PORT: '${r"${db.port}"}'
-                </#if>
         ports:
             - "8080:8080" 
             - "8081:8081"
-<#if SERVER_TYPE != "WILDFLY" && SERVER_TYPE != "WILDFLY_SWARM">
-            - "localhost:9990:9990" 
-</#if>
         links:
             - '${r"${db.svc}"}' 
     '${r"${db.svc}"}':
         image: ${DB_TYPE}:${DB_VERSION}
         ports:
-            - "${r"${db.port}"}:${DB_PORT}"   
+            - "${DB_PORT}:${DB_PORT}"   
         environment:
 <#if DB_TYPE == "mysql" || DB_TYPE == "mariadb">
             MYSQL_ROOT_PASSWORD: '${r"${db.password}"}'

@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import org.apache.commons.lang.StringUtils;
 import org.jcode.infra.DatabaseDriver;
 import org.jcode.infra.DatabaseType;
 import org.jcode.infra.ServerFamily;
@@ -77,7 +78,7 @@ public class DockerGenerator implements Generator {
     private static final String DB_USER = "db.user";
     private static final String DB_PASSWORD = "db.password";
     private static final String DB_SVC = "db.svc";
-    private static final String DB_PORT = "db.port";
+//    private static final String DB_PORT = "db.port";
     private static final String DOCKER_PROFILE = "docker";
     private static final String DEVELOPMENT_PROFILE = "dev";
     private static final String DOCKER_FILE = "DockerFile";
@@ -101,7 +102,7 @@ public class DockerGenerator implements Generator {
     @ConfigData
     protected ApplicationConfigData appConfigData;
 
-    private boolean setupDataSourceLocally;
+//    private boolean setupDataSourceLocally;
     protected PersistenceProviderType persistenceProviderType;
     protected String applicationName;
 
@@ -110,7 +111,7 @@ public class DockerGenerator implements Generator {
         if (!appConfigData.isCompleteApplication()) {
             return;
         }
-        setupDataSourceLocally = !(config.isDockerEnable() && (config.getServerType() == PAYARA || config.getServerType() == WILDFLY));
+//        setupDataSourceLocally = !(config.isDockerEnable() && (config.getServerType() == PAYARA || config.getServerType() == WILDFLY));
         manageServerSettingGeneration();
         manageDBSettingGeneration();
         manageDockerGeneration();
@@ -127,18 +128,18 @@ public class DockerGenerator implements Generator {
             if (POMManager.isMavenProject(project)) {
                 POMManager pomManager = new POMManager(TEMPLATE + "fabric8io/pom/_pom.xml", project);
                 pomManager.commit();
-                appConfigData.addProfile("docker");
+                appConfigData.addProfile(DOCKER_PROFILE);
                 handler.info("Docker", "Use \"docker\" profile to create and run Docker image");
 
                 Properties properties = new Properties();
 //                    handler.warning(NbBundle.getMessage(DockerGenerator.class, "TITLE_Docker_Machine_Not_Found"),
 //                            NbBundle.getMessage(DockerGenerator.class, "MSG_Docker_Machine_Not_Found"));
 //                    properties.put(DOCKER_MACHINE_PROPERTY, "local");
-//                if (!StringUtils.isBlank(config.getDockerMachine())) {
+                if (!StringUtils.isBlank(config.getDockerMachine())) {
                     pomManager = new POMManager(TEMPLATE + "fabric8io/pom/docker_machine_pom.xml", project);
                     pomManager.commit();
-                    properties.put(DOCKER_MACHINE_PROPERTY, "local");
-//                } 
+                    properties.put(DOCKER_MACHINE_PROPERTY, config.getDockerMachine());
+                } 
                 properties.put(BINARY, config.getServerType().getBinary());
                 properties.put(DOCKER_IMAGE, config.getDockerNamespace()
                         + "/" + config.getDockerRepository() + ":${project.version}");
@@ -153,13 +154,13 @@ public class DockerGenerator implements Generator {
         addDatabaseDriverDependency();
         if (config.isDbInfoExist()) {
             addDatabaseProperties();
-            if (setupDataSourceLocally) {
+//            if (setupDataSourceLocally) {
                 generateDataSourceDD();
                 if (POMManager.isMavenProject(project)) {
                     POMManager pomManager = new POMManager(TEMPLATE + "web/xml/filter/pom/_pom.xml", project);
                     pomManager.commit();
                 }
-            }
+//            }
         }
     }
 
@@ -242,12 +243,12 @@ public class DockerGenerator implements Generator {
     private String getJNDI(ServerType server, String dataSource) {
         if (server.getFamily() == WILDFLY_FAMILY) {
             return JAVA_DATASOURCE_PREFIX + "jdbc/" + dataSource;
-        } else if (server.getFamily() == PAYARA_FAMILY) {
-            if (setupDataSourceLocally) {
-                return JAVA_GLOBAL_DATASOURCE_PREFIX + "jdbc/" + dataSource;
-            } else {
-                return "jdbc/" + dataSource;
-            }
+//        } else if (server.getFamily() == PAYARA_FAMILY) {
+//            if (setupDataSourceLocally) {
+//                return JAVA_GLOBAL_DATASOURCE_PREFIX + "jdbc/" + dataSource;
+//            } else {
+//                return "jdbc/" + dataSource;
+//            }
         } else {
             return JAVA_GLOBAL_DATASOURCE_PREFIX + "jdbc/" + dataSource;
         }
@@ -278,7 +279,7 @@ public class DockerGenerator implements Generator {
         if (POMManager.isMavenProject(project)) {
             ServerType serverType = config.getServerType();
             DatabaseType databaseType = config.getDatabaseType();
-            boolean addDependency = (config.isDbInfoExist() && setupDataSourceLocally && serverType.getEmbeddedDB() != databaseType)
+            boolean addDependency = (config.isDbInfoExist() && serverType.getEmbeddedDB() != databaseType)
                     || (serverType.getEmbeddedDB() == databaseType && serverType.isEmbeddedDBDriverRequired());
             if (databaseType.getDriver() != null && addDependency) {
                 POMManager pomManager = new POMManager(project);
@@ -301,17 +302,18 @@ public class DockerGenerator implements Generator {
             properties.put(DB_PASSWORD, config.getDbPassword());
             properties.put(DB_NAME, config.getDbName());
             properties.put(DB_SVC, getDBService());
-            properties.put(DB_PORT, config.getDbPort());
+//            properties.put(DB_PORT, config.getDbPort());
             pomManager.addProperties(DEVELOPMENT_PROFILE, properties);
             pomManager.commit();
+            appConfigData.addProfile(DEVELOPMENT_PROFILE);
         }
     }
 
     private void generateDataSourceDD() throws IOException {
         handler.progress("web.xml <data-source>");
-        Map<String, Object> params = new HashMap<>();
-        params.put("jndi", getJNDI(config.getServerType(), config.getDataSource()));
-        params.put("driverClass", config.getDatabaseType().getDriver().getClassName());
+        Map<String, Object> params = new HashMap<>(getParams());
+        params.put("JNDI", getJNDI(config.getServerType(), config.getDataSource()));
+        params.put("DRIVER_CLASS", config.getDatabaseType().getDriver().getClassName());
         WebDDUtil.createDD(project, "/org/jcode/docker/template/web/xml/datasource/_web.xml.ftl", params);
     }
 
