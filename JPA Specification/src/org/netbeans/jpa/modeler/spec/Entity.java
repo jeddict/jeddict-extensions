@@ -32,6 +32,7 @@ import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import org.netbeans.jpa.modeler.spec.extend.AttributeOverrideHandler;
 import org.netbeans.jpa.modeler.spec.extend.ConvertContainerHandler;
 import org.netbeans.jpa.modeler.spec.extend.InheritanceHandler;
+import org.netbeans.jpa.modeler.spec.extend.PaginationType;
 import org.netbeans.jpa.modeler.spec.validator.override.AssociationValidator;
 import org.netbeans.jpa.modeler.spec.validator.override.AttributeValidator;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
@@ -184,6 +185,9 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
 
     @XmlAttribute(name = "uil")
     private String label;
+    
+    @XmlAttribute(name = "pt")
+    private PaginationType paginationType;
 
     //ui properties end
         
@@ -802,6 +806,23 @@ public class Entity extends IdentifiableClass implements AccessTypeHandler, Inhe
      */
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    /**
+     * @return the paginationType
+     */
+    public PaginationType getPaginationType() {
+        if(paginationType == null){
+            return PaginationType.NO;
+        }
+        return paginationType;
+    }
+
+    /**
+     * @param paginationType the paginationType to set
+     */
+    public void setPaginationType(PaginationType paginationType) {
+        this.paginationType = paginationType;
     }
     
     /**

@@ -41,7 +41,7 @@ public class RESTData extends LayerConfigData<RepositoryData> {
     private boolean logger = true;
     private boolean docsEnable = true;
     private boolean testCase = true;
-    private boolean pagination;
+    private String frontendAppName = "app";
 
     /**
      * @return the _package
@@ -170,17 +170,17 @@ public class RESTData extends LayerConfigData<RepositoryData> {
     }
 
     /**
-     * @return the pagination
+     * @return the frontendAppName
      */
-    public boolean isPagination() {
-        return pagination;
+    public String getFrontendAppName() {
+        return frontendAppName;
     }
 
     /**
-     * @param pagination the pagination to set
+     * @param frontendAppName the frontendAppName to set
      */
-    public void setPagination(boolean pagination) {
-        this.pagination = pagination;
+    public void setFrontendAppName(String frontendAppName) {
+        this.frontendAppName = frontendAppName;
     }
 
     /**

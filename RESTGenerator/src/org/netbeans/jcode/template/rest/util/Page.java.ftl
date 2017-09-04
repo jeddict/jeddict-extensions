@@ -58,6 +58,9 @@ public class Page {
      * @return the totalPages
      */
     public int getTotalPages() {
+        if(size == 0){
+            return 0;
+        }
         if (totalElements % size == 0) {
             return totalElements / size;
         } else {

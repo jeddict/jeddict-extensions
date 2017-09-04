@@ -76,6 +76,7 @@ import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.jpa.modeler.spec.*;
 import org.netbeans.jpa.modeler.spec.extend.Attribute;
+import org.netbeans.jpa.modeler.spec.extend.PaginationType;
 import org.netbeans.modules.j2ee.persistence.dd.common.PersistenceUnit;
 import org.netbeans.modules.j2ee.persistence.dd.common.Property;
 import org.netbeans.modules.websvc.rest.spi.RestSupport;
@@ -260,7 +261,7 @@ public class RESTGenerator implements Generator {
     }
 
     public FileObject generateEntityController(final Entity entity, Map<String, Object> appParam) throws IOException {
-        FileObject controllerFO = null;
+        FileObject controllerFO;
         String entityFQN = entity.getFQN();
         boolean overrideExisting = true, dto = false;
         final String entitySimpleName = entity.getClazz();
@@ -292,7 +293,7 @@ public class RESTGenerator implements Generator {
         param.put("instanceType", dto ? entityClass + "DTO" : entityClass);
         param.put("instanceName", dto ? entityInstance + "DTO" : entityInstance);
 
-        param.put("pagination", restData.isPagination() ? "yes" : "no");
+        param.put("pagination", entity.getPaginationType() == PaginationType.NO? "no" : "yes");        
         param.put("fieldsContainNoOwnerOneToOne", false);
 
         Attribute idAttribute = entity.getAttributes().getIdField();
@@ -447,6 +448,7 @@ public class RESTGenerator implements Generator {
         param.put("docs", restData.isDocsEnable());
         param.put("serverType", dockerConfigData.getServerType().name());
         param.put("serverFamily", dockerConfigData.getServerType().getFamily().name());
+        param.put("frontendAppName", restData.getFrontendAppName());
 
         //config
         expandServerSideComponent(source, appPackage, EMPTY, EMPTY, CONFIG_TEMPLATES, param);

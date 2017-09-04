@@ -15,15 +15,15 @@ public class HeaderUtil {
     }
 
     public static ResponseBuilder createEntityCreationAlert(ResponseBuilder builder, String entityName, String param) {
-        return createAlert(builder, "app." + entityName + ".created", param);
+        return createAlert(builder, "${frontendAppName}." + entityName + ".created", param);
     }
 
     public static ResponseBuilder createEntityUpdateAlert(ResponseBuilder builder, String entityName, String param) {
-        return createAlert(builder, "app." + entityName + ".updated", param);
+        return createAlert(builder, "${frontendAppName}." + entityName + ".updated", param);
     }
 
     public static ResponseBuilder createEntityDeletionAlert(ResponseBuilder builder, String entityName, String param) {
-        return createAlert(builder, "app." + entityName + ".deleted", param);
+        return createAlert(builder, "${frontendAppName}." + entityName + ".deleted", param);
     }
 
     public static ResponseBuilder createFailureAlert(ResponseBuilder builder, String entityName, String errorKey, String defaultMessage) {
