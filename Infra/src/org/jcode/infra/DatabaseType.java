@@ -34,7 +34,7 @@ public enum DatabaseType {
     MYSQL("MySQL", "mysql", "3306", false,
             new DatabaseDriver("mysql", "mysql-connector-java", "5.1.38", "com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"),
             Arrays.asList("latest", "5.5", "5.6", "5.7", "8.0"), true),
-    MARIA_DB("MariaDB", "mariadb", "3306", false,
+    MARIADB("MariaDB", "mariadb", "3306", false,
             new DatabaseDriver("org.mariadb.jdbc", "mariadb-java-client", "1.5.8", "org.mariadb.jdbc.MariaDbDataSource"),
             Arrays.asList("latest", "10.1", "10.0", "5.5"), true),
     POSTGRESQL("PostgreSQL", "postgres", "5432", false,

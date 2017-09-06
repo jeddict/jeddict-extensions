@@ -214,7 +214,7 @@ public class DockerGenerator implements Generator {
                     return "org.hibernate.dialect.MySQL5Dialect";
                 case POSTGRESQL:
                     return "org.hibernate.dialect.PostgreSQLDialect";
-                case MARIA_DB:
+                case MARIADB:
                     return "org.hibernate.dialect.MariaDBDialect";
                 case DERBY:
                     return "org.hibernate.dialect.DB2Dialect";
