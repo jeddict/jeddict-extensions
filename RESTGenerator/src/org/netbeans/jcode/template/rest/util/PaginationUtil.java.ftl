@@ -1,6 +1,5 @@
 <#if package??>package ${package};</#if>
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -20,7 +19,7 @@ public class PaginationUtil {
     public static ResponseBuilder generatePaginationHttpHeaders(ResponseBuilder builder, Page page, String baseUrl)
             throws URISyntaxException {
 
-        builder.header("X-Total-Count", "" + page.getTotalElements());
+        builder.header("X-Total-Count", Integer.toString(page.getTotalElements()));
         String link = "";
         if ((page.getNumber() + 1) < page.getTotalPages()) {
             link = "<" + generateUri(baseUrl, page.getNumber() + 1, page.getSize()) + ">; rel=\"next\",";

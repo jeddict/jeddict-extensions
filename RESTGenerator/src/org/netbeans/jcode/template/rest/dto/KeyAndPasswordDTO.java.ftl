@@ -9,9 +9,6 @@ public class KeyAndPasswordDTO {
 
     private String newPassword;
 
-    public KeyAndPasswordDTO() {
-    }
-
     public String getKey() {
         return key;
     }

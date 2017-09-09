@@ -1,7 +1,7 @@
 <#if package??>package ${package};</#if>
 
-import java.util.Set;
 import java.time.Instant;
+import java.util.Set;
 import javax.validation.constraints.Size;
 
 /**

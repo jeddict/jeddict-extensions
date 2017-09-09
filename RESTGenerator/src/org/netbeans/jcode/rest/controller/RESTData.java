@@ -42,6 +42,7 @@ public class RESTData extends LayerConfigData<RepositoryData> {
     private boolean docsEnable = true;
     private boolean testCase = true;
     private String frontendAppName = "app";
+    private SecurityType securityType;
 
     /**
      * @return the _package
@@ -215,12 +216,27 @@ public class RESTData extends LayerConfigData<RepositoryData> {
     protected void onLayerConnection(){
         getParentLayerConfigData().setNamed(false);
     }
+    
+    /**
+     * @return the securityType
+     */
+    public SecurityType getSecurityType() {
+        return securityType;
+    }
+
+    /**
+     * @param securityType the securityType to set
+     */
+    public void setSecurityType(SecurityType securityType) {
+        this.securityType = securityType;
+    }
 
     @Override
     public List<String> getUsageDetails() {
         return Arrays.asList(metrics ? "Metrics" : null,
                 logger ? "Log-Manager" : null,
                 docsEnable ? "Swagger" : null,
-                testCase ? "TestCase" : null);
+                testCase ? "TestCase" : null,
+                securityType.name());
     }
 }

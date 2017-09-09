@@ -1,10 +1,10 @@
 <#if package??>package ${package};</#if>
 
+import ${SecurityUtils_FQN};
+import java.time.Instant;
 import javax.inject.Inject;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
-import ${SecurityUtils_FQN};
-import java.time.Instant;
 
 /**
  * Entity listener class for audit info

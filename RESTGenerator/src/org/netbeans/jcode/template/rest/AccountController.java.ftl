@@ -9,12 +9,12 @@ import ${KeyAndPasswordDTO_FQN};
 import ${ManagedUserDTO_FQN};
 import ${UserDTO_FQN};
 import ${HeaderUtil_FQN};
-import ${Secured_FQN};
-import org.slf4j.Logger;
+<#if security == "JAXRS_JWT">import ${Secured_FQN};</#if>
+import static ${Constants_FQN}.INCORRECT_PASSWORD_MESSAGE;
+import java.util.*;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.*;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -28,8 +28,8 @@ import javax.ws.rs.core.Response;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.CREATED;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
-import static ${Constants_FQN}.INCORRECT_PASSWORD_MESSAGE;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 <#if metrics>import com.codahale.metrics.annotation.Timed;</#if>
 <#if docs>import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -126,8 +126,8 @@ public class ${AccountController} {
     <#if docs>@ApiOperation(value = "check if the user is authenticated" )</#if>
     @Path("/authenticate")
     @GET
-    @Produces({MediaType.TEXT_PLAIN})
-    @Secured
+    @Produces({MediaType.TEXT_PLAIN})<#if security == "JAXRS_JWT">
+    @Secured</#if>
     public String isAuthenticated() {
         log.debug("REST request to check if the current user is authenticated");
         return request.getRemoteUser();
@@ -146,8 +146,8 @@ public class ${AccountController} {
         @ApiResponse(code = 500, message = "Internal Server Error")})</#if>
     @Path("/account")
     @GET
-    @Produces({MediaType.APPLICATION_JSON})
-    @Secured
+    @Produces({MediaType.APPLICATION_JSON})<#if security == "JAXRS_JWT">
+    @Secured</#if>
     public Response getAccount() {
         return Optional.ofNullable(userService.getUserWithAuthorities())
                 .map(user -> Response.ok(new UserDTO(user)).build())
@@ -170,8 +170,8 @@ public class ${AccountController} {
     @Path("/account")
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
-    @Secured
+    @Produces({MediaType.APPLICATION_JSON})<#if security == "JAXRS_JWT">
+    @Secured</#if>
     public Response saveAccount(@Valid UserDTO userDTO) {
         final String userLogin = securityUtils.getCurrentUserLogin();
         Optional<User> existingUser = ${userRepository}.findOneByEmail(userDTO.getEmail());
@@ -203,8 +203,8 @@ public class ${AccountController} {
     @Path("/account/change_password")
     @POST
     <#--@Consumes({MediaType.TEXT_PLAIN}) should be TEXT_HTML -->
-    @Produces({MediaType.TEXT_PLAIN})
-    @Secured
+    @Produces({MediaType.TEXT_PLAIN})<#if security == "JAXRS_JWT">
+    @Secured</#if>
     public Response changePassword(String password) {
         if (!checkPasswordLength(password)) {
             return Response.status(BAD_REQUEST).entity(INCORRECT_PASSWORD_MESSAGE).build();

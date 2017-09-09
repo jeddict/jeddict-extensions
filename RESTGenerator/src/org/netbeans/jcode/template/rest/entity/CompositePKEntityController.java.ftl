@@ -3,8 +3,7 @@ package ${package};
 import ${EntityClass_FQN};
 import ${EntityPKClass_FQN};
 import ${EntityRepository_FQN};
-import ${HeaderUtil_FQN};
-import ${Secured_FQN};
+import ${restPackage}.util.HeaderUtil;
 import org.slf4j.Logger;
 import javax.inject.Inject;
 import java.net.URI;
@@ -21,8 +20,8 @@ import javax.ws.rs.QueryParam;
 <#if pagination != "no">
 import javax.ws.rs.core.Response.ResponseBuilder;
 import ${Page_FQN};
-import ${PaginationUtil_FQN};
-</#if>
+import ${PaginationUtil_FQN};</#if>
+<#if security == "JAXRS_JWT">import ${Secured_FQN};</#if>
 <#if metrics>import com.codahale.metrics.annotation.Timed;</#if>
 <#if docs>import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -33,8 +32,8 @@ import com.wordnik.swagger.annotations.ApiResponses;</#if>
  * REST controller for managing ${EntityClass}.
  */
 <#if docs>@Api(value = "/api/${entityApiUrl}", description = "${controllerClassHumanized}")</#if>
-@Path("/api/${entityApiUrl}")
-@Secured
+@Path("/api/${entityApiUrl}")<#if security == "JAXRS_JWT">
+@Secured</#if>
 public class ${controllerClass} {
 
     @Inject

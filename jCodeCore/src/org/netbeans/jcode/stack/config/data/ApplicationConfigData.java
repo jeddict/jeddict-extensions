@@ -37,9 +37,26 @@ public class ApplicationConfigData implements Serializable {
     private TechContext bussinesTechContext;
     private TechContext controllerTechContext;
     private TechContext viewerTechContext;
+    private StringBuilder webDescriptorContent = new StringBuilder();
+    private StringBuilder webDescriptorTestContent = new StringBuilder();
     
     private List<String> profiles = new ArrayList<>();
     
+    public void addWebDescriptorContent(String content){
+        webDescriptorContent.append("\n").append(content);
+    }
+    
+    public String getWebDescriptorContent(){
+        return webDescriptorContent.toString();
+    }
+    
+    public void addWebDescriptorTestContent(String content){
+        webDescriptorTestContent.append("\n").append(content);
+    }
+    
+    public String getWebDescriptorTestContent(){
+        return webDescriptorTestContent.toString();
+    }
     
     public void addProfile(String profile){
         profiles.add(profile);

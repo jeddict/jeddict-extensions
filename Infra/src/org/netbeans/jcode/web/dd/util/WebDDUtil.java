@@ -23,6 +23,7 @@ import org.netbeans.api.project.SourceGroup;
 import org.netbeans.api.project.Sources;
 import static org.netbeans.jcode.core.util.Constants.WEB_INF;
 import static org.netbeans.jcode.core.util.FileUtil.expandTemplate;
+import org.netbeans.jcode.core.util.ProjectHelper;
 import org.netbeans.modules.j2ee.common.dd.DDHelper;
 import org.netbeans.modules.j2ee.dd.api.web.DDProvider;
 import org.netbeans.modules.j2ee.dd.api.web.WebApp;
@@ -105,6 +106,17 @@ public class WebDDUtil {
             FileObject webRoot = sourceGroups[0].getRootFolder();
             FileObject targetDir = org.netbeans.jcode.core.util.FileUtil.createFolder(webRoot, WEB_INF);
             fileObject = expandTemplate(ddTemplatePath, targetDir, DD_NAME, params);
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        return fileObject;
+    }
+    
+    public static FileObject createTestDD(Project project, String ddTemplatePath, Map<String, Object> params) {
+        FileObject fileObject = null;
+        try {
+            FileObject testResourceRoot = ProjectHelper.getTestResourceDirectory(project);
+            fileObject = expandTemplate(ddTemplatePath, testResourceRoot, DD_NAME, params);
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
         }

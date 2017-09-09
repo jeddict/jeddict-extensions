@@ -2,12 +2,10 @@
 
 import ${MailConfig_FQN};
 import ${User_FQN};
-
 import java.io.StringWriter;
 import java.util.Locale;
 import java.util.function.Function;
 import javax.enterprise.context.ApplicationScoped;
-import org.slf4j.Logger;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.ObservesAsync;
 import javax.inject.Inject;
@@ -18,6 +16,7 @@ import org.apache.deltaspike.core.api.message.MessageContext;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.slf4j.Logger;
 
 /**
  * Service for sending e-mails.

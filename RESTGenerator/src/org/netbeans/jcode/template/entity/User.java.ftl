@@ -1,17 +1,17 @@
 <#if package??>package ${package};</#if>
 
 import ${Constants_FQN};
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 import javax.json.bind.annotation.JsonbTransient;
+import javax.persistence.*;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.time.Instant;
+import javax.validation.constraints.Size;
 
 /**
  * A user.
@@ -194,10 +194,7 @@ public class User extends AbstractAuditingEntity implements Serializable {
         }
 
         User user = (User) o;
-        if (!login.equals(user.login)) {
-            return false;
-        }
-        return true;
+        return login.equals(user.login);
     }
 
     @Override

@@ -1,11 +1,11 @@
 <#if package??>package ${package};</#if>
 
-import ${User_FQN};
-import static java.util.Collections.singletonMap;
-import java.util.Optional;
-import java.util.List;
 <#if !cdi>import javax.ejb.Stateless;</#if>
 <#if named>import javax.inject.Named;</#if>
+import ${User_FQN};
+import static java.util.Collections.singletonMap;
+import java.util.List;
+import java.util.Optional;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 

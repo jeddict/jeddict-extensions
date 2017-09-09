@@ -33,9 +33,10 @@ import static org.netbeans.jcode.console.Console.FG_MAGENTA;
 import static org.netbeans.jcode.console.Console.FG_RED;
 import static org.netbeans.jcode.console.Console.FG_WHITE;
 import static org.netbeans.jcode.console.Console.UNDERLINE;
-import static org.netbeans.jcode.core.util.FileUtil.expandTemplate;
 import org.netbeans.jcode.task.ITaskSupervisor;
 import org.openide.filesystems.FileObject;
+import static org.netbeans.jcode.core.util.FileUtil.expandTemplateContent;
+import static org.netbeans.jcode.core.util.FileUtil.expandTemplate;
 
 /**
  *
@@ -143,7 +144,7 @@ public class ProgressConsoleHandler implements ProgressHandler {
                 String currentHelpMessage = null;
                 taskSupervisor.log(Console.wrap(message.getTitle() + " > \t", fgColor, BOLD, UNDERLINE), false);
                 String parsedMessage[] = message.getDescription().split("#");
-                taskSupervisor.log(expandTemplate(parsedMessage[0], dynamicVariables), true);
+                taskSupervisor.log(expandTemplateContent(parsedMessage[0], dynamicVariables), true);
                 if(parsedMessage.length>1){
                     currentHelpMessage = parsedMessage[1];
                 }

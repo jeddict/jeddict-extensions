@@ -36,6 +36,7 @@ import org.netbeans.jcode.rest.applicationconfig.RestConfigData;
 import org.netbeans.jcode.rest.applicationconfig.RestConfigDialog;
 import org.netbeans.jcode.rest.filter.FilterType;
 import org.netbeans.jcode.stack.config.panel.*;
+import org.netbeans.modeler.properties.entity.custom.editor.combobox.client.entity.ComboBoxValue;
 import org.netbeans.modules.websvc.rest.spi.RestSupport;
 import org.netbeans.spi.java.project.support.ui.PackageView;
 import static org.openide.util.NbBundle.getMessage;
@@ -89,7 +90,10 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         if(isNotBlank(data.getSuffixName())){
             setSuffix(data.getSuffixName());
         }
-       
+        
+       if (data.getSecurityType()!=null) {
+            setSecurityType(data.getSecurityType());
+        }
         setLogger(data.isLogger());
         setMetrics(data.isMetrics());
         setDocsEnable(data.isDocsEnable());
@@ -114,7 +118,8 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         data.setMetrics(isMetrics());
         data.setLogger(isLogger());
         data.setDocsEnable(isDocsEnable());
-        data.setTestCase(false);
+        data.setTestCase(isTestCase());
+        data.setSecurityType(getSecurityType());
     }
 
     private Project project;
@@ -148,8 +153,29 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         }
         addChangeListener(prefixField);
         addChangeListener(suffixField);
+        
+        securityTypeCombo.removeAllItems();
+        for (SecurityType securityType : SecurityType.values()) {
+            securityTypeCombo.addItem(new ComboBoxValue(securityType, securityType.toString()));
+        }
     }
-
+    
+    private void setSecurityType(SecurityType securityType) {
+        if (securityType == null) {
+            securityTypeCombo.setSelectedIndex(0);
+        } else {
+            for (int i = 0; i < securityTypeCombo.getItemCount(); i++) {
+                if (((ComboBoxValue<SecurityType>) securityTypeCombo.getItemAt(i)).getValue() == securityType) {
+                    securityTypeCombo.setSelectedIndex(i);
+                }
+            }
+        }
+    }
+    
+    private SecurityType getSecurityType(){
+        return ((ComboBoxValue<SecurityType>) securityTypeCombo.getSelectedItem()).getValue();
+    }
+    
     public String getPackage() {
         return ((JTextComponent) packageCombo.getEditor().getEditorComponent()).getText().trim();
     }
@@ -253,13 +279,14 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         packageLabel = new javax.swing.JLabel();
         packageCombo = new javax.swing.JComboBox();
         appPanel = new javax.swing.JPanel();
-        testcaseCheckBox = new javax.swing.JCheckBox();
+        securityTypeLabel = new javax.swing.JLabel();
+        securityTypeCombo = new javax.swing.JComboBox();
         applicationConfigButton = new javax.swing.JButton();
         miscPanel = new javax.swing.JPanel();
-        wrapper = new javax.swing.JLayeredPane();
+        testcaseCheckBox = new javax.swing.JCheckBox();
         metricsCheckbox = new javax.swing.JCheckBox();
-        docsCheckBox = new javax.swing.JCheckBox();
         loggerCheckBox = new javax.swing.JCheckBox();
+        docsCheckBox = new javax.swing.JCheckBox();
 
         warningPanel.setLayout(new java.awt.BorderLayout(10, 0));
 
@@ -331,8 +358,18 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
 
         jPanel1.add(packagePanel);
 
-        testcaseCheckBox.setVisible(false);
-        org.openide.awt.Mnemonics.setLocalizedText(testcaseCheckBox, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.testcaseCheckBox.text")); // NOI18N
+        securityTypeLabel.setLabelFor(packageCombo);
+        org.openide.awt.Mnemonics.setLocalizedText(securityTypeLabel, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.securityTypeLabel.text")); // NOI18N
+        securityTypeLabel.setPreferredSize(new java.awt.Dimension(60, 17));
+
+        packageCombo.setEditable(true);
+        securityTypeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { " " }));
+        securityTypeCombo.setPreferredSize(new java.awt.Dimension(60, 27));
+        securityTypeCombo.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                securityTypeComboPropertyChange(evt);
+            }
+        });
 
         org.openide.awt.Mnemonics.setLocalizedText(applicationConfigButton, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.applicationConfigButton.text")); // NOI18N
         applicationConfigButton.addActionListener(new java.awt.event.ActionListener() {
@@ -346,27 +383,35 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         appPanelLayout.setHorizontalGroup(
             appPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(appPanelLayout.createSequentialGroup()
-                .addGap(325, 325, 325)
-                .addComponent(testcaseCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
-                .addComponent(applicationConfigButton)
-                .addContainerGap())
+                .addComponent(securityTypeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(securityTypeCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 217, Short.MAX_VALUE)
+                .addComponent(applicationConfigButton))
         );
         appPanelLayout.setVerticalGroup(
             appPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(appPanelLayout.createSequentialGroup()
-                .addGroup(appPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(testcaseCheckBox)
-                    .addComponent(applicationConfigButton, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(securityTypeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(securityTypeCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(applicationConfigButton, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         jPanel1.add(appPanel);
 
-        miscPanel.setLayout(new java.awt.BorderLayout());
+        miscPanel.setLayout(new java.awt.GridLayout(1, 0));
+
+        testcaseCheckBox.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(testcaseCheckBox, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.testcaseCheckBox.text")); // NOI18N
+        testcaseCheckBox.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        miscPanel.add(testcaseCheckBox);
 
         metricsCheckbox.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(metricsCheckbox, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.metricsCheckbox.text")); // NOI18N
+        miscPanel.add(metricsCheckbox);
+
+        loggerCheckBox.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(loggerCheckBox, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.loggerCheckBox.text")); // NOI18N
+        miscPanel.add(loggerCheckBox);
 
         docsCheckBox.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(docsCheckBox, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.docsCheckBox.text")); // NOI18N
@@ -375,38 +420,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
                 docsCheckBoxActionPerformed(evt);
             }
         });
-
-        loggerCheckBox.setSelected(true);
-        org.openide.awt.Mnemonics.setLocalizedText(loggerCheckBox, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.loggerCheckBox.text")); // NOI18N
-
-        wrapper.setLayer(metricsCheckbox, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        wrapper.setLayer(docsCheckBox, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        wrapper.setLayer(loggerCheckBox, javax.swing.JLayeredPane.DEFAULT_LAYER);
-
-        javax.swing.GroupLayout wrapperLayout = new javax.swing.GroupLayout(wrapper);
-        wrapper.setLayout(wrapperLayout);
-        wrapperLayout.setHorizontalGroup(
-            wrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(wrapperLayout.createSequentialGroup()
-                .addGap(110, 110, 110)
-                .addComponent(metricsCheckbox, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(69, 69, 69)
-                .addComponent(loggerCheckBox)
-                .addGap(80, 80, 80)
-                .addComponent(docsCheckBox)
-                .addContainerGap())
-        );
-        wrapperLayout.setVerticalGroup(
-            wrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, wrapperLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addGroup(wrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(metricsCheckbox)
-                    .addComponent(docsCheckBox)
-                    .addComponent(loggerCheckBox)))
-        );
-
-        miscPanel.add(wrapper, java.awt.BorderLayout.CENTER);
+        miscPanel.add(docsCheckBox);
 
         jPanel1.add(miscPanel);
 
@@ -417,9 +431,8 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 629, Short.MAX_VALUE)
-                    .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -467,6 +480,10 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
     private void docsCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_docsCheckBoxActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_docsCheckBoxActionPerformed
+
+    private void securityTypeComboPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_securityTypeComboPropertyChange
+        // TODO add your handling code here:
+    }//GEN-LAST:event_securityTypeComboPropertyChange
     private void openApplicationConfig() {
         if (configDialog == null) {
             configDialog = new RestConfigDialog();
@@ -500,11 +517,12 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
     private javax.swing.JLabel packageLabel;
     private javax.swing.JPanel packagePanel;
     private javax.swing.JTextField prefixField;
+    private javax.swing.JComboBox securityTypeCombo;
+    private javax.swing.JLabel securityTypeLabel;
     private javax.swing.JTextField suffixField;
     private javax.swing.JPanel suffixPanel;
     private javax.swing.JCheckBox testcaseCheckBox;
     private javax.swing.JLabel warningLabel;
     private javax.swing.JPanel warningPanel;
-    private javax.swing.JLayeredPane wrapper;
     // End of variables declaration//GEN-END:variables
 }

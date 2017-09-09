@@ -1,28 +1,29 @@
 <#if package??>package ${package};</#if>
 
-import java.io.Serializable;
-import javax.enterprise.context.SessionScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.SecurityContext;
+<#if security == "JAXRS_JWT">import javax.ws.rs.core.Context;
+import javax.ws.rs.core.SecurityContext;<#assign type = "User" ><#elseif security == "SECURITY_JWT">
+import javax.inject.Inject;
+import javax.security.enterprise.SecurityContext;<#assign type = "Caller" ></#if>
 
 /**
  * Utility class for Security.
  */
-@SessionScoped
+@RequestScoped
 @Path("/api")
-public class SecurityUtils implements Serializable {
+public class SecurityUtils {
 
-    @Context
+    <#if security == "JAXRS_JWT">@Context<#elseif security == "SECURITY_JWT">@Inject</#if>
     private SecurityContext securityContext;
 
     @Path(value = "/current_user")
     @GET
     public String getCurrentUserLogin() {
-        if (securityContext == null || securityContext.getUserPrincipal() == null) {
+        if (securityContext == null || securityContext.get${type}Principal() == null) {
             return null;   
         }
-        return securityContext.getUserPrincipal().getName();
+        return securityContext.get${type}Principal().getName();
     }
 }

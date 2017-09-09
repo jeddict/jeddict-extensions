@@ -43,6 +43,12 @@
             <version>6.0.1.Final</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>javax.security.enterprise</groupId>
+            <artifactId>javax.security.enterprise-api</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
+        </dependency>
         
         <dependency>
             <groupId>javax</groupId>
@@ -68,4 +74,14 @@
             </plugin>
         </plugins>
     </build>
+    <repositories>
+        <repository>
+            <id>jvnet-nexus-promoted</id>
+            <name>Java.net Promoted Repositories</name>
+            <url>https://maven.java.net/content/repositories/promoted/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 </project>

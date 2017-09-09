@@ -161,7 +161,7 @@ public class FileUtil {
         expandTemplate(contentStream, outputFile, params);
         return outputFile;
     }
-
+    
     public static void expandTemplate(String inputTemplatePath, FileObject toFile, Map<String, Object> params) throws IOException {
         InputStream contentStream = org.netbeans.jcode.core.util.FileUtil.loadResource(inputTemplatePath);
         expandTemplate(contentStream, toFile, params);
@@ -206,6 +206,26 @@ public class FileUtil {
             }
         }
     }
+    
+    public static String expandTemplate(String inputTemplatePath, Map<String, Object> values) {
+        InputStream contentStream = org.netbeans.jcode.core.util.FileUtil.loadResource(inputTemplatePath);
+        StringWriter writer = new StringWriter();
+        ScriptEngine eng = getScriptEngine();
+        Bindings bind = eng.getContext().getBindings(ScriptContext.ENGINE_SCOPE);
+        if (values != null) {
+            bind.putAll(values);
+        }
+        bind.put(ENCODING_PROPERTY_NAME, Charset.defaultCharset().name());
+        eng.getContext().setWriter(writer);
+        Reader is = new InputStreamReader(contentStream);
+        try {
+            eng.eval(is);
+        } catch (ScriptException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+
+        return writer.toString();
+    }
 
     /**
      * In-memory template api
@@ -214,7 +234,7 @@ public class FileUtil {
      * @param values
      * @return
      */
-    public static String expandTemplate(String templateContent, Map<String, Object> values) {
+    public static String expandTemplateContent(String templateContent, Map<String, Object> values) {
         StringWriter writer = new StringWriter();
         ScriptEngine eng = getScriptEngine();
         Bindings bind = eng.getContext().getBindings(ScriptContext.ENGINE_SCOPE);
@@ -231,8 +251,8 @@ public class FileUtil {
         }
 
         return writer.toString();
-
     }
+    
     private static final String ENCODING_PROPERTY_NAME = "encoding"; //NOI18N
     private static ScriptEngineManager manager;
 

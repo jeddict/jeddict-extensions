@@ -1,14 +1,13 @@
 <#if package??>package ${package};</#if>
 
 import ${SecurityConfig_FQN};
-import ${UserAuthenticationToken_FQN};
-import ${User_FQN};
+import io.jsonwebtoken.*;
 import java.util.*;
-import java.util.stream.Collectors;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toSet;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import org.slf4j.Logger;
-import io.jsonwebtoken.*;
 
 public class TokenProvider {
 
@@ -37,38 +36,30 @@ public class TokenProvider {
                 = 1000 * securityConfig.getTokenValidityInSecondsForRememberMe();
     }
 
-    public String createToken(User user, Boolean rememberMe) {
-        String authorities = user.getAuthorities().stream()
-                .map(authority -> authority.getName())
-                .collect(Collectors.joining(","));
-
+    public String createToken(String username, Set<String> authorities, Boolean rememberMe) {
         long now = (new Date()).getTime();
-        Date validity;
-        if (rememberMe) {
-            validity = new Date(now + this.tokenValidityInSecondsForRememberMe);
-        } else {
-            validity = new Date(now + this.tokenValidityInSeconds);
-        }
+        long validity = now + (rememberMe ? tokenValidityInSecondsForRememberMe : tokenValidityInSeconds);
 
         return Jwts.builder()
-                .setSubject(user.getLogin())
-                .claim(AUTHORITIES_KEY, authorities)
+                .setSubject(username)
+                .claim(AUTHORITIES_KEY, authorities.stream().collect(joining(",")))
                 .signWith(SignatureAlgorithm.HS512, secretKey)
-                .setExpiration(validity)
+                .setExpiration(new Date(validity))
                 .compact();
     }
 
-    public UserAuthenticationToken getAuthentication(String token) {
+    public JWTCredential getCredential(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
                 .getBody();
 
         Set<String> authorities
-                = Arrays.asList(claims.get(AUTHORITIES_KEY).toString().split(",")).stream()
-                .collect(Collectors.toSet());
+                = Arrays.asList(claims.get(AUTHORITIES_KEY).toString().split(","))
+                        .stream()
+                        .collect(toSet());
 
-        return new UserAuthenticationToken(claims.getSubject(), "", authorities);
+        return new JWTCredential(claims.getSubject(), authorities);
     }
 
     public boolean validateToken(String authToken) {
@@ -76,7 +67,7 @@ public class TokenProvider {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(authToken);
             return true;
         } catch (SignatureException e) {
-            log.info("Invalid JWT signature: " + e.getMessage());
+            log.info("Invalid JWT signature: {0}", e.getMessage());
             return false;
         }
     }

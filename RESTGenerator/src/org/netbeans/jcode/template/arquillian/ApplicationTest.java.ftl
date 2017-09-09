@@ -55,7 +55,7 @@ public abstract class ApplicationTest extends AbstractTest {
                 .addClass(${UserRepository}.class)
                 .addClass(${AuthorityRepository}.class)
                 .addClass(${UserService}.class)
-                .addClass(${UserJWTController}.class)
+                .addClass(${AuthenticationController}.class)
                 .addAsResource(new ClassLoaderAsset("META-INF/microprofile-config.properties"), "META-INF/microprofile-config.properties")
                 .addAsResource(new ClassLoaderAsset("i18n/messages.properties"), "i18n/messages.properties");
     }

@@ -1,8 +1,6 @@
 <#if package??>package ${package};</#if>
 
 import ${Constants_FQN};
-import ${UserAuthenticationToken_FQN};
-import ${Secured_FQN};
 import io.jsonwebtoken.ExpiredJwtException;
 import java.io.IOException;
 import java.security.Principal;
@@ -15,10 +13,10 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Context;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 
 @Priority(Priorities.AUTHENTICATION)
 @Provider
@@ -40,12 +38,12 @@ public class JWTAuthenticationFilter implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        String jwt = resolveToken();
-        if (StringUtils.isNotBlank(jwt)) {
+        String token = resolveToken();
+        if (StringUtils.isNotBlank(token)) {
             try {
-                if (tokenProvider.validateToken(jwt)) {
-                    UserAuthenticationToken authenticationToken = this.tokenProvider.getAuthentication(jwt);
-                    if(!isAllowed(authenticationToken)){
+                if (tokenProvider.validateToken(token)) {
+                    JWTCredential credential = tokenProvider.getCredential(token);
+                    if(!isAllowed(credential)){
                         requestContext.setProperty("auth-failed", true);
                         requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
                     }
@@ -53,7 +51,7 @@ public class JWTAuthenticationFilter implements ContainerRequestFilter {
                     requestContext.setSecurityContext(new SecurityContext() {
                         @Override
                         public Principal getUserPrincipal() {
-                            return authenticationToken::getPrincipal;
+                            return credential::getPrincipal;
                         }
 
                         @Override
@@ -89,20 +87,19 @@ public class JWTAuthenticationFilter implements ContainerRequestFilter {
     private String resolveToken() {
         String bearerToken = request.getHeader(Constants.AUTHORIZATION_HEADER);
         if (StringUtils.isNotEmpty(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            String jwt = bearerToken.substring(7, bearerToken.length());
-            return jwt;
+            return bearerToken.substring(7, bearerToken.length());
         }
         return null;
     }
     
 
-    private boolean isAllowed(UserAuthenticationToken authenticationToken) {
+    private boolean isAllowed(JWTCredential credential) {
         Secured secured = resourceInfo.getResourceMethod().getAnnotation(Secured.class);
         if (secured == null) {
             secured = resourceInfo.getResourceClass().getAnnotation(Secured.class);
         }
         for (String role : secured.value()) {
-            if (!authenticationToken.getAuthorities().contains(role)) {
+            if (!credential.getAuthorities().contains(role)) {
                 return false;
             } 
         }

@@ -18,6 +18,7 @@ package org.netbeans.jcode.generator.internal;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,6 +36,7 @@ import org.netbeans.jcode.rest.util.RestUtils;
 import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
 import org.netbeans.jcode.stack.config.data.LayerConfigData;
 import org.netbeans.jcode.task.progress.ProgressHandler;
+import org.netbeans.jcode.web.dd.util.WebDDUtil;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
 import org.openide.util.Exceptions;
 
@@ -70,16 +72,29 @@ public class ApplicationGenerator extends AbstractGenerator {
             //Make necessary changes to the persistence.xml
             new PersistenceHelper(project).configure(entities, !RestUtils.hasJTASupport(project));
             generateCRUD();
+                    
+            if (POMManager.isMavenProject(project)) {
+                POMManager.reload(project);
+            }
             
             String profiles = applicationConfigData.getProfiles();
             handler.addDynamicVariable("profile", profiles.isEmpty()? "":"-P " + profiles);
+            
+            String webDescriptorContent = applicationConfigData.getWebDescriptorContent();
+            if (!webDescriptorContent.isEmpty()) {
+                WebDDUtil.createDD(project, "/org/netbeans/jcode/template/web/descriptor/_web.xml.ftl", Collections.singletonMap("content", webDescriptorContent));
+            }
+            String webDescriptorTestContent = applicationConfigData.getWebDescriptorTestContent();
+            if (!webDescriptorTestContent.isEmpty()) {
+                WebDDUtil.createTestDD(project, "/org/netbeans/jcode/template/web/descriptor/_web.xml.ftl", Collections.singletonMap("content", webDescriptorTestContent));
+            }
             finishProgressReporting();
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
         }
     }
 
-        @Override
+    @Override
     public void preGeneration() {
         TechContext bussinesLayerConfig = applicationConfigData.getBussinesTechContext();
         if (bussinesLayerConfig == null) {
@@ -209,10 +224,6 @@ public class ApplicationGenerator extends AbstractGenerator {
             return;
         }
         execute(viewerLayerConfig);
-
-        if (POMManager.isMavenProject(project)) {
-            POMManager.reload(project);
-        }
 
 //        PersistenceUtil.getPersistenceUnit(getProject(), applicationConfigData.getEntityMappings().getPersistenceUnitName()).ifPresent(pud -> {
 //            try {

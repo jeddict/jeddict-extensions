@@ -91,13 +91,11 @@ public abstract class ${AbstractRepository}<E,P> {
     public Optional<E> findSingleByNamedQuery(String namedQueryName, String entityGraph, Map<String, Object> parameters) {
         Set<Entry<String, Object>> rawParameters = parameters.entrySet();
         TypedQuery<E> query = getEntityManager().createNamedQuery(namedQueryName, entityClass);
-        rawParameters.forEach((entry) -> {
-            query.setParameter(entry.getKey(), entry.getValue());
-        });
+        rawParameters.forEach(entry -> query.setParameter(entry.getKey(), entry.getValue()));
         if(entityGraph != null){
             query.setHint("javax.persistence.loadgraph", getEntityManager().getEntityGraph(entityGraph));
         }
-        return findOrEmpty(() -> query.getSingleResult());
+        return findOrEmpty(query::getSingleResult);
     }
 
     public List<E> findByNamedQuery(String namedQueryName) {
@@ -118,9 +116,7 @@ public abstract class ${AbstractRepository}<E,P> {
         if (resultLimit > 0) {
             query.setMaxResults(resultLimit);
         }
-        rawParameters.forEach((entry) -> {
-            query.setParameter(entry.getKey(), entry.getValue());
-        });
+        rawParameters.forEach(entry -> query.setParameter(entry.getKey(), entry.getValue()));
         return query.getResultList();
     }
 

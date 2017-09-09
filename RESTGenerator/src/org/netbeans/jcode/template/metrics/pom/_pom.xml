@@ -11,8 +11,20 @@
     <properties>
         <version.metrics>3.1.2</version.metrics>
     </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.glassfish.jersey</groupId>
+                <artifactId>jersey-bom</artifactId>
+                <version>2.26</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    
     <dependencies>
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-core</artifactId>
             <version>${version.metrics}</version>
@@ -22,7 +34,7 @@
             <artifactId>metrics-annotation</artifactId>
             <version>${version.metrics}</version>
         </dependency>-->
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-ehcache</artifactId>
             <version>${version.metrics}</version>
@@ -32,7 +44,7 @@
             <artifactId>metrics-graphite</artifactId>
             <version>${version.metrics}</version>
         </dependency>-->
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-healthchecks</artifactId>
             <version>${version.metrics}</version>
@@ -56,7 +68,7 @@
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-servlets</artifactId>
             <version>${version.metrics}</version>
-<!--            <exclusions>
+            <!--            <exclusions>
                 <exclusion>
                     <artifactId>metrics-healthchecks</artifactId>
                     <groupId>io.dropwizard.metrics</groupId>
@@ -67,6 +79,11 @@
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-jersey2</artifactId>
             <version>${version.metrics}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.bundles.repackaged</groupId>
+            <artifactId>jersey-guava</artifactId>
+            <version>2.6</version>
         </dependency>
     </dependencies>
 

@@ -24,19 +24,15 @@ import org.apache.commons.lang.StringUtils;
 import org.jcode.infra.DatabaseDriver;
 import org.jcode.infra.DatabaseType;
 import org.jcode.infra.ServerFamily;
-import static org.jcode.infra.ServerFamily.PAYARA_FAMILY;
 import static org.jcode.infra.ServerFamily.WILDFLY_FAMILY;
 import org.jcode.infra.ServerType;
 import static org.jcode.infra.ServerType.NONE;
-import static org.jcode.infra.ServerType.PAYARA;
-import static org.jcode.infra.ServerType.WILDFLY;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.BOLD;
 import static org.netbeans.jcode.console.Console.FG_RED;
 import static org.netbeans.jcode.console.Console.UNDERLINE;
-import static org.netbeans.jcode.core.util.FileUtil.expandTemplate;
 import org.netbeans.jcode.core.util.POMManager;
 import org.netbeans.jcode.core.util.PersistenceUtil;
 import static org.netbeans.jcode.core.util.PersistenceUtil.addProperty;
@@ -60,6 +56,7 @@ import org.netbeans.modules.j2ee.persistence.dd.common.PersistenceUnit;
 import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
+import static org.netbeans.jcode.core.util.FileUtil.expandTemplate;
 
 /**
  * Generates Docker image.
@@ -314,7 +311,7 @@ public class DockerGenerator implements Generator {
         Map<String, Object> params = new HashMap<>(getParams());
         params.put("JNDI", getJNDI(config.getServerType(), config.getDataSource()));
         params.put("DRIVER_CLASS", config.getDatabaseType().getDriver().getClassName());
-        WebDDUtil.createDD(project, "/org/jcode/docker/template/web/xml/datasource/_web.xml.ftl", params);
+        appConfigData.addWebDescriptorContent(expandTemplate("/org/jcode/docker/template/datasource/web/descriptor/_web.xml.ftl", params));
     }
 
     protected Map<String, Object> getParams() {

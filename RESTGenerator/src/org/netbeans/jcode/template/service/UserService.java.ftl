@@ -8,15 +8,15 @@ import ${User_FQN};
 import ${Authority_FQN};
 import ${SecurityUtils_FQN};
 import ${RandomUtil_FQN};
-import ${AuthenticationException_FQN};
-import ${UserAuthenticationToken_FQN};
 import ${UserDTO_FQN};
 import java.time.Instant;
-import org.slf4j.Logger;
-import javax.inject.Inject;
 import java.util.*;
-import javax.ejb.Stateless;
 import static java.util.stream.Collectors.*;
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import javax.security.enterprise.AuthenticationException;
+import javax.security.enterprise.credential.UsernamePasswordCredential;
+import org.slf4j.Logger;
 
 /**
  * Service class for managing users.
@@ -183,13 +183,11 @@ public class UserService {
         return ${userRepository}.findOneWithAuthoritiesByLogin(securityUtils.getCurrentUserLogin()).orElse(null);
     }
 
-    public User authenticate(UserAuthenticationToken authenticationToken) throws AuthenticationException {
-        Optional<User> userOptional = ${userRepository}.findOneWithAuthoritiesByLogin(authenticationToken.getPrincipal());
-        if (userOptional.isPresent() && userOptional.get().getActivated() && userOptional.get().getPassword().equals(passwordEncoder.encode(authenticationToken.getCredentials()))) {
-            return userOptional.get();
-        } else {
-            throw new AuthenticationException();
-        }
+    public User authenticate(UsernamePasswordCredential credential) throws AuthenticationException {
+        Optional<User> userOptional = ${userRepository}.findOneWithAuthoritiesByLogin(credential.getCaller());
+        return userOptional.filter(User::getActivated)
+                .filter(user -> user.getPassword().equals(passwordEncoder.encode(credential.getPasswordAsString())))
+                .orElseThrow(AuthenticationException::new);
     }
 
     /**

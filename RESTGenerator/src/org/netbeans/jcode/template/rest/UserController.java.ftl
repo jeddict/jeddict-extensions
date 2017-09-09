@@ -1,6 +1,5 @@
 <#if package??>package ${package};</#if>
 
-import ${AuthorityRepository_FQN};
 import ${UserRepository_FQN};
 import ${User_FQN};
 import ${MailService_FQN};
@@ -10,8 +9,8 @@ import ${UserDTO_FQN};
 import ${HeaderUtil_FQN};
 import ${Page_FQN};
 import ${PaginationUtil_FQN};
-import ${Secured_FQN};
-import ${AuthoritiesConstants_FQN};
+<#if security == "JAXRS_JWT">import ${Secured_FQN};
+import ${AuthoritiesConstants_FQN};</#if>
 import org.slf4j.Logger;
 import javax.inject.Inject;
 import java.net.URI;
@@ -59,9 +58,6 @@ public class ${UserController} {
     private MailService mailService;
 
     @Inject
-    private ${AuthorityRepository} ${authorityRepository};
-
-    @Inject
     private UserService userService;
 
     /**
@@ -86,8 +82,8 @@ public class ${UserController} {
     @Path(value = "/users")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Secured(AuthoritiesConstants.ADMIN)
+    @Produces(MediaType.APPLICATION_JSON)<#if security == "JAXRS_JWT">
+    @Secured(AuthoritiesConstants.ADMIN)</#if>
     public Response createUser(ManagedUserDTO managedUserDTO) throws URISyntaxException {
         log.debug("REST request to save User : {}", managedUserDTO);
 
@@ -122,8 +118,8 @@ public class ${UserController} {
     @Path(value = "/users")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Secured(AuthoritiesConstants.ADMIN)
+    @Produces(MediaType.APPLICATION_JSON)<#if security == "JAXRS_JWT">
+    @Secured(AuthoritiesConstants.ADMIN)</#if>
     public Response updateUser(ManagedUserDTO managedUserDTO) {
         log.debug("REST request to update User : {}", managedUserDTO);
         Optional<User> existingUser = ${userRepository}.findOneByEmail(managedUserDTO.getEmail());
@@ -155,8 +151,8 @@ public class ${UserController} {
         @ApiResponse(code = 200, message = "OK")})</#if>
     @Path(value = "/users")
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Secured
+    @Produces(MediaType.APPLICATION_JSON)<#if security == "JAXRS_JWT">
+    @Secured</#if>
     public Response getAllUsers(@QueryParam("page") int page, @QueryParam("size") int size) throws URISyntaxException {
         List<User> userList = ${userRepository}.getUsersWithAuthorities(page * size, size);
         List<UserDTO> userDTOs = userList.stream()
@@ -176,8 +172,8 @@ public class ${UserController} {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK")})</#if>
     @Path("/users/authorities")
-    @GET
-    @Secured(AuthoritiesConstants.ADMIN)
+    @GET<#if security == "JAXRS_JWT">
+    @Secured(AuthoritiesConstants.ADMIN)</#if>
     public List<String> getAuthorities() {
         return userService.getAuthorities();
     }
@@ -196,8 +192,8 @@ public class ${UserController} {
         @ApiResponse(code = 404, message = "Not Found")})</#if>
     @Path(value = "/users/{login}")
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Secured
+    @Produces(MediaType.APPLICATION_JSON)<#if security == "JAXRS_JWT">
+    @Secured</#if>
     public Response getUser(@PathParam("login") String login) {
         log.debug("REST request to get User : {}", login);
         return userService.getUserWithAuthoritiesByLogin(login)
@@ -219,8 +215,8 @@ public class ${UserController} {
         @ApiResponse(code = 404, message = "Not Found")})</#if>
     @Path(value = "/users/{login}")
     @DELETE
-    @Produces(MediaType.APPLICATION_JSON)
-    @Secured(AuthoritiesConstants.ADMIN)
+    @Produces(MediaType.APPLICATION_JSON)<#if security == "JAXRS_JWT">
+    @Secured(AuthoritiesConstants.ADMIN)</#if>
     public Response deleteUser(@PathParam("login") String login) {
         log.debug("REST request to delete User: {}", login);
         userService.deleteUser(login);

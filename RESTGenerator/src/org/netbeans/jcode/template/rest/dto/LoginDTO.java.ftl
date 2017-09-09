@@ -21,9 +21,6 @@ public class LoginDTO {
 
     private Boolean rememberMe = true;
 
-    public LoginDTO() {
-    }
-
     public String getUsername() {
         return username;
     }
@@ -51,7 +48,6 @@ public class LoginDTO {
     @Override
     public String toString() {
         return "LoginDTO{"
-                + "password='" + password + '\''
                 + ", username='" + username + '\''
                 + ", rememberMe=" + rememberMe
                 + '}';
