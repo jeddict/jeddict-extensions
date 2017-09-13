@@ -61,7 +61,7 @@
     </build>
 
     <properties>
-        <version.payara.micro>5.0.0.174-SNAPSHOT</version.payara.micro>
+        <version.payara.micro>5.0.0.Alpha1</version.payara.micro>
     </properties>
     
     

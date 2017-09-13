@@ -12,7 +12,7 @@
         <version.arquillian>1.1.13.Final</version.arquillian>
         <version.jacoco>0.7.4.201502262128</version.jacoco>
         <version.valid4j>1.0</version.valid4j>
-        <version.payara>5.0.0.174-SNAPSHOT</version.payara>
+        <version.payara>5.0.0.Alpha1</version.payara>
     </properties>
     <dependencyManagement>
         <dependencies>
