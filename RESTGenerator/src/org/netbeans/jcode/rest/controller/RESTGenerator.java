@@ -29,11 +29,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import org.apache.commons.lang.StringUtils;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import org.jcode.docker.generator.DockerConfigData;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
+import org.netbeans.bean.validation.constraints.Constraint;
 import static org.netbeans.bean.validation.constraints.ConstraintUtil.getAttributeDefaultValue;
 import static org.netbeans.bean.validation.constraints.ConstraintUtil.getAttributeUpdateValue;
 import static org.netbeans.bean.validation.constraints.ConstraintUtil.isAllowedConstraint;
@@ -429,8 +431,15 @@ public class RESTGenerator implements Generator {
             List<Map<String, Object>> basicAttributes = entity.getAttributes().getSuperBasic()
                     .stream()
                     .filter(attr -> !attr.isOptionalReturnType())
+                    .filter(attr -> !attr.getJsonbTransient())
                     .filter(attr -> getAttributeDefaultValue(attr.getDataTypeLabel()) != null)
-                    .filter(attr -> isAllowedConstraint(attr.getAttributeConstraintsClass()))
+                    .filter(attr -> isAllowedConstraint(
+                            attr.getAttributeConstraints()
+                                    .stream()
+                                    .filter(Constraint::getSelected)
+                                    .map(Constraint::getClass)
+                                    .collect(toSet())
+                    ))
                     .map(con)
                     .collect(toList());
             param.put("attributes", basicAttributes);

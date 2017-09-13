@@ -15,9 +15,12 @@
  */
 package org.netbeans.bean.validation.constraints;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -42,7 +45,6 @@ import static org.netbeans.jcode.core.util.AttributeType.FLOAT;
 import static org.netbeans.jcode.core.util.AttributeType.FLOAT_WRAPPER;
 import static org.netbeans.jcode.core.util.AttributeType.INT;
 import static org.netbeans.jcode.core.util.AttributeType.INT_WRAPPER;
-import static org.netbeans.jcode.core.util.AttributeType.LOCAL_DATE;
 import static org.netbeans.jcode.core.util.AttributeType.LONG;
 import static org.netbeans.jcode.core.util.AttributeType.LONG_WRAPPER;
 import static org.netbeans.jcode.core.util.AttributeType.SHORT;
@@ -50,7 +52,6 @@ import static org.netbeans.jcode.core.util.AttributeType.SHORT_WRAPPER;
 import static org.netbeans.jcode.core.util.AttributeType.STRING;
 import static org.netbeans.jcode.core.util.AttributeType.STRING_FQN;
 import static org.netbeans.jcode.core.util.AttributeType.UUID;
-import static org.netbeans.jcode.core.util.AttributeType.ZONED_DATE_TIME;
 
 /**
  *
@@ -135,8 +136,8 @@ public class ConstraintUtil {
         DEFAULT_VALUE.put(CHAR_WRAPPER_ARRAY, cm -> "new Character[] {'a', 'b', 'c'}");
 
         DEFAULT_VALUE.put(UUID, cm -> "java.util.UUID.randomUUID()");
-        DEFAULT_VALUE.put(LOCAL_DATE, cm -> "java.time.LocalDate.ofEpochDay(0L)");
-        DEFAULT_VALUE.put(ZONED_DATE_TIME, cm -> "java.time.ZonedDateTime.ofInstant(java.time.Instant.ofEpochMilli(0L), java.time.ZoneId.systemDefault())");
+//        DEFAULT_VALUE.put(LOCAL_DATE, cm -> "java.time.LocalDate.ofEpochDay(0L)");
+//        DEFAULT_VALUE.put(ZONED_DATE_TIME, cm -> "java.time.ZonedDateTime.ofInstant(java.time.Instant.ofEpochMilli(0L), java.time.ZoneId.systemDefault())");
     }
 
     static {
@@ -179,8 +180,8 @@ public class ConstraintUtil {
         UPDATE_VALUE.put(CHAR_WRAPPER_ARRAY, cm -> "new Character[] {'d', 'e', 'f'}");
 
         UPDATE_VALUE.put(UUID, cm -> "java.util.UUID.randomUUID()");
-        UPDATE_VALUE.put(LOCAL_DATE, cm -> "java.time.LocalDate.now(java.time.ZoneId.systemDefault())");
-        UPDATE_VALUE.put(ZONED_DATE_TIME, cm -> "java.time.ZonedDateTime.now(java.time.ZoneId.systemDefault()).withNano(0)");
+//        UPDATE_VALUE.put(LOCAL_DATE, cm -> "java.time.LocalDate.now(java.time.ZoneId.systemDefault())");
+//        UPDATE_VALUE.put(ZONED_DATE_TIME, cm -> "java.time.ZonedDateTime.now(java.time.ZoneId.systemDefault()).withNano(0)");
 
     }
 
@@ -200,5 +201,19 @@ public class ConstraintUtil {
     public static String getAttributeUpdateValue(String type, Map<String,Constraint> constraints) {
         Function<Map<String,Constraint>,String> eval = UPDATE_VALUE.get(type);
         return eval != null? eval.apply(constraints): null;
+    }
+    
+    private static final Set<Class<? extends Constraint>> SKIP_CONSTRAINTS = new HashSet<>(Arrays.asList(
+            Email.class, 
+            Future.class, FutureOrPresent.class, 
+            Past.class, PastOrPresent.class,
+            PositiveOrZero.class, Positive.class, 
+            NegativeOrZero.class, Negative.class
+    ));
+    
+    public static boolean isAllowedConstraint(Set<Class<? extends Constraint>> constraints) {
+        Set<Class<? extends Constraint>> skipConstraints = new HashSet<>(SKIP_CONSTRAINTS);
+        skipConstraints.retainAll(constraints);
+        return skipConstraints.isEmpty();
     }
 }
