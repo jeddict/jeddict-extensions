@@ -3,7 +3,7 @@
 import ${SecurityConfig_FQN};
 import ${Constants_FQN};
 import ${SecurityUtils_FQN};
-import ${JWTAuthenticationFilter_FQN};
+import ${TemplateEngineProducer_FQN};
 import ${MailService_FQN};
 import ${RandomUtil_FQN};
 import ${UserService_FQN};
@@ -46,8 +46,8 @@ public abstract class ApplicationTest extends AbstractTest {
                         MailService.class.getPackage(), 
                         UserDTO.class.getPackage(), 
                         SecurityUtils.class.getPackage(), 
-                        JWTAuthenticationFilter.class.getPackage(),
                         RandomUtil.class.getPackage())
+                .addClass(TemplateEngineProducer.class)
                 .addClass(User.class)
                 .addClass(Authority.class)
                 .addClass(AbstractAuditingEntity.class)
@@ -56,6 +56,8 @@ public abstract class ApplicationTest extends AbstractTest {
                 .addClass(${AuthorityRepository}.class)
                 .addClass(${UserService}.class)
                 .addClass(${AuthenticationController}.class)
+                .addClass(AbstractTest.class)
+                .addClass(ApplicationTest.class)
                 .addAsResource(new ClassLoaderAsset("META-INF/microprofile-config.properties"), "META-INF/microprofile-config.properties")
                 .addAsResource(new ClassLoaderAsset("i18n/messages.properties"), "i18n/messages.properties");
     }

@@ -23,6 +23,8 @@ import static javax.ws.rs.core.Response.Status.OK;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.arquillian.junit.Arquillian;
+import org.junit.runner.RunWith;
 import org.junit.Test;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -36,6 +38,7 @@ import static org.valid4j.matchers.http.HttpResponseMatchers.hasStatus;
  * Test class for the ${AccountController} REST controller.
  *
  */
+@RunWith(Arquillian.class)
 public class ${AccountControllerTest} extends ApplicationTest {
 
     @Inject

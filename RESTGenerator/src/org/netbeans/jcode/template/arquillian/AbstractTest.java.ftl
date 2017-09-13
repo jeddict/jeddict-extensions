@@ -10,7 +10,6 @@ import java.util.Map;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
-import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -20,13 +19,11 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.jboss.shrinkwrap.resolver.api.maven.MavenResolverSystem;
 import org.junit.Before;
-import org.junit.runner.RunWith;
 
 /**
  * Abstract class for base application packaging.
  *
  */
-@RunWith(Arquillian.class)
 public abstract class AbstractTest {
 
     @ArquillianResource
@@ -35,16 +32,29 @@ public abstract class AbstractTest {
     protected final static MavenResolverSystem RESOLVER = Maven.resolver();
 
     public static WebArchive buildArchive() {
-        File[] deltaspikeFiles = RESOLVER.resolve("org.apache.deltaspike.core:deltaspike-core-api:1.5.0").withTransitivity().asFile();
-        File[] deltaspikeImplFiles = RESOLVER.resolve("org.apache.deltaspike.core:deltaspike-core-impl:1.5.0").withTransitivity().asFile();
+        File[] shrinkwrapResolverLib = 
+                RESOLVER.resolve("org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-impl-maven:2.2.0")
+                        .withTransitivity()
+                        .asFile();
+        File[] httpMatchersLib = 
+                RESOLVER.resolve("org.valid4j:http-matchers:1.0")
+                        .withTransitivity()
+                        .asFile();
+        File[] libs = 
+                RESOLVER.loadPomFromFile("pom.xml")
+                        .importCompileAndRuntimeDependencies()
+                        .resolve()
+                        .withTransitivity()
+                        .asFile();
 
         final WebArchive archive = ShrinkWrap.create(WebArchive.class);
         archive.addClass(${AbstractRepository}.class)
                 .addPackage(HeaderUtil.class.getPackage())
                 .addClass(EntityManagerProducer.class)
                 .addClass(LoggerProducer.class)
-                .addAsLibraries(deltaspikeFiles)
-                .addAsLibraries(deltaspikeImplFiles)
+                .addAsLibraries(shrinkwrapResolverLib)
+                .addAsLibraries(httpMatchersLib)
+                .addAsLibraries(libs)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"))
                 .addAsResource("test-persistence.xml", "META-INF/persistence.xml")
                 .addAsResource(new ClassLoaderAsset("META-INF/sql/insert.sql"), "META-INF/sql/insert.sql")

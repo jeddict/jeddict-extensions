@@ -22,6 +22,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.junit.runner.RunWith;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
@@ -34,6 +36,7 @@ import static org.valid4j.matchers.http.HttpResponseMatchers.hasStatus;
  * Test class for the ${controllerClass} REST controller.
  *
  */
+@RunWith(Arquillian.class)
 public class ${controllerClass}Test extends ApplicationTest {
 
 <#if eid>
@@ -53,7 +56,9 @@ public class ${controllerClass}Test extends ApplicationTest {
 
     @Deployment
     public static WebArchive createDeployment() {
-        return buildApplication()<#list connectedClasses as connectedClass>.addClass(${connectedClass}.class)</#list>
+        return buildApplication()
+                <#list connectedClasses as connectedClass>.addClass(${connectedClass}.class)
+                </#list>
                 .addClass(${EntityRepository}.class)
                 .addClass(${controllerClass}.class);
     }
