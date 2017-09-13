@@ -36,6 +36,7 @@ import java.util.function.Function;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.FG_BLUE;
 import static org.netbeans.jcode.console.Console.FG_RED;
@@ -82,6 +83,9 @@ public class EJSUtil {
     }
 
     public static void insertNeedle(FileObject root, String source, String needlePointer, String needleContent, ProgressHandler handler) {
+        if(StringUtils.isEmpty(needleContent)){
+            return;
+        }
         Charset charset = Charset.forName("UTF-8");
         BufferedReader reader;
         BufferedWriter writer;
@@ -107,7 +111,7 @@ public class EJSUtil {
             String thisLine;
             while ((thisLine = reader.readLine()) != null) {
                 if (thisLine.contains(needlePointer)) {
-                    content.append(needleContent).append("\n");
+                    content.append(needleContent);
                     contentUpdated = true;
                 }
                 content.append(thisLine).append("\n");

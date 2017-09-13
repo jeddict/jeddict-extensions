@@ -16,7 +16,7 @@
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>${AccountController}.changePassword</web-resource-name>
-            <url-pattern>/resources/api/account/change_password</url-pattern>
+            <url-pattern>/resources/api/account/change-password</url-pattern>
             <http-method>POST</http-method>
         </web-resource-collection>
         <web-resource-collection>

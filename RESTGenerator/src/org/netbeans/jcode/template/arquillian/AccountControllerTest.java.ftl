@@ -322,16 +322,16 @@ public class ${AccountControllerTest} extends ApplicationTest {
         Response response = target("api/register").post(json(user));
         assertThat(response, hasStatus(CREATED));
 
-        Response resetResponse = target("api/account/reset_password/init").post(Entity.text("gaurav.gupta.jc@example.com"));
+        Response resetResponse = target("api/account/reset-password/init").post(Entity.text("gaurav.gupta.jc@example.com"));
         assertThat(resetResponse, hasStatus(BAD_REQUEST));
     }
 
     @Test
     public void assertThatUserMustExistToResetPassword() {
-        Response resetResponse = target("api/account/reset_password/init").post(Entity.text("john.doe@example.com"));
+        Response resetResponse = target("api/account/reset-password/init").post(Entity.text("john.doe@example.com"));
         assertThat(resetResponse, hasStatus(BAD_REQUEST));
 
-        resetResponse = target("api/account/reset_password/init").post(Entity.text("admin@example.com"));
+        resetResponse = target("api/account/reset-password/init").post(Entity.text("admin@example.com"));
         assertThat(resetResponse, hasStatus(OK));
     }
 
@@ -341,11 +341,11 @@ public class ${AccountControllerTest} extends ApplicationTest {
         dto.setKey("invalid_reset_key");
         dto.setNewPassword(PASSWORD);
 
-        Response response = target("api/account/reset_password/finish").post(json(dto));
+        Response response = target("api/account/reset-password/finish").post(json(dto));
         assertThat(response, hasStatus(INTERNAL_SERVER_ERROR));
 
         dto.setNewPassword(INCORRECT_PASSWORD);
-        response = target("api/account/reset_password/finish").post(json(dto));
+        response = target("api/account/reset-password/finish").post(json(dto));
         assertThat(response, hasStatus(BAD_REQUEST));
     }
 
@@ -374,11 +374,11 @@ public class ${AccountControllerTest} extends ApplicationTest {
     @Test
     public void testChangePassword() throws Exception {
         //Invalid password
-        Response response = target("api/account/change_password").post(text(INCORRECT_PASSWORD));
+        Response response = target("api/account/change-password").post(text(INCORRECT_PASSWORD));
         assertThat(response, hasStatus(BAD_REQUEST));
 
         //Valid password
-        response = target("api/account/change_password").post(text(PASSWORD));
+        response = target("api/account/change-password").post(text(PASSWORD));
         assertThat(response, hasStatus(OK));
     }
 

@@ -18,7 +18,7 @@ public class SecurityUtils {
     <#if security == "JAXRS_JWT">@Context<#elseif security == "SECURITY_JWT">@Inject</#if>
     private SecurityContext securityContext;
 
-    @Path(value = "/current_user")
+    @Path(value = "/current-user")
     @GET
     public String getCurrentUserLogin() {
         if (securityContext == null || securityContext.get${type}Principal() == null) {

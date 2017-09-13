@@ -15,14 +15,14 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Response;
-<#if pagination != "no">import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;<#if pagination != "no">
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import ${Page_FQN};
-import ${PaginationUtil_FQN};</#if>
-<#if security == "JAXRS_JWT">import ${Secured_FQN};</#if>
-<#if metrics>import com.codahale.metrics.annotation.Timed;</#if>
-<#if docs>import com.wordnik.swagger.annotations.Api;
+import ${PaginationUtil_FQN};</#if><#if security == "JAXRS_JWT">
+import ${appPackage}.security.Secured;</#if><#if metrics>
+import com.codahale.metrics.annotation.Timed;</#if><#if docs>
+import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;</#if>

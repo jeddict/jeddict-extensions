@@ -189,7 +189,7 @@ public class ${AccountController} {
     }
 
     /**
-     * POST /account/change_password : changes the current user's password
+     * POST /account/change-password : changes the current user's password
      *
      * @param password the new password
      * @return the Response with status 200 (OK), or status 400 (Bad
@@ -200,7 +200,7 @@ public class ${AccountController} {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 400, message = "Bad Request")})</#if>
-    @Path("/account/change_password")
+    @Path("/account/change-password")
     @POST
     <#--@Consumes({MediaType.TEXT_PLAIN}) should be TEXT_HTML -->
     @Produces({MediaType.TEXT_PLAIN})<#if security == "JAXRS_JWT">
@@ -214,7 +214,7 @@ public class ${AccountController} {
     }
 
     /**
-     * POST /account/reset_password/init : Send an e-mail to reset the password
+     * POST /account/reset-password/init : Send an e-mail to reset the password
      * of the user
      *
      * @param mail the mail of the user
@@ -226,7 +226,7 @@ public class ${AccountController} {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 400, message = "Bad Request")})</#if>
-    @Path("/account/reset_password/init")
+    @Path("/account/reset-password/init")
     @POST
     @Produces({MediaType.TEXT_PLAIN})
     public Response requestPasswordReset(String mail) {
@@ -238,7 +238,7 @@ public class ${AccountController} {
     }
 
     /**
-     * POST /account/reset_password/finish : Finish to reset the password of the
+     * POST /account/reset-password/finish : Finish to reset the password of the
      * user
      *
      * @param keyAndPassword the generated key and the new password
@@ -252,7 +252,7 @@ public class ${AccountController} {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})</#if>
-    @Path("/account/reset_password/finish")
+    @Path("/account/reset-password/finish")
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.TEXT_PLAIN})
