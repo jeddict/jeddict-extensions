@@ -197,6 +197,7 @@ public class RESTGenerator implements Generator {
         if (restData.isMetrics() || restData.isDocsEnable()) {
             SERVICE_TEMPLATES.add(new Template("web/WebConfigurer.java.ftl", "WebConfigurer", "web"));
         }
+        SERVICE_TEMPLATES.add(new Template("web/CORSFilter.java.ftl", "CORSFilter", "web"));
         if (restData.getSecurityType() == SecurityType.SECURITY_JWT) {
             POST_SERVICE_TEMPLATES.add(new Template("security/AuthenticationIdentityStore.java.ftl", "AuthenticationIdentityStore", "security"));
             POST_SERVICE_TEMPLATES.add(new Template("security/JWTAuthenticationMechanism.java.ftl", "JWTAuthenticationMechanism", "security"));
