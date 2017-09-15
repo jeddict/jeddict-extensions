@@ -9,6 +9,7 @@ package org.netbeans.jpa.modeler.spec;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
@@ -41,6 +42,7 @@ import org.netbeans.jpa.modeler.spec.extend.JavaClass;
 import org.netbeans.jpa.modeler.spec.extend.MapKeyHandler;
 import org.netbeans.jpa.modeler.spec.extend.MapKeyType;
 import org.netbeans.jpa.modeler.spec.extend.MultiRelationAttribute;
+import org.netbeans.jpa.modeler.spec.extend.PersistenceAttributes;
 import org.netbeans.jpa.modeler.spec.extend.PlainClass;
 import org.netbeans.jpa.modeler.spec.extend.ReferenceClass;
 import org.netbeans.jpa.modeler.spec.extend.RelationAttribute;
@@ -885,6 +887,21 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         if (entity != null) {
             this.entity.remove(entity_In);
             entity_In.setRootElement(null);
+            
+            if (!this.isRootWorkSpace()) {
+                for (JavaClass javaClass : getJavaClassesExcludingWP()) {
+                    if (javaClass.getSuperclass() == entity_In) {
+                        javaClass.removeSuperclass(entity_In);
+                    }
+                    if (javaClass.getAttributes() instanceof PersistenceAttributes) {
+                        PersistenceAttributes<ManagedClass> attributes = (PersistenceAttributes<ManagedClass>) javaClass.getAttributes();
+                                attributes.getRelationAttributes()
+                                .stream()
+                                .filter(attr -> attr.getConnectedEntity() == entity_In)
+                                .forEach(attr -> attributes.removeRelationAttribute(attr));
+                    }
+                }
+            }
         }
     }
 
@@ -969,6 +986,14 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         if (mappedSuperclass != null) {
             this.mappedSuperclass.remove(mappedSuperclass_In);
             mappedSuperclass_In.setRootElement(null);
+            
+            if (!this.isRootWorkSpace()) {
+                for (JavaClass javaClass : getJavaClassesExcludingWP()) {
+                    if (javaClass.getSuperclass() == mappedSuperclass_In) {
+                        javaClass.removeSuperclass(mappedSuperclass_In);
+                    }
+                }
+            }
         }
     }
 
@@ -998,6 +1023,22 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         if (embeddable != null) {
             this.embeddable.remove(embeddable_In);
             embeddable_In.setRootElement(null);
+            
+            if (!this.isRootWorkSpace()) {
+                for (JavaClass javaClass : getJavaClassesExcludingWP()) {
+                    if (javaClass.getAttributes() instanceof PersistenceAttributes) {
+                        PersistenceAttributes<ManagedClass> attributes = (PersistenceAttributes<ManagedClass>) javaClass.getAttributes();
+                        List<Embedded> names = attributes.getEmbedded();
+                        Iterator<Embedded> i = names.iterator();
+                        while (i.hasNext()) {
+                            Embedded embedded = i.next();
+                            if (embedded.getConnectedClass() == embeddable_In) {
+                                i.remove();
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -1407,7 +1448,6 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         }
     }
 
-    // Issue Fix #5949 End
     /**
      * @return the theme
      */
@@ -1734,6 +1774,17 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     
     public boolean isRootWorkSpace() {
         return getCurrentWorkSpace() == getRootWorkSpace();
+    }
+    
+    public List<JavaClass> getJavaClassesExcludingWP(){
+        List<JavaClass> javaClasses = new ArrayList<>(getAllJavaClass());
+                
+        javaClasses.removeAll(getCurrentWorkSpace()
+                        .getItems()
+                        .stream()
+                        .map(wi -> wi.getJavaClass())
+                        .collect(toList()));
+        return javaClasses;
     }
 
     
