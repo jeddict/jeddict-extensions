@@ -18,25 +18,27 @@ package org.netbeans.jpa.modeler.spec.jaxb;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import org.netbeans.jpa.modeler.spec.validator.jaxb.JaxbMetadataValidator;
 import org.netbeans.modeler.properties.type.Embedded;
 
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlJavaTypeAdapter(value = JaxbMetadataValidator.class)
 public class JaxbMetadata implements Embedded {
 
-
-    @XmlAttribute(name="nm")
+    @XmlAttribute(name = "nm")
     private String name;
 
-    @XmlAttribute(name="nil")
-    private Boolean nillable = false;// default false;
+    @XmlAttribute(name = "nil")
+    private Boolean nillable;
 
-    @XmlAttribute(name="req")
-    private Boolean required = false;// default false;
+    @XmlAttribute(name = "req")
+    private Boolean required;
 
-    @XmlAttribute(name="ns")
+    @XmlAttribute(name = "ns")
     private String namespace;// default "##default";
 
-    @XmlAttribute(name="dv")
+    @XmlAttribute(name = "dv")
     private String defaultValue;// default "\u0000";
 
     /**
@@ -57,7 +59,7 @@ public class JaxbMetadata implements Embedded {
      * @return the nillable
      */
     public Boolean getNillable() {
-        if(nillable==null){
+        if (nillable == null) {
             return false;
         }
         return nillable;
@@ -74,7 +76,7 @@ public class JaxbMetadata implements Embedded {
      * @return the required
      */
     public Boolean getRequired() {
-        if(required==null){
+        if (required == null) {
             return false;
         }
         return required;
@@ -114,6 +116,5 @@ public class JaxbMetadata implements Embedded {
     public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
     }
-
 
 }
