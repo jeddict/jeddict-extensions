@@ -12,7 +12,6 @@ import ${UserDTO_FQN};
 import java.time.Instant;
 import java.util.*;
 import static java.util.stream.Collectors.*;
-import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.security.enterprise.AuthenticationException;
 import javax.security.enterprise.credential.UsernamePasswordCredential;
@@ -21,7 +20,6 @@ import org.slf4j.Logger;
 /**
  * Service class for managing users.
  */
-@Stateless
 public class UserService {
 
     @Inject
@@ -46,6 +44,7 @@ public class UserService {
                     // activate given user for the registration key.
                     user.setActivated(true);
                     user.setActivationKey(null);
+                    ${userRepository}.edit(user);
                     log.debug("Activated user: {}", user);
                     return user;
                 });
@@ -59,6 +58,7 @@ public class UserService {
                     user.setPassword(passwordEncoder.encode(newPassword));
                     user.setResetKey(null);
                     user.setResetDate(null);
+                    ${userRepository}.edit(user);
                     return user;
                 });
     }
@@ -69,6 +69,7 @@ public class UserService {
                 .map(user -> {
                     user.setResetKey(RandomUtil.generateResetKey());
                     user.setResetDate(Instant.now());
+                    ${userRepository}.edit(user);
                     return user;
                 });
     }
@@ -131,6 +132,7 @@ public class UserService {
                 user.setLastName(lastName);
                 user.setEmail(email);
                 user.setLangKey(langKey);
+                    ${userRepository}.edit(user);
                 log.debug("Changed Information for User: {}", user);
             });
     }
@@ -150,6 +152,7 @@ public class UserService {
                             .map(${authorityRepository}::find)
                             .collect(toSet())
                     );
+                    ${userRepository}.edit(user);
                     log.debug("Changed Information for User: {}", user);
                     return user;
                 })
@@ -167,6 +170,7 @@ public class UserService {
         ${userRepository}.findOneByLogin(securityUtils.getCurrentUserLogin()).ifPresent(user -> {
             String encryptedPassword = passwordEncoder.encode(password);
             user.setPassword(encryptedPassword);
+            ${userRepository}.edit(user);
             log.debug("Changed password for User: {}", user);
         });
     }
