@@ -82,7 +82,7 @@ import static ${AuthenticationController_FQN}.AUTHENTICATION_ENDPOINT;
 @WebServlet(name = "authenticate", urlPatterns = {AUTHENTICATION_ENDPOINT})
 public class ${AuthenticationController} extends HttpServlet {
         
-    public static final String AUTHENTICATION_ENDPOINT = "/resources/api/authenticate";
+    public static final String AUTHENTICATION_ENDPOINT = "/${applicationPath}/api/authenticate";
     /**
      * Authenticate the credential using JWTAuthenticationMechanism
      *

@@ -64,7 +64,7 @@ public abstract class AbstractTest {
 
     @Before
     public void buildWebTarget() throws Exception {
-        webTarget = ClientBuilder.newClient().target(deploymentUrl.toURI().toString() + "resources/");
+        webTarget = ClientBuilder.newClient().target(deploymentUrl.toURI().toString() + "${applicationPath}/");
     }
 
     protected Invocation.Builder target(String path) {

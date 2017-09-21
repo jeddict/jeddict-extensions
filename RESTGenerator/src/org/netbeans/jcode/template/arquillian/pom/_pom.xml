@@ -186,11 +186,10 @@
             </build>
         </profile>
        
-        <profile>
-            <id>payara-remote</id>
-            
+<!--        <profile>
+            <id>payara-remote</id>  
             <dependencies>
-                <!-- The actual Arquillian connector -->
+                 The actual Arquillian connector 
                 <dependency>
                     <groupId>fish.payara.arquillian</groupId>
                     <artifactId>arquillian-payara-server-4-remote</artifactId> 
@@ -212,6 +211,6 @@
                     </plugin>
                 </plugins>
             </build>
-        </profile>
+        </profile>-->
     </profiles>
 </project>

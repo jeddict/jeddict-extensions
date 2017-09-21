@@ -2,7 +2,7 @@
 <#list entityConstraints as entityConstraint>
         <web-resource-collection>
             <web-resource-name>${entityConstraint.name}</web-resource-name>
-            <url-pattern>/resources/api/${entityConstraint.urlPath}</url-pattern>
+            <url-pattern>/${applicationPath}/api/${entityConstraint.urlPath}</url-pattern>
         </web-resource-collection>
 </#list>
         <auth-constraint>

@@ -257,13 +257,16 @@ public class RESTGenerator implements Generator {
             generateEntityController(entity, params);
         }
         if (appConfigData.isCompleteApplication() && restData.getSecurityType() == SecurityType.SECURITY_JWT) {
-            appConfigData.addWebDescriptorContent(expandTemplate("/org/netbeans/jcode/template/security/web/descriptor/_web.xml.ftl", params));
-            appConfigData.addWebDescriptorTestContent(expandTemplate("/org/netbeans/jcode/template/security/web/descriptor/_web.xml.ftl", params));
+            appConfigData.addWebDescriptorContent(
+                    expandTemplate("/org/netbeans/jcode/template/security/web/descriptor/_web.xml.ftl", params));
+            appConfigData.addWebDescriptorTestContent(
+                    expandTemplate("/org/netbeans/jcode/template/security/web/descriptor/_web.xml.ftl", params));
             if(!entityConstraint.isEmpty()){
-                appConfigData.addWebDescriptorContent(expandTemplate("/org/netbeans/jcode/template/security/web/descriptor/entity_web.xml.ftl", 
-                    singletonMap("entityConstraints", entityConstraint)));
-                appConfigData.addWebDescriptorTestContent(expandTemplate("/org/netbeans/jcode/template/security/web/descriptor/entity_web.xml.ftl", 
-                    singletonMap("entityConstraints", entityConstraint)));
+                params.put("entityConstraints", entityConstraint);
+                appConfigData.addWebDescriptorContent(
+                        expandTemplate("/org/netbeans/jcode/template/security/web/descriptor/entity_web.xml.ftl", params));
+                appConfigData.addWebDescriptorTestContent(
+                        expandTemplate("/org/netbeans/jcode/template/security/web/descriptor/entity_web.xml.ftl", params));
             }
             
         }
@@ -528,7 +531,7 @@ public class RESTGenerator implements Generator {
                 configRoot = ProjectHelper.getTestResourceDirectory(project);
                 expandTemplate(TEMPLATE + "arquillian/config/arquillian.xml.ftl", configRoot, "arquillian.xml", EMPTY_MAP);
 //              expandTemplate(TEMPLATE + "arquillian/config/glassfish-resources.xml.ftl", configRoot, "glassfish-resources.xml", EMPTY_MAP);
-                appConfigData.addWebDescriptorTestContent(expandTemplate(TEMPLATE + "arquillian/config/web.xml.ftl", EMPTY_MAP));
+                appConfigData.addWebDescriptorTestContent(expandTemplate(TEMPLATE + "arquillian/config/web.xml.ftl", params));
                 expandTemplate(TEMPLATE + "arquillian/config/test-persistence.xml.ftl", configRoot, "test-persistence.xml", Collections.singletonMap("PU_NAME", entityMapping.getPersistenceUnitName()));
                 expandTemplate(TEMPLATE + "config/resource/META-INF/sql/insert.sql.ftl", getFolderForPackage(configRoot, "META-INF.sql", true), "insert.sql", singletonMap("database", "Derby"));
             }

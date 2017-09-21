@@ -3,5 +3,5 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>javax.ws.rs.core.Application</servlet-name>
-        <url-pattern>/resources/*</url-pattern>
+        <url-pattern>/${applicationPath}/*</url-pattern>
     </servlet-mapping>
