@@ -6,7 +6,6 @@ import java.io.StringWriter;
 import java.util.Locale;
 import java.util.function.Function;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Event;
 import javax.enterprise.event.ObservesAsync;
 import javax.inject.Inject;
 import org.apache.commons.mail.DefaultAuthenticator;
@@ -18,14 +17,8 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.slf4j.Logger;
 
-/**
- * Service for sending e-mails.
- * <p>
- * CDI events is used to send e-mails asynchronously.
- * </p>
- */
 @ApplicationScoped
-public class MailService {
+public class MailNotifier {
 
     private static final String USER = "user";
     private static final String BASE_URL = "baseUrl";
@@ -42,25 +35,7 @@ public class MailService {
     @Inject
     private MailConfig mailConfig;
 
-    @Inject
-    private Event<MailEvent> eventProducer;
-
-    public void sendActivationEmail(User user) {
-        log.debug("Sending activation e-mail to '{}'", user.getEmail());
-        eventProducer.fireAsync(new MailEvent(user, "email.activation.title", "activationEmail"));
-    }
-
-    public void sendCreationEmail(User user) {
-        log.debug("Sending creation e-mail to '{}'", user.getEmail());
-        eventProducer.fireAsync(new MailEvent(user, "email.creation.title", "creationEmail"));
-    }
-
-    public void sendPasswordResetMail(User user) {
-        log.debug("Sending password reset e-mail to '{}'", user.getEmail());
-        eventProducer.fireAsync(new MailEvent(user, "email.reset.title", "passwordResetEmail"));
-    }
-
-    void sendEmail(@ObservesAsync MailEvent event) {
+    public void sendEmail(@ObservesAsync MailEvent event) {
         if (!mailConfig.isEnable()) {
              log.debug("Mail servce is not enabled");         
         }
@@ -104,29 +79,4 @@ public class MailService {
                 .message();
     }
 
-    class MailEvent {
-
-        private final User user;
-        private final String subjectTemplate;
-        private final String contentTemplate;
-
-        public MailEvent(User user, String subjectTemplate, String contentTemplate) {
-            this.user = user;
-            this.subjectTemplate = subjectTemplate;
-            this.contentTemplate = contentTemplate;
-        }
-
-        public User getUser() {
-            return user;
-        }
-
-        public String getSubjectTemplate() {
-            return subjectTemplate;
-        }
-
-        public String getContentTemplate() {
-            return contentTemplate;
-        }
-
-    }
 }

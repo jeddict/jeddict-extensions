@@ -66,12 +66,18 @@ import org.openide.util.RequestProcessor;
 public class POMManager {
 
     private Project project;
+    
     private FileObject pomFileObject;
+    
     private POMModel pomModel;
+    
     private NbMavenProjectImpl mavenProject;
 
     private Model sourceModel;
+    
     private List<ModelOperation<POMModel>> operations;
+    
+    private static final RequestProcessor RP = new RequestProcessor("Maven loading");
 
     public POMManager(Project project){
         this(project, false);
@@ -161,8 +167,10 @@ public class POMManager {
         return project.getLookup().lookup(NbMavenProjectImpl.class) != null;
     }
 
-    private static final RequestProcessor RP = new RequestProcessor("Maven loading");
-
+    public void reload() {
+        reload(project);
+    }
+    
     public static void reload(Project project) {
         NbMavenProjectImpl mavenProject = project.getLookup().lookup(NbMavenProjectImpl.class);
         try {

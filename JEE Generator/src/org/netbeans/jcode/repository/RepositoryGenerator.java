@@ -103,6 +103,7 @@ public final class RepositoryGenerator implements Generator {
             POMManager pomManager = new POMManager(TEMPLATE + pom, project);
             pomManager.setSourceVersion("1.8");
             pomManager.commit();
+            pomManager.reload();
         } else {
             handler.warning(NbBundle.getMessage(RepositoryGenerator.class, "TITLE_Maven_Project_Not_Found"),
                     NbBundle.getMessage(RepositoryGenerator.class, "MSG_Maven_Project_Not_Found"));

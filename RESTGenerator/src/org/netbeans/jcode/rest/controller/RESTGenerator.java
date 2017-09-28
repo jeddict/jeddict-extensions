@@ -183,7 +183,7 @@ public class RESTGenerator implements Generator {
         
         SERVICE_TEMPLATES.add(new Template("security/AuthoritiesConstants.java.ftl", "AuthoritiesConstants", "security"));
         SERVICE_TEMPLATES.add(new Template("security/PasswordEncoder.java.ftl", "PasswordEncoder", "security"));
-        SERVICE_TEMPLATES.add(new Template("security/SecurityUtils.java.ftl", "SecurityUtils", "security"));
+        SERVICE_TEMPLATES.add(new Template("security/SecurityHelper.java.ftl", "SecurityHelper", "security"));
         SERVICE_TEMPLATES.add(new Template("security/JWTCredential.java.ftl", "JWTCredential", "security"));
         SERVICE_TEMPLATES.add(new Template("security/TokenProvider.java.ftl", "TokenProvider", "security"));
         if (restData.getSecurityType() == SecurityType.JAXRS_JWT) {
@@ -191,13 +191,17 @@ public class RESTGenerator implements Generator {
             SERVICE_TEMPLATES.add(new Template("security/Secured.java.ftl", "Secured", "security"));
         }
         SERVICE_TEMPLATES.add(new Template("producer/TemplateEngineProducer.java.ftl", "TemplateEngineProducer", "producer"));
-        SERVICE_TEMPLATES.add(new Template("service/MailService.java.ftl", "MailService", "service"));
         SERVICE_TEMPLATES.add(new Template("util/RandomUtil.java.ftl", "RandomUtil", "util"));
         SERVICE_TEMPLATES.add(new Template("service/UserService.java.ftl", "UserService", "service"));
         if (restData.isMetrics() || restData.isDocsEnable()) {
             SERVICE_TEMPLATES.add(new Template("web/WebConfigurer.java.ftl", "WebConfigurer", "web"));
         }
         SERVICE_TEMPLATES.add(new Template("web/CORSFilter.java.ftl", "CORSFilter", "web"));
+        
+        SERVICE_TEMPLATES.add(new Template("mail/MailEvent.java.ftl", "MailEvent", "mail"));
+        SERVICE_TEMPLATES.add(new Template("mail/MailNotifier.java.ftl", "MailNotifier", "mail"));
+        SERVICE_TEMPLATES.add(new Template("mail/MailService.java.ftl", "MailService", "service"));
+
         if (restData.getSecurityType() == SecurityType.SECURITY_JWT) {
             POST_SERVICE_TEMPLATES.add(new Template("security/AuthenticationIdentityStore.java.ftl", "AuthenticationIdentityStore", "security"));
             POST_SERVICE_TEMPLATES.add(new Template("security/JWTAuthenticationMechanism.java.ftl", "JWTAuthenticationMechanism", "security"));

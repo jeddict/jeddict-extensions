@@ -2,7 +2,7 @@
 
 import ${UserRepository_FQN};
 import ${User_FQN};
-import ${SecurityUtils_FQN};
+import ${SecurityHelper_FQN};
 import ${MailService_FQN};
 import ${UserService_FQN};
 import ${KeyAndPasswordDTO_FQN};
@@ -56,7 +56,7 @@ public class ${AccountController} {
     private MailService mailService;
 
     @Inject
-    private SecurityUtils securityUtils;
+    private SecurityHelper securityHelper;
 
     @Context
     private HttpServletRequest request;
@@ -173,7 +173,7 @@ public class ${AccountController} {
     @Produces({MediaType.APPLICATION_JSON})<#if security == "JAXRS_JWT">
     @Secured</#if>
     public Response saveAccount(@Valid UserDTO userDTO) {
-        final String userLogin = securityUtils.getCurrentUserLogin();
+        final String userLogin = securityHelper.getCurrentUserLogin();
         Optional<User> existingUser = ${userRepository}.findOneByEmail(userDTO.getEmail());
         if (existingUser.isPresent() && (!existingUser.get().getLogin().equalsIgnoreCase(userLogin))) {
             return HeaderUtil.createFailureAlert(Response.status(BAD_REQUEST), "user-management", "emailexists", "Email already in use").build();

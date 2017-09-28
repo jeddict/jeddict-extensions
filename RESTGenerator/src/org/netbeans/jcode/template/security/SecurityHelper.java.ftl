@@ -13,7 +13,7 @@ import javax.security.enterprise.SecurityContext;<#assign type = "Caller" ></#if
  */
 @RequestScoped
 @Path("/api")
-public class SecurityUtils {
+public class SecurityHelper {
 
     <#if security == "JAXRS_JWT">@Context<#elseif security == "SECURITY_JWT">@Inject</#if>
     private SecurityContext securityContext;

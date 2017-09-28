@@ -6,7 +6,7 @@ import ${AuthoritiesConstants_FQN};
 import ${PasswordEncoder_FQN};
 import ${User_FQN};
 import ${Authority_FQN};
-import ${SecurityUtils_FQN};
+import ${SecurityHelper_FQN};
 import ${RandomUtil_FQN};
 import ${UserDTO_FQN};
 import java.time.Instant;
@@ -26,7 +26,7 @@ public class UserService {
     private Logger log;
 
     @Inject
-    private SecurityUtils securityUtils;
+    private SecurityHelper securityHelper;
 
     @Inject
     private PasswordEncoder passwordEncoder;
@@ -94,7 +94,7 @@ public class UserService {
         newUser.setActivationKey(RandomUtil.generateActivationKey());
         authorities.add(authority);
         newUser.setAuthorities(authorities);
-        String currentLogin = securityUtils.getCurrentUserLogin();
+        String currentLogin = securityHelper.getCurrentUserLogin();
         newUser.setCreatedBy(currentLogin != null ? currentLogin : AuthoritiesConstants.ANONYMOUS);
         ${userRepository}.create(newUser);
         log.debug("Created Information for User: {}", newUser);
@@ -126,7 +126,7 @@ public class UserService {
     }
 
     public void updateUser(String firstName, String lastName, String email, String langKey) {
-        ${userRepository}.findOneByLogin(securityUtils.getCurrentUserLogin())
+        ${userRepository}.findOneByLogin(securityHelper.getCurrentUserLogin())
             .ifPresent(user -> {
                 user.setFirstName(firstName);
                 user.setLastName(lastName);
@@ -167,7 +167,7 @@ public class UserService {
     }
 
     public void changePassword(String password) {
-        ${userRepository}.findOneByLogin(securityUtils.getCurrentUserLogin()).ifPresent(user -> {
+        ${userRepository}.findOneByLogin(securityHelper.getCurrentUserLogin()).ifPresent(user -> {
             String encryptedPassword = passwordEncoder.encode(password);
             user.setPassword(encryptedPassword);
             ${userRepository}.edit(user);
@@ -184,7 +184,7 @@ public class UserService {
     }
 
     public User getUserWithAuthorities() {
-        return ${userRepository}.findOneWithAuthoritiesByLogin(securityUtils.getCurrentUserLogin()).orElse(null);
+        return ${userRepository}.findOneWithAuthoritiesByLogin(securityHelper.getCurrentUserLogin()).orElse(null);
     }
 
     public User authenticate(UsernamePasswordCredential credential) throws AuthenticationException {
