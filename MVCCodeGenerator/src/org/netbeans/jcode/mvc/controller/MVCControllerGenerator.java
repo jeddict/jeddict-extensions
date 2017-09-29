@@ -609,7 +609,7 @@ public class MVCControllerGenerator implements Generator {
             return;
         }
         final RestSupport restSupport = project.getLookup().lookup(RestSupport.class);
-        RestSupport.RestConfig.IDE.setAppClassName(mvcData.getRestConfigData().getPackage() + "." + mvcData.getRestConfigData().getApplicationClass());
+        RestSupport.RestConfig.IDE.setAppClassName(mvcData.getPackage() + "." + mvcData.getRestConfigData().getApplicationClass());
         if (restSupport != null) {
             try {
                 restSupport.ensureRestDevelopmentReady(RestSupport.RestConfig.IDE);
@@ -618,7 +618,7 @@ public class MVCControllerGenerator implements Generator {
             }
         }
 
-        FileObject restAppPack = SourceGroupSupport.getFolderForPackage(sourceGroup, mvcData.getRestConfigData().getPackage(), true);
+        FileObject restAppPack = SourceGroupSupport.getFolderForPackage(sourceGroup, mvcData.getPackage(), true);
         
 
         final String appClassName = mvcData.getRestConfigData().getApplicationClass();

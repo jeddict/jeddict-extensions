@@ -93,7 +93,7 @@ import static org.netbeans.jcode.core.util.FileUtil.expandTemplate;
  * @author Gaurav Gupta
  */
 @ServiceProvider(service = Generator.class)
-@Technology(type = CONTROLLER, label = "REST", panel = RESTPanel.class, 
+@Technology(type = CONTROLLER, label = "REST", panel = RESTPanel.class,
         parents = {RepositoryGenerator.class}, listIndex = 1)
 public class RESTGenerator implements Generator {
 
@@ -116,7 +116,7 @@ public class RESTGenerator implements Generator {
 
     @ConfigData
     private EntityMappings entityMapping;
-    
+
     @ConfigData
     private ApplicationConfigData appConfigData;
 
@@ -125,12 +125,13 @@ public class RESTGenerator implements Generator {
 
     private SourceGroup testSource;
     private String entityPackage;
+    private final List<RestEntityInfo> restEntityInfo = new ArrayList<>();
 
     private List<Template> CONFIG_TEMPLATES, ENTITY_TEMPLATES,
-            ENTITY_LISTENER_TEMPLATES, 
-            REPOSITORY_TEMPLATES, SERVICE_TEMPLATES, POST_SERVICE_TEMPLATES, 
-            CONTROLLER_TEMPLATES, CONTROLLER_EXT_TEMPLATES, 
-            METRICS_TEMPLATES, LOGGER_TEMPLATES, 
+            ENTITY_LISTENER_TEMPLATES,
+            REPOSITORY_TEMPLATES, SERVICE_TEMPLATES, POST_SERVICE_TEMPLATES,
+            CONTROLLER_TEMPLATES, CONTROLLER_EXT_TEMPLATES,
+            METRICS_TEMPLATES, LOGGER_TEMPLATES,
             TEST_CASE_TEMPLATES, TEST_CASE_CONTROLLER_TEMPLATES;
 
     private void registerTemplates() {
@@ -175,12 +176,12 @@ public class RESTGenerator implements Generator {
             METRICS_TEMPLATES.add(new Template("metrics/DiagnosticFilter.java.ftl", "DiagnosticFilter", "metrics"));
             METRICS_TEMPLATES.add(new Template("metrics/MetricsConfigurer.java.ftl", "MetricsConfigurer", "metrics"));//require  import MetricsConfig
         }
-        
+
         if (restData.isLogger()) {
             LOGGER_TEMPLATES.add(new Template("logger/LoggerVM.java.ftl", "LoggerVM", "dto"));
             LOGGER_TEMPLATES.add(new Template("logger/LogsResource.java.ftl", "LogsResource"));
         }
-        
+
         SERVICE_TEMPLATES.add(new Template("security/AuthoritiesConstants.java.ftl", "AuthoritiesConstants", "security"));
         SERVICE_TEMPLATES.add(new Template("security/PasswordEncoder.java.ftl", "PasswordEncoder", "security"));
         SERVICE_TEMPLATES.add(new Template("security/SecurityHelper.java.ftl", "SecurityHelper", "security"));
@@ -197,7 +198,7 @@ public class RESTGenerator implements Generator {
             SERVICE_TEMPLATES.add(new Template("web/WebConfigurer.java.ftl", "WebConfigurer", "web"));
         }
         SERVICE_TEMPLATES.add(new Template("web/CORSFilter.java.ftl", "CORSFilter", "web"));
-        
+
         SERVICE_TEMPLATES.add(new Template("mail/MailEvent.java.ftl", "MailEvent", "mail"));
         SERVICE_TEMPLATES.add(new Template("mail/MailNotifier.java.ftl", "MailNotifier", "mail"));
         SERVICE_TEMPLATES.add(new Template("mail/MailService.java.ftl", "MailService", "service"));
@@ -206,7 +207,7 @@ public class RESTGenerator implements Generator {
             POST_SERVICE_TEMPLATES.add(new Template("security/AuthenticationIdentityStore.java.ftl", "AuthenticationIdentityStore", "security"));
             POST_SERVICE_TEMPLATES.add(new Template("security/JWTAuthenticationMechanism.java.ftl", "JWTAuthenticationMechanism", "security"));
         }
-        
+
         CONTROLLER_TEMPLATES.add(new Template("rest/AccountController.java.ftl", "Account"));
         CONTROLLER_TEMPLATES.add(new Template("rest/UserController.java.ftl", "User"));
         CONTROLLER_TEMPLATES.add(new Template("rest/AuthenticationController.java.ftl", "Authentication"));
@@ -237,10 +238,10 @@ public class RESTGenerator implements Generator {
         params.put("restSuffix", restData.getSuffixName());
         params.put("security", restData.getSecurityType().name());
         params.put("metrics", restData.isMetrics());
+        params.put("log", restData.isLogger());
         params.put("docs", restData.isDocsEnable());
         if (appConfigData.isCompleteApplication()) {
             params.putAll(generateServerSideComponent(params));
-            generateUtil();
             CDIUtil.createDD(project);
             generateProducer();
             addMavenDependencies("rest/pom/_pom.xml");
@@ -265,18 +266,19 @@ public class RESTGenerator implements Generator {
                     expandTemplate("/org/netbeans/jcode/template/security/web/descriptor/_web.xml.ftl", params));
             appConfigData.addWebDescriptorTestContent(
                     expandTemplate("/org/netbeans/jcode/template/security/web/descriptor/_web.xml.ftl", params));
-            if(!entityConstraint.isEmpty()){
-                params.put("entityConstraints", entityConstraint);
+            if (!restEntityInfo.isEmpty()) {
+                params.put("entityConstraints", restEntityInfo);
                 appConfigData.addWebDescriptorContent(
                         expandTemplate("/org/netbeans/jcode/template/security/web/descriptor/entity_web.xml.ftl", params));
                 appConfigData.addWebDescriptorTestContent(
                         expandTemplate("/org/netbeans/jcode/template/security/web/descriptor/entity_web.xml.ftl", params));
             }
-            
+
+        }
+        if (appConfigData.isCompleteApplication()) {
+            generateApplicationConfig(params);
         }
     }
-    
-    private List<EntitySecurityConstraint> entityConstraint = new ArrayList<>();
 
     private FileObject generateProducer() throws IOException {
         String _package = repositoryData.getAppPackage() + ".producer";
@@ -285,7 +287,7 @@ public class RESTGenerator implements Generator {
         FileObject afFO = targetFolder.getFileObject(fileName, JAVA_EXT);
         if (afFO == null) {
             handler.progress(fileName);
-            afFO = org.netbeans.jcode.core.util.FileUtil.expandTemplate(TEMPLATE+ "producer/LoggerProducer.java.ftl", targetFolder, fileName + '.' + JAVA_EXT, Collections.singletonMap("package", _package));
+            afFO = org.netbeans.jcode.core.util.FileUtil.expandTemplate(TEMPLATE + "producer/LoggerProducer.java.ftl", targetFolder, fileName + '.' + JAVA_EXT, Collections.singletonMap("package", _package));
         }
         return afFO;
     }
@@ -333,7 +335,7 @@ public class RESTGenerator implements Generator {
         param.put("instanceType", dto ? entityClass + "DTO" : entityClass);
         param.put("instanceName", dto ? entityInstance + "DTO" : entityInstance);
 
-        param.put("pagination", entity.getPaginationType() == PaginationType.NO? "no" : "yes");        
+        param.put("pagination", entity.getPaginationType() == PaginationType.NO ? "no" : "yes");
         param.put("fieldsContainNoOwnerOneToOne", false);
 
         Attribute idAttribute = entity.getAttributes().getIdField();
@@ -442,12 +444,12 @@ public class RESTGenerator implements Generator {
                     .filter(attr -> !attr.getJsonbTransient())
                     .filter(attr -> getAttributeDefaultValue(attr.getDataTypeLabel()) != null)
                     .filter(attr -> isAllowedConstraint(
-                            attr.getAttributeConstraints()
-                                    .stream()
-                                    .filter(Constraint::getSelected)
-                                    .map(Constraint::getClass)
-                                    .collect(toSet())
-                    ))
+                    attr.getAttributeConstraints()
+                            .stream()
+                            .filter(Constraint::getSelected)
+                            .map(Constraint::getClass)
+                            .collect(toSet())
+            ))
                     .map(con)
                     .collect(toList());
             param.put("attributes", basicAttributes);
@@ -470,8 +472,8 @@ public class RESTGenerator implements Generator {
             handler.progress(controllerTestFileName);
             expandTemplate(TEMPLATE + "arquillian/EntityControllerTest.java.ftl", targetTestFolder, controllerTestFileName + '.' + JAVA_EXT, param);
         }
-        
-        entityConstraint.add(new EntitySecurityConstraint(controllerFileName, entityNameSpinalCased));
+
+        restEntityInfo.add(new RestEntityInfo(entity.getAbsolutePackage(restData.getPackage()), controllerFileName, entityNameSpinalCased));
         return controllerFO;
     }
 
@@ -483,17 +485,17 @@ public class RESTGenerator implements Generator {
         final String abstractRepository = repositoryData.getPrefixName() + REPOSITORY_ABSTRACT + repositoryData.getSuffixName();
         params.put("cdi", repositoryData.isCDI());
         params.put("named", repositoryData.isNamed());
-        
+
         params.put("AbstractRepository", abstractRepository);
         params.put("AbstractRepository_FQN", repositoryData.getPackage() + '.' + abstractRepository);
         params.put("EntityManagerProducer_FQN", repositoryData.getAppPackage() + ".producer.EntityManagerProducer");
         params.put("LoggerProducer_FQN", repositoryData.getAppPackage() + ".producer.LoggerProducer");
         params.put("PU", entityMapping.getPersistenceUnitName());
-       
+
         params.put("serverType", dockerConfigData.getServerType().name());
         params.put("serverFamily", dockerConfigData.getServerType().getFamily().name());
         params.put("frontendAppName", restData.getFrontendAppName());
-        
+
         //config
         expandServerSideComponent(source, appPackage, EMPTY, EMPTY, CONFIG_TEMPLATES, params);
         //entity
@@ -596,61 +598,49 @@ public class RESTGenerator implements Generator {
 
     }
 
-    public void generateUtil() throws IOException {
+    private void generateApplicationConfig(Map<String, Object> superParams) throws IOException {
         FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, restData.getPackage(), true);
-        List<RestApp> singletonClasses = new ArrayList<>();
-        List<String> providerClasses = new ArrayList<>();
-        if (restData.isMetrics()) {
-            singletonClasses.add(RestApp.METRICS);
-        }
-        if (restData.isDocsEnable()) {
-            providerClasses.add("com.wordnik.swagger.jaxrs.listing.ApiListingResource");//not req
-            providerClasses.add("com.wordnik.swagger.jaxrs.listing.ApiDeclarationProvider");
-            providerClasses.add("com.wordnik.swagger.jaxrs.listing.ApiListingResourceJSON");
-            providerClasses.add("com.wordnik.swagger.jaxrs.listing.ResourceListingProvider");
-        }
-
-        generateApplicationConfig(singletonClasses, providerClasses);
-        if (!restData.getFilterTypes().isEmpty()) {
-            String UTIL_PACKAGE = "util";
-            FileObject utilFolder = SourceGroupSupport.getFolderForPackage(targetFolder, UTIL_PACKAGE, true);
-            RESTFilterGenerator.generate(project, source, utilFolder, restData.getFilterTypes(), handler);
-        }
-
+        Map<String, Object> params = new HashMap<>(superParams);
+        params.put("entityControllerList", restEntityInfo);
+        params.put("package", restData.getPackage());
+        params.put("ApplicationConfig", restData.getRestConfigData().getApplicationClass());
+        params.put("ApplicationPath", restData.getRestConfigData().getApplicationPath());
+        expandTemplate(TEMPLATE + "rest/ApplicationConfig.java.ftl", targetFolder, restData.getRestConfigData().getApplicationClass() + '.' + JAVA_EXT, params);
     }
 
-    public void generateApplicationConfig(List<RestApp> singletonClasses, List<String> providerClasses) throws IOException {
-        if (restData.getRestConfigData() == null) {
-            return;
-        }
-        final RestSupport restSupport = project.getLookup().lookup(RestSupport.class);
-        RestSupport.RestConfig.IDE.setAppClassName(restData.getRestConfigData().getPackage() + "." + restData.getRestConfigData().getApplicationClass());
-        if (restSupport != null) {
-            try {
-                restSupport.ensureRestDevelopmentReady(RestSupport.RestConfig.IDE);
-            } catch (IOException ex) {
-                Exceptions.printStackTrace(ex);
-            }
-        }
-
-        FileObject restAppPack = SourceGroupSupport.getFolderForPackage(source,
-                restData.getRestConfigData().getPackage() == null
-                ? restData.getPackage() : restData.getRestConfigData().getPackage(), true);
-
-        try {
-            if (restAppPack != null && restData.getRestConfigData().getApplicationClass() != null) {
-                RestUtils.createApplicationConfigClass(restSupport, restData.getRestConfigData(),
-                        restAppPack, repositoryData.getAppPackage(), singletonClasses, providerClasses, handler);
-            }
-            RestUtils.disableRestServicesChangeListner(project);
-            restSupport.configure("Jeddict - REST support");
-        } catch (IOException iox) {
-            Exceptions.printStackTrace(iox);
-        } finally {
-            RestUtils.enableRestServicesChangeListner(project);
-        }
-    }
-
+//    @Deprecated
+//    private void generateApplicationConfig2(List<RestApp> singletonClasses, List<String> providerClasses) throws IOException {
+//        if (restData.getRestConfigData() == null) {
+//            return;
+//        }
+//        final RestSupport restSupport = project.getLookup().lookup(RestSupport.class);
+//        RestSupport.RestConfig.IDE.setAppClassName(restData.getRestConfigData().getPackage() + "." + restData.getRestConfigData().getApplicationClass());
+//        if (restSupport != null) {
+//            try {
+//                restSupport.ensureRestDevelopmentReady(RestSupport.RestConfig.IDE);
+//            } catch (IOException ex) {
+//                Exceptions.printStackTrace(ex);
+//            }
+//        }
+//
+//        FileObject restAppPack = SourceGroupSupport.getFolderForPackage(source,
+//                restData.getRestConfigData().getPackage() == null
+//                ? restData.getPackage() : restData.getRestConfigData().getPackage(), true);
+//
+//        try {
+//            if (restAppPack != null && restData.getRestConfigData().getApplicationClass() != null) {
+//                RestUtils.createApplicationConfigClass(restSupport, restData.getRestConfigData(),
+//                        restAppPack, repositoryData.getAppPackage(), singletonClasses, providerClasses, handler);
+//            }
+//            RestUtils.disableRestServicesChangeListner(project);
+//            restSupport.configure("Jeddict - REST support");
+//        } catch (IOException iox) {
+//            Exceptions.printStackTrace(iox);
+//        } finally {
+//            RestUtils.enableRestServicesChangeListner(project);
+//        }
+//    }
+    
     private final static Set<String> AUTO_GEN_ENITY = new HashSet<>(Arrays.asList("User", "Authority", "AbstractAuditingEntity", "AuditListner"));
 
     public static boolean isAutoGeneratedEntity(String entity) {

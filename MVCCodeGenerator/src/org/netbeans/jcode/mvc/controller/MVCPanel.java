@@ -115,7 +115,7 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
         data.setPackage(getPackage());
         if (data.getRestConfigData() == null) {// && !useJersey// && !configuredREST){
             RestConfigData restConfigData = new RestConfigData();
-            restConfigData.setPackage(getPackage());
+//            restConfigData.setPackage(getPackage());
             data.setRestConfigData(restConfigData);
         }
         data.setBeanValidation(getBeanValidation());
@@ -516,16 +516,16 @@ public class MVCPanel extends LayerConfigPanel<MVCData> {
         if (configDialog == null) {
             configDialog = new RestConfigDialog();
             configDialog.init(getPackage(), project, sourceGroup);
-            final RestSupport restSupport = project.getLookup().lookup(RestSupport.class);
-            if (restSupport != null) {
-                runWhenScanFinished(() -> {
-                    configDialog.setRestApplicationClasses(restSupport.getRestApplications());
-                    configDialog.setVisible(true);
-                }, getMessage(MVCPanel.class, "MVCPanel.scanningExistingApp.text"));
-            }
-        } else {
-            configDialog.setVisible(true);
+//            final RestSupport restSupport = project.getLookup().lookup(RestSupport.class);
+//            if (restSupport != null) {
+//                runWhenScanFinished(() -> {
+//                    configDialog.setRestApplicationClasses(restSupport.getRestApplications());
+//                    configDialog.setVisible(true);
+//                }, getMessage(MVCPanel.class, "MVCPanel.scanningExistingApp.text"));
+//            }
+//        } else {
         }
+        configDialog.setVisible(true);
         if (configDialog.getDialogResult() == OK_OPTION) {
             this.getConfigData().setRestConfigData(configDialog.getRestConfigData());
         }

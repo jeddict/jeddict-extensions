@@ -374,6 +374,7 @@ public class RestUtils {
         return false;
     }
 
+    @Deprecated
     public static FileObject createApplicationConfigClass(final RestSupport restSupport, RestConfigData configData, 
             FileObject packageFolder, String appPackage,
             List<RestApp> singletonClasses, List<String> providerClasses, ProgressHandler handler) throws IOException {
@@ -391,7 +392,6 @@ public class RestUtils {
         if (javaSource == null) {
             return null;
         }
-        handler.progress(className);
 
         javaSource.runModificationTask((WorkingCopy workingCopy) -> {
             workingCopy.toPhase(JavaSource.Phase.RESOLVED);

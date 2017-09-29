@@ -15,11 +15,9 @@
  */
 package org.netbeans.jcode.rest.applicationconfig;
 
-import java.util.List;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.window.GenericDialog;
-import org.netbeans.modules.websvc.rest.model.api.RestApplication;
 import org.openide.util.NbBundle;
 
 /**
@@ -46,9 +44,9 @@ public class RestConfigDialog extends GenericDialog {
         return restConfigPanel1.getConfigData();
     }
     
-    public void setRestApplicationClasses(List<RestApplication> restApplicationClasses) {
-        this.restConfigPanel1.setRestApplicationClasses(restApplicationClasses);
-    }
+//    public void setRestApplicationClasses(List<RestApplication> restApplicationClasses) {
+//        this.restConfigPanel1.setRestApplicationClasses(restApplicationClasses);
+//    }
 
     /**
      * This method is called from within the constructor to initialize the form.

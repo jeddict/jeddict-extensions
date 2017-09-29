@@ -5,6 +5,7 @@ import ${Constants_FQN};
 import ${SecurityHelper_FQN};
 import ${TemplateEngineProducer_FQN};
 import ${MailService_FQN};
+import ${MailNotifier_FQN};
 import ${RandomUtil_FQN};
 import ${UserService_FQN};
 import ${LoginDTO_FQN};
@@ -43,7 +44,8 @@ public abstract class ApplicationTest extends AbstractTest {
         return buildArchive()
                 .addPackages(true, 
                         SecurityConfig.class.getPackage(), 
-                        MailService.class.getPackage(), 
+                        MailService.class.getPackage(),
+                        MailNotifier.class.getPackage(),
                         UserDTO.class.getPackage(), 
                         SecurityHelper.class.getPackage(), 
                         RandomUtil.class.getPackage())

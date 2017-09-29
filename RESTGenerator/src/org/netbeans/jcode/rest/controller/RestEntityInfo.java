@@ -19,18 +19,24 @@ package org.netbeans.jcode.rest.controller;
  *
  * @author gaura
  */
-public class EntitySecurityConstraint{
+public class RestEntityInfo{
     
     private final String name;
+    private final String _package;
     private final String urlPath;
 
-    public EntitySecurityConstraint(String name, String urlPath) {
+    public RestEntityInfo(String _package, String name, String urlPath) {
+        this._package = _package;
         this.name = name;
         this.urlPath = urlPath;
     }
 
     public String getName() {
         return name;
+    }
+
+    public String getPackage() {
+        return _package;
     }
 
     public String getUrlPath() {

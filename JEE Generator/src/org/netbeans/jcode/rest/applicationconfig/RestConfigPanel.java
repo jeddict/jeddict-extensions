@@ -42,9 +42,9 @@ import org.openide.util.NbBundle;
 public class RestConfigPanel extends LayerConfigPanel<RestConfigData> {
 
     private Preferences pref;
-    private static final String DEFAULT_PACKAGE = "util";
+//    private static final String DEFAULT_PACKAGE = "util";
     public static final String DEFAULT_RESOURCE_FOLDER = "webresources";
-    private Map<String, RestApplication> restApplications = Collections.EMPTY_MAP;
+//    private Map<String, RestApplication> restApplications = Collections.EMPTY_MAP;
 
     public RestConfigPanel() {
         initComponents();
@@ -53,13 +53,13 @@ public class RestConfigPanel extends LayerConfigPanel<RestConfigData> {
     @Override
     public boolean hasError() {
         warningLabel.setText("");
-        String _package = getPackage();
-        if (!JavaIdentifiers.isValidPackageName(_package)) {
-            warningLabel.setText(NbBundle.getMessage(RestConfigPanel.class, "RestConfigDialog.invalidPackage.message"));
-            return true;
-        }
-        String restClass = getRestClass();
+//        String _package = getPackage();
+//        if (!JavaIdentifiers.isValidPackageName(_package)) {
+//            warningLabel.setText(NbBundle.getMessage(RestConfigPanel.class, "RestConfigDialog.invalidPackage.message"));
+//            return true;
+//        }
 
+        String restClass = getRestClass();
         if (!SourceVersion.isName(restClass)) {
             warningLabel.setText(NbBundle.getMessage(RestConfigPanel.class, "RestConfigDialog.invalidClassName.message"));
             return true;
@@ -76,11 +76,11 @@ public class RestConfigPanel extends LayerConfigPanel<RestConfigData> {
             return true;
         }
 
-        RestApplication restApplication = restApplications.get(restPath);
-        if (restApplication != null && !restApplication.getApplicationClass().equals(_package + "." + restClass)) {
-            warningLabel.setText(NbBundle.getMessage(RestConfigPanel.class, "RestConfigDialog.alreadyExist.message", restApplication.getApplicationClass()));
-            return true;
-        }
+//        RestApplication restApplication = restApplications.get(restPath);
+//        if (restApplication != null && !restApplication.getApplicationClass().equals(_package + "." + restClass)) {
+//            warningLabel.setText(NbBundle.getMessage(RestConfigPanel.class, "RestConfigDialog.alreadyExist.message", restApplication.getApplicationClass()));
+//            return true;
+//        }
         return false;
     }
 
@@ -93,9 +93,9 @@ public class RestConfigPanel extends LayerConfigPanel<RestConfigData> {
     public void read() {
         this.setConfigData(PreferenceUtils.get(pref, RestConfigData.class));
         RestConfigData data = this.getConfigData();
-        if (StringUtils.isNotBlank(data.getPackage())) {
-            setPackage(data.getPackage());
-        }
+//        if (StringUtils.isNotBlank(data.getPackage())) {
+//            setPackage(data.getPackage());
+//        }
 
         if (StringUtils.isNotBlank(data.getApplicationPath())) {
             setRestPath(data.getApplicationPath());
@@ -111,46 +111,46 @@ public class RestConfigPanel extends LayerConfigPanel<RestConfigData> {
     public void store() {
         this.getConfigData().setApplicationClass(getRestClass());
         this.getConfigData().setApplicationPath(getRestPath());
-        this.getConfigData().setPackage(getPackage());
+//        this.getConfigData().setPackage(getPackage());
         PreferenceUtils.set(pref, this.getConfigData());
     }
 
     @Override
     public void init(String _package, Project project, SourceGroup sourceGroup) {
         pref = ProjectUtils.getPreferences(project, RestConfigData.class, true);
-        if (sourceGroup != null) {
-            packageCombo.setRenderer(PackageView.listRenderer());
-            ComboBoxModel model = PackageView.createListView(sourceGroup);
-            if (model.getSize() > 0) {
-                model.setSelectedItem(model.getElementAt(0));
-            }
-            packageCombo.setModel(model);
-            addChangeListener(packageCombo);
-            if (StringUtils.isBlank(_package)) {
-                setPackage(DEFAULT_PACKAGE);
-            } else {
-                setPackage(_package);
-            }
-        }
+//        if (sourceGroup != null) {
+//            packageCombo.setRenderer(PackageView.listRenderer());
+//            ComboBoxModel model = PackageView.createListView(sourceGroup);
+//            if (model.getSize() > 0) {
+//                model.setSelectedItem(model.getElementAt(0));
+//            }
+//            packageCombo.setModel(model);
+//            addChangeListener(packageCombo);
+//            if (StringUtils.isBlank(_package)) {
+//                setPackage(DEFAULT_PACKAGE);
+//            } else {
+//                setPackage(_package);
+//            }
+//        }
         addChangeListener(restConfigClassField);
         addChangeListener(restPathField);
 
     }
 
-    public String getPackage() {
-        return ((JTextComponent) packageCombo.getEditor().getEditorComponent()).getText().trim();
-    }
-
-    private void setPackage(String _package) {
-        ComboBoxModel model = packageCombo.getModel();
-        for (int i = 0; i < model.getSize(); i++) {
-            if (model.getElementAt(i).toString().equals(_package)) {
-                model.setSelectedItem(model.getElementAt(i));
-                return;
-            }
-        }
-        ((JTextComponent) packageCombo.getEditor().getEditorComponent()).setText(_package);
-    }
+//    public String getPackage() {
+//        return ((JTextComponent) packageCombo.getEditor().getEditorComponent()).getText().trim();
+//    }
+//
+//    private void setPackage(String _package) {
+//        ComboBoxModel model = packageCombo.getModel();
+//        for (int i = 0; i < model.getSize(); i++) {
+//            if (model.getElementAt(i).toString().equals(_package)) {
+//                model.setSelectedItem(model.getElementAt(i));
+//                return;
+//            }
+//        }
+//        ((JTextComponent) packageCombo.getEditor().getEditorComponent()).setText(_package);
+//    }
 
     public String getRestClass() {
         return restConfigClassField.getText().trim();
@@ -177,9 +177,6 @@ public class RestConfigPanel extends LayerConfigPanel<RestConfigData> {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        packagePanel = new javax.swing.JPanel();
-        packageLabel = new javax.swing.JLabel();
-        packageCombo = new javax.swing.JComboBox();
         restPathPanel = new javax.swing.JPanel();
         restPathLabel = new javax.swing.JLabel();
         restPathField = new javax.swing.JTextField();
@@ -188,22 +185,6 @@ public class RestConfigPanel extends LayerConfigPanel<RestConfigData> {
         restConfigClassField = new javax.swing.JTextField();
         warningPanel = new javax.swing.JPanel();
         warningLabel = new javax.swing.JLabel();
-
-        packagePanel.setLayout(new java.awt.BorderLayout(10, 0));
-
-        packageLabel.setLabelFor(packageCombo);
-        org.openide.awt.Mnemonics.setLocalizedText(packageLabel, org.openide.util.NbBundle.getMessage(RestConfigPanel.class, "RestConfigPanel.packageLabel.text")); // NOI18N
-        packageLabel.setPreferredSize(new java.awt.Dimension(100, 17));
-        packagePanel.add(packageLabel, java.awt.BorderLayout.LINE_START);
-
-        packageCombo.setEditable(true);
-        packageCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { " " }));
-        packageCombo.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                packageComboPropertyChange(evt);
-            }
-        });
-        packagePanel.add(packageCombo, java.awt.BorderLayout.CENTER);
 
         restPathPanel.setLayout(new java.awt.BorderLayout(10, 0));
 
@@ -238,7 +219,6 @@ public class RestConfigPanel extends LayerConfigPanel<RestConfigData> {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(restPathPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 676, Short.MAX_VALUE)
-                    .addComponent(packagePanel, javax.swing.GroupLayout.DEFAULT_SIZE, 676, Short.MAX_VALUE)
                     .addComponent(restConfigClassPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 676, Short.MAX_VALUE))
                 .addContainerGap())
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -254,25 +234,16 @@ public class RestConfigPanel extends LayerConfigPanel<RestConfigData> {
                 .addComponent(restPathPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(restConfigClassPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(packagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(53, Short.MAX_VALUE))
+                .addContainerGap(27, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                    .addContainerGap(137, Short.MAX_VALUE)
+                    .addContainerGap(72, Short.MAX_VALUE)
                     .addComponent(warningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap()))
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void packageComboPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_packageComboPropertyChange
-        fire();
-    }//GEN-LAST:event_packageComboPropertyChange
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox packageCombo;
-    private javax.swing.JLabel packageLabel;
-    private javax.swing.JPanel packagePanel;
     private javax.swing.JTextField restConfigClassField;
     private javax.swing.JLabel restConfigClassLabel;
     private javax.swing.JPanel restConfigClassPanel;
@@ -283,10 +254,7 @@ public class RestConfigPanel extends LayerConfigPanel<RestConfigData> {
     private javax.swing.JPanel warningPanel;
     // End of variables declaration//GEN-END:variables
 
-    /**
-     * @param restApplicationClasses the restApplicationClasses to set
-     */
-    public void setRestApplicationClasses(List<RestApplication> restApplicationList) {
-        restApplications = restApplicationList.stream().collect(toMap(app -> app.getApplicationPath(), app -> app, (app1, app2) -> app1));
-    }
+//    public void setRestApplicationClasses(List<RestApplication> restApplicationList) {
+//        restApplications = restApplicationList.stream().collect(toMap(app -> app.getApplicationPath(), app -> app, (app1, app2) -> app1));
+//    }
 }
