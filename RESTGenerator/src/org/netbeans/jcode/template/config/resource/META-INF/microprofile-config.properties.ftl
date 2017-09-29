@@ -14,5 +14,5 @@ security.authentication.jwt.tokenValidityInSeconds: 86400
 security.authentication.jwt.tokenValidityInSecondsForRememberMe: 1314000
 
 <#if metrics>#METRICS
-metrics.jmx.enable: true
+metrics.jmx.enable: false
 metrics.logs.enable: false</#if>
