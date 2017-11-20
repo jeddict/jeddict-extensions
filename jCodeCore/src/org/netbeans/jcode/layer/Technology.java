@@ -52,6 +52,8 @@ public @interface Technology {
     
     boolean entityGenerator() default true;
     
+    boolean microservice() default false;
+    
     enum Type {
         BUSINESS("Repository"), CONTROLLER("Controller"), VIEWER("Viewer"), NONE("Other");
 

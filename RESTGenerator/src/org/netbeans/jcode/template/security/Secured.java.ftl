@@ -1,4 +1,4 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

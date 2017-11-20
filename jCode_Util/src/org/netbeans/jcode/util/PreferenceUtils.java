@@ -99,17 +99,19 @@ public class PreferenceUtils {
 
     public static <T> T get(Preferences pref, Class<T> _class) {
         T newInstance = null;
-//        ClassLoader ctxLoader = Thread.currentThread().getContextClassLoader();
         try {
-//            Thread.currentThread().setContextClassLoader(_class.getClassLoader());
             newInstance = _class.newInstance();
-            return (T) PreferenceUtils.deserialize(pref.getByteArray(_class.getName(), PreferenceUtils.serialize((Serializable) newInstance)), _class.getClassLoader());
+            return (T) PreferenceUtils.deserialize(
+                    pref.getByteArray(
+                            _class.getName(),
+                            PreferenceUtils.serialize((Serializable) newInstance)
+                    ),
+                    _class.getClassLoader()
+            );
         } catch (InvalidClassException ex) {
             return newInstance;
         } catch (InstantiationException | IllegalAccessException ex) {
             Exceptions.printStackTrace(ex);
-        } finally {
-//            Thread.currentThread().setContextClassLoader(ctxLoader);
         }
         return null;
     }

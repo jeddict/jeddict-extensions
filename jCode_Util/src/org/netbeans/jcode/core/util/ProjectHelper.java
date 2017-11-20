@@ -106,14 +106,23 @@ public class ProjectHelper {
      * Please note that the method should not be used for 
      * checking file existence. There can be multiple resource roots, the returned one
      * is just the first in line. Use <code>getResource</code> instead in that case.
+     * @param project
+     * @return 
      */ 
-    public static FileObject getResourceDirectory(Project prj) {
-        Sources srcs = ProjectUtils.getSources(prj);
+    public static FileObject getResourceDirectory(Project project) {
+        Sources srcs = ProjectUtils.getSources(project);
         SourceGroup[] grps = srcs.getSourceGroups(JavaProjectConstants.SOURCES_TYPE_RESOURCES);
         if (grps != null && grps.length > 0) {
             return grps[0].getRootFolder();
         }
-        return null;
+        try {
+            return project.getProjectDirectory()
+                    .getFileObject("src/main")
+                    .createFolder("resources");
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+            return null;
+        }
     }
     
     public static FileObject getTestResourceDirectory(Project prj) {

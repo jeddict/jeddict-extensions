@@ -1,10 +1,11 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
-import ${Constants_FQN};
-import ${AuthoritiesConstants_FQN};
-import ${UserService_FQN};
-import ${ManagedUserDTO_FQN};
-import ${User_FQN};
+import ${appPackage}${Constants_FQN};
+import ${appPackage}${AuthoritiesConstants_FQN};
+import ${appPackage}${UserService_FQN};
+import ${appPackage}${ManagedUserDTO_FQN};
+import ${appPackage}${User_FQN};
+import ${appPackage}${UserRepository_FQN};
 import java.util.Arrays;
 import static java.util.Collections.singletonMap;
 import java.util.HashSet;
@@ -27,7 +28,6 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import static org.valid4j.matchers.http.HttpResponseMatchers.hasHeader;
 import static org.valid4j.matchers.http.HttpResponseMatchers.hasStatus;
-import ${UserRepository_FQN};
 
 /**
  * Test class for the ${UserController} REST controller.

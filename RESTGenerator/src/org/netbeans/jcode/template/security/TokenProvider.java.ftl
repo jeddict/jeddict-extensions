@@ -1,6 +1,6 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
-import ${SecurityConfig_FQN};
+import ${appPackage}${SecurityConfig_FQN};
 import io.jsonwebtoken.*;
 import java.util.*;
 import static java.util.stream.Collectors.joining;

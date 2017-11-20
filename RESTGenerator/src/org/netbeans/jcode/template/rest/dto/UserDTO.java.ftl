@@ -1,6 +1,6 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
-import ${Constants_FQN};
+import ${appPackage}${Constants_FQN};
 import ${entityPackage}.Authority;
 import ${entityPackage}.User;
 import java.io.Serializable;

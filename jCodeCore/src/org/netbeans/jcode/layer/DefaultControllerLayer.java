@@ -24,7 +24,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author jGauravGupta <gaurav.gupta.jc@gmail.com>
  */
 @ServiceProvider(service=Generator.class)
-@Technology(type=CONTROLLER, listIndex = 0)
+@Technology(type=CONTROLLER, microservice = true, listIndex = 0)
 public class DefaultControllerLayer implements Generator {
 
     @Override

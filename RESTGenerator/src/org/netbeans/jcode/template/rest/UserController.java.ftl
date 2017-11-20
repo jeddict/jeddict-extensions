@@ -1,16 +1,16 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
-import ${UserRepository_FQN};
-import ${User_FQN};
-import ${MailService_FQN};
-import ${UserService_FQN};
-import ${ManagedUserDTO_FQN};
-import ${UserDTO_FQN};
-import ${HeaderUtil_FQN};
-import ${Page_FQN};
-import ${PaginationUtil_FQN};
-<#if security == "JAXRS_JWT">import ${Secured_FQN};
-import ${AuthoritiesConstants_FQN};</#if>
+import ${appPackage}${UserRepository_FQN};
+import ${appPackage}${User_FQN};
+import ${appPackage}${MailService_FQN};
+import ${appPackage}${UserService_FQN};
+import ${appPackage}${ManagedUserDTO_FQN};
+import ${appPackage}${UserDTO_FQN};
+import ${appPackage}${HeaderUtil_FQN};
+import ${appPackage}${Page_FQN};
+import ${appPackage}${PaginationUtil_FQN};
+<#if security == "JAXRS_JWT">import ${appPackage}${Secured_FQN};
+import ${appPackage}${AuthoritiesConstants_FQN};</#if>
 import org.slf4j.Logger;
 import javax.inject.Inject;
 import java.net.URI;

@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import static java.util.stream.Collectors.toSet;
 import org.netbeans.api.project.Project;
+import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.core.util.POMManager;
 import org.netbeans.jcode.generator.AbstractGenerator;
 import org.netbeans.jcode.jpa.util.PersistenceHelper;
@@ -46,18 +47,29 @@ import org.openide.util.Exceptions;
  */
 public class ApplicationGenerator extends AbstractGenerator {
 
-    private Project project;
-    private ApplicationConfigData applicationConfigData;
+//    private Project project;
+    private ApplicationConfigData appConfigData;
     private ProgressHandler handler;
     private Map<Class<? extends LayerConfigData>, LayerConfigData> layerConfigData;
+    
+    private Project targetProject;
 
+    private SourceGroup targetSource;
+
+    private Project gatewayProject;
+
+    private SourceGroup gatewaySource;
+    
     @Override
     public void initialize(ApplicationConfigData applicationConfigData, ProgressHandler progressHandler) {
-        this.applicationConfigData = applicationConfigData;
+        this.appConfigData = applicationConfigData;
         this.handler = progressHandler;
-        this.project = applicationConfigData.getProject();
+//        this.project = applicationConfigData.getTargetProject();
+        targetProject = appConfigData.getTargetProject();
+        targetSource = appConfigData.getTargetSourceGroup();
+        gatewayProject = appConfigData.getGatewayProject();
+        gatewaySource = appConfigData.getGatewaySourceGroup();
         injectData();
-//        this.persistenceUnit = new PersistenceHelper(project).getPersistenceUnit();
     }
 
 
@@ -67,27 +79,44 @@ public class ApplicationGenerator extends AbstractGenerator {
             if (handler != null) {
                 initProgressReporting(handler);
             }
-            EntityMappings entityMappings = applicationConfigData.getEntityMappings();
+            EntityMappings entityMappings = appConfigData.getEntityMappings();
             Set<String> entities = entityMappings.getFQEntity().collect(toSet());
             //Make necessary changes to the persistence.xml
-            new PersistenceHelper(project).configure(entities, !RestUtils.hasJTASupport(project));
+            if (appConfigData.isMonolith() || appConfigData.isMicroservice()) {
+                new PersistenceHelper(targetProject).configure(entities, !RestUtils.hasJTASupport(targetProject));
+            }
+            if (appConfigData.isGateway()) {
+                new PersistenceHelper(gatewayProject).configure(entities, !RestUtils.hasJTASupport(gatewayProject));
+            }
+            
             generateCRUD();
-                    
-            if (POMManager.isMavenProject(project)) {
-                POMManager.reload(project);
+            if (appConfigData.isMonolith() || appConfigData.isMicroservice()) {
+                if (POMManager.isMavenProject(appConfigData.getTargetProject())) {
+                    POMManager.reload(appConfigData.getTargetProject());
+                }
+            }
+            if (appConfigData.isGateway() || appConfigData.isMicroservice()) {
+                if (POMManager.isMavenProject(appConfigData.getGatewayProject())) {
+                    POMManager.reload(appConfigData.getGatewayProject());
+                }
             }
             
-            String profiles = applicationConfigData.getProfiles();
+            String profiles = appConfigData.getProfiles();
             handler.addDynamicVariable("profile", profiles.isEmpty()? "":"-P " + profiles);
+            String buildProperties = appConfigData.getBuildProperties();
+            handler.addDynamicVariable("buildProperties", buildProperties);
             
-            String webDescriptorContent = applicationConfigData.getWebDescriptorContent();
-            if (!webDescriptorContent.isEmpty()) {
-                WebDDUtil.createDD(project, "/org/netbeans/jcode/template/web/descriptor/_web.xml.ftl", Collections.singletonMap("content", webDescriptorContent));
-            }
-            String webDescriptorTestContent = applicationConfigData.getWebDescriptorTestContent();
-            if (!webDescriptorTestContent.isEmpty()) {
-                WebDDUtil.createTestDD(project, "/org/netbeans/jcode/template/web/descriptor/_web.xml.ftl", Collections.singletonMap("content", webDescriptorTestContent));
-            }
+            
+            appConfigData.getWebDescriptorContent().forEach((project, webDescriptorContent) -> {
+                if (!webDescriptorContent.toString().isEmpty()) {
+                    WebDDUtil.createDD(project, "/org/netbeans/jcode/template/web/descriptor/_web.xml.ftl", Collections.singletonMap("content", webDescriptorContent));
+                }
+            });
+            appConfigData.getWebDescriptorTestContent().forEach((project, webDescriptorTestContent) -> {
+                if (!webDescriptorTestContent.toString().isEmpty()) {
+                    WebDDUtil.createTestDD(project, "/org/netbeans/jcode/template/web/descriptor/_web.xml.ftl", Collections.singletonMap("content", webDescriptorTestContent));
+                }
+            });
             finishProgressReporting();
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
@@ -96,7 +125,7 @@ public class ApplicationGenerator extends AbstractGenerator {
 
     @Override
     public void preGeneration() {
-        TechContext bussinesLayerConfig = applicationConfigData.getBussinesTechContext();
+        TechContext bussinesLayerConfig = appConfigData.getBussinesTechContext();
         if (bussinesLayerConfig == null) {
             return;
         }
@@ -105,7 +134,7 @@ public class ApplicationGenerator extends AbstractGenerator {
             context.getGenerator().preExecute();
         }
 
-        TechContext controllerLayerConfig = applicationConfigData.getControllerTechContext();
+        TechContext controllerLayerConfig = appConfigData.getControllerTechContext();
         if (controllerLayerConfig == null) {
             return;
         }
@@ -114,7 +143,7 @@ public class ApplicationGenerator extends AbstractGenerator {
             context.getGenerator().preExecute();
         }
 
-        TechContext viewerLayerConfig = applicationConfigData.getViewerTechContext();
+        TechContext viewerLayerConfig = appConfigData.getViewerTechContext();
         if (viewerLayerConfig == null) {
             return;
         }
@@ -127,7 +156,7 @@ public class ApplicationGenerator extends AbstractGenerator {
     @Override
     public void postGeneration() {
         
-        TechContext bussinesLayerConfig = applicationConfigData.getBussinesTechContext();
+        TechContext bussinesLayerConfig = appConfigData.getBussinesTechContext();
         if (bussinesLayerConfig == null) {
             return;
         }
@@ -136,7 +165,7 @@ public class ApplicationGenerator extends AbstractGenerator {
             context.getGenerator().postExecute();
         }
 
-        TechContext controllerLayerConfig = applicationConfigData.getControllerTechContext();
+        TechContext controllerLayerConfig = appConfigData.getControllerTechContext();
         if (controllerLayerConfig == null) {
             return;
         }
@@ -145,7 +174,7 @@ public class ApplicationGenerator extends AbstractGenerator {
             context.getGenerator().postExecute();
         }
 
-        TechContext viewerLayerConfig = applicationConfigData.getViewerTechContext();
+        TechContext viewerLayerConfig = appConfigData.getViewerTechContext();
         if (viewerLayerConfig == null) {
             return;
         }
@@ -157,19 +186,19 @@ public class ApplicationGenerator extends AbstractGenerator {
 
     private void injectData() {
         layerConfigData = new HashMap<>();
-        TechContext bussinesLayerConfig = applicationConfigData.getBussinesTechContext();
+        TechContext bussinesLayerConfig = appConfigData.getBussinesTechContext();
         if (bussinesLayerConfig == null) {
             return;
         }
         storeLayerConfigData(bussinesLayerConfig);
         
-        TechContext controllerLayerConfig = applicationConfigData.getControllerTechContext();
+        TechContext controllerLayerConfig = appConfigData.getControllerTechContext();
         TechContext viewerLayerConfig = null;
         if (controllerLayerConfig != null) {
             controllerLayerConfig.getPanel().getConfigData().setParentLayerConfigData(bussinesLayerConfig.getPanel().getConfigData());
             storeLayerConfigData(controllerLayerConfig);
 
-            viewerLayerConfig = applicationConfigData.getViewerTechContext();
+            viewerLayerConfig = appConfigData.getViewerTechContext();
             if (viewerLayerConfig != null) {
                 viewerLayerConfig.getPanel().getConfigData().setParentLayerConfigData(controllerLayerConfig.getPanel().getConfigData());
                 storeLayerConfigData(viewerLayerConfig);
@@ -193,7 +222,7 @@ public class ApplicationGenerator extends AbstractGenerator {
     }
     
     private void inject(TechContext rootTechContext) {
-        inject(rootTechContext.getGenerator(), applicationConfigData, layerConfigData, handler);
+        inject(rootTechContext.getGenerator(), appConfigData, layerConfigData, handler);
         for (TechContext context : rootTechContext.getSiblingTechContext()) {
             inject(context);
         }
@@ -207,19 +236,19 @@ public class ApplicationGenerator extends AbstractGenerator {
     }
     
     private void generateCRUD() throws IOException {
-        TechContext bussinesLayerConfig = applicationConfigData.getBussinesTechContext();
+        TechContext bussinesLayerConfig = appConfigData.getBussinesTechContext();
         if (bussinesLayerConfig == null) {
             return;
         }
         execute(bussinesLayerConfig);
 
-        TechContext controllerLayerConfig = applicationConfigData.getControllerTechContext();
+        TechContext controllerLayerConfig = appConfigData.getControllerTechContext();
         if (controllerLayerConfig == null) {
             return;
         }
         execute(controllerLayerConfig);
 
-        TechContext viewerLayerConfig = applicationConfigData.getViewerTechContext();
+        TechContext viewerLayerConfig = appConfigData.getViewerTechContext();
         if (viewerLayerConfig == null) {
             return;
         }
@@ -254,10 +283,6 @@ public class ApplicationGenerator extends AbstractGenerator {
                         field.set(instance, applicationConfigData.getEntityMappings());
                     } else if (field.getType().isAssignableFrom(handler.getClass())) {
                         field.set(instance, handler);
-                    } else if (field.getType().isAssignableFrom(applicationConfigData.getProject().getClass())) {
-                        field.set(instance, applicationConfigData.getProject());
-                    } else if (field.getType().isAssignableFrom(applicationConfigData.getSourceGroup().getClass())) {
-                        field.set(instance, applicationConfigData.getSourceGroup());
                     } else if (LayerConfigData.class.isAssignableFrom(field.getType())) {
                         field.set(instance, layerConfigData.get(field.getType()));
                     }
@@ -272,14 +297,14 @@ public class ApplicationGenerator extends AbstractGenerator {
     protected int getTotalWorkUnits() {
         float unit = 1.5f;
         float webUnit = 5f;
-        float count = applicationConfigData.getEntityMappings().getGeneratedEntity().count();
-        if (applicationConfigData.getBussinesTechContext() != null) {
+        float count = appConfigData.getEntityMappings().getGeneratedEntity().count();
+        if (appConfigData.getBussinesTechContext() != null) {
             count = count + count * unit;
         }
-        if (applicationConfigData.getControllerTechContext() != null) {
+        if (appConfigData.getControllerTechContext() != null) {
             count = count + count * unit;
         }
-        if (applicationConfigData.getViewerTechContext() != null) {
+        if (appConfigData.getViewerTechContext() != null) {
             count = count + count * webUnit;
         }
         return (int) count;

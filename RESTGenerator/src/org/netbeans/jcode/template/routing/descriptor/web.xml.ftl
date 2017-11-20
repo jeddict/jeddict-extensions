@@ -1,0 +1,16 @@
+    <servlet>
+        <servlet-name>Zuul</servlet-name>
+        <servlet-class>com.netflix.zuul.http.ZuulServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Zuul</servlet-name>
+        <url-pattern>/ms/*</url-pattern>
+    </servlet-mapping>
+    <filter>
+        <filter-name>ContextLifecycleFilter</filter-name>
+        <filter-class>com.netflix.zuul.context.ContextLifecycleFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>ContextLifecycleFilter</filter-name>
+        <url-pattern>/ms/*</url-pattern>
+    </filter-mapping>

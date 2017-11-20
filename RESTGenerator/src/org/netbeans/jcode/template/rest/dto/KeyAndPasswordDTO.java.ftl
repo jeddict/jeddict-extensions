@@ -1,4 +1,4 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
 /**
  * DTO for storing the user's key and password.

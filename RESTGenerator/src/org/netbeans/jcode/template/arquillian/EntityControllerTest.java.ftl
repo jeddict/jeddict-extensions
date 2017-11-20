@@ -1,7 +1,7 @@
 package ${package};
 
 <#assign eid = pkStrategy == "EmbeddedId" >
-import ${EntityRepository_FQN};
+import ${appPackage}${EntityRepository_FQN};
 <#list connectedFQClasses as connectedFQClass>
 import ${connectedFQClass};
 </#list>
@@ -37,7 +37,7 @@ import static org.valid4j.matchers.http.HttpResponseMatchers.hasStatus;
  *
  */
 @RunWith(Arquillian.class)
-public class ${controllerClass}Test extends ApplicationTest {
+public class ${controllerClass}Test extends <#if microservices>Abstract<#else>Application</#if>Test {
 
 <#if eid>
 <#list allIdAttributes as attribute>
@@ -56,7 +56,8 @@ public class ${controllerClass}Test extends ApplicationTest {
 
     @Deployment
     public static WebArchive createDeployment() {
-        return buildApplication()
+        return <#if microservices>buildArchive<#else>buildApplication</#if>()<#if microservices>
+                .addClass(AbstractTest.class)</#if>
                 <#list connectedClasses as connectedClass>.addClass(${connectedClass}.class)
                 </#list>
                 .addClass(${EntityRepository}.class)

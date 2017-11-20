@@ -1,8 +1,8 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
 <#if !cdi>import javax.ejb.Stateless;</#if>
 <#if named>import javax.inject.Named;</#if>
-import ${Authority_FQN};
+import ${appPackage}${Authority_FQN};
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 

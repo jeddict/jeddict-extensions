@@ -26,6 +26,7 @@ import javax.swing.SwingUtilities;
 import javax.xml.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.model.Model;
+import org.netbeans.modules.maven.model.pom.Resource;
 import org.apache.maven.model.io.ModelReader;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.netbeans.api.project.Project;
@@ -221,7 +222,7 @@ public class POMManager {
     }
 
     private void registerBuild() {
-        if (sourceModel.getBuild() != null && !sourceModel.getBuild().getPlugins().isEmpty()) {
+        if (sourceModel.getBuild() != null) {
             registerBuildBase(sourceModel.getBuild(), getPOMProject().getBuild());
         }
     }
@@ -235,6 +236,14 @@ public class POMManager {
         }
         if (sourceBuild.getFinalName() != null) {
             targetBuild.setFinalName(sourceBuild.getFinalName());
+        }
+        if (sourceBuild.getResources()!= null && !sourceBuild.getResources().isEmpty()) {
+            for (org.apache.maven.model.Resource sourceResource : sourceBuild.getResources()) {
+                Resource targetResource = pomModel.getFactory().createResource();
+                targetResource.setFiltering(Boolean.parseBoolean(sourceResource.getFiltering()));
+                targetResource.setDirectory(sourceResource.getDirectory());
+                targetBuild.addResource(targetResource);
+            }
         }
         if (sourceBuild.getPlugins() != null && !sourceBuild.getPlugins().isEmpty()) {
             for (org.apache.maven.model.Plugin sourcePlugin : sourceBuild.getPlugins()) {

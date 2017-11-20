@@ -30,22 +30,7 @@ public class RestConfigData extends LayerConfigData{
     public static final String DEFAULT_PATH = "resources";
     private String path;
     private String _class;
-//    private String _package;
     private boolean useJersey;
-
-//    /**
-//     * @return the _package
-//     */
-//    public String getPackage() {
-//        return _package;
-//    }
-//
-//    /**
-//     * @param _package the _package to set
-//     */
-//    public void setPackage(String _package) {
-//        this._package = _package;
-//    }
 
     /**
      * @return the path

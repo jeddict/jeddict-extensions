@@ -1,12 +1,12 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
-import ${AuthoritiesConstants_FQN};
-import ${AuthorityRepository_FQN};
-import ${UserRepository_FQN};
-import ${KeyAndPasswordDTO_FQN};
-import ${ManagedUserDTO_FQN};
-import ${UserDTO_FQN};
-import ${User_FQN};
+import ${appPackage}${AuthoritiesConstants_FQN};
+import ${appPackage}${AuthorityRepository_FQN};
+import ${appPackage}${UserRepository_FQN};
+import ${appPackage}${KeyAndPasswordDTO_FQN};
+import ${appPackage}${ManagedUserDTO_FQN};
+import ${appPackage}${UserDTO_FQN};
+import ${appPackage}${User_FQN};
 import java.util.Arrays;
 import static java.util.Collections.singletonMap;
 import java.util.HashSet;

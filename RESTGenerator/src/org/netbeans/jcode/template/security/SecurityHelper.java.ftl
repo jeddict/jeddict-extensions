@@ -1,4 +1,4 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
 import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.GET;

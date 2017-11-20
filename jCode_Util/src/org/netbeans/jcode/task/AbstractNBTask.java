@@ -59,22 +59,18 @@ public abstract class AbstractNBTask extends Thread
     public final static String SETTING_KEY_DISPLAY_OUTPUT = "DISPLAY_OUTPUT"; // NOI18N
 
     public AbstractNBTask() {
-        initialize();
     }
 
     public AbstractNBTask(ITaskFinishListener listener) {
-        initialize();
         addListener(listener);
     }
 
     public AbstractNBTask(HashMap settings) {
         taskSettings = settings;
-        initialize();
     }
 
     public AbstractNBTask(HashMap settings, ITaskFinishListener listener) {
         taskSettings = settings;
-        initialize();
         addListener(listener);
     }
 
@@ -400,7 +396,7 @@ public abstract class AbstractNBTask extends Thread
         listeners.removeElement(listener);
     }
 
-    private void initialize() {
+    protected void initialize() {
         if (taskSettings == null) {
             initDefaultSettings();
         }
@@ -420,8 +416,7 @@ public abstract class AbstractNBTask extends Thread
             tc.toFront();
         }
 
-        inputOutput = IOProvider.getDefault().getIO(
-                getTaskName() + " " + getBundleMessage("MSG_Log"), false); // NOI18N
+        inputOutput = IOProvider.getDefault().getIO(getTaskName(), false); // NOI18N
 
         try {
             inputOutput.getOut().reset();

@@ -1,8 +1,8 @@
 package ${package};
 
-import ${EntityClass_FQN};
-import ${EntityRepository_FQN};
-import ${restPackage}.util.HeaderUtil;
+import ${appPackage}${EntityClass_FQN};
+import ${appPackage}${EntityRepository_FQN};
+import ${appPackage}${HeaderUtil_FQN};
 import org.slf4j.Logger;
 import javax.inject.Inject;
 import java.net.URI;
@@ -18,9 +18,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;<#if pagination != "no">
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import ${Page_FQN};
-import ${PaginationUtil_FQN};</#if><#if security == "JAXRS_JWT">
-import ${appPackage}.security.Secured;</#if><#if metrics>
+import ${appPackage}${Page_FQN};
+import ${appPackage}${PaginationUtil_FQN};</#if><#if security == "JAXRS_JWT">
+import ${appPackage}${Secured_FQN};</#if><#if metrics>
 import com.codahale.metrics.annotation.Timed;</#if><#if docs>
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;

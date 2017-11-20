@@ -1,4 +1,4 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
 import java.io.Serializable;
 import javax.persistence.Column;

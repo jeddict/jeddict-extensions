@@ -1,4 +1,4 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
 import ch.qos.logback.classic.Logger;
 

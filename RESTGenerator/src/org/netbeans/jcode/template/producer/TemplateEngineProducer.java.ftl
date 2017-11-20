@@ -1,4 +1,4 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;

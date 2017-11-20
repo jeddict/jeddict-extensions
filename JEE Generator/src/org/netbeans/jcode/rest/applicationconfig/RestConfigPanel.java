@@ -118,39 +118,9 @@ public class RestConfigPanel extends LayerConfigPanel<RestConfigData> {
     @Override
     public void init(String _package, Project project, SourceGroup sourceGroup) {
         pref = ProjectUtils.getPreferences(project, RestConfigData.class, true);
-//        if (sourceGroup != null) {
-//            packageCombo.setRenderer(PackageView.listRenderer());
-//            ComboBoxModel model = PackageView.createListView(sourceGroup);
-//            if (model.getSize() > 0) {
-//                model.setSelectedItem(model.getElementAt(0));
-//            }
-//            packageCombo.setModel(model);
-//            addChangeListener(packageCombo);
-//            if (StringUtils.isBlank(_package)) {
-//                setPackage(DEFAULT_PACKAGE);
-//            } else {
-//                setPackage(_package);
-//            }
-//        }
         addChangeListener(restConfigClassField);
         addChangeListener(restPathField);
-
     }
-
-//    public String getPackage() {
-//        return ((JTextComponent) packageCombo.getEditor().getEditorComponent()).getText().trim();
-//    }
-//
-//    private void setPackage(String _package) {
-//        ComboBoxModel model = packageCombo.getModel();
-//        for (int i = 0; i < model.getSize(); i++) {
-//            if (model.getElementAt(i).toString().equals(_package)) {
-//                model.setSelectedItem(model.getElementAt(i));
-//                return;
-//            }
-//        }
-//        ((JTextComponent) packageCombo.getEditor().getEditorComponent()).setText(_package);
-//    }
 
     public String getRestClass() {
         return restConfigClassField.getText().trim();

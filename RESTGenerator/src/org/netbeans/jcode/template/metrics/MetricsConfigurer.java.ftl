@@ -1,6 +1,6 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
-import ${MetricsConfig_FQN};
+import ${appPackage}${MetricsConfig_FQN};
 import com.codahale.metrics.JmxReporter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Slf4jReporter;

@@ -49,7 +49,7 @@
                                 <artifactItem>
                                     <groupId>fish.payara.extras</groupId>
                                     <artifactId>payara-micro</artifactId>
-                                    <version>${version.payara.micro}</version>
+                                    <version>${version.payara}</version>
                                     <type>jar</type>
                                 </artifactItem>
                             </artifactItems>
@@ -61,59 +61,9 @@
     </build>
 
     <properties>
-        <version.payara.micro>5.0.0.Alpha1</version.payara.micro>
+        <version.payara>5.0.0.Alpha2</version.payara>
     </properties>
     
-    
-    
-    <!--    <profiles>
-        <profile>
-            <id>uber-jar</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>1.5.0</version>
-                        <dependencies>
-                            <dependency>
-                                <groupId>fish.payara.extras</groupId>
-                                <artifactId>payara-micro</artifactId>
-                                <version>${version.payara.micro}</version>
-                            </dependency>
-                        </dependencies>
-                        <executions>
-                            <execution>
-                                <id>payara-uber-jar</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>java</goal>
-                                </goals>
-                                <configuration>
-                                    <mainClass>fish.payara.micro.PayaraMicro</mainClass>
-                                    <arguments>
-                                        <argument>deploy</argument>
-                                        <argument>${basedir}/target/${project.build.finalName}.war</argument>
-                                        <argument>outputUberJar</argument>                                                  
-                                        <argument>${basedir}/target/${project.build.finalName}.jar</argument>
-                                    </arguments>
-                                    <includeProjectDependencies>false</includeProjectDependencies>
-                                    <includePluginDependencies>true</includePluginDependencies>
-                                    <executableDependency>
-                                        <groupId>fish.payara.extras</groupId>
-                                        <artifactId>payara-micro</artifactId>
-                                    </executableDependency>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-            <properties>
-                <version.payara.micro>4.1.1.162</version.payara.micro>
-            </properties>
-        </profile>
-    </profiles>-->
     <repositories>
         <repository>
             <id>oss-sonatype</id>

@@ -1,14 +1,16 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
-<#if metrics>import ${MetricsConfigurer_FQN};
+<#if metrics>import ${appPackage}${MetricsConfigurer_FQN};
 import com.codahale.metrics.jersey2.InstrumentedResourceMethodApplicationListener;
 import javax.inject.Inject;</#if>
 import java.util.HashSet;
 import java.util.Set;
-import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Application;<#if microservices && registryType == "SNOOPEE">
+import eu.agilejava.snoop.annotation.EnableSnoopClient;
 
-@javax.ws.rs.ApplicationPath("${ApplicationPath}")
-public class ${ApplicationConfig} extends Application {
+@EnableSnoopClient(serviceName = "${contextPath}")</#if>
+@javax.ws.rs.ApplicationPath("${applicationPath}")
+public class ${applicationConfig} extends Application {
 
     <#if metrics>@Inject
     private MetricsConfigurer metricsConfigurer;</#if>
@@ -31,16 +33,16 @@ public class ${ApplicationConfig} extends Application {
      * If required, comment out calling this method in getClasses().
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {<#if metrics>
-        resources.add(${DiagnosticFilter_FQN}.class);</#if>
-        resources.add(${SecurityHelper_FQN}.class);
-        resources.add(${CORSFilter_FQN}.class);
-        <#list entityControllerList as entityController>
+        resources.add(${appPackage}${DiagnosticFilter_FQN}.class);</#if>
+        resources.add(${appPackage}${SecurityHelper_FQN}.class);
+        resources.add(${appPackage}${CORSFilter_FQN}.class);<#if microservices || monolith><#list entityControllerList as entityController>
         resources.add(${entityController.package}.${entityController.name}.class);
-        </#list>
-        resources.add(${AccountController_FQN}.class);
-        resources.add(${AuthenticationController_FQN}.class);
-        resources.add(${UserController_FQN}.class);<#if log>
-        resources.add(${LogsResource_FQN}.class);</#if>
+        </#list></#if><#if microservices>
+        resources.add(${appPackage}${HealthController_FQN}.class);</#if><#if gateway || monolith>
+        resources.add(${appPackage}${AccountController_FQN}.class);
+        resources.add(${appPackage}${AuthenticationController_FQN}.class);
+        resources.add(${appPackage}${UserController_FQN}.class);</#if><#if log>
+        resources.add(${appPackage}${LogsResource_FQN}.class);</#if>
     }
 
     <#if metrics>@Override

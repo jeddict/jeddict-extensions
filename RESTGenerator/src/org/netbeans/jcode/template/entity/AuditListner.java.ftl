@@ -1,6 +1,6 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
-import ${SecurityHelper_FQN};
+import ${appPackage}${SecurityHelper_FQN};
 import java.time.Instant;
 import javax.inject.Inject;
 import javax.persistence.PrePersist;

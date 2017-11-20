@@ -15,6 +15,7 @@
  */
 package org.netbeans.jcode.task.progress;
 
+import org.netbeans.api.project.Project;
 import org.openide.filesystems.FileObject;
 
 /**
@@ -42,6 +43,14 @@ public interface ProgressHandler {
     void info(String title, String message);
     
     void help(String title, String message);
+    
+    void error(String title, String message, Project project);
+    
+    void warning(String title, String message, Project project);
+    
+    void info(String title, String message, Project project);
+    
+    void help(String title, String message, Project project);
 
     void finish();
     

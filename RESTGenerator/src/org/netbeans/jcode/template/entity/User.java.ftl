@@ -1,6 +1,6 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
-import ${Constants_FQN};
+import ${appPackage}${Constants_FQN};
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.HashSet;

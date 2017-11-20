@@ -24,7 +24,7 @@
                 </plugins>
             </build>
             <properties>
-                <version.fabric8>0.20.0</version.fabric8>
+                <version.fabric8>0.22.1</version.fabric8>
                 <build.name>${project.artifactId}</build.name>
                 <docker.machine>default</docker.machine>
             </properties>

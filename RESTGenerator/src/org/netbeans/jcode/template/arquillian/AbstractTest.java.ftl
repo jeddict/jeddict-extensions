@@ -1,9 +1,9 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
-import ${HeaderUtil_FQN};
-import ${AbstractRepository_FQN};
-import ${EntityManagerProducer_FQN};
-import ${LoggerProducer_FQN};
+import ${appPackage}${HeaderUtil_FQN};
+import ${appPackage}${AbstractRepository_FQN};
+import ${appPackage}${EntityManagerProducer_FQN};
+import ${appPackage}${LoggerProducer_FQN};
 import java.io.File;
 import java.net.URL;
 import java.util.Map;
@@ -57,7 +57,6 @@ public abstract class AbstractTest {
                 .addAsLibraries(libs)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"))
                 .addAsResource("test-persistence.xml", "META-INF/persistence.xml")
-                .addAsResource(new ClassLoaderAsset("META-INF/sql/insert.sql"), "META-INF/sql/insert.sql")
                 .setWebXML("web.xml");
         return archive;
     }

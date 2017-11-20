@@ -1,6 +1,6 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
-import ${LoggerVM_FQN};
+import ${appPackage}${LoggerVM_FQN};
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 <#if metrics>import com.codahale.metrics.annotation.Timed;</#if>

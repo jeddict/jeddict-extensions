@@ -1,4 +1,4 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
 import org.slf4j.Logger;
 import javax.inject.Inject;

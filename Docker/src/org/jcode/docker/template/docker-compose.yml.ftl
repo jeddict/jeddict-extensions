@@ -1,20 +1,20 @@
 version: '2'
 services:
-    web:
+    ${r"${web.svc}"}:
         build:
             context: .
             dockerfile: DockerFile
             args:
-                BINARY: ${r"${docker.binary}"}
+                BINARY: '${r"${docker.binary}"}'
+                EXPOSE_PORT: '${r"${web.port}"}'
         ports:
-            - "8080:8080" 
-            - "8081:8081"
+            - "${r"${web.port}"}:8080" 
         links:
             - '${r"${db.svc}"}' 
-    '${r"${db.svc}"}':
+    ${r"${db.svc}"}:
         image: ${DB_TYPE}:${DB_VERSION}
         ports:
-            - "${DB_PORT}:${DB_PORT}"   
+            - "${r"${db.port}"}:${DB_PORT}"   
         environment:
 <#if DB_TYPE == "mysql" || DB_TYPE == "mariadb">
             MYSQL_ROOT_PASSWORD: '${r"${db.password}"}'

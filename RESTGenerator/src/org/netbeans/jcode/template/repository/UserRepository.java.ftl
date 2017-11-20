@@ -1,8 +1,8 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
 <#if !cdi>import javax.ejb.Stateless;</#if>
 <#if named>import javax.inject.Named;</#if>
-import ${User_FQN};
+import ${appPackage}${User_FQN};
 import static java.util.Collections.singletonMap;
 import java.util.List;
 import java.util.Optional;

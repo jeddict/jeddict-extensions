@@ -78,7 +78,7 @@ public class JSPViewerGenerator implements Generator{
     public static final String TARGET_COMMON_TEMPLATE_PATH = "common/";
 
     static {
-         final String HEADER = "header"; //NOI18N
+        final String HEADER = "header"; //NOI18N
         final String NAVIGATIONBAR = "navigationbar"; //NOI18N
         final String ERROR = "error"; //NOI18N
         final String FOOTER = "footer"; //NOI18N
@@ -105,12 +105,10 @@ public class JSPViewerGenerator implements Generator{
 
     @ConfigData
     private JSPData jspData;
+    
     @ConfigData
     private MVCData mvcData;
-    
-    @ConfigData
-    private Project project; 
-    
+        
     @ConfigData
     private EntityMappings entityMappings;
     
@@ -119,11 +117,14 @@ public class JSPViewerGenerator implements Generator{
     
     @ConfigData
     private ApplicationConfigData appConfigData;
-        
+    
+    private Project project; 
+    
     private static final String WEB_XML_DD = "/org/netbeans/jcode/mvc/template/dd/welcomefile/_web.xml";
 
     @Override
     public void execute() throws IOException {
+        project = appConfigData.getTargetProject();
         Set<String> entities = entityMappings.getGeneratedEntity()
                 .map(Entity::getFQN)
                 .collect(toSet());

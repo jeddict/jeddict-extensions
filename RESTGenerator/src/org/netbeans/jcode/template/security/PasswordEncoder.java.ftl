@@ -1,4 +1,4 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

@@ -20,6 +20,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import org.netbeans.api.project.Project;
 import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.BG_BLUE;
 import static org.netbeans.jcode.console.Console.BG_GREEN;
@@ -36,7 +37,6 @@ import static org.netbeans.jcode.console.Console.UNDERLINE;
 import org.netbeans.jcode.task.ITaskSupervisor;
 import org.openide.filesystems.FileObject;
 import static org.netbeans.jcode.core.util.FileUtil.expandTemplateContent;
-import static org.netbeans.jcode.core.util.FileUtil.expandTemplate;
 
 /**
  *
@@ -132,6 +132,26 @@ public class ProgressConsoleHandler implements ProgressHandler {
     
     @Override
     public void help(String title, String message) {
+        helpMessage.add(new Message(title, message));
+    }
+    
+    @Override
+    public void error(String title, String message, Project project) {
+        errorMessage.add(new Message(title, message));
+    }
+
+    @Override
+    public void warning(String title, String message, Project project) {
+        warningMessage.add(new Message(title, message));
+    }
+
+    @Override
+    public void info(String title, String message, Project project) {
+        infoMessage.add(new Message(title, message));
+    }
+    
+    @Override
+    public void help(String title, String message, Project project) {
         helpMessage.add(new Message(title, message));
     }
 

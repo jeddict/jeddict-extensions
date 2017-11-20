@@ -1,4 +1,4 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
 import java.util.EnumSet;
 import javax.inject.Inject;
@@ -10,7 +10,7 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRegistration;
 import javax.servlet.annotation.WebListener;
 import org.slf4j.Logger;
-<#if metrics>import ${MetricsConfigurer_FQN};
+<#if metrics>import ${appPackage}${MetricsConfigurer_FQN};
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.servlet.InstrumentedFilter;
 import com.codahale.metrics.servlets.MetricsServlet;</#if>

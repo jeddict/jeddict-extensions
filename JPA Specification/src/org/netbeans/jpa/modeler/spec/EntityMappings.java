@@ -44,6 +44,7 @@ import org.netbeans.jpa.modeler.spec.extend.MapKeyType;
 import org.netbeans.jpa.modeler.spec.extend.MultiRelationAttribute;
 import org.netbeans.jpa.modeler.spec.extend.PersistenceAttributes;
 import org.netbeans.jpa.modeler.spec.extend.PlainClass;
+import org.netbeans.jpa.modeler.spec.extend.ProjectType;
 import org.netbeans.jpa.modeler.spec.extend.ReferenceClass;
 import org.netbeans.jpa.modeler.spec.extend.RelationAttribute;
 import org.netbeans.jpa.modeler.spec.extend.cache.Cache;
@@ -163,8 +164,12 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     private static final String DEFAULT_PU_NAME = "DEFAULT_PU";
 
     protected String description;
-    @XmlAttribute(name = "pkg")
-    protected String _package;
+    @XmlAttribute(name = "ptype")
+    private ProjectType projectType;
+    @XmlAttribute(name = "ppkg")
+    private String projectPackage;
+    @XmlAttribute(name = "epkg")
+    private String entityPackage;
     protected String schema;
     protected String catalog;
     protected AccessType access;
@@ -368,6 +373,20 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     public void setJavaEEVersion(JavaEEVersion javaEEVersion) {
         this.javaEEVersion = javaEEVersion;
     }
+
+    /**
+     * @return the projectType
+     */
+    public ProjectType getProjectType() {
+        return projectType;
+    }
+
+    /**
+     * @param projectType the projectType to set
+     */
+    public void setProjectType(ProjectType projectType) {
+        this.projectType = projectType;
+    }
     
     /**
      * Gets the value of the package property.
@@ -376,20 +395,35 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
      *
      */
     public String getPackage() {
-        if (StringUtils.isBlank(_package)) {
-            return null;
-        }
-        return _package;
+        return projectPackage + '.' + entityPackage;
     }
 
     /**
-     * Sets the value of the package property.
-     *
-     * @param value allowed object is {@link String }
-     *
+     * @return the projectPackage
      */
-    public void setPackage(String value) {
-        this._package = value;
+    public String getProjectPackage() {
+        return projectPackage;
+    }
+
+    /**
+     * @param projectPackage the projectPackage to set
+     */
+    public void setProjectPackage(String projectPackage) {
+        this.projectPackage = projectPackage;
+    }
+
+    /**
+     * @return the entityPackage
+     */
+    public String getEntityPackage() {
+        return entityPackage;
+    }
+
+    /**
+     * @param entityPackage the entityPackage to set
+     */
+    public void setEntityPackage(String entityPackage) {
+        this.entityPackage = entityPackage;
     }
 
     /**

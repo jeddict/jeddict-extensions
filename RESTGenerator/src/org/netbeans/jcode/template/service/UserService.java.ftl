@@ -1,14 +1,14 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
-import ${AuthorityRepository_FQN};
-import ${UserRepository_FQN};
-import ${AuthoritiesConstants_FQN};
-import ${PasswordEncoder_FQN};
-import ${User_FQN};
-import ${Authority_FQN};
-import ${SecurityHelper_FQN};
-import ${RandomUtil_FQN};
-import ${UserDTO_FQN};
+import ${appPackage}${AuthorityRepository_FQN};
+import ${appPackage}${UserRepository_FQN};
+import ${appPackage}${AuthoritiesConstants_FQN};
+import ${appPackage}${PasswordEncoder_FQN};
+import ${appPackage}${User_FQN};
+import ${appPackage}${Authority_FQN};
+import ${appPackage}${SecurityHelper_FQN};
+import ${appPackage}${RandomUtil_FQN};
+import ${appPackage}${UserDTO_FQN};
 import java.time.Instant;
 import java.util.*;
 import static java.util.stream.Collectors.*;

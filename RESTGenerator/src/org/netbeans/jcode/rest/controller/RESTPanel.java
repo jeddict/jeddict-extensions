@@ -5,7 +5,7 @@
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.asecurityTypeCombopache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
@@ -15,30 +15,16 @@
  */
 package org.netbeans.jcode.rest.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import static javax.lang.model.SourceVersion.isName;
-import javax.swing.ComboBoxModel;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import static javax.swing.JOptionPane.OK_OPTION;
-import javax.swing.text.JTextComponent;
-import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
-import static org.netbeans.api.java.source.ui.ScanDialog.runWhenScanFinished;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import static org.netbeans.jcode.core.util.JavaSourceHelper.isValidPackageName;
 import org.netbeans.jcode.rest.applicationconfig.RestConfigData;
 import org.netbeans.jcode.rest.applicationconfig.RestConfigDialog;
-import org.netbeans.jcode.rest.filter.FilterType;
 import org.netbeans.jcode.stack.config.panel.*;
 import org.netbeans.modeler.properties.entity.custom.editor.combobox.client.entity.ComboBoxValue;
-import org.netbeans.modules.websvc.rest.spi.RestSupport;
-import org.netbeans.spi.java.project.support.ui.PackageView;
 import static org.openide.util.NbBundle.getMessage;
 
 /**
@@ -49,10 +35,11 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
 
     private static final String DEFAULT_PACKAGE = "controller";
     private RestConfigDialog configDialog;
-    private final Map<JCheckBox, FilterType> eventTypeBoxs = new HashMap<>();
 
     public RESTPanel() {
         initComponents();
+        securityTypeLabel.setVisible(false);
+        securityTypeCombo.setVisible(false);
     }
 
     @Override
@@ -98,8 +85,6 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         setMetrics(data.isMetrics());
         setDocsEnable(data.isDocsEnable());
         setTestCase(data.isTestCase());
-        
-        setSelectedEventType(data.getFilterTypes());
     }
 
     @Override
@@ -108,49 +93,25 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         data.setPrefixName(getPrefix());
         data.setSuffixName(getSuffix());
         data.setPackage(getPackage());
-        if (data.getRestConfigData() == null ) {//&& !useJersey// && !configuredREST){
+        if (data.getRestConfigData() == null ) {
             RestConfigData restConfigData = new RestConfigData();
-//            restConfigData.setPackage(getPackage());
             data.setRestConfigData(restConfigData);
         }
-//        data.setReturnType(getReturnType());
-        data.setFilterTypes(getSelectedEventType());
         data.setMetrics(isMetrics());
         data.setLogger(isLogger());
         data.setDocsEnable(isDocsEnable());
         data.setTestCase(isTestCase());
-        data.setSecurityType(getSecurityType());
+        data.setSecurityType(SecurityType.SECURITY_JWT);//getSecurityType());
     }
 
     private Project project;
     private SourceGroup sourceGroup;
-
-    private void setPackageType(JComboBox comboBox){
-            comboBox.setRenderer(PackageView.listRenderer());
-            ComboBoxModel model = PackageView.createListView(sourceGroup);
-            if (model.getSize() > 0) {
-                model.setSelectedItem(model.getElementAt(0));
-            }
-            comboBox.setModel(model);
-            addChangeListener(comboBox); 
-    }
     
     @Override
-    public void init(String modelerPackage, Project project, SourceGroup sourceGroup) {
+    public void init(String _package, Project project, SourceGroup sourceGroup) {
         this.project = project;
         this.sourceGroup = sourceGroup;
-
-        if (sourceGroup != null) {
-            setPackageType(packageCombo);
-
-            String _package;
-            if (isBlank(modelerPackage)) {
-                _package = DEFAULT_PACKAGE;
-            } else {
-                _package = modelerPackage + '.' + DEFAULT_PACKAGE;
-            }
-            setPackage(_package);
-        }
+        setPackage(DEFAULT_PACKAGE);
         addChangeListener(prefixField);
         addChangeListener(suffixField);
         
@@ -177,18 +138,11 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
     }
     
     public String getPackage() {
-        return ((JTextComponent) packageCombo.getEditor().getEditorComponent()).getText().trim();
+        return packageTextField.getText().trim();
     }
 
     private void setPackage(String _package) {
-        ComboBoxModel model = packageCombo.getModel();
-        for (int i = 0; i < model.getSize(); i++) {
-            if (model.getElementAt(i).toString().equals(_package)) {
-                model.setSelectedItem(model.getElementAt(i));
-                break;
-            }
-        }
-        ((JTextComponent) packageCombo.getEditor().getEditorComponent()).setText(_package);
+        packageTextField.setText(_package);
     }
         
     public String getSuffix() {
@@ -238,24 +192,6 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
     private void setLogger(boolean loggerEnable) {
         loggerCheckBox.setSelected(loggerEnable);
     }
-    
-    
-
-    public List<FilterType> getSelectedEventType() {
-        List<FilterType> eventTypes = new ArrayList<>();
-        for (Entry<JCheckBox, FilterType> eventTypeBoxEntry : eventTypeBoxs.entrySet()) {
-            if (eventTypeBoxEntry.getKey().isSelected()) {
-                eventTypes.add(eventTypeBoxEntry.getValue());
-            }
-        }
-        return eventTypes;
-    }
-    
-    public void setSelectedEventType(List<FilterType> controllerEventTypes) {
-        for (Entry<JCheckBox, FilterType> eventTypeBoxEntry : eventTypeBoxs.entrySet()) {
-            eventTypeBoxEntry.getKey().setSelected(controllerEventTypes.contains(eventTypeBoxEntry.getValue()));
-        }
-    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -277,7 +213,9 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         nameLabel = new javax.swing.JLabel();
         packagePanel = new javax.swing.JPanel();
         packageLabel = new javax.swing.JLabel();
-        packageCombo = new javax.swing.JComboBox();
+        packageWrapper = new javax.swing.JLayeredPane();
+        packagePrefixLabel = new javax.swing.JLabel();
+        packageTextField = new javax.swing.JTextField();
         appPanel = new javax.swing.JPanel();
         securityTypeLabel = new javax.swing.JLabel();
         securityTypeCombo = new javax.swing.JComboBox();
@@ -340,36 +278,29 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
 
         packagePanel.setLayout(new java.awt.BorderLayout(10, 0));
 
-        packageLabel.setLabelFor(packageCombo);
         org.openide.awt.Mnemonics.setLocalizedText(packageLabel, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.packageLabel.text")); // NOI18N
         packageLabel.setPreferredSize(new java.awt.Dimension(100, 17));
         packagePanel.add(packageLabel, java.awt.BorderLayout.LINE_START);
 
-        packageCombo.setEditable(true);
-        packageCombo.setEditable(true);
-        packageCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { " " }));
-        packageCombo.setPreferredSize(new java.awt.Dimension(60, 27));
-        packageCombo.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                packageComboPropertyChange(evt);
-            }
-        });
-        packagePanel.add(packageCombo, java.awt.BorderLayout.CENTER);
+        packageWrapper.setLayout(new java.awt.BorderLayout());
+
+        packagePrefixLabel.setForeground(new java.awt.Color(153, 153, 153));
+        org.openide.awt.Mnemonics.setLocalizedText(packagePrefixLabel, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.packagePrefixLabel.text")); // NOI18N
+        packagePrefixLabel.setPreferredSize(new java.awt.Dimension(130, 14));
+        packageWrapper.add(packagePrefixLabel, java.awt.BorderLayout.WEST);
+
+        packageTextField.setText(org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.packageTextField.text")); // NOI18N
+        packageWrapper.add(packageTextField, java.awt.BorderLayout.CENTER);
+
+        packagePanel.add(packageWrapper, java.awt.BorderLayout.CENTER);
 
         jPanel1.add(packagePanel);
 
-        securityTypeLabel.setLabelFor(packageCombo);
         org.openide.awt.Mnemonics.setLocalizedText(securityTypeLabel, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.securityTypeLabel.text")); // NOI18N
         securityTypeLabel.setPreferredSize(new java.awt.Dimension(60, 17));
 
-        packageCombo.setEditable(true);
         securityTypeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { " " }));
         securityTypeCombo.setPreferredSize(new java.awt.Dimension(60, 27));
-        securityTypeCombo.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                securityTypeComboPropertyChange(evt);
-            }
-        });
 
         org.openide.awt.Mnemonics.setLocalizedText(applicationConfigButton, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.applicationConfigButton.text")); // NOI18N
         applicationConfigButton.addActionListener(new java.awt.event.ActionListener() {
@@ -415,11 +346,6 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
 
         docsCheckBox.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(docsCheckBox, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.docsCheckBox.text")); // NOI18N
-        docsCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                docsCheckBoxActionPerformed(evt);
-            }
-        });
         miscPanel.add(docsCheckBox);
 
         jPanel1.add(miscPanel);
@@ -444,10 +370,6 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
-
-    private void packageComboPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_packageComboPropertyChange
-        fire();
-    }//GEN-LAST:event_packageComboPropertyChange
 
     private void prefixFieldPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_prefixFieldPropertyChange
         fire();
@@ -476,14 +398,6 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
             openApplicationConfig();
 //        }
     }//GEN-LAST:event_applicationConfigButtonActionPerformed
-
-    private void docsCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_docsCheckBoxActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_docsCheckBoxActionPerformed
-
-    private void securityTypeComboPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_securityTypeComboPropertyChange
-        // TODO add your handling code here:
-    }//GEN-LAST:event_securityTypeComboPropertyChange
     private void openApplicationConfig() {
         if (configDialog == null) {
             configDialog = new RestConfigDialog();
@@ -513,9 +427,11 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
     private javax.swing.JPanel miscPanel;
     private javax.swing.JLabel nameLabel;
     private javax.swing.JLayeredPane namePane;
-    private javax.swing.JComboBox packageCombo;
     private javax.swing.JLabel packageLabel;
     private javax.swing.JPanel packagePanel;
+    private javax.swing.JLabel packagePrefixLabel;
+    private javax.swing.JTextField packageTextField;
+    private javax.swing.JLayeredPane packageWrapper;
     private javax.swing.JTextField prefixField;
     private javax.swing.JComboBox securityTypeCombo;
     private javax.swing.JLabel securityTypeLabel;

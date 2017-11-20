@@ -3,7 +3,7 @@
         <name>${JNDI}</name>
         <class-name>${DRIVER_CLASS}</class-name>
         <server-name>${r"${db.svc}"}</server-name>
-        <port-number>${DB_PORT}</port-number>
+        <port-number>${r"${db.port"}}</port-number>
         <database-name>${r"${db.name"}}</database-name>
         <user>${r"${db.user}"}</user>
         <password>${r"${db.password}"}</password>

@@ -1,8 +1,8 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
-import ${UserService_FQN};
-import ${Authority_FQN};
-import ${User_FQN};
+import ${appPackage}${UserService_FQN};
+import ${appPackage}${Authority_FQN};
+import ${appPackage}${User_FQN};
 import java.util.stream.Collectors;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;

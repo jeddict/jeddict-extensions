@@ -1,16 +1,16 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
-import ${UserRepository_FQN};
-import ${User_FQN};
-import ${SecurityHelper_FQN};
-import ${MailService_FQN};
-import ${UserService_FQN};
-import ${KeyAndPasswordDTO_FQN};
-import ${ManagedUserDTO_FQN};
-import ${UserDTO_FQN};
-import ${HeaderUtil_FQN};
-<#if security == "JAXRS_JWT">import ${Secured_FQN};</#if>
-import static ${Constants_FQN}.INCORRECT_PASSWORD_MESSAGE;
+import ${appPackage}${UserRepository_FQN};
+import ${appPackage}${User_FQN};
+import ${appPackage}${SecurityHelper_FQN};
+import ${appPackage}${MailService_FQN};
+import ${appPackage}${UserService_FQN};
+import ${appPackage}${KeyAndPasswordDTO_FQN};
+import ${appPackage}${ManagedUserDTO_FQN};
+import ${appPackage}${UserDTO_FQN};
+import ${appPackage}${HeaderUtil_FQN};
+<#if security == "JAXRS_JWT">import ${appPackage}${Secured_FQN};</#if>
+import static ${appPackage}${Constants_FQN}.INCORRECT_PASSWORD_MESSAGE;
 import java.util.*;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;

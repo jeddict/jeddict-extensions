@@ -1,6 +1,6 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
-import ${User_FQN};
+import ${appPackage}${User_FQN};
 
 public class MailEvent {
 

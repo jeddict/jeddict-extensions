@@ -61,7 +61,12 @@ import org.openide.util.lookup.ServiceProvider;
  */
 
 @ServiceProvider(service = Generator.class)
-@Technology(type = BUSINESS, label = "CDI Repository", panel = RepositoryPanel.class, sibling = {DockerGenerator.class,})
+@Technology(type = BUSINESS, 
+        label = "CDI Repository", 
+        panel = RepositoryPanel.class, 
+        sibling = {DockerGenerator.class},
+        microservice = true
+)
 public final class RepositoryGenerator implements Generator {
 
     private static final String TEMPLATE = "org/netbeans/jcode/template/";
@@ -71,34 +76,51 @@ public final class RepositoryGenerator implements Generator {
     private RepositoryData repositoryData;
 
     @ConfigData
-    private Project project;
-
-    @ConfigData
     private EntityMappings entityMapping;
-
-    @ConfigData
-    private SourceGroup source;
 
     @ConfigData
     private ApplicationConfigData appConfigData;
 
     @ConfigData
     private ProgressHandler handler;
+    
+    private Project targetProject;
+
+    private SourceGroup targetSource;
+    
+    private Project gatewayProject;
+
+    private SourceGroup gatewaySource;
 
     @Override
     public void execute() throws IOException {
+        targetProject = appConfigData.getTargetProject();
+        targetSource = appConfigData.getTargetSourceGroup();
+        gatewayProject = appConfigData.getGatewayProject();
+        gatewaySource = appConfigData.getGatewaySourceGroup();
+        
         handler.progress(Console.wrap(RepositoryGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
-        if (appConfigData.isCompleteApplication()) {
-            generateAbstract(true);
-            generateProducer();
-            addMavenDependencies("repository/pom/_pom.xml");
-            handler.info("Build", Console.wrap(" mvn clean install ${profile}", BOLD));
+        if (appConfigData.isMonolith() || appConfigData.isMicroservice()) {
+            if (appConfigData.isCompleteApplication()) {
+                generateAbstract(true, targetSource, appConfigData.getTargetPackage());
+                generateProducer(targetSource, appConfigData.getTargetPackage());
+                addMavenDependencies("repository/pom/_pom.xml", targetProject);
+            }
+            generateRepository();
         }
-        generateRepository();
-
+        if (appConfigData.isGateway()) {
+            generateAbstract(true, gatewaySource, appConfigData.getGatewayPackage());
+            generateProducer(gatewaySource, appConfigData.getGatewayPackage());
+            addMavenDependencies("repository/pom/_pom.xml", gatewayProject);
+        }
+         if (appConfigData.isCompleteApplication()) {
+             handler.info("Build", 
+                     Console.wrap(" mvn clean install ${profile} ${buildProperties}", BOLD), 
+                     appConfigData.isGateway() ? gatewayProject : targetProject);
+         }
     }
 
-    private void addMavenDependencies(String pom) {
+    private void addMavenDependencies(String pom, Project project) {
         if (POMManager.isMavenProject(project)) {
             POMManager pomManager = new POMManager(TEMPLATE + pom, project);
             pomManager.setSourceVersion("1.8");
@@ -120,8 +142,8 @@ public final class RepositoryGenerator implements Generator {
         return createdFiles;
     }
 
-    private FileObject generateProducer() throws IOException {
-        String _package = repositoryData.getAppPackage() + ".producer";
+    private FileObject generateProducer(SourceGroup source, String appPackage) throws IOException {
+        String _package = appPackage + ".producer";
         FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, _package, true);
         String fileName = "EntityManagerProducer";
         FileObject afFO = targetFolder.getFileObject(fileName, JAVA_EXT);//skips here
@@ -135,15 +157,15 @@ public final class RepositoryGenerator implements Generator {
         return afFO;
     }
 
-    private FileObject generateAbstract(boolean overrideExisting) throws IOException {
+    private FileObject generateAbstract(boolean overrideExisting, SourceGroup source, String appPackage) throws IOException {
         //create the abstract repository class
-        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, repositoryData.getPackage(), true);
+        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, appPackage + '.' + repositoryData.getPackage(), true);
         String fileName = repositoryData.getPrefixName() + REPOSITORY_ABSTRACT + repositoryData.getSuffixName();
         FileObject afFO = targetFolder.getFileObject(fileName, JAVA_EXT);//skips here
 
         Map<String, Object> param = new HashMap<>();
         param.put("AbstractRepository", fileName);
-        param.put("package", repositoryData.getPackage());
+        param.put("package", appPackage + '.' + repositoryData.getPackage());
         param.put("cdi", repositoryData.isCDI());
         param.put("named", repositoryData.isNamed());
 
@@ -166,7 +188,9 @@ public final class RepositoryGenerator implements Generator {
      * @return the generated files.
      */
     private FileObject generate(final Entity entity, boolean overrideExisting) throws IOException {
-        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, entity.getAbsolutePackage(repositoryData.getPackage()), true);
+        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(appConfigData.getTargetSourceGroup(), 
+                entity.getAbsolutePackage(appConfigData.getTargetPackage() + '.' + repositoryData.getPackage()), 
+                true);
         String entityFQN = entity.getFQN();
         final String entitySimpleName = entity.getClazz();
         String abstractFileName = repositoryData.getPrefixName() + REPOSITORY_ABSTRACT + repositoryData.getSuffixName();
@@ -193,15 +217,16 @@ public final class RepositoryGenerator implements Generator {
 
         param.put("AbstractRepository", abstractFileName);
         if (!entity.getAbsolutePackage(repositoryData.getPackage()).equals(repositoryData.getPackage())) { //if both EntityRepository and AbstractRepository are not in same package
-            param.put("AbstractRepository_FQN", repositoryData.getPackage() + "." + abstractFileName);
+            param.put("AbstractRepository_FQN", '.' + repositoryData.getPackage() + "." + abstractFileName);
         } else {
             param.put("AbstractRepository_FQN", EMPTY);
         }
         param.put("EntityRepository", repositoryName);
         param.put("PU", entityMapping.getPersistenceUnitName());
-        param.put("package", entity.getAbsolutePackage(repositoryData.getPackage()));
+        param.put("package", entity.getAbsolutePackage(appConfigData.getTargetPackage() + '.' + repositoryData.getPackage()));
         param.put("cdi", repositoryData.isCDI());
         param.put("named", repositoryData.isNamed());
+        param.put("appPackage", appConfigData.getTargetPackage());
 
         Attribute idAttribute = entity.getAttributes().getIdField();
         if (idAttribute != null) {

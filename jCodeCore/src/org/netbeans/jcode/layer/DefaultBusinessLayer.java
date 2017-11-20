@@ -24,7 +24,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author jGauravGupta <gaurav.gupta.jc@gmail.com>
  */
 @ServiceProvider(service=Generator.class)
-@Technology(type=BUSINESS, listIndex = 0)
+@Technology(type=BUSINESS, microservice = true, listIndex = 0)
 public class DefaultBusinessLayer implements Generator {
 
     @Override

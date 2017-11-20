@@ -6,7 +6,7 @@
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
-      <property name="javax.persistence.sql-load-script-source" value="META-INF/sql/insert.sql"/>
+      <#if !microservices><property name="javax.persistence.sql-load-script-source" value="META-INF/sql/insert.sql"/></#if>
     </properties>
   </persistence-unit>
 </persistence>

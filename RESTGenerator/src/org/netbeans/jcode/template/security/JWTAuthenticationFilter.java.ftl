@@ -1,6 +1,6 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
-import ${Constants_FQN};
+import ${appPackage}${Constants_FQN};
 import io.jsonwebtoken.ExpiredJwtException;
 import java.io.IOException;
 import java.security.Principal;

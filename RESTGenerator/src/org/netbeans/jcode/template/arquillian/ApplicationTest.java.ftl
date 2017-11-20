@@ -1,21 +1,21 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
-import ${SecurityConfig_FQN};
-import ${Constants_FQN};
-import ${SecurityHelper_FQN};
-import ${TemplateEngineProducer_FQN};
-import ${MailService_FQN};
-import ${MailNotifier_FQN};
-import ${RandomUtil_FQN};
-import ${UserService_FQN};
-import ${LoginDTO_FQN};
-import ${UserDTO_FQN};
-import ${AbstractAuditingEntity_FQN};
-import ${AuditListner_FQN};
-import ${Authority_FQN};
-import ${User_FQN};
-import ${AuthorityRepository_FQN};
-import ${UserRepository_FQN};
+import ${appPackage}${SecurityConfig_FQN};
+import ${appPackage}${Constants_FQN};
+import ${appPackage}${SecurityHelper_FQN};
+import ${appPackage}${TemplateEngineProducer_FQN};
+import ${appPackage}${MailService_FQN};
+import ${appPackage}${MailNotifier_FQN};
+import ${appPackage}${RandomUtil_FQN};
+import ${appPackage}${UserService_FQN};
+import ${appPackage}${LoginDTO_FQN};
+import ${appPackage}${UserDTO_FQN};
+import ${appPackage}${AbstractAuditingEntity_FQN};
+import ${appPackage}${AuditListner_FQN};
+import ${appPackage}${Authority_FQN};
+import ${appPackage}${User_FQN};
+import ${appPackage}${AuthorityRepository_FQN};
+import ${appPackage}${UserRepository_FQN};
 import static ${package}.AbstractTest.buildArchive;
 import java.util.Map;
 import javax.ws.rs.client.Entity;
@@ -60,6 +60,7 @@ public abstract class ApplicationTest extends AbstractTest {
                 .addClass(${AuthenticationController}.class)
                 .addClass(AbstractTest.class)
                 .addClass(ApplicationTest.class)
+                .addAsResource(new ClassLoaderAsset("META-INF/sql/insert.sql"), "META-INF/sql/insert.sql")
                 .addAsResource(new ClassLoaderAsset("META-INF/microprofile-config.properties"), "META-INF/microprofile-config.properties")
                 .addAsResource(new ClassLoaderAsset("i18n/messages.properties"), "i18n/messages.properties");
     }

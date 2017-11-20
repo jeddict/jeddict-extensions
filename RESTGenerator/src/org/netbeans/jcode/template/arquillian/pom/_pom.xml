@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.netbeans.jpamodeler</groupId>
+    <groupId>org.netbeans.jcode</groupId>
     <artifactId>arquillian_pom</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
@@ -12,7 +12,8 @@
         <version.arquillian>1.1.13.Final</version.arquillian>
         <version.jacoco>0.7.4.201502262128</version.jacoco>
         <version.valid4j>1.0</version.valid4j>
-        <version.payara>5.0.0.Alpha1</version.payara>
+        <version.payara>5.0.0.Alpha2</version.payara>
+        <version.junit>4.12</version.junit>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -28,13 +29,13 @@
                 <artifactId>arquillian-container-test-api</artifactId>
                 <version>${version.arquillian}</version>
             </dependency>
-            <dependency>
+<!--            <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
                 <version>2.9.0</version>
                 <scope>import</scope>
                 <type>pom</type>
-            </dependency> 
+            </dependency> -->
             <dependency>
                 <groupId>commons-lang</groupId>
                 <artifactId>commons-lang</artifactId>
@@ -47,6 +48,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <version>${version.junit}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

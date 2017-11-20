@@ -47,16 +47,29 @@ public interface Generator {
         return context;
     }
 
-    static List<TechContext> getBusinessService() {
-        return getTechContexts(null, Technology.Type.BUSINESS);
+//    static List<TechContext> getBusinessService() {
+//        return getTechContexts(null, Technology.Type.BUSINESS);
+//    }
+//
+//    static List<TechContext> getController(TechContext parentCodeGenerator) {
+//        return getTechContexts(parentCodeGenerator, Technology.Type.CONTROLLER);
+//    }
+//
+//    static List<TechContext> getViewer(TechContext parentCodeGenerator) {
+//        return getTechContexts(parentCodeGenerator, Technology.Type.VIEWER);
+//    }
+
+        
+    static List<TechContext> getBusinessService(boolean microservices) {
+        return getTechContexts(null, Technology.Type.BUSINESS, microservices);
     }
 
-    static List<TechContext> getController(TechContext parentCodeGenerator) {
-        return getTechContexts(parentCodeGenerator, Technology.Type.CONTROLLER);
+    static List<TechContext> getController(TechContext parentCodeGenerator, boolean microservices) {
+        return getTechContexts(parentCodeGenerator, Technology.Type.CONTROLLER, microservices);
     }
 
-    static List<TechContext> getViewer(TechContext parentCodeGenerator) {
-        return getTechContexts(parentCodeGenerator, Technology.Type.VIEWER);
+    static List<TechContext> getViewer(TechContext parentCodeGenerator, boolean microservices) {
+        return getTechContexts(parentCodeGenerator, Technology.Type.VIEWER, microservices);
     }
 
     static List<TechContext> getSiblingTechContexts(TechContext rootTechContext) {
@@ -78,35 +91,40 @@ public interface Generator {
         return new ArrayList<>(siblingCodeGenerators);
     }
 
-    static List<TechContext> getTechContexts(TechContext parentCodeGenerator, Technology.Type type) {
+    static List<TechContext> getTechContexts(TechContext parentCodeGenerator, Technology.Type type, boolean microservices) {
         List<TechContext> codeGenerators = new ArrayList<>();//default <none> type //LayerConfigPanel
         List<TechContext> customCodeGenerators = new ArrayList<>();
 
-        Lookup.getDefault().lookupAll(Generator.class).stream().forEach(codeGenerator -> {
-            Technology technology = codeGenerator.getClass().getAnnotation(Technology.class);
-            if (technology.type() == type) {
-                if (technology.panel() == org.netbeans.jcode.stack.config.panel.LayerConfigPanel.class) {
-                    codeGenerators.add(new TechContext((Class<Generator>)codeGenerator.getClass()));
-                } else {
-                    if (parentCodeGenerator != null) {
-                        for (Class<? extends Generator> genClass : technology.parents()) {
-                            if (genClass == parentCodeGenerator.getGeneratorClass()) {
-                                customCodeGenerators.add(new TechContext((Class<Generator>)codeGenerator.getClass()));
-                                break;
-                            }
-                        }
-                        for (Class<? extends Generator> genClass : parentCodeGenerator.getTechnology().children()) {
-                            if (genClass == codeGenerator.getClass()) {
-                                customCodeGenerators.add(new TechContext((Class<Generator>)codeGenerator.getClass()));
-                                break;
-                            }
-                        }
-                    } else {
-                        customCodeGenerators.add(new TechContext((Class<Generator>)codeGenerator.getClass()));
+        Lookup.getDefault().lookupAll(Generator.class)
+                .stream()
+                .forEach(codeGenerator -> {
+                    Technology technology = codeGenerator.getClass().getAnnotation(Technology.class);
+                    if(microservices && !technology.microservice()){
+                        return;
                     }
-                }
-            }
-        });
+                    if (technology.type() == type) {
+                        if (technology.panel() == org.netbeans.jcode.stack.config.panel.LayerConfigPanel.class) {
+                            codeGenerators.add(new TechContext((Class<Generator>) codeGenerator.getClass()));
+                        } else {
+                            if (parentCodeGenerator != null) {
+                                for (Class<? extends Generator> genClass : technology.parents()) {
+                                    if (genClass == parentCodeGenerator.getGeneratorClass()) {
+                                        customCodeGenerators.add(new TechContext((Class<Generator>) codeGenerator.getClass()));
+                                        break;
+                                    }
+                                }
+                                for (Class<? extends Generator> genClass : parentCodeGenerator.getTechnology().children()) {
+                                    if (genClass == codeGenerator.getClass()) {
+                                        customCodeGenerators.add(new TechContext((Class<Generator>) codeGenerator.getClass()));
+                                        break;
+                                    }
+                                }
+                            } else {
+                                customCodeGenerators.add(new TechContext((Class<Generator>) codeGenerator.getClass()));
+                            }
+                        }
+                    }
+                });
         codeGenerators.addAll(customCodeGenerators);
         return codeGenerators.stream()
                 .sorted((t1,t2) -> Integer.compare(t1.getTechnology().listIndex() , t2.getTechnology().listIndex()))

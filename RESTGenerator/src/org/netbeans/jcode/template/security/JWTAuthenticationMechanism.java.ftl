@@ -1,34 +1,34 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
-import static ${Constants_FQN}.AUTHORIZATION_HEADER;
-import static ${Constants_FQN}.BEARER_PREFIX;
-import ${LoginDTO_FQN};
+import static ${appPackage}${Constants_FQN}.AUTHORIZATION_HEADER;
+import static ${appPackage}${Constants_FQN}.BEARER_PREFIX;
 import io.jsonwebtoken.ExpiredJwtException;
-import java.io.IOException;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.json.bind.Jsonb;
-import javax.json.bind.JsonbBuilder;
-import javax.json.bind.JsonbException;
 import javax.security.enterprise.AuthenticationStatus;
 import javax.security.enterprise.authentication.mechanism.http.HttpAuthenticationMechanism;
 import javax.security.enterprise.authentication.mechanism.http.HttpMessageContext;
-import javax.security.enterprise.credential.UsernamePasswordCredential;
-import javax.security.enterprise.identitystore.CredentialValidationResult;
-import javax.security.enterprise.identitystore.IdentityStoreHandler;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import static ${AuthenticationController_FQN}.AUTHENTICATION_ENDPOINT;
+import org.slf4j.Logger;<#if gateway || monolith>
+import javax.security.enterprise.identitystore.CredentialValidationResult;
+import javax.security.enterprise.identitystore.IdentityStoreHandler;
+import ${appPackage}${LoginDTO_FQN};
+import javax.security.enterprise.credential.UsernamePasswordCredential;
+import javax.json.bind.Jsonb;
+import javax.json.bind.JsonbBuilder;
+import javax.json.bind.JsonbException;
+import java.io.IOException;
+import static ${appPackage}${AuthenticationController_FQN}.AUTHENTICATION_ENDPOINT;</#if>
 
 @ApplicationScoped
 public class JWTAuthenticationMechanism implements HttpAuthenticationMechanism {
 
     @Inject
-    private Logger log;
-
+    private Logger log;<#if gateway || monolith>
+    
     @Inject
-    private IdentityStoreHandler identityStoreHandler;
+    private IdentityStoreHandler identityStoreHandler;</#if>
 
     @Inject
     private TokenProvider tokenProvider;
@@ -37,7 +37,7 @@ public class JWTAuthenticationMechanism implements HttpAuthenticationMechanism {
     public AuthenticationStatus validateRequest(HttpServletRequest request, HttpServletResponse response, HttpMessageContext context) {
 
         String token;
-        LoginDTO loginDTO;
+        <#if gateway || monolith>LoginDTO loginDTO;
         if (AUTHENTICATION_ENDPOINT.equals(context.getRequest().getServletPath()) 
                 && (loginDTO = extractLoginCredential(context)) != null) {
             // validation of the credential using the identity store
@@ -49,7 +49,7 @@ public class JWTAuthenticationMechanism implements HttpAuthenticationMechanism {
             }
             // if the authentication failed, we return the unauthorized status in the http response
             return context.responseUnauthorized();
-        } else if ((token = extractToken(context)) != null) {
+        } else </#if>if ((token = extractToken(context)) != null) {
             // validation of the jwt credential
             return validateToken(token, context);
         } else if (context.isProtected()) {
@@ -59,7 +59,7 @@ public class JWTAuthenticationMechanism implements HttpAuthenticationMechanism {
         // there are no credentials and the resource is not protected, so notify the container to "do nothing"
         return context.doNothing();
     }
-
+    <#if gateway || monolith>
     /**
      * To extract the login credential from http request
      *
@@ -76,6 +76,24 @@ public class JWTAuthenticationMechanism implements HttpAuthenticationMechanism {
         }
         return loginDTO;
     }
+
+    /**
+     * Create the JWT using CredentialValidationResult received from
+     * IdentityStoreHandler
+     *
+     * @param result the result from validation of UsernamePasswordCredential
+     * @param context
+     * @return the AuthenticationStatus to notify the container
+     */
+    private AuthenticationStatus createToken(CredentialValidationResult result, boolean rememberMe, HttpMessageContext context) {
+        String token = tokenProvider.createToken(
+                result.getCallerPrincipal().getName(),
+                result.getCallerGroups(),
+                rememberMe
+        );
+        context.getResponse().setHeader(AUTHORIZATION_HEADER, BEARER_PREFIX + token);
+        return context.notifyContainerAboutLogin(result);
+    }</#if>
 
     /**
      * To validate the JWT token e.g Signature check, JWT claims
@@ -97,24 +115,6 @@ public class JWTAuthenticationMechanism implements HttpAuthenticationMechanism {
             log.info("Security exception for user {0} - {1}", new Object[]{eje.getClaims().getSubject(), eje.getMessage()});
             return context.responseUnauthorized();
         }
-    }
-
-    /**
-     * Create the JWT using CredentialValidationResult received from
-     * IdentityStoreHandler
-     *
-     * @param result the result from validation of UsernamePasswordCredential
-     * @param context
-     * @return the AuthenticationStatus to notify the container
-     */
-    private AuthenticationStatus createToken(CredentialValidationResult result, boolean rememberMe, HttpMessageContext context) {
-        String token = tokenProvider.createToken(
-                result.getCallerPrincipal().getName(),
-                result.getCallerGroups(),
-                rememberMe
-        );
-        context.getResponse().setHeader(AUTHORIZATION_HEADER, BEARER_PREFIX + token);
-        return context.notifyContainerAboutLogin(result);
     }
 
     /**

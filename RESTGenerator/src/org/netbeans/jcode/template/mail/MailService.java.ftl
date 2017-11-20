@@ -1,7 +1,7 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
-import ${User_FQN};
-import ${MailEvent_FQN};
+import ${appPackage}${User_FQN};
+import ${appPackage}${MailEvent_FQN};
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;

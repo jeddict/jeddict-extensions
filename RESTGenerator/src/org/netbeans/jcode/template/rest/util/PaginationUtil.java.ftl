@@ -1,4 +1,4 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
 import java.net.URISyntaxException;
 import javax.ws.rs.core.HttpHeaders;

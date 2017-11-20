@@ -627,16 +627,24 @@ public abstract class JavaClass<T extends IAttributes> extends FlowNode implemen
      * @param rootPackage
      * @return the complete _package
      */
-    public String getAbsolutePackage(String rootPackage) {
+    public String getAbsolutePackage(String rootPackage) { // rootPackage.class_pkg
         return StringUtils.isBlank(_package) ? rootPackage : rootPackage + '.' + _package;
     }
     
-     public String getRootPackage() {
+    public String getRootPackage() { // project_pkg.entity_pkg
         return getAbsolutePackage(this.getRootElement().getPackage());
     }
     
-    public String getFQN() {
+    public String getRelativeRootPackage() { // entity_pkg
+        return getAbsolutePackage(this.getRootElement().getEntityPackage());
+    }
+    
+    public String getFQN() { // project_pkg.entity_pkg.class_pkg
         return getAbsolutePackage(this.getRootElement().getPackage()) + '.' + getClazz();
+    }
+    
+    public String getRelativeFQN() { // entity_pkg.class_pkg
+        return getAbsolutePackage(this.getRootElement().getEntityPackage()) + '.' + getClazz();
     }
 
     /**

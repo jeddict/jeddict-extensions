@@ -1,7 +1,7 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
-import ${MailConfig_FQN};
-import ${User_FQN};
+import ${appPackage}${MailConfig_FQN};
+import ${appPackage}${User_FQN};
 import java.io.StringWriter;
 import java.util.Locale;
 import java.util.function.Function;

@@ -17,11 +17,16 @@ package org.netbeans.jcode.stack.config.data;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.layer.TechContext;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
+import org.netbeans.jpa.modeler.spec.extend.ProjectType;
 
 /**
  *
@@ -29,45 +34,82 @@ import org.netbeans.jpa.modeler.spec.EntityMappings;
  */
 public class ApplicationConfigData implements Serializable {
 
-    private Project project;
-    private SourceGroup sourceGroup;
+    private ProjectType projectType;
+
+    private Project targetProject;
+    private SourceGroup targetSourceGroup;
+    private String targetPackage;
+    private String targetArtifactId;
+
+    private Project gatewayProject;
+    private SourceGroup gatewaySourceGroup;
+    private String gatewayPackage;
+    private String gatewayArtifactId;
+
     private boolean completeApplication;
     private EntityMappings entityMappings;
-    
+
     private TechContext bussinesTechContext;
     private TechContext controllerTechContext;
     private TechContext viewerTechContext;
-    private StringBuilder webDescriptorContent = new StringBuilder();
-    private StringBuilder webDescriptorTestContent = new StringBuilder();
+
+    private Map<Project, StringBuilder> webDescriptorContent = new HashMap<>();
+    private Map<Project, StringBuilder> webDescriptorTestContent = new HashMap<>();
+
+    private final Set<String> profiles = new LinkedHashSet<>();
+    private final List<String> buildProperties = new ArrayList<>();
     
-    private List<String> profiles = new ArrayList<>();
-    
-    public void addWebDescriptorContent(String content){
-        webDescriptorContent.append("\n").append(content);
+    private RegistryType registryType = RegistryType.CONSUL;
+
+    public void addWebDescriptorContent(String content, Project project) {
+        StringBuilder sb = webDescriptorContent.get(project);
+        if (sb == null) {
+            sb = new StringBuilder();
+            webDescriptorContent.put(project, sb);
+        }
+        sb.append("\n").append(content);
     }
-    
-    public String getWebDescriptorContent(){
-        return webDescriptorContent.toString();
+
+    public Map<Project, StringBuilder> getWebDescriptorContent() {
+        return webDescriptorContent;
     }
-    
-    public void addWebDescriptorTestContent(String content){
-        webDescriptorTestContent.append("\n").append(content);
+
+    public void addWebDescriptorTestContent(String content, Project project) {
+        StringBuilder sb = webDescriptorTestContent.get(project);
+        if (sb == null) {
+            sb = new StringBuilder();
+            webDescriptorTestContent.put(project, sb);
+        }
+        sb.append("\n").append(content);
     }
-    
-    public String getWebDescriptorTestContent(){
-        return webDescriptorTestContent.toString();
+
+    public Map<Project, StringBuilder> getWebDescriptorTestContent() {
+        return webDescriptorTestContent;
     }
-    
-    public void addProfile(String profile){
+
+    public void addProfile(String profile) {
         profiles.add(profile);
     }
-    
-    public void removeProfile(String profile){
+
+    public void removeProfile(String profile) {
         profiles.remove(profile);
     }
-    
-   public String getProfiles(){
+
+    public String getProfiles() {
         return String.join(",", profiles);
+    }
+    
+    public void addBuildProperty(String propertyName, String propertyValue) {
+        String buildProperty = "-D" + propertyName + '=' + propertyValue;
+        buildProperties.add(buildProperty);
+    }
+
+    public void removeBuildProperty(String propertyName) {
+        buildProperties.removeIf(element -> element.startsWith("-D" + propertyName + '='));
+    }
+
+    public String getBuildProperties() {
+        return String.join(" ", buildProperties);
     }
 
     public TechContext getBussinesTechContext() {
@@ -93,33 +135,157 @@ public class ApplicationConfigData implements Serializable {
     public void setViewerTechContext(TechContext viewerLayerTechContext) {
         this.viewerTechContext = viewerLayerTechContext;
     }
-    
+
     /**
-     * @return the project
+     * @return the targetProject
      */
-    public Project getProject() {
-        return project;
+    public Project getTargetProject() {
+        return targetProject;
     }
 
     /**
-     * @param project the project to set
+     * @param targetProject the targetProject to set
      */
-    public void setProject(Project project) {
-        this.project = project;
+    public void setTargetProject(Project targetProject) {
+        this.targetProject = targetProject;
     }
 
     /**
-     * @return the sourceGroup
+     * @return the targetSourceGroup
      */
-    public SourceGroup getSourceGroup() {
-        return sourceGroup;
+    public SourceGroup getTargetSourceGroup() {
+        return targetSourceGroup;
     }
 
     /**
-     * @param sourceGroup the sourceGroup to set
+     * @param targetSourceGroup the targetSourceGroup to set
      */
-    public void setSourceGroup(SourceGroup sourceGroup) {
-        this.sourceGroup = sourceGroup;
+    public void setTargetSourceGroup(SourceGroup targetSourceGroup) {
+        this.targetSourceGroup = targetSourceGroup;
+    }
+
+    /**
+     * @return the targetPackage
+     */
+    public String getTargetPackage() {
+        return targetPackage;
+    }
+
+    /**
+     * @param targetPackage the targetPackage to set
+     */
+    public void setTargetPackage(String targetPackage) {
+        this.targetPackage = targetPackage;
+    }
+
+    /**
+     * @return the targetContextPath
+     */
+    public String getTargetContextPath() {
+        return targetArtifactId.toLowerCase();
+    }
+
+    /**
+     * @return the targetArtifactId
+     */
+    public String getTargetArtifactId() {
+        return targetArtifactId;
+    }
+
+    /**
+     * @param targetArtifactId the targetArtifactId to set
+     */
+    public void setTargetArtifactId(String targetArtifactId) {
+        this.targetArtifactId = targetArtifactId;
+    }
+
+    /**
+     * @return the gatewayProject
+     */
+    public Project getGatewayProject() {
+        return gatewayProject;
+    }
+
+    /**
+     * @param gatewayProject the gatewayProject to set
+     */
+    public void setGatewayProject(Project gatewayProject) {
+        this.gatewayProject = gatewayProject;
+    }
+
+    /**
+     * @return the gatewaySourceGroup
+     */
+    public SourceGroup getGatewaySourceGroup() {
+        return gatewaySourceGroup;
+    }
+
+    /**
+     * @param gatewaySourceGroup the gatewaySourceGroup to set
+     */
+    public void setGatewaySourceGroup(SourceGroup gatewaySourceGroup) {
+        this.gatewaySourceGroup = gatewaySourceGroup;
+    }
+
+    /**
+     * @return the gatewayPackage
+     */
+    public String getGatewayPackage() {
+        return gatewayPackage;
+    }
+
+    /**
+     * @param gatewayPackage the gatewayPackage to set
+     */
+    public void setGatewayPackage(String gatewayPackage) {
+        this.gatewayPackage = gatewayPackage;
+    }
+
+    /**
+     * @return the gatewayContextPath
+     */
+    public String getGatewayContextPath() {
+        return gatewayArtifactId;
+    }
+
+    /**
+     * @return the gatewayArtifactId
+     */
+    public String getGatewayArtifactId() {
+        return gatewayArtifactId;
+    }
+
+    /**
+     * @param gatewayArtifactId the gatewayArtifactId to set
+     */
+    public void setGatewayArtifactId(String gatewayArtifactId) {
+        this.gatewayArtifactId = gatewayArtifactId;
+    }
+
+    public boolean isMonolith() {
+        return projectType == ProjectType.MONOLITH;
+    }
+
+    public boolean isMicroservice() {
+        return projectType == ProjectType.MICROSERVICE;
+    }
+
+    public boolean isGateway() {
+        return projectType == ProjectType.GATEWAY;
+    }
+
+    /**
+     * @return the projectType
+     */
+    public ProjectType getProjectType() {
+        return projectType;
+    }
+
+    /**
+     * @param projectType the projectType to set
+     */
+    public void setProjectType(ProjectType projectType) {
+        this.projectType = projectType;
     }
 
     /**
@@ -148,6 +314,20 @@ public class ApplicationConfigData implements Serializable {
      */
     public void setCompleteApplication(boolean completeApplication) {
         this.completeApplication = completeApplication;
+    }
+
+    /**
+     * @return the registryType
+     */
+    public RegistryType getRegistryType() {
+        return registryType;
+    }
+
+    /**
+     * @param registryType the registryType to set
+     */
+    public void setRegistryType(RegistryType registryType) {
+        this.registryType = registryType;
     }
 
 }

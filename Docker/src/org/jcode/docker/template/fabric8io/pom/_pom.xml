@@ -34,7 +34,7 @@
                         <configuration>
                             <images>
                                 <image>
-                                    <alias>web</alias>
+                                    <alias>${web.svc}</alias>
                                     <name>${docker.image}</name>
                                     <build>
                                         <!--<args>
@@ -93,7 +93,7 @@
                 </plugins>
             </build>
             <properties>
-                <version.fabric8>0.20.0</version.fabric8>
+                <version.fabric8>0.22.1</version.fabric8>
 
                 <build.name>${project.artifactId}</build.name>
                 <project.binary>${project.build.directory}/${binary}</project.binary>

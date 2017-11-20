@@ -31,6 +31,7 @@ import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.BOLD;
+import static org.netbeans.jcode.console.Console.FG_MAGENTA;
 import static org.netbeans.jcode.console.Console.FG_RED;
 import static org.netbeans.jcode.console.Console.UNDERLINE;
 import org.netbeans.jcode.core.util.POMManager;
@@ -50,13 +51,13 @@ import org.netbeans.jcode.layer.Generator;
 import org.netbeans.jcode.layer.Technology;
 import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
 import org.netbeans.jcode.task.progress.ProgressHandler;
-import org.netbeans.jcode.web.dd.util.WebDDUtil;
 import org.netbeans.jpa.modeler.spec.EntityMappings;
 import org.netbeans.modules.j2ee.persistence.dd.common.PersistenceUnit;
 import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 import static org.netbeans.jcode.core.util.FileUtil.expandTemplate;
+import static org.netbeans.jcode.stack.config.data.RegistryType.CONSUL;
 
 /**
  * Generates Docker image.
@@ -75,7 +76,14 @@ public class DockerGenerator implements Generator {
     private static final String DB_USER = "db.user";
     private static final String DB_PASSWORD = "db.password";
     private static final String DB_SVC = "db.svc";
-//    private static final String DB_PORT = "db.port";
+    private static final String DB_PORT = "db.port";
+    
+    private static final String WEB_SVC = "web.svc";
+    private static final String WEB_HOST = "web.host";
+    private static final String WEB_PORT = "web.port";
+    private static final String CONTEXT_PATH = "context.path";
+    private static final String REGISTRY_URL = "registry.url";
+
     private static final String DOCKER_PROFILE = "docker";
     private static final String DEVELOPMENT_PROFILE = "dev";
     private static final String DOCKER_FILE = "DockerFile";
@@ -83,12 +91,6 @@ public class DockerGenerator implements Generator {
 
     @ConfigData
     protected DockerConfigData config;
-
-    @ConfigData
-    protected Project project;
-
-    @ConfigData
-    protected SourceGroup source;
 
     @ConfigData
     protected ProgressHandler handler;
@@ -99,18 +101,26 @@ public class DockerGenerator implements Generator {
     @ConfigData
     protected ApplicationConfigData appConfigData;
 
-//    private boolean setupDataSourceLocally;
     protected PersistenceProviderType persistenceProviderType;
     protected String applicationName;
 
+    protected Project project;
+    protected SourceGroup source;
+    
+    @Override
+    public void preExecute() {
+        project = appConfigData.isGateway() ? appConfigData.getGatewayProject() : appConfigData.getTargetProject();
+        source = appConfigData.isGateway() ? appConfigData.getGatewaySourceGroup() : appConfigData.getTargetSourceGroup();
+    }
+    
     @Override
     public void execute() throws IOException {
         if (!appConfigData.isCompleteApplication()) {
             return;
         }
-//        setupDataSourceLocally = !(config.isDockerEnable() && (config.getServerType() == PAYARA || config.getServerType() == WILDFLY));
         manageServerSettingGeneration();
         manageDBSettingGeneration();
+        
         manageDockerGeneration();
     }
 
@@ -153,10 +163,6 @@ public class DockerGenerator implements Generator {
             addDatabaseProperties();
 //            if (setupDataSourceLocally) {
                 generateDataSourceDD();
-                if (POMManager.isMavenProject(project)) {
-                    POMManager pomManager = new POMManager(TEMPLATE + "web/xml/filter/pom/_pom.xml", project);
-                    pomManager.commit();
-                }
 //            }
         }
     }
@@ -264,7 +270,7 @@ public class DockerGenerator implements Generator {
                 pomManager = new POMManager(TEMPLATE + "wildfly/swarm/pom/_pom.xml", project);
                 pomManager.commit();
             }
-
+            addWebProperties();
         } else {
             handler.warning(NbBundle.getMessage(DockerGenerator.class, "TITLE_Maven_Project_Not_Found"),
                     NbBundle.getMessage(DockerGenerator.class, "MSG_Maven_Project_Not_Found"));
@@ -299,7 +305,42 @@ public class DockerGenerator implements Generator {
             properties.put(DB_PASSWORD, config.getDbPassword());
             properties.put(DB_NAME, config.getDbName());
             properties.put(DB_SVC, getDBService());
-//            properties.put(DB_PORT, config.getDbPort());
+            properties.put(DB_PORT, config.getDbPort());
+            pomManager.addProperties(DEVELOPMENT_PROFILE, properties);
+            pomManager.commit();
+            appConfigData.addProfile(DEVELOPMENT_PROFILE);
+        }
+    }
+    
+    private void addWebProperties() {
+        if (POMManager.isMavenProject(project)) {
+            POMManager pomManager = new POMManager(project);
+            Properties properties = new Properties();
+            if (config.isDockerEnable()) {
+                properties.put(WEB_SVC, getWebService());
+            }
+            
+            String registryPort = appConfigData.getRegistryType() == CONSUL ? "8500" : "8081";
+            
+            if (appConfigData.isMicroservice()){
+                properties.put(WEB_HOST, "http://localhost");
+                properties.put(WEB_PORT, "8080");
+                properties.put(CONTEXT_PATH, appConfigData.getTargetContextPath());
+                properties.put(REGISTRY_URL, "http://localhost:"+registryPort);
+                appConfigData.addBuildProperty(WEB_HOST, "<container host>");
+                appConfigData.addBuildProperty(WEB_PORT, "<container port>");
+                appConfigData.addBuildProperty(REGISTRY_URL, "<registry url>");
+                handler.info("Service Registry",
+                        Console.wrap(String.join(", ", WEB_HOST, WEB_PORT, REGISTRY_URL), BOLD, FG_MAGENTA)
+                        + " properties are required for Service Registry");
+            } else if (appConfigData.isGateway()) {
+                properties.put(WEB_PORT, "8080");//for docker
+                properties.put(REGISTRY_URL, "http://localhost:"+registryPort);
+                appConfigData.addBuildProperty(REGISTRY_URL, "<registry url>");
+                handler.info("Service Discovery",
+                        Console.wrap(REGISTRY_URL, BOLD, FG_MAGENTA)
+                        + " property is required for Service Discovery");
+            }
             pomManager.addProperties(DEVELOPMENT_PROFILE, properties);
             pomManager.commit();
             appConfigData.addProfile(DEVELOPMENT_PROFILE);
@@ -311,19 +352,21 @@ public class DockerGenerator implements Generator {
         Map<String, Object> params = new HashMap<>(getParams());
         params.put("JNDI", getJNDI(config.getServerType(), config.getDataSource()));
         params.put("DRIVER_CLASS", config.getDatabaseType().getDriver().getClassName());
-        appConfigData.addWebDescriptorContent(expandTemplate("/org/jcode/docker/template/datasource/web/descriptor/_web.xml.ftl", params));
+        appConfigData.addWebDescriptorContent(
+                expandTemplate("/org/jcode/docker/template/datasource/web/descriptor/_web.xml.ftl", params), 
+                appConfigData.getTargetProject());
     }
 
     protected Map<String, Object> getParams() {
         Map<String, Object> params = new HashMap<>();
-        params.put("DB_USER", config.getDbUserName());
-        params.put("DB_PASSWORD", config.getDbPassword());
-        params.put("DB_NAME", config.getDbName());
+//        params.put("DB_USER", config.getDbUserName());
+//        params.put("DB_PASSWORD", config.getDbPassword());
+//        params.put("DB_NAME", config.getDbName());
         params.put("DB_SVC", getDBService());
         params.put("DB_PORT", config.getDbPort());
         params.put("DB_VERSION", config.getDatabaseVersion());
         params.put("DB_TYPE", config.getDatabaseType().getDockerImage());
-        params.put("DATASOURCE", config.getDataSource());
+//        params.put("DATASOURCE", config.getDataSource());
         params.put("SERVER_TYPE", config.getServerType().name());
         return params;
     }
@@ -334,6 +377,10 @@ public class DockerGenerator implements Generator {
         } else {
             return getApplicationName() + "-" + config.getDatabaseType().name().toLowerCase();
         }
+    }
+
+    protected String getWebService() {
+        return getApplicationName() + "-web";
     }
 
     protected String getApplicationName() {

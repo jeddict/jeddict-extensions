@@ -1,5 +1,5 @@
 /**
- * Copyright [2016] Gaurav Gupta
+ * Copyright [2016-2017] Gaurav Gupta
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -71,9 +71,6 @@ import static org.netbeans.jcode.layer.Technology.Type.CONTROLLER;
 import org.netbeans.jcode.repository.RepositoryData;
 import org.netbeans.jcode.repository.RepositoryGenerator;
 import static org.netbeans.jcode.repository.RepositoryGenerator.REPOSITORY_ABSTRACT;
-import org.netbeans.jcode.rest.filter.RESTFilterGenerator;
-import org.netbeans.jcode.rest.util.RestApp;
-import org.netbeans.jcode.rest.util.RestUtils;
 import org.netbeans.jcode.stack.config.data.ApplicationConfigData;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.netbeans.jpa.modeler.spec.*;
@@ -81,20 +78,26 @@ import org.netbeans.jpa.modeler.spec.extend.Attribute;
 import org.netbeans.jpa.modeler.spec.extend.PaginationType;
 import org.netbeans.modules.j2ee.persistence.dd.common.PersistenceUnit;
 import org.netbeans.modules.j2ee.persistence.dd.common.Property;
-import org.netbeans.modules.websvc.rest.spi.RestSupport;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 import static org.netbeans.jcode.core.util.FileUtil.expandTemplate;
+import static org.netbeans.jcode.stack.config.data.RegistryType.CONSUL;
+import static org.netbeans.jcode.stack.config.data.RegistryType.SNOOPEE;
 
 /**
  *
  * @author Gaurav Gupta
  */
 @ServiceProvider(service = Generator.class)
-@Technology(type = CONTROLLER, label = "REST", panel = RESTPanel.class,
-        parents = {RepositoryGenerator.class}, listIndex = 1)
+@Technology(type = CONTROLLER,
+        label = "REST",
+        panel = RESTPanel.class,
+        parents = {RepositoryGenerator.class},
+        microservice = true,
+        listIndex = 1
+)
 public class RESTGenerator implements Generator {
 
     private static final String TEMPLATE = "org/netbeans/jcode/template/";
@@ -109,12 +112,6 @@ public class RESTGenerator implements Generator {
     private DockerConfigData dockerConfigData;
 
     @ConfigData
-    private Project project;
-
-    @ConfigData
-    private SourceGroup source;
-
-    @ConfigData
     private EntityMappings entityMapping;
 
     @ConfigData
@@ -123,17 +120,30 @@ public class RESTGenerator implements Generator {
     @ConfigData
     private ProgressHandler handler;
 
-    private SourceGroup testSource;
+    private Project targetProject;
+
+    private SourceGroup targetSource;
+
+    private SourceGroup targetTestSource;
+
+    private Project gatewayProject;
+
+    private SourceGroup gatewaySource;
+
+    private SourceGroup gatewayTestSource;
+
     private String entityPackage;
     private final List<RestEntityInfo> restEntityInfo = new ArrayList<>();
 
     private List<Template> CONFIG_TEMPLATES, ENTITY_TEMPLATES,
             ENTITY_LISTENER_TEMPLATES,
             REPOSITORY_TEMPLATES, SERVICE_TEMPLATES, POST_SERVICE_TEMPLATES,
-            CONTROLLER_TEMPLATES, CONTROLLER_EXT_TEMPLATES,
+            CONTROLLER_TEMPLATES, CONTROLLER_UTIL_TEMPLATES, CONTROLLER_EXT_TEMPLATES,
             METRICS_TEMPLATES, LOGGER_TEMPLATES,
-            TEST_CASE_TEMPLATES, TEST_CASE_CONTROLLER_TEMPLATES;
-
+            TEST_CASE_TEMPLATES, TEST_CASE_CONTROLLER_TEMPLATES, 
+            MICROSERVICES_TEMPLATES, MICROSERVICES_CONTROLLER_TEMPLATES, 
+            GATEWAY_TEMPLATES;
+  
     private void registerTemplates() {
 
         CONFIG_TEMPLATES = new ArrayList<>();
@@ -143,11 +153,15 @@ public class RESTGenerator implements Generator {
         SERVICE_TEMPLATES = new ArrayList<>();
         POST_SERVICE_TEMPLATES = new ArrayList<>();
         CONTROLLER_TEMPLATES = new ArrayList<>();
+        CONTROLLER_UTIL_TEMPLATES = new ArrayList<>();
         CONTROLLER_EXT_TEMPLATES = new ArrayList<>();
         METRICS_TEMPLATES = new ArrayList<>();
         LOGGER_TEMPLATES = new ArrayList<>();
         TEST_CASE_TEMPLATES = new ArrayList<>();
         TEST_CASE_CONTROLLER_TEMPLATES = new ArrayList<>();
+        MICROSERVICES_TEMPLATES = new ArrayList<>();
+        MICROSERVICES_CONTROLLER_TEMPLATES = new ArrayList<>();
+        GATEWAY_TEMPLATES = new ArrayList<>();
 
         ENTITY_TEMPLATES.add(new Template("entity/AbstractAuditingEntity.java.ftl", "AbstractAuditingEntity"));
         ENTITY_TEMPLATES.add(new Template("entity/Authority.java.ftl", "Authority"));
@@ -162,9 +176,9 @@ public class RESTGenerator implements Generator {
         CONFIG_TEMPLATES.add(new Template("config/MailConfig.java.ftl", "MailConfig", "config"));
         CONFIG_TEMPLATES.add(new Template("config/SecurityConfig.java.ftl", "SecurityConfig", "config"));
 
-        CONTROLLER_EXT_TEMPLATES.add(new Template("rest/util/HeaderUtil.java.ftl", "HeaderUtil", "util"));
-        CONTROLLER_EXT_TEMPLATES.add(new Template("rest/util/Page.java.ftl", "Page", "util"));
-        CONTROLLER_EXT_TEMPLATES.add(new Template("rest/util/PaginationUtil.java.ftl", "PaginationUtil", "util"));
+        CONTROLLER_UTIL_TEMPLATES.add(new Template("rest/util/HeaderUtil.java.ftl", "HeaderUtil", "util"));
+        CONTROLLER_UTIL_TEMPLATES.add(new Template("rest/util/Page.java.ftl", "Page", "util"));
+        CONTROLLER_UTIL_TEMPLATES.add(new Template("rest/util/PaginationUtil.java.ftl", "PaginationUtil", "util"));
 
         CONTROLLER_EXT_TEMPLATES.add(new Template("rest/dto/KeyAndPasswordDTO.java.ftl", "KeyAndPasswordDTO", "dto"));
         CONTROLLER_EXT_TEMPLATES.add(new Template("rest/dto/LoginDTO.java.ftl", "LoginDTO", "dto"));
@@ -174,9 +188,9 @@ public class RESTGenerator implements Generator {
         if (restData.isMetrics()) {
             METRICS_TEMPLATES.add(new Template("config/MetricsConfig.java.ftl", "MetricsConfig", "config"));
             METRICS_TEMPLATES.add(new Template("metrics/DiagnosticFilter.java.ftl", "DiagnosticFilter", "metrics"));
-            METRICS_TEMPLATES.add(new Template("metrics/MetricsConfigurer.java.ftl", "MetricsConfigurer", "metrics"));//require  import MetricsConfig
+            METRICS_TEMPLATES.add(new Template("metrics/MetricsConfigurer.java.ftl", "MetricsConfigurer", "metrics"));
         }
-
+               
         if (restData.isLogger()) {
             LOGGER_TEMPLATES.add(new Template("logger/LoggerVM.java.ftl", "LoggerVM", "dto"));
             LOGGER_TEMPLATES.add(new Template("logger/LogsResource.java.ftl", "LogsResource"));
@@ -211,27 +225,56 @@ public class RESTGenerator implements Generator {
         CONTROLLER_TEMPLATES.add(new Template("rest/AccountController.java.ftl", "Account"));
         CONTROLLER_TEMPLATES.add(new Template("rest/UserController.java.ftl", "User"));
         CONTROLLER_TEMPLATES.add(new Template("rest/AuthenticationController.java.ftl", "Authentication"));
-
+        
         if (restData.isTestCase()) {
             TEST_CASE_TEMPLATES.add(new Template("arquillian/AbstractTest.java.ftl", "AbstractTest"));
-            TEST_CASE_TEMPLATES.add(new Template("arquillian/ApplicationTest.java.ftl", "ApplicationTest"));
+            if (appConfigData.isMonolith() || appConfigData.isGateway()) {
+                TEST_CASE_TEMPLATES.add(new Template("arquillian/ApplicationTest.java.ftl", "ApplicationTest"));
+            }
             TEST_CASE_CONTROLLER_TEMPLATES.add(new Template("arquillian/AccountControllerTest.java.ftl", "Account"));
             TEST_CASE_CONTROLLER_TEMPLATES.add(new Template("arquillian/UserControllerTest.java.ftl", "User"));
         }
+
+        MICROSERVICES_TEMPLATES.add(new Template("web/CORSFilter.java.ftl", "CORSFilter", "web"));
+        MICROSERVICES_TEMPLATES.add(new Template("security/SecurityHelper.java.ftl", "SecurityHelper", "security"));
+        MICROSERVICES_TEMPLATES.add(new Template("security/JWTCredential.java.ftl", "JWTCredential", "security"));
+        MICROSERVICES_TEMPLATES.add(new Template("security/TokenProvider.java.ftl", "TokenProvider", "security"));
+        if (restData.getSecurityType() == SecurityType.JAXRS_JWT) {
+            MICROSERVICES_TEMPLATES.add(new Template("security/JWTAuthenticationFilter.java.ftl", "JWTAuthenticationFilter", "security"));
+            MICROSERVICES_TEMPLATES.add(new Template("security/Secured.java.ftl", "Secured", "security"));
+        } else if (restData.getSecurityType() == SecurityType.SECURITY_JWT) {
+            MICROSERVICES_TEMPLATES.add(new Template("security/JWTAuthenticationMechanism.java.ftl", "JWTAuthenticationMechanism", "security"));
+        }
+        
+        if(appConfigData.getRegistryType() == CONSUL){
+            MICROSERVICES_TEMPLATES.add(new Template("registry/RegistryService.java.ftl", "RegistryService", "registry"));
+        }
+        MICROSERVICES_CONTROLLER_TEMPLATES.add(new Template("rest/HealthController.java.ftl", "Health"));
+    
+        GATEWAY_TEMPLATES.add(new Template("routing/FilterRegistryListener.java.ftl", "FilterRegistryListener", "routing"));
+        GATEWAY_TEMPLATES.add(new Template("routing/ServiceDiscoveryFilter.java.ftl", "ServiceDiscoveryFilter", "routing"));
+        GATEWAY_TEMPLATES.add(new Template("routing/RoutingFilter.java.ftl", "RoutingFilter", "routing"));
+        GATEWAY_TEMPLATES.add(new Template("routing/SendResponseFilter.java.ftl", "SendResponseFilter", "routing"));
 
     }
 
     @Override
     public void execute() throws IOException {
-        testSource = SourceGroupSupport.getTestSourceGroup(project);
+        targetProject = appConfigData.getTargetProject();
+        targetSource = appConfigData.getTargetSourceGroup();
+        gatewayProject = appConfigData.getGatewayProject();
+        gatewaySource = appConfigData.getGatewaySourceGroup();
+        targetTestSource = SourceGroupSupport.getTestSourceGroup(targetProject);
+        gatewayTestSource = SourceGroupSupport.getTestSourceGroup(gatewayProject);
+
         handler.progress(Console.wrap(RESTGenerator.class, "MSG_Progress_Generating_REST", FG_RED, BOLD, UNDERLINE));
-        entityPackage = entityMapping.getPackage();
+        entityPackage = entityMapping.getEntityPackage();
         Map<String, Object> params = new HashMap<>();
-        params.put("entityPackage", entityPackage);
+        params.put("gateway", appConfigData.isGateway());
+        params.put("microservices", appConfigData.isMicroservice());
+        params.put("monolith", appConfigData.isMonolith());
+        reloadTargetPackage(params);
         params.put("applicationPath", restData.getRestConfigData().getApplicationPath());
-        params.put("appPackage", repositoryData.getAppPackage());
-        params.put("repositoryPackage", repositoryData.getPackage());
-        params.put("restPackage", restData.getPackage());
         params.put("beanPrefix", repositoryData.getPrefixName());
         params.put("beanSuffix", repositoryData.getSuffixName());
         params.put("restPrefix", restData.getPrefixName());
@@ -240,71 +283,96 @@ public class RESTGenerator implements Generator {
         params.put("metrics", restData.isMetrics());
         params.put("log", restData.isLogger());
         params.put("docs", restData.isDocsEnable());
-        if (appConfigData.isCompleteApplication()) {
-            params.putAll(generateServerSideComponent(params));
-            CDIUtil.createDD(project);
-            generateProducer();
-            addMavenDependencies("rest/pom/_pom.xml");
-            if (restData.isMetrics()) {
-                addMavenDependencies("metrics/pom/_pom.xml");
-            }
-            if (restData.isLogger()) {
-                addMavenDependencies("logger/pom/_pom.xml");
-            }
-            if (restData.isDocsEnable()) {
-                addMavenDependencies("docs/pom/_pom.xml");
-            }
-            if (restData.isTestCase()) {
-                addMavenDependencies("arquillian/pom/_pom.xml");
+        if (appConfigData.isMonolith() || appConfigData.isMicroservice()) {
+            if (appConfigData.isCompleteApplication()) {
+                generateServerSideComponent(params);
+                CDIUtil.createDD(targetProject);
+                generateLoggerProducer(targetSource, appConfigData.getTargetPackage());
+                addRestMavenDependencies(targetProject);
             }
         }
-        for (Entity entity : entityMapping.getGeneratedEntity().collect(toList())) {
-            generateEntityController(entity, params);
+        if (appConfigData.isGateway()) {
+            generateServerSideComponent(params);
+            CDIUtil.createDD(gatewayProject);
+            generateLoggerProducer(gatewaySource, appConfigData.getGatewayPackage());
+            addRestMavenDependencies(gatewayProject);
         }
-        if (appConfigData.isCompleteApplication() && restData.getSecurityType() == SecurityType.SECURITY_JWT) {
+        if (appConfigData.isMonolith() || appConfigData.isMicroservice()) {
+            for (Entity entity : entityMapping.getGeneratedEntity().collect(toList())) {
+                generateEntityController(entity, params);
+            }
+        }
+
+        if (restData.getSecurityType() == SecurityType.SECURITY_JWT) {
+            if (appConfigData.isMonolith() || appConfigData.isGateway()) {
+                if (appConfigData.isCompleteApplication()) {
+                    appConfigData.addWebDescriptorContent(
+                            expandTemplate("/org/netbeans/jcode/template/security/web/descriptor/_web.xml.ftl", params), gatewayProject);
+                    if (restData.isTestCase()) {
+                        appConfigData.addWebDescriptorTestContent(
+                                expandTemplate("/org/netbeans/jcode/template/security/web/descriptor/_web.xml.ftl", params), gatewayProject);
+                    }
+                }
+            }
+            if (appConfigData.isMonolith() || appConfigData.isMicroservice()) {
+                if (!restEntityInfo.isEmpty()) {
+                    params.put("entityConstraints", restEntityInfo);
+                    appConfigData.addWebDescriptorContent(
+                            expandTemplate("/org/netbeans/jcode/template/security/web/descriptor/entity_web.xml.ftl", params), targetProject);
+                    if (appConfigData.isMonolith() && restData.isTestCase()) {
+                        appConfigData.addWebDescriptorTestContent(
+                                expandTemplate("/org/netbeans/jcode/template/security/web/descriptor/entity_web.xml.ftl", params), targetProject);
+                    }
+                }
+            }
+        }
+        
+        if(appConfigData.isGateway()) {
             appConfigData.addWebDescriptorContent(
-                    expandTemplate("/org/netbeans/jcode/template/security/web/descriptor/_web.xml.ftl", params));
-            appConfigData.addWebDescriptorTestContent(
-                    expandTemplate("/org/netbeans/jcode/template/security/web/descriptor/_web.xml.ftl", params));
-            if (!restEntityInfo.isEmpty()) {
-                params.put("entityConstraints", restEntityInfo);
-                appConfigData.addWebDescriptorContent(
-                        expandTemplate("/org/netbeans/jcode/template/security/web/descriptor/entity_web.xml.ftl", params));
-                appConfigData.addWebDescriptorTestContent(
-                        expandTemplate("/org/netbeans/jcode/template/security/web/descriptor/entity_web.xml.ftl", params));
-            }
-
+                            expandTemplate("/org/netbeans/jcode/template/routing/descriptor/web.xml.ftl", params), gatewayProject);
         }
+        
+
+        
         if (appConfigData.isCompleteApplication()) {
-            generateApplicationConfig(params);
+            Map<String, Object> appParams = new HashMap<>(params);
+            if (appConfigData.isGateway()) {
+                reloadGatewayPackage(appParams);
+                generateApplicationConfig(appParams,
+                        appConfigData.getGatewayContextPath(),
+                        gatewaySource,
+                        appConfigData.getGatewayPackage());
+            } else if (appConfigData.isMicroservice()) {
+                reloadTargetPackage(appParams);
+                generateApplicationConfig(appParams,
+                        appConfigData.getTargetContextPath(),
+                        targetSource,
+                        appConfigData.getTargetPackage());
+            } else if (appConfigData.isMonolith()) {
+                generateApplicationConfig(appParams,
+                        appConfigData.getTargetContextPath(),
+                        targetSource,
+                        appConfigData.getTargetPackage());
+            }
         }
     }
 
-    private FileObject generateProducer() throws IOException {
-        String _package = repositoryData.getAppPackage() + ".producer";
-        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, _package, true);
-        String fileName = "LoggerProducer";
-        FileObject afFO = targetFolder.getFileObject(fileName, JAVA_EXT);
-        if (afFO == null) {
-            handler.progress(fileName);
-            afFO = org.netbeans.jcode.core.util.FileUtil.expandTemplate(TEMPLATE + "producer/LoggerProducer.java.ftl", targetFolder, fileName + '.' + JAVA_EXT, Collections.singletonMap("package", _package));
-        }
-        return afFO;
+    private void reloadTargetPackage(Map<String, Object> params) {
+        params.put("entityPackage", appConfigData.getTargetPackage() + "." + entityPackage);
+        params.put("appPackage", appConfigData.getTargetPackage());
+        params.put("repositoryPackage", appConfigData.getTargetPackage() + "." + repositoryData.getPackage());
+        params.put("restPackage", appConfigData.getTargetPackage() + "." + restData.getPackage());
     }
 
-    private void addMavenDependencies(String pom) {
-        if (POMManager.isMavenProject(project)) {
-            POMManager pomManager = new POMManager(TEMPLATE + pom, project);
-            pomManager.commit();
-        } else {
-            handler.warning(NbBundle.getMessage(RESTGenerator.class, "TITLE_Maven_Project_Not_Found"),
-                    NbBundle.getMessage(RESTGenerator.class, "MSG_Maven_Project_Not_Found"));
-        }
+    private void reloadGatewayPackage(Map<String, Object> params) {
+        params.put("entityPackage", appConfigData.getGatewayPackage() + "." + entityPackage);
+        params.put("appPackage", appConfigData.getGatewayPackage());
+        params.put("repositoryPackage", appConfigData.getGatewayPackage() + "." + repositoryData.getPackage());
+        params.put("restPackage", appConfigData.getGatewayPackage() + "." + restData.getPackage());
     }
 
-    public FileObject generateEntityController(final Entity entity, Map<String, Object> appParam) throws IOException {
+    public FileObject generateEntityController(final Entity entity, Map<String, Object> params) throws IOException {
         FileObject controllerFO;
-        String entityFQN = entity.getFQN();
         boolean overrideExisting = true, dto = false;
         final String entitySimpleName = entity.getClazz();
 
@@ -317,43 +385,43 @@ public class RESTGenerator implements Generator {
         String entityInstance = firstLower(entitySimpleName);
         String entityNameSpinalCased = kebabCase(entityInstance);
 
-        Map<String, Object> param = new HashMap<>(appParam);
-        param.put("EntityClass", entityClass);
-        param.put("EntityClassPlural", pluralize(firstUpper(entitySimpleName)));
-        param.put("EntityClass_FQN", entityFQN);
-        param.put("entityInstance", entityInstance);
-        param.put("entityInstancePlural", pluralize(entityInstance));
+        Map<String, Object> contollerParams = new HashMap<>(params);
+        reloadTargetPackage(contollerParams);
+        contollerParams.put("EntityClass", entityClass);
+        contollerParams.put("EntityClassPlural", pluralize(firstUpper(entitySimpleName)));
+        contollerParams.put("EntityClass_FQN", '.' + entity.getRelativeFQN());
+        contollerParams.put("entityInstance", entityInstance);
+        contollerParams.put("entityInstancePlural", pluralize(entityInstance));
 
-        param.put("controllerClass", controllerFileName);
-        param.put("controllerClassHumanized", startCase(controllerFileName));
-        param.put("entityApiUrl", entityNameSpinalCased);
+        contollerParams.put("controllerClass", controllerFileName);
+        contollerParams.put("controllerClassHumanized", startCase(controllerFileName));
+        contollerParams.put("entityApiUrl", entityNameSpinalCased);
 
-        param.put("EntityRepository", repositoryFileName);
-        param.put("entityRepository", firstLower(repositoryFileName));
-        param.put("EntityRepository_FQN", fqRepositoryFileName);
+        contollerParams.put("EntityRepository", repositoryFileName);
+        contollerParams.put("entityRepository", firstLower(repositoryFileName));
+        contollerParams.put("EntityRepository_FQN", '.' + fqRepositoryFileName);
 
-        param.put("instanceType", dto ? entityClass + "DTO" : entityClass);
-        param.put("instanceName", dto ? entityInstance + "DTO" : entityInstance);
+        contollerParams.put("instanceType", dto ? entityClass + "DTO" : entityClass);
+        contollerParams.put("instanceName", dto ? entityInstance + "DTO" : entityInstance);
 
-        param.put("pagination", entity.getPaginationType() == PaginationType.NO ? "no" : "yes");
-        param.put("fieldsContainNoOwnerOneToOne", false);
+        contollerParams.put("pagination", entity.getPaginationType() == PaginationType.NO ? "no" : "yes");
+        contollerParams.put("fieldsContainNoOwnerOneToOne", false);
 
         Attribute idAttribute = entity.getAttributes().getIdField();
 
         if (idAttribute != null) {
             String dataType = idAttribute.getDataTypeLabel();
-            param.put("pkName", firstLower(idAttribute.getName()));
-            param.put("pkGetter", "get" + getMethodName(idAttribute.getName()));
-            param.put("pkSetter", "set" + getMethodName(idAttribute.getName()));
-            param.put("pkType", dataType);
-            param.put("isPKPrimitive", isPrimitive(dataType));
+            contollerParams.put("pkName", firstLower(idAttribute.getName()));
+            contollerParams.put("pkGetter", "get" + getMethodName(idAttribute.getName()));
+            contollerParams.put("pkSetter", "set" + getMethodName(idAttribute.getName()));
+            contollerParams.put("pkType", dataType);
+            contollerParams.put("isPKPrimitive", isPrimitive(dataType));
         }
 
         String restTemplate = "EntityController";
-//        if(idAttribute instanceof Id){
         if (idAttribute instanceof EmbeddedId || idAttribute instanceof DefaultAttribute) {
             restTemplate = "CompositePKEntityController";
-            param.put("EntityPKClass_FQN", entity.getRootPackage() + '.' + idAttribute.getDataTypeLabel());
+            contollerParams.put("EntityPKClass_FQN", '.' + entity.getRelativeRootPackage() + '.' + idAttribute.getDataTypeLabel());
             DefaultClass defaultClass = null;
             if (idAttribute instanceof EmbeddedId) {
                 EmbeddedId embeddedId = (EmbeddedId) idAttribute;
@@ -368,22 +436,22 @@ public class RESTGenerator implements Generator {
             for (DefaultAttribute attribute : attributes) {
                 restParamList.append(String.format("@QueryParam(\"%s\") %s %s,", attribute.getName(), attribute.getDataTypeLabel(), attribute.getName()));
                 restParamNameList.append(attribute.getName()).append(',');
-                restDocList.append(String.format("@param %s the %s of the %s", attribute.getName(), attribute.getName(), param.get("instanceName"))).append('\n');
+                restDocList.append(String.format("@param %s the %s of the %s", attribute.getName(), attribute.getName(), contollerParams.get("instanceName"))).append('\n');
             }
             restParamList.setLength(restParamList.length() - 1);
             restParamNameList.setLength(restParamNameList.length() - 1);
             restDocList.setLength(restDocList.length() - 1);
-            param.put("restParamList", restParamList);
-            param.put("restParamNameList", restParamNameList);
-            param.put("restDocList", restDocList);
+            contollerParams.put("restParamList", restParamList);
+            contollerParams.put("restParamNameList", restParamNameList);
+            contollerParams.put("restDocList", restDocList);
         }
 
-        param.put("package", entity.getAbsolutePackage(restData.getPackage()));
-        param.put("applicationPath", restData.getRestConfigData().getApplicationPath());
-        param.put("metrics", appConfigData.isCompleteApplication() && restData.isMetrics());
-        param.put("docs", appConfigData.isCompleteApplication() && restData.isDocsEnable());
+        contollerParams.put("package", entity.getAbsolutePackage(appConfigData.getTargetPackage() + '.' + restData.getPackage()));
+        contollerParams.put("applicationPath", restData.getRestConfigData().getApplicationPath());
+        contollerParams.put("metrics", appConfigData.isCompleteApplication() && restData.isMetrics());
+        contollerParams.put("docs", appConfigData.isCompleteApplication() && restData.isDocsEnable());
 
-        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, entity.getAbsolutePackage(restData.getPackage()), true);
+        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(targetSource, entity.getAbsolutePackage(appConfigData.getTargetPackage() + '.' + restData.getPackage()), true);
 
         controllerFO = targetFolder.getFileObject(controllerFileName, JAVA_EXT);
         if (controllerFO != null) {
@@ -395,7 +463,7 @@ public class RESTGenerator implements Generator {
         }
         //entity controller 
         handler.progress(controllerFileName);
-        expandTemplate(TEMPLATE + "rest/entity/" + restTemplate + ".java.ftl", targetFolder, controllerFileName + '.' + JAVA_EXT, param);
+        expandTemplate(TEMPLATE + "rest/entity/" + restTemplate + ".java.ftl", targetFolder, controllerFileName + '.' + JAVA_EXT, contollerParams);
 
         //entity controller test-case
         if (restData.isTestCase()) {
@@ -416,11 +484,11 @@ public class RESTGenerator implements Generator {
             };
 
             if (idAttribute instanceof DefaultAttribute) {
-                param.put("pkStrategy", "IdClass");
+                contollerParams.put("pkStrategy", "IdClass");
             } else if (idAttribute instanceof EmbeddedId) {
-                param.put("pkStrategy", "EmbeddedId");
+                contollerParams.put("pkStrategy", "EmbeddedId");
             } else {
-                param.put("pkStrategy", "Id");
+                contollerParams.put("pkStrategy", "Id");
             }
 
             List<Map<String, Object>> allIdAttributes = entity.getAttributes().getSuperId()
@@ -428,8 +496,8 @@ public class RESTGenerator implements Generator {
                     .filter(attr -> getAttributeDefaultValue(attr.getDataTypeLabel()) != null)
                     .map(con)
                     .collect(toList());
-            param.put("allIdAttributes", allIdAttributes);
-            param.put("idAttributes", entity.getAttributes().getSuperId()
+            contollerParams.put("allIdAttributes", allIdAttributes);
+            contollerParams.put("idAttributes", entity.getAttributes().getSuperId()
                     .stream()
                     .filter(id -> !id.isGeneratedValue())
                     .filter(attr -> getAttributeDefaultValue(attr.getDataTypeLabel()) != null)
@@ -452,14 +520,16 @@ public class RESTGenerator implements Generator {
             ))
                     .map(con)
                     .collect(toList());
-            param.put("attributes", basicAttributes);
-            param.put("versionAttributes", entity.getAttributes().getSuperVersion().stream().map(con).collect(toList()));
+            contollerParams.put("attributes", basicAttributes);
+            contollerParams.put("versionAttributes", entity.getAttributes().getSuperVersion().stream().map(con).collect(toList()));
             Set<String> connectedClasses = entity.getAttributes().getConnectedClass();
-            param.put("connectedClasses", connectedClasses.stream().map(jc -> JavaIdentifiers.unqualify(jc)).collect(toList()));
-            param.put("connectedFQClasses", connectedClasses);
+            contollerParams.put("connectedClasses", connectedClasses.stream().map(jc -> JavaIdentifiers.unqualify(jc)).collect(toList()));
+            contollerParams.put("connectedFQClasses", connectedClasses);
 
             String controllerTestFileName = controllerFileName + "Test";
-            FileObject targetTestFolder = SourceGroupSupport.getFolderForPackage(testSource, entity.getAbsolutePackage(restData.getPackage()), true);
+            FileObject targetTestFolder = SourceGroupSupport.getFolderForPackage(targetTestSource,
+                    entity.getAbsolutePackage(appConfigData.getTargetPackage() + '.' + restData.getPackage()),
+                    true);
             controllerFO = targetTestFolder.getFileObject(controllerTestFileName, JAVA_EXT);
 
             if (controllerFO != null) {
@@ -470,82 +540,160 @@ public class RESTGenerator implements Generator {
                 }
             }
             handler.progress(controllerTestFileName);
-            expandTemplate(TEMPLATE + "arquillian/EntityControllerTest.java.ftl", targetTestFolder, controllerTestFileName + '.' + JAVA_EXT, param);
+            expandTemplate(TEMPLATE + "arquillian/EntityControllerTest.java.ftl", targetTestFolder, controllerTestFileName + '.' + JAVA_EXT, contollerParams);
         }
 
-        restEntityInfo.add(new RestEntityInfo(entity.getAbsolutePackage(restData.getPackage()), controllerFileName, entityNameSpinalCased));
+        restEntityInfo.add(new RestEntityInfo(entity.getAbsolutePackage(appConfigData.getTargetPackage() + '.' + restData.getPackage()), controllerFileName, entityNameSpinalCased));
         return controllerFO;
     }
 
-    private Map<String, Object> generateServerSideComponent(Map<String, Object> baseParam) throws IOException {
+    private Map<String, Object> generateServerSideComponent(Map<String, Object> params) throws IOException {
         registerTemplates();
 
-        Map<String, Object> params = new HashMap<>(baseParam);
-        String appPackage = repositoryData.getAppPackage();
         final String abstractRepository = repositoryData.getPrefixName() + REPOSITORY_ABSTRACT + repositoryData.getSuffixName();
         params.put("cdi", repositoryData.isCDI());
         params.put("named", repositoryData.isNamed());
 
         params.put("AbstractRepository", abstractRepository);
-        params.put("AbstractRepository_FQN", repositoryData.getPackage() + '.' + abstractRepository);
-        params.put("EntityManagerProducer_FQN", repositoryData.getAppPackage() + ".producer.EntityManagerProducer");
-        params.put("LoggerProducer_FQN", repositoryData.getAppPackage() + ".producer.LoggerProducer");
+        params.put("AbstractRepository_FQN", '.' + repositoryData.getPackage() + '.' + abstractRepository);
+        params.put("EntityManagerProducer_FQN", ".producer.EntityManagerProducer");
+        params.put("LoggerProducer_FQN", ".producer.LoggerProducer");
         params.put("PU", entityMapping.getPersistenceUnitName());
 
         params.put("serverType", dockerConfigData.getServerType().name());
         params.put("serverFamily", dockerConfigData.getServerType().getFamily().name());
         params.put("frontendAppName", restData.getFrontendAppName());
+        params.put("registryType", appConfigData.getRegistryType().name());
+        
 
-        //config
-        expandServerSideComponent(source, appPackage, EMPTY, EMPTY, CONFIG_TEMPLATES, params);
-        //entity
-        expandServerSideComponent(source, entityPackage, EMPTY, EMPTY, ENTITY_TEMPLATES, params);
-        //contoller ext
-        expandServerSideComponent(source, restData.getPackage(), EMPTY, EMPTY, CONTROLLER_EXT_TEMPLATES, params);
-        //repository
-        expandServerSideComponent(source, repositoryData.getPackage(), repositoryData.getPrefixName(), repositoryData.getSuffixName(), REPOSITORY_TEMPLATES, params);
-        //metrics
-        expandServerSideComponent(source, appPackage, EMPTY, EMPTY, METRICS_TEMPLATES, params);
-        //logger
-        expandServerSideComponent(source, restData.getPackage(), EMPTY, EMPTY, LOGGER_TEMPLATES, params);
-        //service
-        expandServerSideComponent(source, appPackage, EMPTY, EMPTY, SERVICE_TEMPLATES, params);
-        //entity
-        expandServerSideComponent(source, entityPackage, EMPTY, EMPTY, ENTITY_LISTENER_TEMPLATES, params);
-        //controller
-        expandServerSideComponent(source, restData.getPackage(), restData.getPrefixName(), restData.getSuffixName(), CONTROLLER_TEMPLATES, params);
-        //post service depends on controller
-        expandServerSideComponent(source, appPackage, EMPTY, EMPTY, POST_SERVICE_TEMPLATES, params);
-        //test-case
+        if (appConfigData.isGateway() || appConfigData.isMonolith()) {
+            reloadGatewayPackage(params);
+            //config
+            expandServerSideComponent(gatewaySource, appConfigData.getGatewayPackage(), null, EMPTY, EMPTY, CONFIG_TEMPLATES, params);
+            //entity
+            expandServerSideComponent(gatewaySource, appConfigData.getGatewayPackage(), entityPackage, EMPTY, EMPTY, ENTITY_TEMPLATES, params);
+            //contoller util
+            expandServerSideComponent(gatewaySource, appConfigData.getGatewayPackage(), restData.getPackage(), EMPTY, EMPTY, CONTROLLER_UTIL_TEMPLATES, params);
+            //contoller ext
+            expandServerSideComponent(gatewaySource, appConfigData.getGatewayPackage(), restData.getPackage(), EMPTY, EMPTY, CONTROLLER_EXT_TEMPLATES, params);
+            //repository
+            expandServerSideComponent(gatewaySource, appConfigData.getGatewayPackage(), repositoryData.getPackage(), repositoryData.getPrefixName(), repositoryData.getSuffixName(), REPOSITORY_TEMPLATES, params);
+            //metrics
+            expandServerSideComponent(gatewaySource, appConfigData.getGatewayPackage(), null, EMPTY, EMPTY, METRICS_TEMPLATES, params);
+            //logger
+            expandServerSideComponent(gatewaySource, appConfigData.getGatewayPackage(), restData.getPackage(), EMPTY, EMPTY, LOGGER_TEMPLATES, params);
+            //service
+            expandServerSideComponent(gatewaySource, appConfigData.getGatewayPackage(), null, EMPTY, EMPTY, SERVICE_TEMPLATES, params);
+            //entity
+            expandServerSideComponent(gatewaySource, appConfigData.getGatewayPackage(), entityPackage, EMPTY, EMPTY, ENTITY_LISTENER_TEMPLATES, params);
+            //controller
+            expandServerSideComponent(gatewaySource, appConfigData.getGatewayPackage(), restData.getPackage(), restData.getPrefixName(), restData.getSuffixName(), CONTROLLER_TEMPLATES, params);
+            //post service depends on controller
+            expandServerSideComponent(gatewaySource, appConfigData.getGatewayPackage(), null, EMPTY, EMPTY, POST_SERVICE_TEMPLATES, params);
+        }
+        
+        if (appConfigData.isGateway()) {
+            expandServerSideComponent(targetSource, appConfigData.getTargetPackage(), null, EMPTY, EMPTY, GATEWAY_TEMPLATES, params);
+        }
+
+        if (appConfigData.isMicroservice()) {
+            reloadTargetPackage(params);
+            //config
+            expandServerSideComponent(targetSource, appConfigData.getTargetPackage(), null, EMPTY, EMPTY, CONFIG_TEMPLATES, params);
+            //contoller util
+            expandServerSideComponent(targetSource, appConfigData.getTargetPackage(), restData.getPackage(), EMPTY, EMPTY, CONTROLLER_UTIL_TEMPLATES, params);
+            //metrics
+            expandServerSideComponent(targetSource, appConfigData.getTargetPackage(), null, EMPTY, EMPTY, METRICS_TEMPLATES, params);
+            //logger
+            expandServerSideComponent(targetSource, appConfigData.getTargetPackage(), restData.getPackage(), EMPTY, EMPTY, LOGGER_TEMPLATES, params);
+            //microservices
+            expandServerSideComponent(targetSource, appConfigData.getTargetPackage(), null, EMPTY, EMPTY, MICROSERVICES_TEMPLATES, params);
+            expandServerSideComponent(targetSource, appConfigData.getTargetPackage(), restData.getPackage(), restData.getPrefixName(), restData.getSuffixName(), MICROSERVICES_CONTROLLER_TEMPLATES, params);
+        }
+
         if (restData.isTestCase()) {
-            expandServerSideComponent(testSource, restData.getPackage(), EMPTY, EMPTY, TEST_CASE_TEMPLATES, params);
-            expandServerSideComponent(testSource, restData.getPackage(), restData.getPrefixName(), restData.getSuffixName() + "Test", TEST_CASE_CONTROLLER_TEMPLATES, params);
-        }
-
-        if (appConfigData.isCompleteApplication()) {
-            FileObject configRoot = ProjectHelper.getResourceDirectory(project);
-            if (configRoot == null) {//non-maven project
-                configRoot = source.getRootFolder();
+            if (appConfigData.isGateway() || appConfigData.isMonolith()) {
+                //test-case
+                reloadGatewayPackage(params);
+                expandServerSideComponent(gatewayTestSource, appConfigData.getGatewayPackage(), restData.getPackage(), EMPTY, EMPTY, TEST_CASE_TEMPLATES, params);
+                expandServerSideComponent(gatewayTestSource, appConfigData.getGatewayPackage(), restData.getPackage(), restData.getPrefixName(), restData.getSuffixName() + "Test", TEST_CASE_CONTROLLER_TEMPLATES, params);
             }
-            expandTemplate(TEMPLATE + "config/resource/META-INF/sql/insert.sql.ftl", getFolderForPackage(configRoot, "META-INF.sql", true), "insert.sql", singletonMap("database", dockerConfigData.getDatabaseType() != null ? dockerConfigData.getDatabaseType() : "Derby"));
-            expandTemplate(TEMPLATE + "config/resource/META-INF/microprofile-config.properties.ftl", getFolderForPackage(configRoot, "META-INF", true), "microprofile-config.properties", params);
-            expandTemplate(TEMPLATE + "config/resource/i18n/messages.properties.ftl", getFolderForPackage(configRoot, "i18n", true), "messages.properties", EMPTY_MAP);
-            FileUtil.copyStaticResource(TEMPLATE + "config/resource/mail-resources.zip", configRoot, null, handler);
-            updatePersistenceXml(Arrays.asList(entityPackage + ".User", entityPackage + ".Authority"));
-
-            if (restData.isTestCase()) {
-                configRoot = ProjectHelper.getTestResourceDirectory(project);
-                expandTemplate(TEMPLATE + "arquillian/config/arquillian.xml.ftl", configRoot, "arquillian.xml", EMPTY_MAP);
-//              expandTemplate(TEMPLATE + "arquillian/config/glassfish-resources.xml.ftl", configRoot, "glassfish-resources.xml", EMPTY_MAP);
-                appConfigData.addWebDescriptorTestContent(expandTemplate(TEMPLATE + "arquillian/config/web.xml.ftl", params));
-                expandTemplate(TEMPLATE + "arquillian/config/test-persistence.xml.ftl", configRoot, "test-persistence.xml", Collections.singletonMap("PU_NAME", entityMapping.getPersistenceUnitName()));
-                expandTemplate(TEMPLATE + "config/resource/META-INF/sql/insert.sql.ftl", getFolderForPackage(configRoot, "META-INF.sql", true), "insert.sql", singletonMap("database", "Derby"));
+            if (appConfigData.isMicroservice()) {
+                reloadTargetPackage(params);
+                expandServerSideComponent(targetTestSource, appConfigData.getTargetPackage(), restData.getPackage(), EMPTY, EMPTY, TEST_CASE_TEMPLATES, params);
             }
         }
+
+        final FileObject configGatwayRoot = ProjectHelper.getResourceDirectory(gatewayProject);
+        final FileObject configTargetRoot = ProjectHelper.getResourceDirectory(targetProject);
+        FileObject webinfTargetRoot = ProjectHelper.getProjectWebRoot(targetProject).getFileObject("WEB-INF");
+        if(webinfTargetRoot == null){
+            webinfTargetRoot = ProjectHelper.getProjectWebRoot(targetProject).createFolder("WEB-INF");
+        }
+        expandTemplate(TEMPLATE + "config/resource/META-INF/microprofile-config.properties.ftl",
+                getFolderForPackage(appConfigData.isMicroservice() ? configTargetRoot : configGatwayRoot, "META-INF", true),
+                "microprofile-config.properties",
+                params);
+        if (appConfigData.isGateway() || appConfigData.isMonolith()) {
+            expandTemplate(TEMPLATE + "config/resource/META-INF/sql/insert.sql.ftl",
+                    getFolderForPackage(configGatwayRoot, "META-INF.sql", true),
+                    "insert.sql",
+                    singletonMap("database", dockerConfigData.getDatabaseType() != null ? dockerConfigData.getDatabaseType() : "Derby"));
+            expandTemplate(TEMPLATE + "config/resource/i18n/messages.properties.ftl",
+                    getFolderForPackage(configGatwayRoot, "i18n", true),
+                    "messages.properties",
+                    EMPTY_MAP);
+            FileUtil.copyStaticResource(TEMPLATE + "config/resource/mail-resources.zip", configGatwayRoot, null, handler);
+            updatePersistenceXml(Arrays.asList(
+                    appConfigData.getGatewayPackage() + "." + entityPackage + ".User",
+                    appConfigData.getGatewayPackage() + "." + entityPackage + ".Authority"),
+                    gatewayProject);
+        }
+        if (appConfigData.isMicroservice()) {
+            Map<String, Object> descriptorParams = new HashMap<>();
+            descriptorParams.put("applicationPath", restData.getRestConfigData().getApplicationPath());
+            descriptorParams.put("contextPath", appConfigData.getTargetContextPath());
+            if (appConfigData.getRegistryType() == SNOOPEE) {
+                expandTemplate(TEMPLATE + "registry/resource/snoop.yml.ftl",
+                        configTargetRoot,
+                        "snoop.yml",
+                        descriptorParams);
+            }
+            expandTemplate(TEMPLATE + "web/descriptor/glassfish-web.xml.ftl",
+                    webinfTargetRoot,
+                    "glassfish-web.xml",
+                    descriptorParams);
+        }
+
+        if (restData.isTestCase()) {
+        final FileObject testConfigGatwayRoot = ProjectHelper.getTestResourceDirectory(gatewayProject);
+        final FileObject testConfigTargetRoot = ProjectHelper.getTestResourceDirectory(targetProject);
+            Map<String, Object> param = new HashMap<>(params);
+            param.put("PU_NAME", entityMapping.getPersistenceUnitName());
+            expandTemplate(TEMPLATE + "arquillian/config/test-persistence.xml.ftl",
+                    appConfigData.isMicroservice() ? testConfigTargetRoot : testConfigGatwayRoot,
+                    "test-persistence.xml",
+                    param);
+            expandTemplate(TEMPLATE + "arquillian/config/arquillian.xml.ftl",
+                    appConfigData.isMicroservice() ? testConfigTargetRoot : testConfigGatwayRoot,
+                    "arquillian.xml",
+                    EMPTY_MAP);
+            appConfigData.addWebDescriptorTestContent(
+                    expandTemplate(TEMPLATE + "arquillian/config/web.xml.ftl", params),
+                    appConfigData.isMicroservice() ? targetProject : gatewayProject);
+            
+            if (appConfigData.isGateway() || appConfigData.isMonolith()) {
+                expandTemplate(TEMPLATE + "config/resource/META-INF/sql/insert.sql.ftl",
+                        getFolderForPackage(testConfigGatwayRoot, "META-INF.sql", true),
+                        "insert.sql",
+                        singletonMap("database", "Derby"));
+            }
+        }
+
         return params;
     }
 
-    private void updatePersistenceXml(List<String> classNames) {
+    private void updatePersistenceXml(List<String> classNames, Project project) {
         String puName = entityMapping.getPersistenceUnitName();
         Optional<PersistenceUnit> punitOptional = getPersistenceUnit(project, puName);
         if (punitOptional.isPresent()) {
@@ -567,16 +715,23 @@ public class RESTGenerator implements Generator {
 
     }
 
-    private void expandServerSideComponent(SourceGroup targetSourceGroup, String _package, String prefixName, String suffixName, List<Template> templates, Map<String, Object> param) {
+    private void expandServerSideComponent(SourceGroup targetSourceGroup, String appPackage,
+            String _package, String prefixName, String suffixName, List<Template> templates,
+            Map<String, Object> param) {
         if (templates != null) {
             for (Template template : templates) {
                 try {
                     String templatePackage = _package;
                     String fileName = prefixName + template.getFileName() + suffixName;
                     if (StringUtils.isNotBlank(template.getPackageSuffix())) {
-                        templatePackage = templatePackage + '.' + template.getPackageSuffix();
+                        templatePackage = StringUtils.isNotBlank(templatePackage)
+                                ? templatePackage + '.' + template.getPackageSuffix()
+                                : template.getPackageSuffix();
                     }
-                    param.put("package", templatePackage);
+                    if (StringUtils.isNotBlank(templatePackage)) {
+                        templatePackage = '.' + templatePackage;
+                    }
+                    param.put("package", appPackage + templatePackage);
                     String templateFile = template.getPath().substring(template.getPath().lastIndexOf('/') + 1, template.getPath().indexOf('.'));
                     param.put(templateFile, fileName);
 
@@ -598,53 +753,65 @@ public class RESTGenerator implements Generator {
 
     }
 
-    private void generateApplicationConfig(Map<String, Object> superParams) throws IOException {
-        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, restData.getPackage(), true);
-        Map<String, Object> params = new HashMap<>(superParams);
-        params.put("entityControllerList", restEntityInfo);
-        params.put("package", restData.getPackage());
-        params.put("ApplicationConfig", restData.getRestConfigData().getApplicationClass());
-        params.put("ApplicationPath", restData.getRestConfigData().getApplicationPath());
-        expandTemplate(TEMPLATE + "rest/ApplicationConfig.java.ftl", targetFolder, restData.getRestConfigData().getApplicationClass() + '.' + JAVA_EXT, params);
+    private void generateApplicationConfig(Map<String, Object> params, String contextPath, SourceGroup source, String appPackage) throws IOException {
+        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, appPackage + '.' + restData.getPackage(), true);
+        Map<String, Object> appParams = new HashMap<>(params);
+        appParams.put("entityControllerList", restEntityInfo);
+        appParams.put("package", appPackage + '.' + restData.getPackage());
+        appParams.put("applicationConfig", restData.getRestConfigData().getApplicationClass());
+        appParams.put("applicationPath", restData.getRestConfigData().getApplicationPath());
+        appParams.put("contextPath", contextPath);
+        expandTemplate(TEMPLATE + "rest/ApplicationConfig.java.ftl", targetFolder, restData.getRestConfigData().getApplicationClass() + '.' + JAVA_EXT, appParams);
     }
 
-//    @Deprecated
-//    private void generateApplicationConfig2(List<RestApp> singletonClasses, List<String> providerClasses) throws IOException {
-//        if (restData.getRestConfigData() == null) {
-//            return;
-//        }
-//        final RestSupport restSupport = project.getLookup().lookup(RestSupport.class);
-//        RestSupport.RestConfig.IDE.setAppClassName(restData.getRestConfigData().getPackage() + "." + restData.getRestConfigData().getApplicationClass());
-//        if (restSupport != null) {
-//            try {
-//                restSupport.ensureRestDevelopmentReady(RestSupport.RestConfig.IDE);
-//            } catch (IOException ex) {
-//                Exceptions.printStackTrace(ex);
-//            }
-//        }
-//
-//        FileObject restAppPack = SourceGroupSupport.getFolderForPackage(source,
-//                restData.getRestConfigData().getPackage() == null
-//                ? restData.getPackage() : restData.getRestConfigData().getPackage(), true);
-//
-//        try {
-//            if (restAppPack != null && restData.getRestConfigData().getApplicationClass() != null) {
-//                RestUtils.createApplicationConfigClass(restSupport, restData.getRestConfigData(),
-//                        restAppPack, repositoryData.getAppPackage(), singletonClasses, providerClasses, handler);
-//            }
-//            RestUtils.disableRestServicesChangeListner(project);
-//            restSupport.configure("Jeddict - REST support");
-//        } catch (IOException iox) {
-//            Exceptions.printStackTrace(iox);
-//        } finally {
-//            RestUtils.enableRestServicesChangeListner(project);
-//        }
-//    }
-    
     private final static Set<String> AUTO_GEN_ENITY = new HashSet<>(Arrays.asList("User", "Authority", "AbstractAuditingEntity", "AuditListner"));
 
     public static boolean isAutoGeneratedEntity(String entity) {
         return AUTO_GEN_ENITY.contains(entity);
+    }
+
+    private void addRestMavenDependencies(Project project) {
+        addMavenDependencies("rest/pom/_pom.xml", project);
+        if (restData.isMetrics()) {
+            addMavenDependencies("metrics/pom/_pom.xml", project);
+        }
+        if (restData.isLogger()) {
+            addMavenDependencies("logger/pom/_pom.xml", project);
+        }
+        if (restData.isDocsEnable()) {
+            addMavenDependencies("docs/pom/_pom.xml", project);
+        }
+        if (restData.isTestCase()) {
+            addMavenDependencies("arquillian/pom/_pom.xml", project);
+        }
+        if (appConfigData.isGateway()) {
+            addMavenDependencies("routing/pom/_pom.xml", project);
+            addMavenDependencies("routing/pom/"+appConfigData.getRegistryType().name().toLowerCase()+"_pom.xml", project);
+        } else if (appConfigData.isMicroservice()) {
+            addMavenDependencies("registry/pom/"+appConfigData.getRegistryType().name().toLowerCase()+"_pom.xml", project);
+        }
+    }
+
+    private FileObject generateLoggerProducer(SourceGroup source, String appPackage) throws IOException {
+        String _package = appPackage + ".producer";
+        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, _package, true);
+        String fileName = "LoggerProducer";
+        FileObject afFO = targetFolder.getFileObject(fileName, JAVA_EXT);
+        if (afFO == null) {
+            handler.progress(fileName);
+            afFO = org.netbeans.jcode.core.util.FileUtil.expandTemplate(TEMPLATE + "producer/LoggerProducer.java.ftl", targetFolder, fileName + '.' + JAVA_EXT, Collections.singletonMap("package", _package));
+        }
+        return afFO;
+    }
+
+    private void addMavenDependencies(String pom, Project project) {
+        if (POMManager.isMavenProject(project)) {
+            POMManager pomManager = new POMManager(TEMPLATE + pom, project);
+            pomManager.commit();
+        } else {
+            handler.warning(NbBundle.getMessage(RESTGenerator.class, "TITLE_Maven_Project_Not_Found"),
+                    NbBundle.getMessage(RESTGenerator.class, "MSG_Maven_Project_Not_Found"));
+        }
     }
 
 }

@@ -16,3 +16,9 @@ security.authentication.jwt.tokenValidityInSecondsForRememberMe: 1314000
 <#if metrics>#METRICS
 metrics.jmx.enable: false
 metrics.logs.enable: false</#if>
+
+<#if microservices>
+web.host = ${r"${web.host}"}
+web.port = ${r"${web.port}"}
+context.path = ${r"${context.path}"}</#if><#if microservices || gateway>
+registry.url: ${r"${registry.url}"}</#if>

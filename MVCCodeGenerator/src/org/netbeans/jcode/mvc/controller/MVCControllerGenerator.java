@@ -151,17 +151,13 @@ public class MVCControllerGenerator implements Generator {
                                                   + "        }\n\n";
 
     @ConfigData
-    private RepositoryData beanData;
+    private RepositoryData repositoryData;
+    
     @ConfigData
     private JSPData jspData;
+    
     @ConfigData
     private MVCData mvcData;
-
-    @ConfigData
-    private Project project;
-
-    @ConfigData
-    private SourceGroup source;
 
     @ConfigData
     private EntityMappings entityMapping;
@@ -171,6 +167,10 @@ public class MVCControllerGenerator implements Generator {
         
     @ConfigData
     private ApplicationConfigData appConfigData;
+    
+    private Project project;
+
+    private SourceGroup source;
 
     @Override
     public void preExecute(){
@@ -179,6 +179,10 @@ public class MVCControllerGenerator implements Generator {
     
     @Override
     public void execute() throws IOException {
+        
+        project = appConfigData.getTargetProject();
+        source = appConfigData.getTargetSourceGroup();
+        
         handler.progress(Console.wrap(MVCControllerGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
         if (appConfigData.isCompleteApplication()) {
             generateUtil();
@@ -198,8 +202,8 @@ public class MVCControllerGenerator implements Generator {
         final String listVariableName = Inflector.getInstance().pluralize(variableName);
 //        final String constantName = StringHelper.toConstant(entitySimpleName);
 
-        String repositoryFileName = beanData.getPrefixName() + entitySimpleName + beanData.getSuffixName();
-        String fqRepositoryFileName = entity.getAbsolutePackage(beanData.getPackage()) + '.' + repositoryFileName;
+        String repositoryFileName = repositoryData.getPrefixName() + entitySimpleName + repositoryData.getSuffixName();
+        String fqRepositoryFileName = entity.getAbsolutePackage(appConfigData.getTargetPackage() + '.' + repositoryData.getPackage()) + '.' + repositoryFileName;
 
         String controllerFileName = mvcData.getPrefixName() + entitySimpleName + mvcData.getSuffixName();
         handler.progress(controllerFileName);

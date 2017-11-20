@@ -1,10 +1,10 @@
-<#if package??>package ${package};</#if>
+package ${package};
 
-<#if security == "JAXRS_JWT">import static ${Constants_FQN}.*;
+<#if security == "JAXRS_JWT">import static ${appPackage}${Constants_FQN}.*;
 import ${entityPackage}.User;
 import ${entityPackage}.Authority;
 import javax.inject.Inject;
-import ${LoginDTO_FQN};
+import ${appPackage}${LoginDTO_FQN};
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -12,8 +12,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import ${TokenProvider_FQN};
-import ${UserService_FQN};
+import ${appPackage}${TokenProvider_FQN};
+import ${appPackage}${UserService_FQN};
 import javax.validation.Valid;
 import static java.util.stream.Collectors.toSet;
 import javax.security.enterprise.AuthenticationException;
@@ -77,7 +77,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import static ${AuthenticationController_FQN}.AUTHENTICATION_ENDPOINT;
+import static ${appPackage}${AuthenticationController_FQN}.AUTHENTICATION_ENDPOINT;
 
 @WebServlet(name = "authenticate", urlPatterns = {AUTHENTICATION_ENDPOINT})
 public class ${AuthenticationController} extends HttpServlet {

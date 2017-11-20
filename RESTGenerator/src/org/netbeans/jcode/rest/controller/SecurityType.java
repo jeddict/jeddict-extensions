@@ -20,8 +20,10 @@ package org.netbeans.jcode.rest.controller;
  * @author jGauravGupta
  */
 public enum SecurityType {
-    JAXRS_JWT("JAX-RS Filter"), SECURITY_JWT("Security API 1.0");
     
+    SECURITY_JWT("Security API 1.0"), 
+    JAXRS_JWT("JAX-RS Filter");
+
     private final String value;
 
     SecurityType(String value) {
