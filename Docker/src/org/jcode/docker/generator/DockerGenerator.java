@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jcode.infra.DatabaseDriver;
 import org.jcode.infra.DatabaseType;
 import org.jcode.infra.ServerFamily;

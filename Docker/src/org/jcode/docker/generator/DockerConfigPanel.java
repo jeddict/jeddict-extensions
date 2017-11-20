@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jcode.infra.DatabaseType;
 import org.jcode.infra.ServerType;
 import static org.jcode.infra.ServerType.NONE;

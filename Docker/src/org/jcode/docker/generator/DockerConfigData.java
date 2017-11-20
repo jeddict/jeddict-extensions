@@ -17,7 +17,7 @@ package org.jcode.docker.generator;
 
 import java.util.Arrays;
 import java.util.List;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jcode.infra.DatabaseType;
 import org.jcode.infra.ServerType;
 import org.netbeans.jcode.stack.config.data.LayerConfigData;

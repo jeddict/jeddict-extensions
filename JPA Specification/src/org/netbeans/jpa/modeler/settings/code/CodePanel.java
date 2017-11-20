@@ -16,7 +16,7 @@
 package org.netbeans.jpa.modeler.settings.code;
 
 import java.util.prefs.Preferences;
-import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import org.openide.util.NbPreferences;
 
 public final class CodePanel extends javax.swing.JPanel {

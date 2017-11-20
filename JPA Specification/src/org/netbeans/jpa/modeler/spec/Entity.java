@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import static org.netbeans.jcode.jpa.JPAConstants.CACHEABLE_FQN;
 import static org.netbeans.jcode.jpa.JPAConstants.DISCRIMINATOR_VALUE_FQN;
 import static org.netbeans.jcode.jpa.JPAConstants.ENTITY_FQN;

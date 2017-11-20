@@ -36,7 +36,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlTransient;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.netbeans.api.java.source.JavaSource;
 import static org.netbeans.jcode.jsonb.JSONBConstants.JSONB_NILLABLE_FQN;
 import static org.netbeans.jcode.jsonb.JSONBConstants.JSONB_TYPE_ADAPTER_FQN;

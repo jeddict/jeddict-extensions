@@ -29,8 +29,7 @@ import javax.swing.JList;
 import static javax.swing.JOptionPane.OK_OPTION;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.text.JTextComponent;
-import org.apache.commons.lang.StringUtils;
-import static org.netbeans.api.java.source.ui.ScanDialog.runWhenScanFinished;
+import org.apache.commons.lang3.StringUtils;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import static org.netbeans.jcode.core.util.JavaSourceHelper.isValidPackageName;
@@ -39,10 +38,8 @@ import org.netbeans.jcode.mvc.controller.returntype.ControllerReturnType;
 import org.netbeans.jcode.rest.applicationconfig.RestConfigData;
 import org.netbeans.jcode.rest.applicationconfig.RestConfigDialog;
 import org.netbeans.jcode.stack.config.panel.*;
-import org.netbeans.modules.websvc.rest.spi.RestSupport;
 import org.netbeans.spi.java.project.support.ui.PackageView;
 import org.openide.util.NbBundle;
-import static org.openide.util.NbBundle.getMessage;
 
 /**
  *

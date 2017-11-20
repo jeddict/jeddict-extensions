@@ -15,7 +15,7 @@
  */
 package org.netbeans.jpa.modeler.spec.validator;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.netbeans.jpa.modeler.spec.SequenceGenerator;
 
 /**

@@ -17,7 +17,7 @@ package org.netbeans.jcode.mvc.viewer.jsp;
 
 import java.util.Arrays;
 import java.util.List;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import static org.netbeans.jcode.rest.applicationconfig.RestConfigPanel.DEFAULT_RESOURCE_FOLDER;
 import org.netbeans.jcode.stack.config.data.LayerConfigData;
 

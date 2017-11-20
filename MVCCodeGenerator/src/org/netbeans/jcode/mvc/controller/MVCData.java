@@ -18,7 +18,7 @@ package org.netbeans.jcode.mvc.controller;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.netbeans.jcode.mvc.controller.event.ControllerEventType;
 import org.netbeans.jcode.mvc.controller.returntype.ControllerReturnType;
 import org.netbeans.jcode.repository.RepositoryData;

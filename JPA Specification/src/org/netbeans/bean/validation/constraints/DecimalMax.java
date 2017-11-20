@@ -19,7 +19,7 @@ import static java.lang.Boolean.FALSE;
 import javax.lang.model.element.AnnotationMirror;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.netbeans.jpa.source.JavaSourceParserUtil;
 
 /**

@@ -41,7 +41,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlTransient;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.netbeans.bean.validation.constraints.AssertFalse;
 import org.netbeans.bean.validation.constraints.AssertTrue;
 import org.netbeans.bean.validation.constraints.Constraint;

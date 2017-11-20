@@ -18,7 +18,7 @@ package org.netbeans.jcode.rest.controller;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import org.netbeans.jcode.repository.RepositoryData;
 import org.netbeans.jcode.rest.applicationconfig.RestConfigData;
 import org.netbeans.jcode.rest.filter.FilterType;

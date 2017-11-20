@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.netbeans.jcode.core.util.StringHelper;
 import org.netbeans.jpa.modeler.settings.code.CodePanel;
 import static org.netbeans.jpa.modeler.spec.NamedQuery.FIND_BY;

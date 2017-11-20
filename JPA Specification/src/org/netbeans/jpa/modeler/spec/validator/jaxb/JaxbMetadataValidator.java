@@ -15,7 +15,7 @@
  */
 package org.netbeans.jpa.modeler.spec.validator.jaxb;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.netbeans.jpa.modeler.spec.jaxb.JaxbMetadata;
 import org.netbeans.jpa.modeler.spec.validator.MarshalValidator;
 

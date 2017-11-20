@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jcode.infra.JavaEEVersion;
 import org.netbeans.jcode.core.util.JavaSourceHelper;
 import org.netbeans.jcode.jpa.PersistenceProviderType;

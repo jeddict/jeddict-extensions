@@ -15,7 +15,7 @@
  */
 package org.netbeans.jpa.modeler.spec.validator.table;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.netbeans.jpa.modeler.spec.CollectionTable;
 import org.netbeans.jpa.modeler.spec.validator.MarshalValidator;
 import org.netbeans.jpa.modeler.spec.validator.column.JoinColumnValidator;

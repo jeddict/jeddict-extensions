@@ -16,7 +16,7 @@
 package org.netbeans.jpa.modeler.db.accessor;
 
 import static java.util.stream.Collectors.toList;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import static org.netbeans.jcode.core.util.Constants.LIST_TYPE;
 import org.netbeans.jpa.modeler.db.accessor.spec.MapKeyAccessor;
 import org.netbeans.jpa.modeler.spec.JoinColumn;

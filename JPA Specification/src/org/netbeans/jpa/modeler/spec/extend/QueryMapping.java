@@ -17,7 +17,7 @@ package org.netbeans.jpa.modeler.spec.extend;
 
 import java.util.regex.Pattern;
 import javax.xml.bind.annotation.XmlElement;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.netbeans.jpa.modeler.settings.code.CodePanel;
 
 /**

@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.internal.jpa.metadata.tables.IndexMetadata;
 import static org.netbeans.jcode.jpa.JPAConstants.INDEX_FQN;
 import org.netbeans.jpa.modeler.spec.extend.OrderbyItem;

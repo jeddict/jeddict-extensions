@@ -48,6 +48,7 @@ import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import org.apache.commons.io.IOUtils;
 import org.openide.util.Exceptions;
 
@@ -63,7 +64,8 @@ public final class EJSParser {
     public EJSParser() {
 
         try {
-            engine = new ScriptEngineManager().getEngineByName("nashorn");
+            engine = new NashornScriptEngineFactory().getScriptEngine("--language=es6");
+//            engine = new ScriptEngineManager().getEngineByName("nashorn");
             engine.eval("var window = this;"
                     + "var console = {\n"
                     + "  debug: print,\n"

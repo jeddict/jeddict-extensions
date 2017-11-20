@@ -36,7 +36,7 @@ import java.util.function.Function;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.FG_BLUE;
 import static org.netbeans.jcode.console.Console.FG_RED;

@@ -16,7 +16,7 @@
 package org.netbeans.jcode.core.util;
 
 import java.util.function.Predicate;
-import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 public final class StringHelper {
 

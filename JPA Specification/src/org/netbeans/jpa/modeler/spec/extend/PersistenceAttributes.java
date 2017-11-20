@@ -30,7 +30,7 @@ import static java.util.stream.Collectors.toSet;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.XMLAttributes;
 import org.netbeans.jcode.core.util.AttributeType.Type;
 import static org.netbeans.jcode.core.util.AttributeType.Type.OTHER;
