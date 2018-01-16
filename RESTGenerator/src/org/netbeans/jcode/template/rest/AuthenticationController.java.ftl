@@ -18,7 +18,7 @@ import javax.validation.Valid;
 import static java.util.stream.Collectors.toSet;
 import javax.security.enterprise.AuthenticationException;
 import javax.security.enterprise.credential.UsernamePasswordCredential;
-<#if metrics>import com.codahale.metrics.annotation.Timed;</#if>
+<#if metrics>import org.eclipse.microprofile.metrics.annotation.Timed;</#if>
 <#if docs>import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiResponse;

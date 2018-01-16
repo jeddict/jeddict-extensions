@@ -9,7 +9,8 @@
     <name>metrics_pom</name>
 
     <properties>
-        <version.metrics>3.1.2</version.metrics>
+        <!--<version.metrics>3.1.2</version.metrics>-->
+        <version.metrics>1.0</version.metrics>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -24,42 +25,7 @@
     </dependencyManagement>
     
     <dependencies>
-        <!--        <dependency>
-            <groupId>io.dropwizard.metrics</groupId>
-            <artifactId>metrics-core</artifactId>
-            <version>${version.metrics}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.dropwizard.metrics</groupId>
-            <artifactId>metrics-annotation</artifactId>
-            <version>${version.metrics}</version>
-        </dependency>-->
-        <!--        <dependency>
-            <groupId>io.dropwizard.metrics</groupId>
-            <artifactId>metrics-ehcache</artifactId>
-            <version>${version.metrics}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.dropwizard.metrics</groupId>
-            <artifactId>metrics-graphite</artifactId>
-            <version>${version.metrics}</version>
-        </dependency>-->
-        <!--        <dependency>
-            <groupId>io.dropwizard.metrics</groupId>
-            <artifactId>metrics-healthchecks</artifactId>
-            <version>${version.metrics}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.dropwizard.metrics</groupId>
-            <artifactId>metrics-json</artifactId>
-            <version>${version.metrics}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.dropwizard.metrics</groupId>
-            <artifactId>metrics-jvm</artifactId>
-            <version>${version.metrics}</version>
-        </dependency>-->
-        <dependency>
+<!--        <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-servlet</artifactId>
             <version>${version.metrics}</version>
@@ -68,12 +34,6 @@
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-servlets</artifactId>
             <version>${version.metrics}</version>
-            <!--            <exclusions>
-                <exclusion>
-                    <artifactId>metrics-healthchecks</artifactId>
-                    <groupId>io.dropwizard.metrics</groupId>
-                </exclusion>
-            </exclusions>-->
         </dependency>
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>
@@ -84,6 +44,13 @@
             <groupId>org.glassfish.jersey.bundles.repackaged</groupId>
             <artifactId>jersey-guava</artifactId>
             <version>2.6</version>
+        </dependency>-->
+        <dependency>
+            <groupId>org.eclipse.microprofile.metrics</groupId>
+            <artifactId>microprofile-metrics-api</artifactId>
+            <version>${version.metrics}</version>
+            <type>jar</type>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

@@ -21,7 +21,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import ${appPackage}${Page_FQN};
 import ${appPackage}${PaginationUtil_FQN};</#if><#if security == "JAXRS_JWT">
 import ${appPackage}${Secured_FQN};</#if><#if metrics>
-import com.codahale.metrics.annotation.Timed;</#if><#if docs>
+import org.eclipse.microprofile.metrics.annotation.Timed;</#if><#if docs>
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiResponse;

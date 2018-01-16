@@ -2,7 +2,9 @@ package ${package};
 
 import java.util.EnumSet;
 import javax.inject.Inject;
-import javax.servlet.DispatcherType;
+import static javax.servlet.DispatcherType.ASYNC;
+import static javax.servlet.DispatcherType.FORWARD;
+import static javax.servlet.DispatcherType.REQUEST;
 import javax.servlet.FilterRegistration;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -10,10 +12,7 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRegistration;
 import javax.servlet.annotation.WebListener;
 import org.slf4j.Logger;
-<#if metrics>import ${appPackage}${MetricsConfigurer_FQN};
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.servlet.InstrumentedFilter;
-import com.codahale.metrics.servlets.MetricsServlet;</#if>
+<#if metrics>import ${appPackage}${InstrumentedFilter_FQN};</#if>
 <#if docs>import com.wordnik.swagger.config.ConfigFactory;
 import com.wordnik.swagger.config.ScannerFactory;
 import com.wordnik.swagger.config.SwaggerConfig;
@@ -22,7 +21,7 @@ import com.wordnik.swagger.jaxrs.reader.DefaultJaxrsApiReader;
 import com.wordnik.swagger.reader.ClassReaders;</#if>
 
 /**
- * Configuration of web application with Servlet 3.0 APIs.
+ * Configuration of web application
  */
 @WebListener
 public class WebConfigurer implements ServletContextListener {
@@ -30,14 +29,9 @@ public class WebConfigurer implements ServletContextListener {
     @Inject
     private Logger log;
 
-    <#if metrics>
-    @Inject
-    private MetricsConfigurer metricsConfigurer;
-    </#if>
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        <#if metrics>EnumSet<DispatcherType> disps = EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ASYNC);
-        initMetrics(sce.getServletContext(), disps);</#if>
+        <#if metrics>initMetrics(sce.getServletContext());</#if>
         <#if docs>initDocs(sce.getServletContext());</#if>
         log.info("Web application fully configured");
     }
@@ -46,27 +40,11 @@ public class WebConfigurer implements ServletContextListener {
     /**
      * Initializes Metrics.
      */
-    private void initMetrics(ServletContext servletContext, EnumSet<DispatcherType> disps) {
-         MetricRegistry metricRegistry = metricsConfigurer.getMetricRegistry();
-        log.debug("Initializing Metrics registries");
-        servletContext.setAttribute(InstrumentedFilter.REGISTRY_ATTRIBUTE, metricRegistry);
-        servletContext.setAttribute(MetricsServlet.METRICS_REGISTRY, metricRegistry);
-
+    private void initMetrics(ServletContext servletContext) {
         log.debug("Registering Metrics Filter");
-        FilterRegistration.Dynamic metricsFilter = servletContext.addFilter("webappMetricsFilter",
-                new InstrumentedFilter());
-
-        metricsFilter.addMappingForUrlPatterns(disps, true, "/*");
+        FilterRegistration.Dynamic metricsFilter = servletContext.addFilter("Instrumented Metrics Filter",InstrumentedFilter.class);
+        metricsFilter.addMappingForUrlPatterns(EnumSet.of(REQUEST, FORWARD, ASYNC), true, "/*");
         metricsFilter.setAsyncSupported(true);
-
-        log.debug("Registering Metrics Servlet");
-        ServletRegistration.Dynamic metricsAdminServlet
-                = servletContext.addServlet("metricsServlet", new MetricsServlet());
-
-        metricsAdminServlet.addMapping("/management/metrics/*");
-        metricsAdminServlet.setAsyncSupported(true);
-        metricsAdminServlet.setLoadOnStartup(2);
-        
     }
     </#if>
     <#if docs>

@@ -14,13 +14,14 @@
         <version.jsonwebtoken>0.7.0</version.jsonwebtoken>
         <version.commons.lang>3.3.2</version.commons.lang>
         <version.commons.email>1.4</version.commons.email>
+        <version.config>1.0</version.config>
     </properties>
     
     <dependencies>
         <dependency>
             <groupId>org.eclipse.microprofile.config</groupId>
             <artifactId>microprofile-config-api</artifactId>
-            <version>1.0</version>
+            <version>${version.config}</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>

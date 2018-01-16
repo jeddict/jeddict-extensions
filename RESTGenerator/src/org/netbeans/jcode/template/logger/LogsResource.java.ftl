@@ -3,7 +3,7 @@ package ${package};
 import ${appPackage}${LoggerVM_FQN};
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
-<#if metrics>import com.codahale.metrics.annotation.Timed;</#if>
+<#if metrics>import org.eclipse.microprofile.metrics.annotation.Timed;</#if>
 import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.stream.Collectors;

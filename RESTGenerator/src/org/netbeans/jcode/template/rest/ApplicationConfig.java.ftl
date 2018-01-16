@@ -1,8 +1,5 @@
 package ${package};
 
-<#if metrics>import ${appPackage}${MetricsConfigurer_FQN};
-import com.codahale.metrics.jersey2.InstrumentedResourceMethodApplicationListener;
-import javax.inject.Inject;</#if>
 import java.util.HashSet;
 import java.util.Set;
 import javax.ws.rs.core.Application;<#if microservices && registryType == "SNOOPEE">
@@ -11,9 +8,6 @@ import eu.agilejava.snoop.annotation.EnableSnoopClient;
 @EnableSnoopClient(serviceName = "${contextPath}")</#if>
 @javax.ws.rs.ApplicationPath("${applicationPath}")
 public class ${applicationConfig} extends Application {
-
-    <#if metrics>@Inject
-    private MetricsConfigurer metricsConfigurer;</#if>
 
     @Override
     public Set<Class<?>> getClasses() {
@@ -45,11 +39,4 @@ public class ${applicationConfig} extends Application {
         resources.add(${appPackage}${LogsResource_FQN}.class);</#if>
     }
 
-    <#if metrics>@Override
-    public Set<Object> getSingletons() {
-        final Set<Object> instances = new HashSet<>();
-        instances.add(new InstrumentedResourceMethodApplicationListener(metricsConfigurer.getMetricRegistry()));
-        return instances;
-    }
-    </#if>
 }

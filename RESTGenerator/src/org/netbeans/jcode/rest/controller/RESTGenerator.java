@@ -186,9 +186,10 @@ public class RESTGenerator implements Generator {
         CONTROLLER_EXT_TEMPLATES.add(new Template("rest/dto/UserDTO.java.ftl", "UserDTO", "dto"));
 
         if (restData.isMetrics()) {
-            METRICS_TEMPLATES.add(new Template("config/MetricsConfig.java.ftl", "MetricsConfig", "config"));
+//            METRICS_TEMPLATES.add(new Template("config/MetricsConfig.java.ftl", "MetricsConfig", "config"));
+//             METRICS_TEMPLATES.add(new Template("metrics/MetricsConfigurer.java.ftl", "MetricsConfigurer", "metrics"));
             METRICS_TEMPLATES.add(new Template("metrics/DiagnosticFilter.java.ftl", "DiagnosticFilter", "metrics"));
-            METRICS_TEMPLATES.add(new Template("metrics/MetricsConfigurer.java.ftl", "MetricsConfigurer", "metrics"));
+            METRICS_TEMPLATES.add(new Template("metrics/InstrumentedFilter.java.ftl", "InstrumentedFilter", "metrics"));
         }
                
         if (restData.isLogger()) {
