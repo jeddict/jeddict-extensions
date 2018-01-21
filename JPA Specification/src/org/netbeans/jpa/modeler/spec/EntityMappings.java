@@ -29,6 +29,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.StringUtils;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.isNoneBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import org.jcode.infra.JavaEEVersion;
 import org.netbeans.jcode.core.util.JavaSourceHelper;
 import org.netbeans.jcode.jpa.PersistenceProviderType;
@@ -43,7 +46,7 @@ import org.netbeans.jpa.modeler.spec.extend.MapKeyHandler;
 import org.netbeans.jpa.modeler.spec.extend.MapKeyType;
 import org.netbeans.jpa.modeler.spec.extend.MultiRelationAttribute;
 import org.netbeans.jpa.modeler.spec.extend.PersistenceAttributes;
-import org.netbeans.jpa.modeler.spec.extend.PlainClass;
+import org.netbeans.jpa.modeler.spec.bean.BeanClass;
 import org.netbeans.jpa.modeler.spec.extend.ProjectType;
 import org.netbeans.jpa.modeler.spec.extend.ReferenceClass;
 import org.netbeans.jpa.modeler.spec.extend.RelationAttribute;
@@ -145,7 +148,7 @@ import org.openide.windows.InputOutput;
     "mappedSuperclass",
     "entity",
     "embeddable",
-    "plainClass",
+    "beanClass",
     "converter",
     "snippets",
     "interfaces",
@@ -158,7 +161,7 @@ import org.openide.windows.InputOutput;
 })
 @XmlRootElement(name = "entity-mappings")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class EntityMappings extends BaseElement implements IDefinitionElement, IRootElement, 
+public class EntityMappings extends BaseElement implements IDefinitionElement, IRootElement,
         org.netbeans.modeler.properties.type.Embedded, JsonbVisibilityHandler {
 
     private static final String DEFAULT_PU_NAME = "DEFAULT_PU";
@@ -170,6 +173,8 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     private String projectPackage;
     @XmlAttribute(name = "epkg")
     private String entityPackage;
+    @XmlAttribute(name = "pkg")//for backward compatibility 
+    private String _package;
     protected String schema;
     protected String catalog;
     protected AccessType access;
@@ -182,7 +187,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     @XmlElement(name = "nnq")//(name = "named-native-query")
     protected List<NamedNativeQuery> namedNativeQuery;
     @XmlElement(name = "nspq")//(name = "named-stored-procedure-query")
-    protected List<NamedStoredProcedureQuery> namedStoredProcedureQuery; 
+    protected List<NamedStoredProcedureQuery> namedStoredProcedureQuery;
     @XmlElement(name = "srsm")//(name = "sql-result-set-mapping")
     protected Set<SqlResultSetMapping> sqlResultSetMapping;
 
@@ -192,7 +197,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     protected List<MappedSuperclass> mappedSuperclass;
     protected List<Entity> entity;
     protected List<Embeddable> embeddable;
-    protected List<PlainClass> plainClass;
+    private List<BeanClass> beanClass;
     protected List<Converter> converter;//NREVENG 
     @XmlAttribute(name = "v", required = true)
     protected String version;
@@ -202,7 +207,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     private String diagramVersion;
     @XmlElement(name = "diagram")
     private Diagram jpaDiagram;//Custom Added
-    
+
     @XmlAttribute(name = "rws")
     @XmlIDREF
     private WorkSpace rootWorkSpace;
@@ -218,7 +223,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     @XmlElementWrapper(name = "wsl")
     @XmlElement(name = "ws")
     private List<WorkSpace> workSpaces;
-    
+
     @XmlAttribute
     private String status;//GENERATED (DBRE,JCRE)
     @XmlAttribute(name = "thm")
@@ -229,9 +234,9 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     private String jbTheme;
     @XmlAttribute
     private String persistenceUnitName;
-    @XmlAttribute(name="pp")
+    @XmlAttribute(name = "pp")
     private PersistenceProviderType persistenceProviderType;
-    @XmlAttribute(name="ee")
+    @XmlAttribute(name = "ee")
     private JavaEEVersion javaEEVersion;
 
     @XmlElement(name = "c")
@@ -246,32 +251,30 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
      */
     @XmlAttribute(name = "xs")
     private Boolean jaxbSupport;
-    
+
     @XmlAttribute(name = "xn")
     private String jaxbNameSpace;
-    
+
     //Jsonb support start
-    
     @XmlAttribute(name = "jbpns")
     private PropertyNamingStrategy jsonbPropertyNamingStrategy;
-    
+
     @XmlAttribute(name = "jbpos")
-    private PropertyOrderStrategy jsonbPropertyOrderStrategy;   
-        
+    private PropertyOrderStrategy jsonbPropertyOrderStrategy;
+
     @XmlAttribute(name = "jbn")
     private Boolean jsonbNillable;//REVENG pending
-    
+
     @XmlElement(name = "jbdf")
     private JsonbDateFormat jsonbDateFormat;//REVENG pending
-        
+
     @XmlElement(name = "jbnf")
     private JsonbNumberFormat jsonbNumberFormat;//REVENG pending
-        
+
     @XmlElement(name = "jbv")
     private ReferenceClass jsonbVisibility;//REVENG pending
 
     //Jsonb support end
-    
     @XmlElement(name = "snp")
     private List<ClassSnippet> snippets;
 
@@ -319,6 +322,11 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
                 return true;
             }
         }
+        if (getBeanClass() != null) {
+            if (getBeanClass().stream().anyMatch((e) -> (e.getClazz() != null && e.getClazz().equals(_class)))) {
+                return true;
+            }
+        }
 
         return false;
     }
@@ -361,9 +369,6 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
      * @return the javaEEVersion
      */
     public JavaEEVersion getJavaEEVersion() {
-//        if(javaEEVersion == null){
-//            return JavaEEVersion.getDefaultVersion();
-//        }
         return JavaEEVersion.JAVA_EE_8;
     }
 
@@ -387,7 +392,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     public void setProjectType(ProjectType projectType) {
         this.projectType = projectType;
     }
-    
+
     /**
      * Gets the value of the package property.
      *
@@ -395,7 +400,14 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
      *
      */
     public String getPackage() {
-        return projectPackage + '.' + entityPackage;
+        if (isNoneBlank(getProjectPackage(), getEntityPackage())) {
+            return getProjectPackage() + '.' + getEntityPackage();
+        } else if (isNotBlank(getProjectPackage())) {
+            return getProjectPackage();
+        } else if (isNotBlank(getEntityPackage())) {
+            return getEntityPackage();
+        }
+        return EMPTY;
     }
 
     /**
@@ -706,6 +718,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         }
         this.mappedSuperclass = mappedSuperclass;
     }
+
     /**
      * Gets the value of the entity property.
      *
@@ -726,7 +739,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
      * Objects of the following type(s) are allowed in the list {@link Entity }
      *
      *
-     * @return 
+     * @return
      */
     public List<Entity> getEntity() {
         if (entity == null) {
@@ -746,14 +759,13 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     public Stream<Entity> getConcreteEntity() {
         return getEntity().stream().filter(e -> Boolean.FALSE.equals(e.getAbstract()));
     }
-    
+
     public Stream<Entity> getGeneratedEntity() {
         return getEntity().stream()
                 .filter(e -> Boolean.FALSE.equals(e.getAbstract()))
                 .filter(e -> e.getGenerateSourceCode());
     }
-    
-    
+
     public void setEntity(List<Entity> entity) {
         if (this.entity == null) {
             this.entity = new ArrayList<>();
@@ -796,7 +808,27 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         }
         this.embeddable = embeddable;
     }
-    
+
+    /**
+     * @return the beanClass
+     */
+    public List<BeanClass> getBeanClass() {
+        if (this.beanClass == null) {
+            this.beanClass = new ArrayList<>();
+        }
+        return beanClass;
+    }
+
+    /**
+     * @param beanClass the beanClass to set
+     */
+    public void setBeanClass(List<BeanClass> beanClass) {
+        if (this.beanClass == null) {
+            this.beanClass = new ArrayList<>();
+        }
+        this.beanClass = beanClass;
+    }
+
     /**
      * Gets the value of the converter property.
      *
@@ -825,7 +857,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         }
         return this.converter;
     }
-    
+
     public Optional<Converter> findConverter(String converter) {
         if (StringUtils.isBlank(converter)) {
             return Optional.empty();
@@ -837,20 +869,20 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         }
         return Optional.empty();
     }
-    
+
     public boolean addConverter(String converterClass, String attributeType, String dbFieldType) {
-       Optional<Converter> existingConOpt = findConverter(converterClass);
-       if(existingConOpt.isPresent()){
+        Optional<Converter> existingConOpt = findConverter(converterClass);
+        if (existingConOpt.isPresent()) {
             Converter existingCon = existingConOpt.get();
             return attributeType.equals(existingCon.getAttributeType()) && dbFieldType.equals(existingCon.getFieldType());
-       } else {
-           Converter newConverter = new Converter();
-           newConverter.setClazz(converterClass);
-           newConverter.setFieldType(dbFieldType);
-           newConverter.setAttributeType(attributeType);
-           getConverter().add(newConverter);
-           return true;
-       }
+        } else {
+            Converter newConverter = new Converter();
+            newConverter.setClazz(converterClass);
+            newConverter.setFieldType(dbFieldType);
+            newConverter.setAttributeType(attributeType);
+            getConverter().add(newConverter);
+            return true;
+        }
     }
 
     /**
@@ -889,6 +921,8 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
                 this.removeMappedSuperclass((MappedSuperclass) baseElement_In);
             } else if (baseElement_In instanceof Embeddable) {
                 this.removeEmbeddable((Embeddable) baseElement_In);
+            } else if (baseElement_In instanceof BeanClass) {
+                this.removeBeanClass((BeanClass) baseElement_In);
             } else {
                 throw new InvalidElmentException("Invalid JPA Element");
             }
@@ -906,8 +940,8 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
                 this.addMappedSuperclass((MappedSuperclass) baseElement_In);
             } else if (baseElement_In instanceof Embeddable) {
                 this.addEmbeddable((Embeddable) baseElement_In);
-            } else if (baseElement_In instanceof PlainClass) {
-                this.addPlainClass((PlainClass) baseElement_In);
+            } else if (baseElement_In instanceof BeanClass) {
+                this.addBeanClass((BeanClass) baseElement_In);
             } else {
                 throw new InvalidElmentException("Invalid JPA Element");
             }
@@ -921,7 +955,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         if (entity != null) {
             this.entity.remove(entity_In);
             entity_In.setRootElement(null);
-            
+
             if (!this.isRootWorkSpace()) {
                 for (JavaClass javaClass : getJavaClassesExcludingWP()) {
                     if (javaClass.getSuperclass() == entity_In) {
@@ -929,7 +963,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
                     }
                     if (javaClass.getAttributes() instanceof PersistenceAttributes) {
                         PersistenceAttributes<ManagedClass> attributes = (PersistenceAttributes<ManagedClass>) javaClass.getAttributes();
-                                attributes.getRelationAttributes()
+                        attributes.getRelationAttributes()
                                 .stream()
                                 .filter(attr -> attr.getConnectedEntity() == entity_In)
                                 .forEach(attr -> attributes.removeRelationAttribute(attr));
@@ -960,7 +994,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         }
         return Optional.empty();
     }
-    
+
     public Optional<? extends IdentifiableClass> findIdentifiableClass(String className) {
         if (StringUtils.isBlank(className)) {
             return Optional.empty();
@@ -1020,7 +1054,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         if (mappedSuperclass != null) {
             this.mappedSuperclass.remove(mappedSuperclass_In);
             mappedSuperclass_In.setRootElement(null);
-            
+
             if (!this.isRootWorkSpace()) {
                 for (JavaClass javaClass : getJavaClassesExcludingWP()) {
                     if (javaClass.getSuperclass() == mappedSuperclass_In) {
@@ -1057,7 +1091,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         if (embeddable != null) {
             this.embeddable.remove(embeddable_In);
             embeddable_In.setRootElement(null);
-            
+
             if (!this.isRootWorkSpace()) {
                 for (JavaClass javaClass : getJavaClassesExcludingWP()) {
                     if (javaClass.getAttributes() instanceof PersistenceAttributes) {
@@ -1097,28 +1131,28 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         }
         return Optional.empty();
     }
-    
-    public void removePlainClass(PlainClass class_In) {
-        if (plainClass != null) {
-            this.plainClass.remove(class_In);
+
+    public void removeBeanClass(BeanClass class_In) {
+        if (getBeanClass() != null) {
+            this.getBeanClass().remove(class_In);
             class_In.setRootElement(null);
         }
     }
 
-    public void addPlainClass(PlainClass class_In) {
-        if (plainClass == null) {
-            plainClass = new ArrayList<>();
+    public void addBeanClass(BeanClass class_In) {
+        if (getBeanClass() == null) {
+            setBeanClass(new ArrayList<>());
         }
-        this.plainClass.add(class_In);
+        this.getBeanClass().add(class_In);
         class_In.setRootElement(this);
     }
 
-    public Optional<PlainClass> findPlainClass(String className) {
+    public Optional<BeanClass> findBeanClass(String className) {
         if (StringUtils.isBlank(className)) {
             return Optional.empty();
         }
-        if (plainClass != null) {
-            for (PlainClass class_In : plainClass) {
+        if (getBeanClass() != null) {
+            for (BeanClass class_In : getBeanClass()) {
                 if (className.equals(class_In.getClazz())) {
                     return Optional.of(class_In);
                 }
@@ -1175,11 +1209,11 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
 //        Optional<DefaultClass> existDefaultClassOpt = findDefaultClass(_class);
 //
 //        if (!existDefaultClassOpt.isPresent()) {
-            existDefaultClass = new DefaultClass(_class);
-            existDefaultClass.setPackage(subPackage);
-            existDefaultClass.setId(NBModelerUtil.getAutoGeneratedStringId());
-            existDefaultClass.setRootElement(this);
-            this.getDefaultClass().add(existDefaultClass);
+        existDefaultClass = new DefaultClass(_class);
+        existDefaultClass.setPackage(subPackage);
+        existDefaultClass.setId(NBModelerUtil.getAutoGeneratedStringId());
+        existDefaultClass.setRootElement(this);
+        this.getDefaultClass().add(existDefaultClass);
 //        } else {
 //            existDefaultClass = existDefaultClassOpt.get();
 //        }
@@ -1499,9 +1533,10 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         managedClassList.addAll(this.getEmbeddable());
         return managedClassList;
     }
-        
+
     public List<JavaClass> getJavaClass() {
         List<JavaClass> javaClassList = new ArrayList<>(this.getManagedClass());
+        javaClassList.addAll(getBeanClass());
         return javaClassList;
     }
 
@@ -1509,10 +1544,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         if (StringUtils.isBlank(classId)) {
             return null;
         }
-        List<JavaClass> javaClassList = new ArrayList<>(this.getEntity());
-        javaClassList.addAll(this.getMappedSuperclass());
-        javaClassList.addAll(this.getEmbeddable());
-        for (JavaClass javaClass : javaClassList) {
+        for (JavaClass javaClass : getJavaClass()) {
             if (StringUtils.equals(javaClass.getId(), classId)) {
                 return javaClass;
             }
@@ -1526,6 +1558,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         classes.addAll(getMappedSuperclass());
         classes.addAll(getEmbeddable());
         classes.addAll(getDefaultClass());
+        classes.addAll(getBeanClass());
         return classes;
     }
 
@@ -1617,6 +1650,10 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
 
     void afterUnmarshal(Unmarshaller u, Object parent) {
         setPreviousVersion(version);
+        if(StringUtils.isEmpty(entityPackage) && !StringUtils.isEmpty(_package)){
+            entityPackage = _package;
+            _package = null;
+        }
     }
 
     /**
@@ -1749,8 +1786,8 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     public void setInterfaces(Set<ReferenceClass> interfaces) {
         this.interfaces = interfaces;
     }
-    
-    public Set<String> getAllConvert(){
+
+    public Set<String> getAllConvert() {
         Set<String> converts = new HashSet<>();
         for (Entity clazz : getEntity()) {
             converts.addAll(clazz.getAllConvert());
@@ -1764,15 +1801,15 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         return converts;
     }
 
-    public void cleanRuntimeArtifact(){
+    public void cleanRuntimeArtifact() {
         for (JavaClass javaClass : getJavaClass()) {
             javaClass.setRuntimeAnnotation(null);
             javaClass.setRuntimeSnippets(null);
             List<? extends Attribute> attributes = null;
-            if(javaClass instanceof ManagedClass){
-                attributes = ((ManagedClass)javaClass).getAttributes().getAllAttribute();
-            } else if(javaClass instanceof DefaultClass){
-                attributes = ((DefaultClass)javaClass).getAttributes().getDefaultAttributes();
+            if (javaClass instanceof ManagedClass) {
+                attributes = ((ManagedClass) javaClass).getAttributes().getAllAttribute();
+            } else if (javaClass instanceof DefaultClass) {
+                attributes = ((DefaultClass) javaClass).getAttributes().getDefaultAttributes();
             }
             if (attributes != null) {
                 attributes.forEach(attr -> {
@@ -1787,7 +1824,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
      * @return the rootWorkSpace
      */
     public WorkSpace getRootWorkSpace() {
-        if(rootWorkSpace == null){
+        if (rootWorkSpace == null) {
             rootWorkSpace = new WorkSpace();
             rootWorkSpace.setId(NBModelerUtil.getAutoGeneratedStringId());
             rootWorkSpace.setName("Main");
@@ -1802,23 +1839,22 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     public void setRootWorkSpace(WorkSpace rootWorkSpace) {
         this.rootWorkSpace = rootWorkSpace;
     }
-    
+
     public boolean isRootWorkSpace() {
         return getCurrentWorkSpace() == getRootWorkSpace();
     }
-    
-    public List<JavaClass> getJavaClassesExcludingWP(){
+
+    public List<JavaClass> getJavaClassesExcludingWP() {
         List<JavaClass> javaClasses = new ArrayList<>(getAllJavaClass());
-                
+
         javaClasses.removeAll(getCurrentWorkSpace()
-                        .getItems()
-                        .stream()
-                        .map(wi -> wi.getJavaClass())
-                        .collect(toList()));
+                .getItems()
+                .stream()
+                .map(wi -> wi.getJavaClass())
+                .collect(toList()));
         return javaClasses;
     }
 
-    
     /**
      * @return the previousWorkSpace
      */
@@ -1837,14 +1873,14 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
      * @return the currentWorkSpace
      */
     public WorkSpace getCurrentWorkSpace() {
-        if(currentWorkSpace == null){
+        if (currentWorkSpace == null) {
             return getRootWorkSpace();
         }
         return currentWorkSpace;
     }
-    
+
     public void setGenerateWorkSpaceClass(WorkSpace workspace) {
-        assert(workspace!=null);
+        assert (workspace != null);
         getAllJavaClass()
                 .forEach(jc -> jc.setGenerateSourceCode(false));
         getAllJavaClass()
@@ -1852,7 +1888,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
                 .filter(jc -> workspace.hasItem(jc))
                 .forEach(jc -> jc.setGenerateSourceCode(true));
     }
-        
+
     public Optional<WorkSpace> findGeneratedWorkSpace() {
         Set<WorkSpaceItem> selectedWorkSpaceItems = getAllJavaClass()
                 .stream()
@@ -1865,7 +1901,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
                 .findAny();
         return optionalWorkSpace;
     }
-    
+
     public List<JavaClass> findGeneratedClass() {
         return getAllJavaClass()
                 .stream()
@@ -1880,10 +1916,10 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         setPreviousWorkSpace(this.currentWorkSpace);
         this.currentWorkSpace = currentWorkSpace;
     }
-    
+
     public void setCurrentWorkSpace(String currentWorkSpaceId) {
         Optional<WorkSpace> wsOptional = findWorkSpace(currentWorkSpaceId);
-        if(wsOptional.isPresent()){
+        if (wsOptional.isPresent()) {
             this.currentWorkSpace = wsOptional.get();
         }
     }
@@ -1892,7 +1928,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
      * @return the nextWorkSpace
      */
     public WorkSpace getNextWorkSpace() {
-        if(nextWorkSpace == null){
+        if (nextWorkSpace == null) {
             return getCurrentWorkSpace();
         }
         return nextWorkSpace;
@@ -1909,7 +1945,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
      * @return the workSpaces
      */
     public List<WorkSpace> getWorkSpaces() {
-        if(workSpaces == null) {
+        if (workSpaces == null) {
             workSpaces = new ArrayList<>();
         }
         return workSpaces;
@@ -1921,24 +1957,25 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     public void setWorkSpaces(List<WorkSpace> workSpaces) {
         this.workSpaces = workSpaces;
     }
-    
+
     public void addWorkSpace(WorkSpace workSpace) {
         getWorkSpaces().add(workSpace);
     }
-    
+
     public void removeWorkSpace(WorkSpace workSpace) {
         getWorkSpaces().remove(workSpace);
     }
-    
+
     public void removeAllWorkSpace() {
         getWorkSpaces().clear();
         getWorkSpaces().add(getRootWorkSpace());
-        setCurrentWorkSpace((WorkSpace)null);
+        setCurrentWorkSpace((WorkSpace) null);
         setNextWorkSpace(getRootWorkSpace());
     }
-    
+
     /**
      * Remove the selected workspace
+     *
      * @param workSpace
      * @return true if current workspace is also removed
      */
@@ -1954,16 +1991,16 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         }
         return currentWorkSpaceDeleted;
     }
-    
+
     public Optional<WorkSpace> findWorkSpace(String workSpaceId) {
-       return getWorkSpaces().stream().filter(ws -> ws.getId().equals(workSpaceId)).findAny();
+        return getWorkSpaces().stream().filter(ws -> ws.getId().equals(workSpaceId)).findAny();
     }
 
     /**
      * @return the jaxbSupport
      */
     public Boolean getJaxbSupport() {
-        if(jaxbSupport == null){
+        if (jaxbSupport == null) {
             jaxbSupport = false;
         }
         return jaxbSupport;
@@ -1975,17 +2012,17 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     public void setJaxbSupport(Boolean jaxbSupport) {
         this.jaxbSupport = jaxbSupport;
     }
-    
+
     /**
      * @return the jsonbSupport
      */
     public Boolean isJsonbPackageInfoExist() {
-        return  //jsonbPropertyNamingStrategy!=null
+        return //jsonbPropertyNamingStrategy!=null
                 //jsonbPropertyOrderStrategy!=null
-                 (jsonbNillable!=null && jsonbNillable!=false)
-                || (jsonbDateFormat!=null && !jsonbDateFormat.isEmpty())
-                || (jsonbNumberFormat!=null && !jsonbNumberFormat.isEmpty())
-                || (jsonbVisibility!=null && StringUtils.isNotBlank(jsonbVisibility.getName()));
+                (jsonbNillable != null && jsonbNillable != false)
+                || (jsonbDateFormat != null && !jsonbDateFormat.isEmpty())
+                || (jsonbNumberFormat != null && !jsonbNumberFormat.isEmpty())
+                || (jsonbVisibility != null && StringUtils.isNotBlank(jsonbVisibility.getName()));
     }
 
     /**
@@ -2023,7 +2060,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
      * @return the jsonbDateFormat
      */
     public JsonbDateFormat getJsonbDateFormat() {
-        if(jsonbDateFormat==null){
+        if (jsonbDateFormat == null) {
             jsonbDateFormat = new JsonbDateFormat();
         }
         return jsonbDateFormat;
@@ -2040,7 +2077,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
      * @return the jsonbNumberFormat
      */
     public JsonbNumberFormat getJsonbNumberFormat() {
-        if(jsonbNumberFormat==null){
+        if (jsonbNumberFormat == null) {
             jsonbNumberFormat = new JsonbNumberFormat();
         }
         return jsonbNumberFormat;
@@ -2096,5 +2133,5 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     public void setJBTheme(String jbTheme) {
         this.jbTheme = jbTheme;
     }
-    
+
 }

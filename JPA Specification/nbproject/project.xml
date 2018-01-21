@@ -204,20 +204,19 @@
                 <package>org.eclipse.persistence.internal.jpa.metadata</package>
                 <package>org.netbeans.bean.validation.constraints</package>
                 <package>org.netbeans.db.modeler.exception</package>
-                <package>org.netbeans.db.modeler.manager</package>
                 <package>org.netbeans.jpa.modeler._import.javaclass</package>
                 <package>org.netbeans.jpa.modeler.db.accessor</package>
                 <package>org.netbeans.jpa.modeler.db.accessor.spec</package>
                 <package>org.netbeans.jpa.modeler.settings.code</package>
                 <package>org.netbeans.jpa.modeler.settings.view</package>
                 <package>org.netbeans.jpa.modeler.spec</package>
+                <package>org.netbeans.jpa.modeler.spec.bean</package>
                 <package>org.netbeans.jpa.modeler.spec.design</package>
                 <package>org.netbeans.jpa.modeler.spec.extend</package>
                 <package>org.netbeans.jpa.modeler.spec.extend.annotation</package>
                 <package>org.netbeans.jpa.modeler.spec.extend.cache</package>
                 <package>org.netbeans.jpa.modeler.spec.jaxb</package>
                 <package>org.netbeans.jpa.modeler.spec.jsonb</package>
-                <package>org.netbeans.jpa.modeler.spec.validation.constraints</package>
                 <package>org.netbeans.jpa.modeler.spec.validator</package>
                 <package>org.netbeans.jpa.modeler.spec.validator.column</package>
                 <package>org.netbeans.jpa.modeler.spec.validator.override</package>

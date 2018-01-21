@@ -49,6 +49,11 @@ public abstract class Attributes<T extends JavaClass> implements IAttributes {
         if(includeParentClassAttibute && this.getJavaClass().getSuperclass()!=null){
             attributes.addAll(this.getJavaClass().getSuperclass().getAttributes().findAllAttribute(name,true));
         }
+        for (Attribute attribute : getAllAttribute(false)) {
+            if (attribute.getName() != null && attribute.getName().equals(name)) {
+                attributes.add(attribute);
+            }
+        }
         return attributes;
     }
 
@@ -59,9 +64,9 @@ public abstract class Attributes<T extends JavaClass> implements IAttributes {
     
     @Override
     public List<Attribute> getAllSortedAttribute(boolean includeParentClassAttibute) {
-        List<Attribute> attributeWidgets = getAllAttribute(includeParentClassAttibute);
-        attributeWidgets.sort(new AttributeLocationComparator());
-        return attributeWidgets;
+        List<Attribute> attributes = getAllAttribute(includeParentClassAttibute);
+        attributes.sort(new AttributeLocationComparator());
+        return attributes;
     }
     
     @Override
@@ -80,13 +85,17 @@ public abstract class Attributes<T extends JavaClass> implements IAttributes {
     @Override
     public boolean isAttributeExist(String name) {
         //check from parent entities
-        if(this.getJavaClass().getSuperclass()!=null){
-            if(this.getJavaClass().getSuperclass().getAttributes().isAttributeExist(name)){
+        if (this.getJavaClass().getSuperclass() != null) {
+            if (this.getJavaClass().getSuperclass().getAttributes().isAttributeExist(name)) {
                 return true;
             }
         }
-        return false;
+        return getAllAttribute(false)
+                .stream()
+                .filter(attr -> attr.getName() != null)
+                .anyMatch(attr -> attr.getName().equals(name));
     }
+    
     @Override
     public Set<String> getConnectedClass(){
         return getConnectedClass(new HashSet<>());

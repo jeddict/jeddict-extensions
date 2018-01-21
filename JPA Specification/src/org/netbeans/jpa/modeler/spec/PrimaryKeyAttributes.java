@@ -179,60 +179,6 @@ public class PrimaryKeyAttributes extends PersistenceAttributes<IdentifiableClas
 
     }
 
-    @Override
-    public List<Attribute> findAllAttribute(String name, boolean includeParentClassAttibute) {
-        List<Attribute> attributes = super.findAllAttribute(name, includeParentClassAttibute);
-        if (id != null) {
-            for (Id id_TMP : id) {
-                if (id_TMP.getName() != null && id_TMP.getName().equals(name)) {
-                    attributes.add(id_TMP);
-                }
-            }
-        }
-        if (version != null) {
-            for (Version version_TMP : version) {
-                if (version_TMP.getName() != null && version_TMP.getName().equals(name)) {
-                    attributes.add(version_TMP);
-                }
-            }
-        }
-        if (embeddedId != null) {
-            if (embeddedId.getName() != null && embeddedId.getName().equals(name)) {
-                attributes.add(embeddedId);
-            }
-        }
-
-        return attributes;
-    }
-
-    @Override
-    public boolean isAttributeExist(String name) {
-        if (super.isAttributeExist(name)) {
-            return true;
-        }
-        if (id != null) {
-            for (Id id_TMP : id) {
-                if (id_TMP.getName() != null && id_TMP.getName().equals(name)) {
-                    return true;
-                }
-            }
-        }
-        if (version != null) {
-            for (Version version_TMP : version) {
-                if (version_TMP.getName() != null && version_TMP.getName().equals(name)) {
-                    return true;
-                }
-            }
-        }
-        if (embeddedId != null) {
-            if (embeddedId.getName() != null && embeddedId.getName().equals(name)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     /**
      * Gets the value of the description property.
      *

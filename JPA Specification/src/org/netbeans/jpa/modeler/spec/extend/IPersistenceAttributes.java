@@ -36,227 +36,46 @@ import org.netbeans.jpa.modeler.spec.workspace.WorkSpace;
  */
 public interface IPersistenceAttributes extends IAttributes {
 
-    /**
-     * Gets the value of the basic property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list, not a
-     * snapshot. Therefore any modification you make to the returned list will
-     * be present inside the JAXB object. This is why there is not a
-     * <CODE>set</CODE> method for the basic property.
-     *
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    addBasic(newItem);
-     * </pre>
-     *
-     *
-     * <p>
-     * Objects of the following type(s) are allowed in the list {@link Basic }
-     *
-     *
-     */
     List<Basic> getBasic();
 
-    /**
-     * Gets the value of the elementCollection property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list, not a
-     * snapshot. Therefore any modification you make to the returned list will
-     * be present inside the JAXB object. This is why there is not a
-     * <CODE>set</CODE> method for the elementCollection property.
-     *
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getElementCollection().add(newItem);
-     * </pre>
-     *
-     *
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link ElementCollection }
-     *
-     *
-     */
-    List<ElementCollection> getElementCollection();
-    void setElementCollection(List<ElementCollection> elementCollection);
-
-    /**
-     * Gets the value of the embedded property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list, not a
-     * snapshot. Therefore any modification you make to the returned list will
-     * be present inside the JAXB object. This is why there is not a
-     * <CODE>set</CODE> method for the embedded property.
-     *
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getEmbedded().add(newItem);
-     * </pre>
-     *
-     *
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Embedded }
-     *
-     *
-     */
-    List<Embedded> getEmbedded();
-    void setEmbedded(List<Embedded> embedded);
-
-    /**
-     * Gets the value of the manyToMany property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list, not a
-     * snapshot. Therefore any modification you make to the returned list will
-     * be present inside the JAXB object. This is why there is not a
-     * <CODE>set</CODE> method for the manyToMany property.
-     *
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getManyToMany().add(newItem);
-     * </pre>
-     *
-     *
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link ManyToMany }
-     *
-     *
-     */
-    List<ManyToMany> getManyToMany();
-    void setManyToMany(List<ManyToMany> manyToMany);
-
-    /**
-     * Gets the value of the manyToOne property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list, not a
-     * snapshot. Therefore any modification you make to the returned list will
-     * be present inside the JAXB object. This is why there is not a
-     * <CODE>set</CODE> method for the manyToOne property.
-     *
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    addManyToOne(newItem);
-     * </pre>
-     *
-     *
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link ManyToOne }
-     *
-     *
-     */
-    List<ManyToOne> getManyToOne();
-    void setManyToOne(List<ManyToOne> manyToOne);
-
-    /**
-     * Gets the value of the oneToMany property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list, not a
-     * snapshot. Therefore any modification you make to the returned list will
-     * be present inside the JAXB object. This is why there is not a
-     * <CODE>set</CODE> method for the oneToMany property.
-     *
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getOneToMany().add(newItem);
-     * </pre>
-     *
-     *
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link OneToMany }
-     *
-     *
-     */
-    List<OneToMany> getOneToMany();
-    void setOneToMany(List<OneToMany> oneToMany);
-
-    /**
-     * Gets the value of the oneToOne property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list, not a
-     * snapshot. Therefore any modification you make to the returned list will
-     * be present inside the JAXB object. This is why there is not a
-     * <CODE>set</CODE> method for the oneToOne property.
-     *
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getOneToOne().add(newItem);
-     * </pre>
-     *
-     *
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link OneToOne }
-     *
-     *
-     */
-    List<OneToOne> getOneToOne();
-    void setOneToOne(List<OneToOne> oneToOne);
-
-    /**
-     * Gets the value of the transient property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list, not a
-     * snapshot. Therefore any modification you make to the returned list will
-     * be present inside the JAXB object. This is why there is not a
-     * <CODE>set</CODE> method for the transient property.
-     *
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getTransient().add(newItem);
-     * </pre>
-     *
-     *
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Transient }
-     *
-     *
-     */
-    List<Transient> getTransient();
+    void setBasic(List<Basic> basic);
 
     void addBasic(Basic basic);
 
     void removeBasic(Basic basic);
-    
+
     Optional<Basic> getBasic(String id);
 
     void addTransient(Transient _transient);
 
     void removeTransient(Transient _transient);
-    
+
+    List<Transient> getTransient();
+
     Optional<Transient> getTransient(String id);
-    
+
+    void setTransient(List<Transient> _transient);
+
+    List<Embedded> getEmbedded();
+
+    void setEmbedded(List<Embedded> embedded);
+
     void addEmbedded(Embedded embedded);
 
     void removeEmbedded(Embedded embedded);
-    
+
     Optional<Embedded> getEmbedded(String id);
+
+    List<ElementCollection> getElementCollection();
+
+    void setElementCollection(List<ElementCollection> elementCollection);
 
     void addElementCollection(ElementCollection elementCollection);
 
     void removeElementCollection(ElementCollection elementCollection);
 
     Optional<ElementCollection> getElementCollection(String id);
-    
+
     void removeRelationAttribute(RelationAttribute relationAttribute);
 
     void addRelationAttribute(RelationAttribute relationAttribute);
@@ -264,39 +83,63 @@ public interface IPersistenceAttributes extends IAttributes {
     List<Attribute> getNonRelationAttributes();
 
     List<RelationAttribute> getRelationAttributes();
-    
+
     List<SingleRelationAttribute> getDerivedRelationAttributes();
-    
+
     Optional<RelationAttribute> getRelationAttribute(String id);
-    
+
+    List<ManyToMany> getManyToMany();
+
+    void setManyToMany(List<ManyToMany> manyToMany);
+
     Optional<ManyToMany> getManyToMany(String id);
-    
+
     void addManyToMany(ManyToMany manyToMany);
 
+    void removeManyToMany(ManyToMany manyToMany);
+
+    List<ManyToOne> getManyToOne();
+
+    void setManyToOne(List<ManyToOne> manyToOne);
+
     Optional<ManyToOne> getManyToOne(String id);
-    
+
     void addManyToOne(ManyToOne manyToOne);
 
+    void removeManyToOne(ManyToOne manyToOne);
+
+    List<OneToMany> getOneToMany();
+
+    void setOneToMany(List<OneToMany> oneToMany);
+
     Optional<OneToMany> getOneToMany(String id);
-    
+
     void addOneToMany(OneToMany oneToMany);
 
+    void removeOneToMany(OneToMany oneToMany);
+
+    List<OneToOne> getOneToOne();
+
+    void setOneToOne(List<OneToOne> oneToOne);
+
     Optional<OneToOne> getOneToOne(String id);
-    
+
     void addOneToOne(OneToOne oneToOne);
-    
+
+    void removeOneToOne(OneToOne oneToOne);
+
     Set<Entity> getRelationConnectedClassRef();
-    
+
     void removeNonOwnerAttribute(Set<JavaClass> filterJavaClasses);
-    
+
     Set<String> getAllConvert();
-    
+
     List<Basic> getSuperBasic();
-    
+
     XMLAttributes getAccessor(WorkSpace workSpace);
 
     XMLAttributes getAccessor(WorkSpace workSpace, boolean inherit);
-    
+
     XMLAttributes updateAccessor(WorkSpace workSpace, XMLAttributes attr, boolean inherit);
 
 }

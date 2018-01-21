@@ -30,6 +30,12 @@ import org.netbeans.jpa.modeler.spec.OneToMany;
 import org.netbeans.jpa.modeler.spec.OneToOne;
 import org.netbeans.jpa.modeler.spec.Transient;
 import org.netbeans.jpa.modeler.spec.Version;
+import org.netbeans.jpa.modeler.spec.bean.BeanAttribute;
+import org.netbeans.jpa.modeler.spec.bean.BeanCollectionAttribute;
+import org.netbeans.jpa.modeler.spec.bean.ManyToManyAssociation;
+import org.netbeans.jpa.modeler.spec.bean.ManyToOneAssociation;
+import org.netbeans.jpa.modeler.spec.bean.OneToManyAssociation;
+import org.netbeans.jpa.modeler.spec.bean.OneToOneAssociation;
 
 /**
  *
@@ -40,23 +46,25 @@ public class AttributeLocationComparator implements Comparator<Attribute>{
     private final static Map<Class<? extends Attribute>, Function<Attribute, Integer>> index = new HashMap<>();
     
     static {
-        index.put(EmbeddedId.class, (attr) -> 1);
-        index.put(Id.class, (attr) -> 2);
-        index.put(Basic.class, (attr) -> 3);
-        index.put(ElementCollection.class, (attr) -> {
-            if(((ElementCollection)attr).getConnectedClass()==null){
-                return 4;
-            } else {
-                return 5;
-            }
-        });
-        index.put(Embedded.class, (attr) -> 6);
-        index.put(OneToOne.class, (attr) -> 7);
-        index.put(ManyToOne.class, (attr) -> 8);
-        index.put(OneToMany.class, (attr) -> 9);
-        index.put(ManyToMany.class, (attr) -> 10);
-        index.put(Transient.class, (attr) -> 11);
-        index.put(Version.class, (attr) -> 12);
+        index.put(EmbeddedId.class, attr -> 1);
+        index.put(Id.class, attr -> 2);
+        index.put(Basic.class, attr -> 3);
+        index.put(ElementCollection.class, attr -> ((ElementCollection)attr).getConnectedClass()==null?4:5);
+        index.put(Embedded.class, attr -> 6);
+        index.put(OneToOne.class, attr -> 7);
+        index.put(ManyToOne.class, attr -> 8);
+        index.put(OneToMany.class, attr -> 9);
+        index.put(ManyToMany.class, attr -> 10);
+        
+        index.put(BeanAttribute.class, attr -> 11);
+        index.put(BeanCollectionAttribute.class, attr -> 12);
+        index.put(OneToOneAssociation.class, attr -> 13);
+        index.put(ManyToOneAssociation.class, attr -> 14);
+        index.put(OneToManyAssociation.class, attr -> 15);
+        index.put(ManyToManyAssociation.class, attr -> 16);
+        
+        index.put(Transient.class, attr -> 17);
+        index.put(Version.class, attr -> 18);
     }
     
     @Override

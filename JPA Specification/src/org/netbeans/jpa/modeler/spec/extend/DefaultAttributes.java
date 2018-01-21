@@ -44,17 +44,6 @@ public class DefaultAttributes extends Attributes<DefaultClass> {
         return attributes;
     }
     
-    @Override
-    public List<Attribute> findAllAttribute(String name, boolean includeParentClassAttibute) {
-        List<Attribute> attributes = super.findAllAttribute(name, includeParentClassAttibute);
-
-        for (DefaultAttribute defaultAttribute : getDefaultAttributes()) {
-            if (defaultAttribute.getName() != null && defaultAttribute.getName().equals(name)) {
-                attributes.add(defaultAttribute);
-            }
-        }
-        return attributes;
-    }
     /**
      * @return the defaultAttributes
      */

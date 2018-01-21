@@ -164,7 +164,8 @@ import static org.netbeans.jpa.source.JavaSourceParserUtil.loadEntityClass;
  * For Basic ElementCollection -> TargetClass<String>
  * For Embeddable ElementCollection -> ConnectedClass<Embeddable>
  */
-public class ElementCollection extends CompositionAttribute<Embeddable> implements SortableAttribute, FetchTypeHandler,
+public class ElementCollection extends CompositionAttribute<Embeddable> implements 
+        SortableAttribute, FetchTypeHandler,
         ColumnHandler, AssociationOverrideHandler,
         CollectionTypeHandler, MapKeyHandler,
         TemporalTypeHandler, EnumTypeHandler,

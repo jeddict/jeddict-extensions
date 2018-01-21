@@ -13,40 +13,41 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.netbeans.jpa.modeler.spec.extend;
+package org.netbeans.jpa.modeler.spec.bean;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import org.netbeans.jpa.modeler.spec.extend.JavaClass;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "class", propOrder = {
+@XmlType(propOrder = {
     "attributes"
 })
-public class PlainClass extends JavaClass<PlainAttributes> {
+public class BeanClass extends JavaClass<BeanAttributes> {
 
-    @XmlElement(name = "attrs")
-    private PlainAttributes attributes;
+    @XmlElement(name = "attributes")
+    private BeanAttributes attributes;
 
-    public PlainClass() {
+    public BeanClass() {
     }
 
-    public PlainClass(String clazz) {
+    public BeanClass(String clazz) {
         this.clazz = clazz;
     }
 
     @Override
-    public PlainAttributes getAttributes() {
+    public BeanAttributes getAttributes() {
         if (attributes == null) {
-            attributes = new PlainAttributes();
+            attributes = new BeanAttributes();
             attributes.setJavaClass(this);
         }
         return attributes;
     }
 
     @Override
-    public void setAttributes(PlainAttributes attributes) {
+    public void setAttributes(BeanAttributes attributes) {
         this.attributes = attributes;
     }
 
