@@ -643,7 +643,7 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
         dbComboBox.setModel(
                 new DefaultComboBoxModel(Stream.of(DatabaseType.values())
                         .filter(type -> type.isDockerSupport() || !dockerMachineCheckBox.isSelected())
-                        .filter(type -> !type.isEmbeddedDB() || (type.isEmbeddedDB() && getServerType().getEmbeddedDB() == type))
+                        .filter(type -> !type.isEmbeddedDB() || (type.isEmbeddedDB() && getServerType().isEmbeddedDB(type)))
                         //                        .sorted((t1,t2)-> getServerType().getEmbeddedDB() == t1?-1:(getServerType().getEmbeddedDB() == t2?1:0))
                         .toArray(DatabaseType[]::new))
         );

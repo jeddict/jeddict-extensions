@@ -32,7 +32,7 @@ import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.BOLD;
 import static org.netbeans.jcode.console.Console.FG_MAGENTA;
-import static org.netbeans.jcode.console.Console.FG_RED;
+import static org.netbeans.jcode.console.Console.FG_DARK_RED;
 import static org.netbeans.jcode.console.Console.UNDERLINE;
 import org.netbeans.jcode.core.util.POMManager;
 import org.netbeans.jcode.core.util.PersistenceUtil;
@@ -126,7 +126,7 @@ public class DockerGenerator implements Generator {
 
     private void manageDockerGeneration() throws IOException {
         if (config.isDockerEnable()) {
-            handler.progress(Console.wrap(DockerGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
+            handler.progress(Console.wrap(DockerGenerator.class, "MSG_Progress_Now_Generating", FG_DARK_RED, BOLD, UNDERLINE));
 
             FileObject targetFolder = getDockerDirectory(source);
             Map<String, Object> params = getParams();
@@ -282,8 +282,8 @@ public class DockerGenerator implements Generator {
         if (POMManager.isMavenProject(project)) {
             ServerType serverType = config.getServerType();
             DatabaseType databaseType = config.getDatabaseType();
-            boolean addDependency = (config.isDbInfoExist() && serverType.getEmbeddedDB() != databaseType)
-                    || (serverType.getEmbeddedDB() == databaseType && serverType.isEmbeddedDBDriverRequired());
+            boolean addDependency = (config.isDbInfoExist() && !serverType.isEmbeddedDB(databaseType))
+                    || (serverType.isEmbeddedDB(databaseType) && serverType.isEmbeddedDBDriverRequired());
             if (databaseType.getDriver() != null && addDependency) {
                 POMManager pomManager = new POMManager(project);
                 DatabaseDriver driver = databaseType.getDriver();
@@ -331,14 +331,14 @@ public class DockerGenerator implements Generator {
                 appConfigData.addBuildProperty(WEB_PORT, "<container port>");
                 appConfigData.addBuildProperty(REGISTRY_URL, "<registry url>");
                 handler.info("Service Registry",
-                        Console.wrap(String.join(", ", WEB_HOST, WEB_PORT, REGISTRY_URL), BOLD, FG_MAGENTA)
+                        Console.wrap(String.join(", ", WEB_HOST, WEB_PORT, REGISTRY_URL), FG_MAGENTA)
                         + " properties are required for Service Registry");
             } else if (appConfigData.isGateway()) {
                 properties.put(WEB_PORT, "8080");//for docker
                 properties.put(REGISTRY_URL, "http://localhost:"+registryPort);
                 appConfigData.addBuildProperty(REGISTRY_URL, "<registry url>");
                 handler.info("Service Discovery",
-                        Console.wrap(REGISTRY_URL, BOLD, FG_MAGENTA)
+                        Console.wrap(REGISTRY_URL, FG_MAGENTA)
                         + " property is required for Service Discovery");
             }
             pomManager.addProperties(DEVELOPMENT_PROFILE, properties);

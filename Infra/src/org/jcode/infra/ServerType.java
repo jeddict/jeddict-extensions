@@ -15,9 +15,13 @@
  */
 package org.jcode.infra;
 
-import java.util.Arrays;
+import static java.util.Arrays.asList;
 import static java.util.Collections.EMPTY_LIST;
+import static java.util.Collections.EMPTY_MAP;
+import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonMap;
 import java.util.List;
+import java.util.Map;
 import static org.jcode.infra.DatabaseType.DERBY;
 import static org.jcode.infra.DatabaseType.H2;
 import static org.jcode.infra.ServerFamily.PAYARA_FAMILY;
@@ -32,16 +36,25 @@ import static org.netbeans.jcode.jpa.PersistenceProviderType.HIBERNATE;
  */
 public enum ServerType {
     
-    NONE(true, null, "<No Server Selected>", null, null, false,
+    NONE(true, null, "<No Server Selected>", 
+            null, null, EMPTY_MAP, false,
             null, null, EMPTY_LIST),
-    PAYARA(true, PAYARA_FAMILY, "Payara", ECLIPSELINK, DERBY, false,
-           "${build.name}.war", "DockerFile_PAYARA.ftl", Arrays.asList("latest", "161", "161.1")),
-    PAYARA_MICRO(true, PAYARA_FAMILY, "Payara Micro", ECLIPSELINK, DERBY, false,
-           "${build.name}.jar", "DockerFile_JAVA.ftl", EMPTY_LIST),
-    WILDFLY(false, WILDFLY_FAMILY, "Wildfly", HIBERNATE, H2, false,
-           "${build.name}.war", "DockerFile_WILDFLY.ftl", Arrays.asList("latest", "8.1.0.Final", "8.2.1.Final", "8.2.0.Final", "9.0.0.Final", "10.1.0.Final", "9.0.1.Final", "9.0.2.Final", "10.0.0.Final")),
-    WILDFLY_SWARM(false, WILDFLY_FAMILY, "Wildfly Swarm", HIBERNATE, H2, true,
-          "${build.name}-swarm.jar", "DockerFile_JAVA.ftl", EMPTY_LIST);
+    PAYARA(true, PAYARA_FAMILY, "Payara", 
+            ECLIPSELINK, H2, singletonMap(DERBY, "jdbc/__derby"), false,
+           "${build.name}.war", "DockerFile_PAYARA.ftl", 
+            asList("latest", "161", "161.1")),
+    PAYARA_MICRO(true, PAYARA_FAMILY, "Payara Micro", 
+            ECLIPSELINK, H2, singletonMap(DERBY, "jdbc/__derby"), false,
+           "${build.name}.jar", "DockerFile_JAVA.ftl", 
+            EMPTY_LIST),
+    WILDFLY(false, WILDFLY_FAMILY, "Wildfly", 
+            HIBERNATE, H2, EMPTY_MAP, false,
+           "${build.name}.war", "DockerFile_WILDFLY.ftl", 
+            asList("latest", "8.1.0.Final", "8.2.1.Final", "8.2.0.Final", "9.0.0.Final", "10.1.0.Final", "9.0.1.Final", "9.0.2.Final", "10.0.0.Final")),
+    WILDFLY_SWARM(false, WILDFLY_FAMILY, "Wildfly Swarm", 
+            HIBERNATE, H2, EMPTY_MAP, true,
+          "${build.name}-swarm.jar", "DockerFile_JAVA.ftl", 
+            EMPTY_LIST);
 //    GLASSFISH("Glassfish", Arrays.asList("4.1.1","4.1.1-web")),
 
     private final ServerFamily family;
@@ -50,22 +63,25 @@ public enum ServerType {
     private final String template;
     private final List<String> version;
     private final PersistenceProviderType persistenceProviderType;
-    private final DatabaseType embeddedDB;
+    private final DatabaseType defaultDB;
+    private final Map<DatabaseType, String> embeddedDBs;
     private final boolean embeddedDBDriverRequired;
     private final boolean visible;
 
-    private ServerType (boolean                 visible,
-                        ServerFamily            family, 
-                        String                  displayName, 
-                        PersistenceProviderType persistenceProviderType, 
-                        DatabaseType            embeddedDB, 
-                        boolean                 embeddedDBDriverRequired,
-                        String                  binary, 
-                        String                  template, 
-                        List<String>            version) {
+    private ServerType (boolean                     visible,
+                        ServerFamily                family, 
+                        String                      displayName, 
+                        PersistenceProviderType     persistenceProviderType, 
+                        DatabaseType                defaultDB,
+                        Map<DatabaseType, String>   embeddedDBs, 
+                        boolean                     embeddedDBDriverRequired,
+                        String                      binary, 
+                        String                      template, 
+                        List<String>                version) {
         this.family = family;
         this.displayName = displayName;
-        this.embeddedDB = embeddedDB;
+        this.defaultDB = defaultDB;
+        this.embeddedDBs = embeddedDBs;
         this.embeddedDBDriverRequired = embeddedDBDriverRequired;
         this.binary = binary;
         this.template = template;
@@ -118,8 +134,22 @@ public enum ServerType {
     /**
      * @return the embeddedDB
      */
-    public DatabaseType getEmbeddedDB() {
-        return embeddedDB;
+    public DatabaseType getDeafultDB() {
+        return defaultDB;
+    }
+    
+    /**
+     * @return the embeddedDB
+     */
+    public Map<DatabaseType, String> getEmbeddedDBs() {
+        return embeddedDBs;
+    }
+    
+    public boolean isEmbeddedDB(DatabaseType type){
+        if(defaultDB == type){
+            return true;
+        }
+        return embeddedDBs.keySet().contains(type);
     }
 
     /**
