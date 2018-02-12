@@ -24,9 +24,8 @@ import org.netbeans.api.progress.aggregate.AggregateProgressFactory;
 import org.netbeans.api.progress.aggregate.AggregateProgressHandle;
 import org.netbeans.api.progress.aggregate.ProgressContributor;
 import org.netbeans.jcode.console.Console;
-import static org.netbeans.jcode.console.Console.BOLD;
 import static org.netbeans.jcode.console.Console.FG_GREEN;
-import static org.netbeans.jcode.console.Console.FG_RED;
+import static org.netbeans.jcode.console.Console.FG_DARK_RED;
 import org.openide.ErrorManager;
 import org.openide.util.Cancellable;
 import org.openide.util.NbBundle;
@@ -137,17 +136,17 @@ public abstract class AbstractNBTask extends Thread
             log(Console.wrap(NbBundle.getMessage(
                     AbstractNBTask.class, "MSG_Report_Cancelled") + " " + // NOI18N
                     NbBundle.getMessage(
-                            AbstractNBTask.class, "MSG_TotalTime", timeMsg), FG_RED, BOLD)); // NOI18N
+                            AbstractNBTask.class, "MSG_TotalTime", timeMsg), FG_DARK_RED)); // NOI18N
         } else if (success) {
             log(Console.wrap(NbBundle.getMessage(
                     AbstractNBTask.class, "MSG_Report_Successful") + " " + // NOI18N
                     NbBundle.getMessage(
-                            AbstractNBTask.class, "MSG_TotalTime", timeMsg), FG_GREEN, BOLD)); // NOI18N
+                            AbstractNBTask.class, "MSG_TotalTime", timeMsg), FG_GREEN)); // NOI18N
         } else {
             log(Console.wrap(NbBundle.getMessage(
                     AbstractNBTask.class, "MSG_Report_Failed") + " " + // NOI18N
                     NbBundle.getMessage(
-                            AbstractNBTask.class, "MSG_TotalTime", timeMsg), FG_RED, BOLD)); // NOI18N
+                            AbstractNBTask.class, "MSG_TotalTime", timeMsg), FG_DARK_RED)); // NOI18N
         }
     }
 

@@ -313,7 +313,7 @@ public abstract class JavaClass<T extends IAttributes> extends FlowNode implemen
     }
     
     public List<Attribute> getSuperclassAttributes() {
-         List<Attribute> attributes = Collections.EMPTY_LIST;
+         List<Attribute> attributes = Collections.<Attribute>emptyList();
         if(superclass !=null && superclass instanceof IdentifiableClass){
             attributes = ((IdentifiableClass)superclass).getAttributes().getAllAttribute();
             attributes.addAll(superclass.getSuperclassAttributes());

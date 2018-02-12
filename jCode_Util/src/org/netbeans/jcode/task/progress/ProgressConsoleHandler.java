@@ -26,14 +26,10 @@ import static org.netbeans.jcode.console.Console.BG_BLUE;
 import static org.netbeans.jcode.console.Console.BG_GREEN;
 import static org.netbeans.jcode.console.Console.BG_MAGENTA;
 import static org.netbeans.jcode.console.Console.BG_RED;
-import static org.netbeans.jcode.console.Console.BLINK;
-import static org.netbeans.jcode.console.Console.BOLD;
 import static org.netbeans.jcode.console.Console.FG_BLUE;
 import static org.netbeans.jcode.console.Console.FG_GREEN;
 import static org.netbeans.jcode.console.Console.FG_MAGENTA;
-import static org.netbeans.jcode.console.Console.FG_RED;
-import static org.netbeans.jcode.console.Console.FG_WHITE;
-import static org.netbeans.jcode.console.Console.UNDERLINE;
+import static org.netbeans.jcode.console.Console.FG_DARK_RED;
 import org.netbeans.jcode.task.ITaskSupervisor;
 import org.openide.filesystems.FileObject;
 import static org.netbeans.jcode.core.util.FileUtil.expandTemplateContent;
@@ -111,7 +107,7 @@ public class ProgressConsoleHandler implements ProgressHandler {
         
         printMessage(MessageType.INFO,BG_BLUE,FG_BLUE, infoMessage);
         printMessage(MessageType.WARNING,BG_MAGENTA,FG_MAGENTA, warningMessage);
-        printMessage(MessageType.ERROR,BG_RED, FG_RED, errorMessage);
+        printMessage(MessageType.ERROR,BG_RED, FG_DARK_RED, errorMessage);
         printMessage(MessageType.HELP,BG_GREEN, FG_GREEN, helpMessage);
     }
 
@@ -156,13 +152,13 @@ public class ProgressConsoleHandler implements ProgressHandler {
     }
 
     private void printMessage(MessageType messageType, Console bgColor, Console fgColor, Set<Message> messageRepository) {
-        String type = Console.wrap(messageType.getHeading(), bgColor, FG_WHITE, BOLD, BLINK);
+        String type = Console.wrap(messageType.getHeading(), bgColor);
         if (!messageRepository.isEmpty()) {
             taskSupervisor.log(type, true);
             String previousHelpMessage = null;
             for (Message message : messageRepository) {
                 String currentHelpMessage = null;
-                taskSupervisor.log(Console.wrap(message.getTitle() + " > \t", fgColor, BOLD, UNDERLINE), false);
+                taskSupervisor.log(Console.wrap(message.getTitle() + " > \t", fgColor), false);
                 String parsedMessage[] = message.getDescription().split("#");
                 taskSupervisor.log(expandTemplateContent(parsedMessage[0], dynamicVariables), true);
                 if(parsedMessage.length>1){

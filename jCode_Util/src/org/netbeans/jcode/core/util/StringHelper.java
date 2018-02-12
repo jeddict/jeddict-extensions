@@ -147,21 +147,17 @@ public final class StringHelper {
         return result.toString();
     }
     
-        /**
-     * @return the a derived methodName from variableName Eg nickname -->
-     * getNickname()
+    /**
+     * @return the a derived methodName from variableName Eg nickname Nickname
      */
     public static String getMethodName(String name) {
         if (name.charAt(0) == '_') {
             char ch = Character.toUpperCase(name.charAt(1));
-
             return Character.toString(ch) + name.substring(2);
         } else {
             char ch = Character.toUpperCase(name.charAt(0));
-
             return Character.toString(ch) + name.substring(1);
         }
-
     }
 
     public static String removeBeanMethodPrefix(String methodName) {

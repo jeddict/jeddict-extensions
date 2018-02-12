@@ -89,17 +89,17 @@ public class MappedSuperclass extends IdentifiableClass {
 
     @Override
     public List<NamedQuery> getNamedQuery() {
-        return Collections.EMPTY_LIST;
+        return Collections.<NamedQuery>emptyList();
     }
 
     @Override
     public List<NamedNativeQuery> getNamedNativeQuery() {
-        return Collections.EMPTY_LIST;
+        return Collections.<NamedNativeQuery>emptyList();
     }
 
     @Override
     public List<NamedStoredProcedureQuery> getNamedStoredProcedureQuery() {
-        return Collections.EMPTY_LIST;
+        return Collections.<NamedStoredProcedureQuery>emptyList();
     }
 
 }

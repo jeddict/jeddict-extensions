@@ -27,7 +27,7 @@ import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.BOLD;
-import static org.netbeans.jcode.console.Console.FG_RED;
+import static org.netbeans.jcode.console.Console.FG_DARK_RED;
 import static org.netbeans.jcode.console.Console.UNDERLINE;
 import static org.netbeans.jcode.core.util.AttributeType.getWrapperType;
 import static org.netbeans.jcode.core.util.AttributeType.isPrimitive;
@@ -99,7 +99,7 @@ public final class RepositoryGenerator implements Generator {
         gatewayProject = appConfigData.getGatewayProject();
         gatewaySource = appConfigData.getGatewaySourceGroup();
         
-        handler.progress(Console.wrap(RepositoryGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
+        handler.progress(Console.wrap(RepositoryGenerator.class, "MSG_Progress_Now_Generating", FG_DARK_RED, BOLD, UNDERLINE));
         if (appConfigData.isMonolith() || appConfigData.isMicroservice()) {
             if (appConfigData.isCompleteApplication()) {
                 generateAbstract(true, targetSource, appConfigData.getTargetPackage());
@@ -113,13 +113,18 @@ public final class RepositoryGenerator implements Generator {
             generateProducer(gatewaySource, appConfigData.getGatewayPackage());
             addMavenDependencies("repository/pom/_pom.xml", gatewayProject);
         }
-         if (appConfigData.isCompleteApplication()) {
-             handler.info("Build", 
-                     Console.wrap(" mvn clean install ${profile} ${buildProperties}", BOLD), 
-                     appConfigData.isGateway() ? gatewayProject : targetProject);
-         }
-    }
 
+    }
+    
+    @Override
+    public void postExecute() {
+        if (appConfigData.isCompleteApplication()) {
+            handler.info("Maven Build",
+                    Console.wrap("mvn clean install ${profile} ${buildProperties}", BOLD),
+                    appConfigData.isGateway() ? gatewayProject : targetProject);
+        }
+    }
+    
     private void addMavenDependencies(String pom, Project project) {
         if (POMManager.isMavenProject(project)) {
             POMManager pomManager = new POMManager(TEMPLATE + pom, project);

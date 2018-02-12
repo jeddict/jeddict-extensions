@@ -72,6 +72,35 @@ public class ApplicationGenerator extends AbstractGenerator {
         injectData();
     }
 
+    @Override
+    public void preGeneration() {
+        TechContext bussinesLayerConfig = appConfigData.getBussinesTechContext();
+        if (bussinesLayerConfig == null) {
+            return;
+        }
+        bussinesLayerConfig.getGenerator().preExecute();
+        for (TechContext context : bussinesLayerConfig.getSiblingTechContext()) {
+            context.getGenerator().preExecute();
+        }
+
+        TechContext controllerLayerConfig = appConfigData.getControllerTechContext();
+        if (controllerLayerConfig == null) {
+            return;
+        }
+        controllerLayerConfig.getGenerator().preExecute();
+        for (TechContext context : controllerLayerConfig.getSiblingTechContext()) {
+            context.getGenerator().preExecute();
+        }
+
+        TechContext viewerLayerConfig = appConfigData.getViewerTechContext();
+        if (viewerLayerConfig == null) {
+            return;
+        }
+        viewerLayerConfig.getGenerator().preExecute();
+        for (TechContext context : viewerLayerConfig.getSiblingTechContext()) {
+            context.getGenerator().preExecute();
+        }
+    }
 
     @Override
     public void generate() {
@@ -100,13 +129,7 @@ public class ApplicationGenerator extends AbstractGenerator {
                     POMManager.reload(appConfigData.getGatewayProject());
                 }
             }
-            
-            String profiles = appConfigData.getProfiles();
-            handler.addDynamicVariable("profile", profiles.isEmpty()? "":"-P " + profiles);
-            String buildProperties = appConfigData.getBuildProperties();
-            handler.addDynamicVariable("buildProperties", buildProperties);
-            
-            
+                        
             appConfigData.getWebDescriptorContent().forEach((project, webDescriptorContent) -> {
                 if (!webDescriptorContent.toString().isEmpty()) {
                     WebDDUtil.createDD(project, "/org/netbeans/jcode/template/web/descriptor/_web.xml.ftl", Collections.singletonMap("content", webDescriptorContent));
@@ -117,39 +140,8 @@ public class ApplicationGenerator extends AbstractGenerator {
                     WebDDUtil.createTestDD(project, "/org/netbeans/jcode/template/web/descriptor/_web.xml.ftl", Collections.singletonMap("content", webDescriptorTestContent));
                 }
             });
-            finishProgressReporting();
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
-        }
-    }
-
-    @Override
-    public void preGeneration() {
-        TechContext bussinesLayerConfig = appConfigData.getBussinesTechContext();
-        if (bussinesLayerConfig == null) {
-            return;
-        }
-        bussinesLayerConfig.getGenerator().preExecute();
-        for (TechContext context : bussinesLayerConfig.getSiblingTechContext()) {
-            context.getGenerator().preExecute();
-        }
-
-        TechContext controllerLayerConfig = appConfigData.getControllerTechContext();
-        if (controllerLayerConfig == null) {
-            return;
-        }
-        controllerLayerConfig.getGenerator().preExecute();
-        for (TechContext context : controllerLayerConfig.getSiblingTechContext()) {
-            context.getGenerator().preExecute();
-        }
-
-        TechContext viewerLayerConfig = appConfigData.getViewerTechContext();
-        if (viewerLayerConfig == null) {
-            return;
-        }
-        viewerLayerConfig.getGenerator().preExecute();
-        for (TechContext context : viewerLayerConfig.getSiblingTechContext()) {
-            context.getGenerator().preExecute();
         }
     }
 
@@ -182,6 +174,11 @@ public class ApplicationGenerator extends AbstractGenerator {
         for (TechContext context : viewerLayerConfig.getSiblingTechContext()) {
             context.getGenerator().postExecute();
         }
+        
+        String profiles = appConfigData.getProfiles();
+        handler.addDynamicVariable("profile", profiles.isEmpty() ? "" : "-P " + profiles);
+        handler.addDynamicVariable("buildProperties", appConfigData.getBuildProperties());
+        finishProgressReporting();
     }
 
     private void injectData() {

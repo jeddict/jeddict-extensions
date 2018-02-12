@@ -208,7 +208,7 @@ public class MVCData extends LayerConfigData<RepositoryData> {
     
     @Override
     public List<String> getUsageDetails() {
-        return Collections.EMPTY_LIST;
+        return Collections.<String>emptyList();
     }
 
 }

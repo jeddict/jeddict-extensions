@@ -15,7 +15,7 @@
  */
 package org.netbeans.jcode.rest.util;
 
-import java.util.Arrays;
+import static java.util.Collections.EMPTY_LIST;
 import java.util.List;
 
 /**
@@ -24,7 +24,7 @@ import java.util.List;
  */
 public enum RestApp {
     
-    METRICS("new InstrumentedResourceMethodApplicationListener (metricsConfigurer.getMetricRegistry())", Arrays.asList("com.codahale.metrics.jersey2.InstrumentedResourceMethodApplicationListener;"));
+    NONE("", EMPTY_LIST);
     
     private final String body;
     private final List<String> imports;
@@ -41,6 +41,5 @@ public enum RestApp {
     public List<String> getImports() {
         return imports;
     }
-    
     
 }

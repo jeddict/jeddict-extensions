@@ -723,7 +723,7 @@ public abstract class FromEntityBase {
         }
   
         public String getHtmlType() {
-            return (String) method.getReturnType().toString();
+            return method.getReturnType().toString();
         }
 
         public boolean isRelationshipOwner() {

@@ -23,23 +23,35 @@ import org.openide.util.NbBundle;
  */
 public enum Console {
 
-    NORMAL("0"), BOLD("1"), UNDERLINE("4"), BLINK("5"), INVERSE("7"),
+    NORMAL("0"), 
+    
+    BOLD("1"), UNDERLINE("4"), BLINK("5"), INVERSE("7"),
+    
+    FG_RED("31;1"),
+    FG_GREEN("32;1"),
+    FG_YELLOW("33;1"),
+    FG_BLUE("34;1"),
+    FG_MAGENTA("35;1"),
+    FG_CYAN("36;1"),
+    
+    FG_GREY("30;1"),
+    FG_LIGHT_GREY("37"),
     FG_BLACK("30"),
-    FG_RED("31"),
-    FG_GREEN("32"),
-    FG_YELLOW("33"),
-    FG_BLUE("34"),
-    FG_MAGENTA("35"),
-    FG_CYAN("36"),
-    FG_WHITE("37"),
-    BG_BLACK("40"),
-    BG_RED("41"),
-    BG_GREEN("42"),
-    BG_YELLOW("43"),
-    BG_BLUE("44"),
-    BG_MAGENTA("45"),
-    BG_CYAN("46"),
-    BG_WHITE("47");
+    
+    FG_DARK_RED("31"),
+    FG_DARK_GREEN("32"),
+    FG_DARK_YELLOW("33"),
+    FG_DARK_BLUE("34"),
+    FG_DARK_MAGENTA("35"),
+    FG_DARK_CYAN("36"),
+    
+    BG_RED("41;1"),
+    BG_GREEN("42;1"),
+    BG_YELLOW("43;1"),
+    BG_BLUE("44;1"),
+    BG_MAGENTA("45;1"),
+    BG_CYAN("46;1"),
+    BG_GREY("47;1");
 
     private final String code;
 
@@ -64,7 +76,7 @@ public enum Console {
             }
 
         } else {
-            sb.append(NORMAL);
+            sb.append(NORMAL.code);
         }
         sb.append(TAG_END).append(text).append(END);
         return sb.toString();
@@ -73,8 +85,8 @@ public enum Console {
     public static String wrap(Class _class, String text, Console... consoles) {
         return wrap(NbBundle.getMessage(_class, text), consoles);
     }
-    
-    public static String wrap(Class _class, String text,String param, Console... consoles) {
+
+    public static String wrap(Class _class, String text, String param, Console... consoles) {
         return wrap(NbBundle.getMessage(_class, text, param), consoles);
     }
 

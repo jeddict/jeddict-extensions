@@ -59,7 +59,7 @@ import org.netbeans.jcode.cdi.logger.LoggerProducerGenerator;
 import org.netbeans.jcode.cdi.util.CDIUtil;
 import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.BOLD;
-import static org.netbeans.jcode.console.Console.FG_RED;
+import static org.netbeans.jcode.console.Console.FG_DARK_RED;
 import static org.netbeans.jcode.console.Console.UNDERLINE;
 import org.netbeans.jcode.core.util.AttributeType.Type;
 import static org.netbeans.jcode.core.util.AttributeType.Type.ARRAY;
@@ -183,7 +183,7 @@ public class MVCControllerGenerator implements Generator {
         project = appConfigData.getTargetProject();
         source = appConfigData.getTargetSourceGroup();
         
-        handler.progress(Console.wrap(MVCControllerGenerator.class, "MSG_Progress_Now_Generating", FG_RED, BOLD, UNDERLINE));
+        handler.progress(Console.wrap(MVCControllerGenerator.class, "MSG_Progress_Now_Generating", FG_DARK_RED, BOLD, UNDERLINE));
         if (appConfigData.isCompleteApplication()) {
             generateUtil();
             addMavenDependencies();
@@ -398,7 +398,7 @@ public class MVCControllerGenerator implements Generator {
                         returnType,
                         Collections.EMPTY_LIST,
                         vars,
-                        (List<ExpressionTree>) Collections.EMPTY_LIST,
+                        Collections.<ExpressionTree>emptyList(),
                         "{" + bodyContent + "}",
                         null)
                 );

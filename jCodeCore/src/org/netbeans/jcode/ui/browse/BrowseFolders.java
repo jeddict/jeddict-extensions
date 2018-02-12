@@ -403,7 +403,7 @@ public class BrowseFolders extends JPanel implements ExplorerManager.Provider, L
                 Node selection[] = browsePanel.getExplorerManager().getSelectedNodes();
                 
                 if ( selection != null && selection.length > 0 ) {
-                    DataObject dobj = (DataObject)selection[0].getLookup().
+                    DataObject dobj = selection[0].getLookup().
                         lookup( DataObject.class );
                     if (dobj!=null && dobj.getClass().isAssignableFrom(target)) {
                         result = dobj.getPrimaryFile();

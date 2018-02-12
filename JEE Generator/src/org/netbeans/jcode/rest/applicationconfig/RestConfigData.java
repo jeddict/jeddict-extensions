@@ -82,6 +82,6 @@ public class RestConfigData extends LayerConfigData{
     
     @Override
     public List<String> getUsageDetails() {
-        return Collections.EMPTY_LIST;
+        return Collections.<String>emptyList();
     }
 }

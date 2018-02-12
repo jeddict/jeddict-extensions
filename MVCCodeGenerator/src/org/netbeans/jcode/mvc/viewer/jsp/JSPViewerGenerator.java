@@ -30,7 +30,7 @@ import org.netbeans.api.project.Sources;
 import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.BOLD;
 import static org.netbeans.jcode.console.Console.FG_MAGENTA;
-import static org.netbeans.jcode.console.Console.FG_RED;
+import static org.netbeans.jcode.console.Console.FG_DARK_RED;
 import static org.netbeans.jcode.console.Console.UNDERLINE;
 import org.netbeans.jcode.core.util.FileUtil;
 import org.netbeans.jcode.core.util.StringHelper;
@@ -156,7 +156,7 @@ public class JSPViewerGenerator implements Generator{
     }
 
     public void generateStaticResources(Project project, ProgressHandler handler) throws IOException {
-        handler.append(Console.wrap(JSPViewerGenerator.class, "MSG_Copying_Static_Files", FG_RED, BOLD, UNDERLINE));
+        handler.append(Console.wrap(JSPViewerGenerator.class, "MSG_Copying_Static_Files", FG_DARK_RED, BOLD, UNDERLINE));
         Sources sources = ProjectUtils.getSources(project);
         SourceGroup sourceGroups[] = sources.getSourceGroups(WebProjectConstants.TYPE_DOC_ROOT);
         FileObject webRoot = sourceGroups[0].getRootFolder();
@@ -175,7 +175,7 @@ public class JSPViewerGenerator implements Generator{
         params.put("Authentication", mvcData.isAuthentication());
         params.put("online", jspData.isOnlineTheme());
 
-        handler.append(Console.wrap(JSPViewerGenerator.class, "MSG_Generating_Static_Template", FG_RED, BOLD));
+        handler.append(Console.wrap(JSPViewerGenerator.class, "MSG_Generating_Static_Template", FG_DARK_RED, BOLD));
         for (Entry<String, String> entry : TEMPLATE_PATTERN_FILES.entrySet()) {
             String targetPath =  jspData.getResourceFolder() + '/' + entry.getValue();
 //            if (webRoot.getFileObject(targetPath) == null) {
@@ -187,7 +187,7 @@ public class JSPViewerGenerator implements Generator{
 
     public void generateCRUD(Set<String> entities, boolean overrideExisting) throws IOException {
         
-        handler.progress(Console.wrap(JSPViewerGenerator.class, "MSG_Generating_CRUD_Template", FG_RED, BOLD, UNDERLINE));
+        handler.progress(Console.wrap(JSPViewerGenerator.class, "MSG_Generating_CRUD_Template", FG_DARK_RED, BOLD, UNDERLINE));
         for (String entityFQN : entities) {
         
         Sources sources = ProjectUtils.getSources(project);

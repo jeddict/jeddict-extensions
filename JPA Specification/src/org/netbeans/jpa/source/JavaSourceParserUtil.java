@@ -761,7 +761,7 @@ public class JavaSourceParserUtil {
      */
     public static List<VariableElement> getFields(TypeElement typeElement) {
         if(typeElement==null){
-            return Collections.EMPTY_LIST;
+            return Collections.<VariableElement>emptyList();
         }
         List<VariableElement> result = new LinkedList<>();
         final List<VariableElement> fieldsIn = ElementFilter.fieldsIn(typeElement.getEnclosedElements());
