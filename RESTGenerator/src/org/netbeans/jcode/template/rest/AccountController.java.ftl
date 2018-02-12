@@ -10,7 +10,10 @@ import ${appPackage}${ManagedUserDTO_FQN};
 import ${appPackage}${UserDTO_FQN};
 import ${appPackage}${HeaderUtil_FQN};
 <#if security == "JAXRS_JWT">import ${appPackage}${Secured_FQN};</#if>
-import static ${appPackage}${Constants_FQN}.INCORRECT_PASSWORD_MESSAGE;
+import static ${appPackage}${Constants_FQN}.EMAIL_ALREADY_USED_TYPE;
+import static ${appPackage}${Constants_FQN}.EMAIL_NOT_FOUND_TYPE;
+import static ${appPackage}${Constants_FQN}.INVALID_PASSWORD_TYPE;
+import static ${appPackage}${Constants_FQN}.LOGIN_ALREADY_USED_TYPE;
 import java.util.*;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -79,12 +82,12 @@ public class ${AccountController} {
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
     public Response registerAccount(@Valid ManagedUserDTO managedUserDTO) {
         if (!checkPasswordLength(managedUserDTO.getPassword())) {
-            return Response.status(BAD_REQUEST).entity(INCORRECT_PASSWORD_MESSAGE).build();
+            return Response.status(BAD_REQUEST).entity(INVALID_PASSWORD_TYPE).build();
         }
         return ${userRepository}.findOneByLogin(managedUserDTO.getLogin().toLowerCase())
-                .map(user -> Response.status(BAD_REQUEST).type(TEXT_PLAIN).entity("login already in use").build())
+                .map(user -> Response.status(BAD_REQUEST).type(TEXT_PLAIN).entity(LOGIN_ALREADY_USED_TYPE).build())
                 .orElseGet(() -> ${userRepository}.findOneByEmail(managedUserDTO.getEmail())
-                        .map(user -> Response.status(BAD_REQUEST).type(TEXT_PLAIN).entity("e-mail address already in use").build())
+                        .map(user -> Response.status(BAD_REQUEST).type(TEXT_PLAIN).entity(EMAIL_ALREADY_USED_TYPE).build())
                         .orElseGet(() -> {
                             User user = userService.createUser(managedUserDTO.getLogin(), managedUserDTO.getPassword(),
                                     managedUserDTO.getFirstName(), managedUserDTO.getLastName(),
@@ -207,7 +210,7 @@ public class ${AccountController} {
     @Secured</#if>
     public Response changePassword(String password) {
         if (!checkPasswordLength(password)) {
-            return Response.status(BAD_REQUEST).entity(INCORRECT_PASSWORD_MESSAGE).build();
+            return Response.status(BAD_REQUEST).entity(INVALID_PASSWORD_TYPE).build();
         }
         userService.changePassword(password);
         return Response.ok().build();
@@ -228,13 +231,13 @@ public class ${AccountController} {
         @ApiResponse(code = 400, message = "Bad Request")})</#if>
     @Path("/account/reset-password/init")
     @POST
-    @Produces({MediaType.TEXT_PLAIN})
+    @Produces({MediaType.APPLICATION_JSON})
     public Response requestPasswordReset(String mail) {
         return userService.requestPasswordReset(mail)
                 .map(user -> {
                     mailService.sendPasswordResetMail(user);
-                    return Response.ok("email was sent").build();
-                }).orElse(Response.status(BAD_REQUEST).entity("email address not registered").build());
+                    return Response.ok().build();
+                }).orElse(Response.status(BAD_REQUEST).entity(EMAIL_NOT_FOUND_TYPE).build());
     }
 
     /**
@@ -258,7 +261,7 @@ public class ${AccountController} {
     @Produces({MediaType.TEXT_PLAIN})
     public Response finishPasswordReset(KeyAndPasswordDTO keyAndPassword) {
         if (!checkPasswordLength(keyAndPassword.getNewPassword())) {
-            return Response.status(BAD_REQUEST).entity(INCORRECT_PASSWORD_MESSAGE).build();
+            return Response.status(BAD_REQUEST).entity(INVALID_PASSWORD_TYPE).build();
         }
         return userService.completePasswordReset(keyAndPassword.getNewPassword(), keyAndPassword.getKey())
                 .map(user -> Response.ok().build())

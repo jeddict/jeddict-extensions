@@ -16,14 +16,14 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.QueryParam;
-<#if pagination != "no">
+import javax.ws.rs.QueryParam;<#if pagination != "no">
 import javax.ws.rs.core.Response.ResponseBuilder;
 import ${appPackage}${Page_FQN};
-import ${appPackage}${PaginationUtil_FQN};</#if>
-<#if security == "JAXRS_JWT">import ${appPackage}${Secured_FQN};</#if>
-<#if metrics>import org.eclipse.microprofile.metrics.annotation.Timed;</#if>
-<#if docs>import com.wordnik.swagger.annotations.Api;
+import ${appPackage}${PaginationUtil_FQN};</#if><#if security == "JAXRS_JWT">
+import ${appPackage}${Secured_FQN};</#if><#if metrics>
+import org.eclipse.microprofile.metrics.annotation.Timed;</#if>
+import org.eclipse.microprofile.faulttolerance.Timeout;<#if docs>
+import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;</#if>
@@ -101,6 +101,7 @@ public class ${controllerClass} {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK")})</#if>
     @GET
+    @Timeout
     <#if pagination == "no">
     public List<${instanceType}> getAll${EntityClassPlural}() {
         log.debug("REST request to get all ${EntityClassPlural}");

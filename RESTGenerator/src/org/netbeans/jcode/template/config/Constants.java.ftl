@@ -17,7 +17,13 @@ public final class Constants {
     
     public static final String EMAIL_REGEX_MESSAGE = "{invalid.email}";
 
-    public static final String INCORRECT_PASSWORD_MESSAGE = "Incorrect password";
+    public static final String INVALID_PASSWORD_TYPE = "invalid-password";
+    
+    public static final String EMAIL_ALREADY_USED_TYPE = "email-already-used";
+    
+    public static final String LOGIN_ALREADY_USED_TYPE = "login-already-used";
+    
+    public static final String EMAIL_NOT_FOUND_TYPE = "email-not-found";
     
     private Constants() {
     }

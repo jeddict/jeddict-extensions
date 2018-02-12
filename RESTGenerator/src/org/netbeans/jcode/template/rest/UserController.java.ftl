@@ -9,6 +9,8 @@ import ${appPackage}${UserDTO_FQN};
 import ${appPackage}${HeaderUtil_FQN};
 import ${appPackage}${Page_FQN};
 import ${appPackage}${PaginationUtil_FQN};
+import static ${appPackage}${Constants_FQN}.EMAIL_ALREADY_USED_TYPE;
+import static ${appPackage}${Constants_FQN}.LOGIN_ALREADY_USED_TYPE;
 <#if security == "JAXRS_JWT">import ${appPackage}${Secured_FQN};
 import ${appPackage}${AuthoritiesConstants_FQN};</#if>
 import org.slf4j.Logger;
@@ -30,9 +32,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-<#if metrics>import org.eclipse.microprofile.metrics.annotation.Timed;</#if>
-<#if docs>import com.wordnik.swagger.annotations.Api;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;<#if metrics>
+import org.eclipse.microprofile.metrics.annotation.Timed;</#if>
+import org.eclipse.microprofile.faulttolerance.Timeout;<#if docs>
+import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;</#if>
@@ -89,9 +92,9 @@ public class ${UserController} {
 
         //Lowercase the user login before comparing with database
         if (${userRepository}.findOneByLogin(managedUserDTO.getLogin().toLowerCase()).isPresent()) {
-            return HeaderUtil.createFailureAlert(Response.status(BAD_REQUEST), "userManagement", "userexists", "Login already in use").build();
+            return HeaderUtil.createFailureAlert(Response.status(BAD_REQUEST), "userManagement", "userexists", LOGIN_ALREADY_USED_TYPE).build();
         } else if (${userRepository}.findOneByEmail(managedUserDTO.getEmail()).isPresent()) {
-            return HeaderUtil.createFailureAlert(Response.status(BAD_REQUEST), "userManagement", "emailexists", "Email already in use").build();
+            return HeaderUtil.createFailureAlert(Response.status(BAD_REQUEST), "userManagement", "emailexists", EMAIL_ALREADY_USED_TYPE).build();
         } else {
             User newUser = userService.createUser(managedUserDTO);
             mailService.sendCreationEmail(newUser);
@@ -124,11 +127,11 @@ public class ${UserController} {
         log.debug("REST request to update User : {}", managedUserDTO);
         Optional<User> existingUser = ${userRepository}.findOneByEmail(managedUserDTO.getEmail());
         if (existingUser.isPresent() && (!existingUser.get().getId().equals(managedUserDTO.getId()))) {
-            return HeaderUtil.createFailureAlert(Response.status(BAD_REQUEST), "userManagement", "emailexists", "Email already in use").build();
+            return HeaderUtil.createFailureAlert(Response.status(BAD_REQUEST), "userManagement", "emailexists", EMAIL_ALREADY_USED_TYPE).build();
         }
         existingUser = ${userRepository}.findOneByLogin(managedUserDTO.getLogin().toLowerCase());
         if (existingUser.isPresent() && (!existingUser.get().getId().equals(managedUserDTO.getId()))) {
-            return HeaderUtil.createFailureAlert(Response.status(BAD_REQUEST), "userManagement", "userexists", "Login already in use").build();
+            return HeaderUtil.createFailureAlert(Response.status(BAD_REQUEST), "userManagement", "userexists", LOGIN_ALREADY_USED_TYPE).build();
         }
         Optional<UserDTO> updatedUser = userService.updateUser(managedUserDTO);
         
@@ -153,6 +156,7 @@ public class ${UserController} {
     @GET
     @Produces(MediaType.APPLICATION_JSON)<#if security == "JAXRS_JWT">
     @Secured</#if>
+    @Timeout
     public Response getAllUsers(@QueryParam("page") int page, @QueryParam("size") int size) throws URISyntaxException {
         List<User> userList = ${userRepository}.getUsersWithAuthorities(page * size, size);
         List<UserDTO> userDTOs = userList.stream()
