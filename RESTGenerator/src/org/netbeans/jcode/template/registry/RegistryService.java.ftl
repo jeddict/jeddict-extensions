@@ -50,7 +50,7 @@ public class RegistryService {
                 .name(registryService)
                 .address(webHost)
                 .port(Integer.parseInt(webPort))
-                .check(http(webHost + ":" + webPort + "/"+  registryService + "/resources/health", 5))
+                .check(http(webHost + ":" + webPort + "/"+  registryService + "/health", 5))
                 .build();
         agentClient.register(registration);
 

@@ -42,7 +42,7 @@ import static org.netbeans.bean.validation.constraints.ConstraintUtil.isAllowedC
 import org.netbeans.jcode.cdi.util.CDIUtil;
 import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.BOLD;
-import static org.netbeans.jcode.console.Console.FG_RED;
+import static org.netbeans.jcode.console.Console.FG_DARK_RED;
 import static org.netbeans.jcode.console.Console.UNDERLINE;
 import static org.netbeans.jcode.core.util.AttributeType.isBoolean;
 import static org.netbeans.jcode.core.util.AttributeType.isPrimitive;
@@ -226,7 +226,8 @@ public class RESTGenerator implements Generator {
         CONTROLLER_TEMPLATES.add(new Template("rest/AccountController.java.ftl", "Account"));
         CONTROLLER_TEMPLATES.add(new Template("rest/UserController.java.ftl", "User"));
         CONTROLLER_TEMPLATES.add(new Template("rest/AuthenticationController.java.ftl", "Authentication"));
-        
+        CONTROLLER_TEMPLATES.add(new Template("rest/HealthController.java.ftl", "Health"));
+    
         if (restData.isTestCase()) {
             TEST_CASE_TEMPLATES.add(new Template("arquillian/AbstractTest.java.ftl", "AbstractTest"));
             if (appConfigData.isMonolith() || appConfigData.isGateway()) {
@@ -268,7 +269,7 @@ public class RESTGenerator implements Generator {
         targetTestSource = SourceGroupSupport.getTestSourceGroup(targetProject);
         gatewayTestSource = SourceGroupSupport.getTestSourceGroup(gatewayProject);
 
-        handler.progress(Console.wrap(RESTGenerator.class, "MSG_Progress_Generating_REST", FG_RED, BOLD, UNDERLINE));
+        handler.progress(Console.wrap(RESTGenerator.class, "MSG_Progress_Generating_REST", FG_DARK_RED, BOLD, UNDERLINE));
         entityPackage = entityMapping.getEntityPackage();
         Map<String, Object> params = new HashMap<>();
         params.put("gateway", appConfigData.isGateway());
