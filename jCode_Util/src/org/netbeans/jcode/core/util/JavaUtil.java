@@ -15,6 +15,7 @@
  */
 package org.netbeans.jcode.core.util;
 
+import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Map;
 import static org.netbeans.jcode.core.util.Constants.JAVA_EXT;
@@ -26,6 +27,13 @@ import org.openide.filesystems.FileObject;
  */
 public class JavaUtil {
 
+    public static boolean isJava9() {
+        return getJavaVersion() >= 9;
+    }
+
+    public static double getJavaVersion() {
+        return Double.parseDouble(ManagementFactory.getRuntimeMXBean().getSpecVersion());
+    }
     
     public static String getUniqueClassName(String candidateName, FileObject targetFolder) {
         return org.openide.filesystems.FileUtil.findFreeFileName(targetFolder, candidateName, JAVA_EXT); //NOI18N

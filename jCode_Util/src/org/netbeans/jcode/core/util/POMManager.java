@@ -16,6 +16,7 @@
 package org.netbeans.jcode.core.util;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -100,6 +101,17 @@ public class POMManager {
             //source
             ModelReader reader = EmbedderFactory.getProjectEmbedder().lookupComponent(ModelReader.class);
             sourceModel = reader.read(FileUtil.loadResource(inputResource), Collections.singletonMap(ModelReader.IS_STRICT, false));
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+    }
+    
+    public POMManager(Reader inputResource, Project project) {
+        this(project, false);
+        try {
+            //source
+            ModelReader reader = EmbedderFactory.getProjectEmbedder().lookupComponent(ModelReader.class);
+            sourceModel = reader.read(inputResource, Collections.singletonMap(ModelReader.IS_STRICT, false));
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
         }

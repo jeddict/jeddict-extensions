@@ -27,19 +27,22 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import static java.util.stream.Collectors.toList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.netbeans.jcode.console.Console;
 import static org.netbeans.jcode.console.Console.FG_BLUE;
-import static org.netbeans.jcode.console.Console.FG_RED;
+import static org.netbeans.jcode.console.Console.FG_DARK_RED;
 import static org.netbeans.jcode.core.util.FileUtil.loadResource;
 import org.netbeans.jcode.task.progress.ProgressHandler;
 import org.openide.filesystems.FileLock;
@@ -159,6 +162,48 @@ public class EJSUtil {
             Exceptions.printStackTrace(ex);
         }
     }
+        
+//    public static void copyDynamicFolder(Consumer<FileTypeStream> parserManager, String inputResource, FileObject webRoot, String targetFile, ProgressHandler handler) throws IOException {
+//        try {
+//            handler.progress(targetFile);
+//            FileObject target = org.openide.filesystems.FileUtil.createData(webRoot, targetFile);
+//            FileLock lock = target.lock();
+//            try {
+//                List<InputStream> inputStream = getFolderResources(inputResource);
+//                 getFolderResources("org/netbeans/jcode/angular2/template");
+////                OutputStream outputStream = target.getOutputStream(lock);
+////                parserManager.accept(new FileTypeStream(inputResource, inputStream, outputStream));
+//            } finally {
+//                lock.releaseLock();
+//            }
+//        } catch (IOException ex) {
+//            Exceptions.printStackTrace(ex);
+//        }
+//    }
+//    
+//    public static List<InputStream> getFolderResources(final String inputResource) throws IOException {
+//        try (
+//                final InputStream is = loadResource(inputResource);
+//                final InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+//                final BufferedReader br = new BufferedReader(isr)) {
+//        
+//            br.lines().count();
+//            return br.lines()
+//                    .peek(a -> {
+//                        System.out.println("");
+//                        System.out.println("eeee " + a);
+//                        
+//                    })
+//                    .map(l -> inputResource + "/" + l)
+//                    .peek(a -> {
+//                        System.out.println("");
+//                        System.out.println("eeee " + a);
+//                        
+//                    })
+//                    .map(r -> loadResource(r))
+//                    .collect(toList());
+//        }
+//    }
 
     public static Map<String, String> getResource(String inputResource) {
         Map<String, String> data = new HashMap<>();
@@ -205,7 +250,7 @@ public class EJSUtil {
 
             // read any errors from the attempted command
             while ((s = stdError.readLine()) != null) {
-                handler.append(Console.wrap(s, FG_RED));
+                handler.append(Console.wrap(s, FG_DARK_RED));
             }
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);

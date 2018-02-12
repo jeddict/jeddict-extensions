@@ -29,6 +29,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Map;
@@ -61,23 +62,26 @@ public class FileUtil {
     
     private static final Logger LOG = Logger.getLogger(FileUtil.class.getName());
     
-    public static InputStream loadResource(String resource) {
-        InputStream inputStream = null;
-        try {
+    public static URL getResourceURL(String resource) {
             String n;
             if (resource.startsWith("/")) { // NOI18N
                 n = resource.substring(1);
             } else {
                 n = resource;
             }
-
-            java.net.URL url = getLoader().getResource(n);
-            inputStream = url.openStream();
+        return getLoader().getResource(n);
+    }
+    
+    public static InputStream loadResource(String resource) {
+        InputStream inputStream = null;
+        try {
+            inputStream = getResourceURL(resource).openStream();
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
         }
         return inputStream;
     }
+    
     private static volatile Object currentLoader;
     private static Lookup.Result<ClassLoader> loaderQuery = null;
     private static boolean noLoaderWarned = false;
@@ -274,7 +278,7 @@ public class FileUtil {
                 }
             }
         }
-        return manager.getEngineByName((String) "freemarker");
+        return manager.getEngineByName("freemarker");
     }
 
     public static FileObject createFolder(FileObject folder, String name) throws IOException {
