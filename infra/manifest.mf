@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+AutoUpdate-Show-In-Client: true
+OpenIDE-Module: io.github.jeddict.infra
+OpenIDE-Module-Localizing-Bundle: io/github/jeddict/infra/Bundle.properties
+OpenIDE-Module-Specification-Version: 4.7
+

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.github.jeddict</groupId>
+    <artifactId>docs_pom</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+    <name>docs_pom</name>
+
+    <properties>
+        <version.swagger>1.3.12</version.swagger>
+    </properties>
+    <dependencies>
+         <dependency>
+            <groupId>com.wordnik</groupId>
+            <artifactId>swagger-jaxrs_2.11</artifactId>
+            <version>${version.swagger}</version>
+            <exclusions>
+               <!--https://github.com/jeddict/jeddict/issues/47 : java.lang.ClassCastException: org.dom4j.DocumentFactory cannot be cast to org.dom4j.DocumentFactory-->
+                <exclusion>
+                    <groupId>org.reflections</groupId>
+                    <artifactId>reflections</artifactId>
+                </exclusion>
+                <!--HttpHeaders.LINK not available-->
+                <exclusion>
+                    <groupId>javax.ws.rs</groupId>
+                    <artifactId>jsr311-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>joda-time</groupId>
+                    <artifactId>joda-time</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.joda</groupId>
+                    <artifactId>joda-convert</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+ 
+</project>

@@ -1,32 +1,20 @@
-/nbproject/private/
-/MVCCodeGenerator/nbproject/private/
-/MVC Code Generator/nbproject/private/
-/jCodeCore/nbproject/private/
-/jCodeCore/build/
 /build/
-/MVC Code Generator/build/
-/jCode Core/nbproject/private/
-/ jCode Core/nbproject/private/
-/jCode Core/build/
-/module8/build/
-/module8/nbproject/private/
-/MVCCodeGenerator/build/
-/TechStack/build/
-/TechStack/nbproject/private/
-/JEE Generator/nbproject/private/
-/JEE Generator/build/
-/RESTGenerator/nbproject/private/
-/RESTGenerator/build/
-/Angular JS/nbproject/private/
-/Angular JS/build/
-/NodeJsApplication/nbproject/private/
-/JPA Specification/build/
-/JPA Specification/nbproject/private/
-/jCode_Util/build/
-/jCode_Util/nbproject/private/
-/JPA RI/nbproject/private/
-/JPA RI/build/
-/Docker/nbproject/private/
-/Docker/build/
-/Infra/build/
-/Infra/nbproject/private/
+/nbproject/private/
+/jpa.spec/nbproject/private/
+/jpa.ri/nbproject/private/
+/rest/nbproject/private/
+/mvc/nbproject/private/
+/jcode.core/nbproject/private/
+/jcode.util/nbproject/private/
+/javaee/nbproject/private/
+/docker/nbproject/private/
+/infra/nbproject/private/
+/jpa.spec/build/
+/jpa.ri/build/
+/mvc/build/
+/rest/build/
+/jcode.core/build/
+/jcode.util/build/
+/javaee/build/
+/docker/build/
+/infra/build/
