@@ -15,6 +15,7 @@
  */
 package io.github.jeddict.mvc.controller;
 
+import io.github.jeddict.jcode.LayerConfigPanel;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,7 +38,6 @@ import io.github.jeddict.mvc.controller.event.ControllerEventType;
 import io.github.jeddict.mvc.controller.returntype.ControllerReturnType;
 import io.github.jeddict.rest.applicationconfig.RestConfigData;
 import io.github.jeddict.rest.applicationconfig.RestConfigDialog;
-import io.github.jeddict.jcode.stack.config.panel.*;
 import org.netbeans.spi.java.project.support.ui.PackageView;
 import org.openide.util.NbBundle;
 

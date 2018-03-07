@@ -34,15 +34,15 @@ import static io.github.jeddict.jcode.console.Console.FG_DARK_RED;
 import static io.github.jeddict.jcode.console.Console.UNDERLINE;
 import io.github.jeddict.jcode.util.FileUtil;
 import io.github.jeddict.jcode.util.StringHelper;
-import io.github.jeddict.jcode.layer.ConfigData;
-import io.github.jeddict.jcode.layer.Generator;
-import io.github.jeddict.jcode.layer.Technology;
-import static io.github.jeddict.jcode.layer.Technology.Type.VIEWER;
+import io.github.jeddict.jcode.Generator;
 import io.github.jeddict.mvc.controller.MVCControllerGenerator;
 import io.github.jeddict.mvc.controller.MVCData;
 import io.github.jeddict.mvc.controller.Operation;
 import io.github.jeddict.mvc.viewer.dto.FromEntityBase;
-import io.github.jeddict.jcode.stack.config.data.ApplicationConfigData;
+import io.github.jeddict.jcode.ApplicationConfigData;
+import io.github.jeddict.jcode.annotation.ConfigData;
+import io.github.jeddict.jcode.annotation.Technology;
+import static io.github.jeddict.jcode.annotation.Technology.Type.VIEWER;
 import io.github.jeddict.jcode.task.progress.ProgressHandler;
 import io.github.jeddict.web.dd.util.WebDDUtil;
 import io.github.jeddict.jpa.spec.Entity;
@@ -230,7 +230,7 @@ public class JSPViewerGenerator implements Generator{
 
         Map<String, Object> params = new LinkedHashMap<>();
         Map<String, String> entityVarMapping = new LinkedHashMap<>();
-        entities.stream().forEach((entity) -> {
+        entities.forEach((entity) -> {
             String entityName = JavaIdentifiers.unqualify(entity);
             entityVarMapping.put(StringHelper.firstLower(entityName), entityName);// "person", "Person"
         });

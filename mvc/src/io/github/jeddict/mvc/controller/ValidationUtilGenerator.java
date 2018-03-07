@@ -33,7 +33,7 @@ import javax.lang.model.element.TypeElement;
 import org.netbeans.api.java.source.JavaSource;
 import org.netbeans.api.java.source.TreeMaker;
 import org.netbeans.api.java.source.WorkingCopy;
-import static io.github.jeddict.jcode.beanvalidation.BeanVaildationConstants.CONSTRAINT_VIOLATION;
+import static io.github.jeddict.jcode.bv.BeanVaildationConstants.CONSTRAINT_VIOLATION;
 import static io.github.jeddict.jcode.util.Constants.JAVA_EXT;
 import static io.github.jeddict.jcode.util.Constants.SET_TYPE;
 import io.github.jeddict.jcode.util.JavaSourceHelper;

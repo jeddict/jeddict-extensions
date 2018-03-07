@@ -15,6 +15,7 @@
  */
 package io.github.jeddict.mvc.controller;
 
+import io.github.jeddict.jcode.LayerConfigData;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +24,6 @@ import io.github.jeddict.mvc.controller.event.ControllerEventType;
 import io.github.jeddict.mvc.controller.returntype.ControllerReturnType;
 import io.github.jeddict.repository.RepositoryData;
 import io.github.jeddict.rest.applicationconfig.RestConfigData;
-import io.github.jeddict.jcode.stack.config.data.LayerConfigData;
 
 /**
  *

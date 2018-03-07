@@ -15,21 +15,21 @@
  */
 package io.github.jeddict.mvc.viewer.jsp;
 
+import io.github.jeddict.jcode.LayerConfigData;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import static io.github.jeddict.rest.applicationconfig.RestConfigPanel.DEFAULT_RESOURCE_FOLDER;
-import io.github.jeddict.jcode.stack.config.data.LayerConfigData;
 
 /**
  *
  * @author Gaurav Gupta
  */
 public class JSPData extends LayerConfigData {
-    
+
     public static final String DEFAULT_FOLDER = "WEB-INF/views";
     private String folder;
-    
+
     private String resourceFolder;
     private boolean onlineTheme;
 
@@ -65,7 +65,7 @@ public class JSPData extends LayerConfigData {
      * @return the resourceFolder
      */
     public String getResourceFolder() {
-        if(StringUtils.isBlank(resourceFolder)){
+        if (StringUtils.isBlank(resourceFolder)) {
             return DEFAULT_RESOURCE_FOLDER;
         }
         return resourceFolder;
@@ -77,8 +77,8 @@ public class JSPData extends LayerConfigData {
     public void setResourceFolder(String resourceFolder) {
         this.resourceFolder = resourceFolder;
     }
-    
-        @Override
+
+    @Override
     public List<String> getUsageDetails() {
         return Arrays.asList(isOnlineTheme() ? "Online Theme" : null);
     }

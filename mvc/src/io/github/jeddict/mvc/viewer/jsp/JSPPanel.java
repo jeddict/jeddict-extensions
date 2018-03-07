@@ -15,6 +15,7 @@
  */
 package io.github.jeddict.mvc.viewer.jsp;
 
+import io.github.jeddict.jcode.LayerConfigPanel;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.apache.commons.lang3.StringUtils;
@@ -24,8 +25,7 @@ import org.netbeans.api.project.SourceGroup;
 import org.netbeans.api.project.Sources;
 import static io.github.jeddict.jcode.util.WebUtil.isInternetReachable;
 import static io.github.jeddict.mvc.viewer.jsp.JSPData.DEFAULT_FOLDER;
-import io.github.jeddict.jcode.stack.config.panel.*;
-import io.github.jeddict.jcode.ui.browse.BrowseFolders;
+import io.github.jeddict.jcode.ui.BrowseFolders;
 import org.netbeans.modules.web.api.webmodule.WebProjectConstants;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;

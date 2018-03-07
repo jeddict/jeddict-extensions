@@ -51,9 +51,9 @@ import org.netbeans.api.java.source.TreeUtilities;
 import org.netbeans.api.java.source.WorkingCopy;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
-import static io.github.jeddict.jcode.beanvalidation.BeanVaildationConstants.EXECUTABLE_TYPE;
-import static io.github.jeddict.jcode.beanvalidation.BeanVaildationConstants.VALID;
-import static io.github.jeddict.jcode.beanvalidation.BeanVaildationConstants.VALIDATE_ON_EXECUTION;
+import static io.github.jeddict.jcode.bv.BeanVaildationConstants.EXECUTABLE_TYPE;
+import static io.github.jeddict.jcode.bv.BeanVaildationConstants.VALID;
+import static io.github.jeddict.jcode.bv.BeanVaildationConstants.VALIDATE_ON_EXECUTION;
 import static io.github.jeddict.cdi.CDIConstants.INJECT;
 import io.github.jeddict.cdi.logger.LoggerProducerGenerator;
 import io.github.jeddict.cdi.util.CDIUtil;
@@ -78,10 +78,7 @@ import io.github.jeddict.jcode.util.JavaSourceHelper;
 import io.github.jeddict.jcode.util.POMManager;
 import io.github.jeddict.jcode.util.SourceGroupSupport;
 import io.github.jeddict.jcode.util.StringHelper;
-import io.github.jeddict.jcode.layer.ConfigData;
-import io.github.jeddict.jcode.layer.Generator;
-import io.github.jeddict.jcode.layer.Technology;
-import static io.github.jeddict.jcode.layer.Technology.Type.CONTROLLER;
+import io.github.jeddict.jcode.Generator;
 import io.github.jeddict.mvc.MVCConstants;
 import static io.github.jeddict.mvc.MVCConstants.BINDING_RESULT;
 import static io.github.jeddict.mvc.MVCConstants.CSRF_VALID;
@@ -110,7 +107,10 @@ import static io.github.jeddict.security.SecurityConstants.CALLER_NAME;
 import static io.github.jeddict.security.SecurityConstants.CREDENTIALS;
 import static io.github.jeddict.security.SecurityConstants.DEFAULT_CREDENTIALS;
 import static io.github.jeddict.security.SecurityConstants.EMBEDDED_IDENTITY_STORE_DEFINITION;
-import io.github.jeddict.jcode.stack.config.data.ApplicationConfigData;
+import io.github.jeddict.jcode.ApplicationConfigData;
+import io.github.jeddict.jcode.annotation.ConfigData;
+import io.github.jeddict.jcode.annotation.Technology;
+import static io.github.jeddict.jcode.annotation.Technology.Type.CONTROLLER;
 import io.github.jeddict.jcode.task.progress.ProgressHandler;
 import io.github.jeddict.jpa.spec.DefaultAttribute;
 import io.github.jeddict.jpa.spec.DefaultClass;
@@ -127,13 +127,19 @@ import org.openide.util.lookup.ServiceProvider;
 import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
 import org.netbeans.modules.j2ee.core.api.support.java.SourceUtils;
 import io.github.jeddict.jcode.util.JavaIdentifiers;
+import static io.github.jeddict.rest.applicationconfig.RestConfigPanel.DEFAULT_RESOURCE_FOLDER;
 
 /**
  *
  * @author Gaurav Gupta
  */
 @ServiceProvider(service = Generator.class)
-@Technology(type = CONTROLLER, label = "MVC 1.0", panel = MVCPanel.class, parents = {RepositoryGenerator.class})
+@Technology(
+        type = CONTROLLER,
+        label = "MVC 1.0", 
+        panel = MVCPanel.class, 
+        parents = {RepositoryGenerator.class}
+)
 
 public class MVCControllerGenerator implements Generator {
 
@@ -580,12 +586,12 @@ public class MVCControllerGenerator implements Generator {
         FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, mvcData.getPackage(), true);
         FileObject utilFolder = SourceGroupSupport.getFolderForPackage(targetFolder, UTIL_PACKAGE, true);
 
-        String resourcePath = null;
+        String resourcePath = DEFAULT_RESOURCE_FOLDER;
         if (jspData != null) {
             resourcePath = jspData.getResourceFolder();
         }
 
-        if (resourcePath != null && mvcData.isBeanValidation()) {
+        if (mvcData.isBeanValidation()) {
             ValidationUtilGenerator.generate(mvcData, utilFolder, resourcePath, handler);
             ErrorBeanGenerator.generate(utilFolder, handler);
         }
