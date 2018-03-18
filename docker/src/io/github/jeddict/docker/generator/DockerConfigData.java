@@ -20,7 +20,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import io.github.jeddict.infra.DatabaseType;
 import io.github.jeddict.infra.ServerType;
-import io.github.jeddict.jcode.stack.config.data.LayerConfigData;
+import io.github.jeddict.jcode.LayerConfigData;
 
 /**
  *

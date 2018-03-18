@@ -48,11 +48,11 @@ import static io.github.jeddict.jcode.jpa.JPAConstants.JDBC_PASSWORD;
 import static io.github.jeddict.jcode.jpa.JPAConstants.JDBC_URL;
 import static io.github.jeddict.jcode.jpa.JPAConstants.JDBC_USER;
 import io.github.jeddict.jcode.jpa.PersistenceProviderType;
-import io.github.jeddict.jcode.layer.ConfigData;
-import io.github.jeddict.jcode.layer.Generator;
-import io.github.jeddict.jcode.layer.Technology;
-import io.github.jeddict.jcode.stack.config.data.ApplicationConfigData;
-import static io.github.jeddict.jcode.stack.config.data.RegistryType.CONSUL;
+import io.github.jeddict.jcode.Generator;
+import io.github.jeddict.jcode.ApplicationConfigData;
+import static io.github.jeddict.jcode.RegistryType.CONSUL;
+import io.github.jeddict.jcode.annotation.ConfigData;
+import io.github.jeddict.jcode.annotation.Technology;
 import io.github.jeddict.jcode.task.progress.ProgressHandler;
 import io.github.jeddict.jpa.spec.EntityMappings;
 
@@ -62,7 +62,12 @@ import io.github.jeddict.jpa.spec.EntityMappings;
  * @author Gaurav Gupta
  */
 @ServiceProvider(service = Generator.class)
-@Technology(label = "Infra", panel = DockerConfigPanel.class, entityGenerator = false, tabIndex = 1)
+@Technology(
+        label = "Infra", 
+        panel = DockerConfigPanel.class, 
+        entityGenerator = false, 
+        tabIndex = 1
+)
 public class DockerGenerator implements Generator {
 
     private static final String TEMPLATE = "io/github/jeddict/docker/template/";
@@ -174,7 +179,13 @@ public class DockerGenerator implements Generator {
             removeProperty(punit, JDBC_PASSWORD);
             removeProperty(punit, JDBC_DRIVER);
             removeProperty(punit, JDBC_USER);
-            punit.setJtaDataSource(config.isDbInfoExist() ? getJNDI(config.getServerType(), config.getDataSource()) : null);
+
+            String datasource = config.getServerType().getEmbeddedDBs().get(config.getDatabaseType());
+            if (datasource != null) {
+                punit.setJtaDataSource(datasource);
+            } else {
+                punit.setJtaDataSource(config.isDbInfoExist() ? getJNDI(config.getServerType(), config.getDataSource()) : null);
+            }
             punit.setProvider(getPersistenceProvider(config.getServerType(), entityMapping, punit.getProvider()));
             PersistenceUtil.updatePersistenceUnit(project, punit);
         }
@@ -253,7 +264,7 @@ public class DockerGenerator implements Generator {
             return JAVA_GLOBAL_DATASOURCE_PREFIX + "jdbc/" + dataSource;
         }
     }
-
+    
     private void manageServerSettingGeneration() {
         if (POMManager.isMavenProject(project)) {
             POMManager pomManager = new POMManager(TEMPLATE + "profile/dev/pom/_pom.xml", project);

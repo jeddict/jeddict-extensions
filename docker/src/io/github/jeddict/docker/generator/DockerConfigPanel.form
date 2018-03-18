@@ -19,9 +19,8 @@
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="infoPanel" max="32767" attributes="0"/>
-                  <Component id="warningPanel" max="32767" attributes="0"/>
-                  <Component id="jLayeredPane8" alignment="0" pref="565" max="32767" attributes="0"/>
+                  <Component id="messagePanel" max="32767" attributes="0"/>
+                  <Component id="jLayeredPane8" alignment="0" pref="598" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -32,10 +31,8 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jLayeredPane8" min="-2" pref="228" max="-2" attributes="0"/>
-              <EmptySpace pref="35" max="32767" attributes="0"/>
-              <Component id="infoPanel" min="-2" pref="25" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="warningPanel" min="-2" pref="25" max="-2" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
+              <Component id="messagePanel" min="-2" pref="25" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -68,7 +65,7 @@
               <Properties>
                 <Property name="selected" type="boolean" value="true"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="org/jcode/docker/generator/Bundle.properties" key="DockerConfigPanel.dockerMachineCheckBox.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                  <ResourceString bundle="io/github/jeddict/docker/generator/Bundle.properties" key="DockerConfigPanel.dockerMachineCheckBox.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -110,7 +107,7 @@
             <Component class="javax.swing.JLabel" name="dockerImageLabel">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="org/jcode/docker/generator/Bundle.properties" key="DockerConfigPanel.dockerImageLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                  <ResourceString bundle="io/github/jeddict/docker/generator/Bundle.properties" key="DockerConfigPanel.dockerImageLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                 </Property>
                 <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[98, 17]"/>
@@ -148,10 +145,10 @@
                 <Component class="javax.swing.JTextField" name="namespaceTextField">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="org/jcode/docker/generator/Bundle.properties" key="DockerConfigPanel.namespaceTextField.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="io/github/jeddict/docker/generator/Bundle.properties" key="DockerConfigPanel.namespaceTextField.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                     <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="org/jcode/docker/generator/Bundle.properties" key="DockerConfigPanel.namespaceTextField.toolTipText" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="io/github/jeddict/docker/generator/Bundle.properties" key="DockerConfigPanel.namespaceTextField.toolTipText" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                     <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                       <Dimension value="[10, 20]"/>
@@ -165,17 +162,17 @@
                   <Properties>
                     <Property name="horizontalAlignment" type="int" value="0"/>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="org/jcode/docker/generator/Bundle.properties" key="DockerConfigPanel.groupArtifactSpeperatorLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="io/github/jeddict/docker/generator/Bundle.properties" key="DockerConfigPanel.groupArtifactSpeperatorLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JTextField" name="repositoryTextField">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="org/jcode/docker/generator/Bundle.properties" key="DockerConfigPanel.repositoryTextField.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="io/github/jeddict/docker/generator/Bundle.properties" key="DockerConfigPanel.repositoryTextField.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                     <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="org/jcode/docker/generator/Bundle.properties" key="DockerConfigPanel.repositoryTextField.toolTipText" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="io/github/jeddict/docker/generator/Bundle.properties" key="DockerConfigPanel.repositoryTextField.toolTipText" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                     <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                       <Dimension value="[10, 20]"/>
@@ -186,21 +183,17 @@
             </Container>
           </SubComponents>
         </Container>
-        <Container class="javax.swing.JLayeredPane" name="jLayeredPane4">
-
-          <Layout>
-            <DimensionLayout dim="0">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="565" max="32767" attributes="0"/>
-              </Group>
-            </DimensionLayout>
-            <DimensionLayout dim="1">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="22" max="32767" attributes="0"/>
-              </Group>
-            </DimensionLayout>
-          </Layout>
-        </Container>
+        <Component class="javax.swing.JLabel" name="infoLabel">
+          <Properties>
+            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="ff" green="0" red="66" type="rgb"/>
+            </Property>
+            <Property name="horizontalAlignment" type="int" value="4"/>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+              <ResourceString bundle="io/github/jeddict/docker/generator/Bundle.properties" key="DockerConfigPanel.infoLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+            </Property>
+          </Properties>
+        </Component>
         <Container class="javax.swing.JPanel" name="serverWrapperPanel">
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout">
@@ -230,7 +223,7 @@
             <Component class="javax.swing.JLabel" name="serverLabel">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="org/jcode/docker/generator/Bundle.properties" key="DockerConfigPanel.serverLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                  <ResourceString bundle="io/github/jeddict/docker/generator/Bundle.properties" key="DockerConfigPanel.serverLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                 </Property>
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[78, 17]"/>
@@ -286,7 +279,7 @@
             <Component class="javax.swing.JLabel" name="dbLabel">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="org/jcode/docker/generator/Bundle.properties" key="DockerConfigPanel.dbLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                  <ResourceString bundle="io/github/jeddict/docker/generator/Bundle.properties" key="DockerConfigPanel.dbLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                 </Property>
                 <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[39, 14]"/>
@@ -375,7 +368,7 @@
                     <Component class="javax.swing.JLabel" name="dbUserLabel">
                       <Properties>
                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                          <ResourceString bundle="org/jcode/docker/generator/Bundle.properties" key="DockerConfigPanel.dbUserLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                          <ResourceString bundle="io/github/jeddict/docker/generator/Bundle.properties" key="DockerConfigPanel.dbUserLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                         </Property>
                         <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                           <Dimension value="[87, 17]"/>
@@ -390,7 +383,7 @@
                     <Component class="javax.swing.JTextField" name="dbUserTextField">
                       <Properties>
                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                          <ResourceString bundle="org/jcode/docker/generator/Bundle.properties" key="DockerConfigPanel.dbUserTextField.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                          <ResourceString bundle="io/github/jeddict/docker/generator/Bundle.properties" key="DockerConfigPanel.dbUserTextField.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                         </Property>
                         <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                           <Dimension value="[14, 27]"/>
@@ -412,7 +405,7 @@
                       <Properties>
                         <Property name="horizontalAlignment" type="int" value="0"/>
                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                          <ResourceString bundle="org/jcode/docker/generator/Bundle.properties" key="DockerConfigPanel.dbPasswordLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                          <ResourceString bundle="io/github/jeddict/docker/generator/Bundle.properties" key="DockerConfigPanel.dbPasswordLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                         </Property>
                         <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                           <Dimension value="[90, 17]"/>
@@ -427,7 +420,7 @@
                     <Component class="javax.swing.JTextField" name="dbPasswordTextField">
                       <Properties>
                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                          <ResourceString bundle="org/jcode/docker/generator/Bundle.properties" key="DockerConfigPanel.dbPasswordTextField.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                          <ResourceString bundle="io/github/jeddict/docker/generator/Bundle.properties" key="DockerConfigPanel.dbPasswordTextField.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                         </Property>
                         <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                           <Dimension value="[14, 27]"/>
@@ -552,7 +545,7 @@
                   <Properties>
                     <Property name="horizontalAlignment" type="int" value="2"/>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="org/jcode/docker/generator/Bundle.properties" key="DockerConfigPanel.dsLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="io/github/jeddict/docker/generator/Bundle.properties" key="DockerConfigPanel.dsLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                     <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                       <Dimension value="[87, 17]"/>
@@ -567,7 +560,7 @@
                 <Component class="javax.swing.JTextField" name="dsTextField">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="org/jcode/docker/generator/Bundle.properties" key="DockerConfigPanel.dsTextField.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="io/github/jeddict/docker/generator/Bundle.properties" key="DockerConfigPanel.dsTextField.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                     <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                       <Dimension value="[14, 27]"/>
@@ -589,7 +582,7 @@
                   <Properties>
                     <Property name="horizontalAlignment" type="int" value="0"/>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="org/jcode/docker/generator/Bundle.properties" key="DockerConfigPanel.dbNameLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="io/github/jeddict/docker/generator/Bundle.properties" key="DockerConfigPanel.dbNameLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                     <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                       <Dimension value="[90, 17]"/>
@@ -604,7 +597,7 @@
                 <Component class="javax.swing.JTextField" name="dbNameTextField">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="org/jcode/docker/generator/Bundle.properties" key="DockerConfigPanel.dbNameTextField.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="io/github/jeddict/docker/generator/Bundle.properties" key="DockerConfigPanel.dbNameTextField.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                     <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                       <Dimension value="[14, 27]"/>
@@ -622,27 +615,7 @@
         </Container>
       </SubComponents>
     </Container>
-    <Container class="javax.swing.JPanel" name="infoPanel">
-
-      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
-        <Property name="columns" type="int" value="0"/>
-        <Property name="rows" type="int" value="1"/>
-      </Layout>
-      <SubComponents>
-        <Component class="javax.swing.JLabel" name="infoLabel">
-          <Properties>
-            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-              <Color blue="ff" green="0" red="66" type="rgb"/>
-            </Property>
-            <Property name="horizontalAlignment" type="int" value="4"/>
-            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="org/jcode/docker/generator/Bundle.properties" key="DockerConfigPanel.infoLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
-            </Property>
-          </Properties>
-        </Component>
-      </SubComponents>
-    </Container>
-    <Container class="javax.swing.JPanel" name="warningPanel">
+    <Container class="javax.swing.JPanel" name="messagePanel">
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
         <Property name="columns" type="int" value="0"/>
@@ -656,7 +629,7 @@
             </Property>
             <Property name="horizontalAlignment" type="int" value="4"/>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="org/jcode/docker/generator/Bundle.properties" key="DockerConfigPanel.warningLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+              <ResourceString bundle="io/github/jeddict/docker/generator/Bundle.properties" key="DockerConfigPanel.warningLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
             </Property>
           </Properties>
         </Component>
