@@ -22,8 +22,11 @@ import io.github.jeddict.db.modeler.exception.DBValidationException;
 import io.github.jeddict.jpa.spec.IdClass;
 import io.github.jeddict.jpa.spec.Inheritance;
 import io.github.jeddict.jpa.spec.JoinColumn;
+import io.github.jeddict.jpa.spec.ManagedClass;
 import io.github.jeddict.jpa.spec.ManyToOne;
+import io.github.jeddict.jpa.spec.PrimaryKeyAttributes;
 import io.github.jeddict.jpa.spec.extend.Attribute;
+import io.github.jeddict.jpa.spec.extend.IAttributes;
 import io.github.jeddict.jpa.spec.validator.column.JoinColumnValidator;
 import io.github.jeddict.jpa.spec.validator.table.JoinTableValidator;
 
@@ -50,7 +53,12 @@ public class ManyToOneSpecAccessor extends ManyToOneAccessor {
             if (idClass != null) {
                 accessor.setId(Boolean.TRUE);
             } else {
-                accessor.setMapsId(manyToOne.getName());
+                IAttributes attributes = ((ManagedClass) manyToOne.getJavaClass()).getAttributes();
+                if (attributes instanceof PrimaryKeyAttributes && !((PrimaryKeyAttributes) attributes).hasCompositePrimaryKey()) { //Ex 4.a Derived Identity
+                    accessor.setId(Boolean.TRUE);
+                } else {
+                    accessor.setMapsId(manyToOne.getName());
+                }
             }
         }
         if (!JoinTableValidator.isEmpty(manyToOne.getJoinTable())) {

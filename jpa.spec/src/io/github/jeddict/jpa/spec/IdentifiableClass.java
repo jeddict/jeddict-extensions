@@ -625,7 +625,9 @@ public abstract class IdentifiableClass extends ManagedClass<IPrimaryKeyAttribut
 
     private void manageCompositePrimaryKeyType() {
         if (null != compositePrimaryKeyType) {
-            CompositePrimaryKeyType type = compositePrimaryKeyType == CompositePrimaryKeyType.DEFAULT ? (CodePanel.isEmbeddedIdDefaultType() ? CompositePrimaryKeyType.EMBEDDEDID : CompositePrimaryKeyType.IDCLASS) : compositePrimaryKeyType;
+            CompositePrimaryKeyType type = compositePrimaryKeyType == CompositePrimaryKeyType.DEFAULT ? 
+                    (CodePanel.isEmbeddedIdDefaultType() ? CompositePrimaryKeyType.EMBEDDEDID : CompositePrimaryKeyType.IDCLASS) : 
+                    compositePrimaryKeyType;
             switch (type) {
                 case EMBEDDEDID:
                     this.idClass = null;

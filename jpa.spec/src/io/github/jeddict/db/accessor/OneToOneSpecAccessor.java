@@ -57,7 +57,7 @@ public class OneToOneSpecAccessor extends OneToOneAccessor {
                 if (attributes instanceof PrimaryKeyAttributes && !((PrimaryKeyAttributes) attributes).hasCompositePrimaryKey()) { //Ex 4.a Derived Identity
                     accessor.setId(Boolean.TRUE);
                 } else {
-                    accessor.setMapsId("");//oneToOne.getName());
+                    accessor.setMapsId(oneToOne.getName()); // setMapsId("")
                 }
             }
         }
