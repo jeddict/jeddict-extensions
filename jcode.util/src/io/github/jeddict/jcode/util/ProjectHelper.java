@@ -208,4 +208,8 @@ public class ProjectHelper {
         }
         return projectType;
     }
+    
+    public static String getProjectDisplayName(Project project) {
+        return ProjectUtils.getInformation(project).getDisplayName();
+    }
 }

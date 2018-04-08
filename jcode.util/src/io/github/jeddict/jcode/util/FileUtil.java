@@ -50,9 +50,8 @@ import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
 import org.openide.util.Exceptions;
-import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
+import org.openide.util.LookupEvent;    
 
 /**
  *
@@ -63,13 +62,10 @@ public class FileUtil {
     private static final Logger LOG = Logger.getLogger(FileUtil.class.getName());
     
     public static URL getResourceURL(String resource) {
-            String n;
-            if (resource.startsWith("/")) { // NOI18N
-                n = resource.substring(1);
-            } else {
-                n = resource;
+           if (resource.startsWith("/")) { // NOI18N
+                resource = resource.substring(1);
             }
-        return getLoader().getResource(n);
+        return getLoader().getResource(resource);
     }
     
     public static InputStream loadResource(String resource) {
@@ -85,7 +81,6 @@ public class FileUtil {
     private static volatile Object currentLoader;
     private static Lookup.Result<ClassLoader> loaderQuery = null;
     private static boolean noLoaderWarned = false;
-    private static final Logger ERR = Logger.getLogger(ImageUtilities.class.getName());
 
     private static ClassLoader getLoader() {
         Object is = currentLoader;
@@ -98,7 +93,7 @@ public class FileUtil {
         if (loaderQuery == null) {
             loaderQuery = Lookup.getDefault().lookupResult(ClassLoader.class);
             loaderQuery.addLookupListener((LookupEvent ev) -> {
-                ERR.fine("Loader cleared"); // NOI18N
+                LOG.fine("Loader cleared"); // NOI18N
                 currentLoader = null;
             });
         }
@@ -109,12 +104,12 @@ public class FileUtil {
             if (currentLoader == Thread.currentThread()) {
                 currentLoader = toReturn;
             }
-            ERR.log(Level.FINE, "Loader computed: {0}", currentLoader); // NOI18N
+            LOG.log(Level.FINE, "Loader computed: {0}", currentLoader); // NOI18N
             return toReturn;
         } else {
             if (!noLoaderWarned) {
                 noLoaderWarned = true;
-                ERR.log(Level.WARNING, "No ClassLoader instance found in {0}", Lookup.getDefault() // NOI18N
+                LOG.log(Level.WARNING, "No ClassLoader instance found in {0}", Lookup.getDefault() // NOI18N
                 );
             }
             return null;
@@ -212,7 +207,7 @@ public class FileUtil {
     }
     
     public static String expandTemplate(String inputTemplatePath, Map<String, Object> values) {
-        InputStream contentStream = io.github.jeddict.jcode.util.FileUtil.loadResource(inputTemplatePath);
+        InputStream contentStream = loadResource(inputTemplatePath);
         StringWriter writer = new StringWriter();
         ScriptEngine eng = getScriptEngine();
         Bindings bind = eng.getContext().getBindings(ScriptContext.ENGINE_SCOPE);

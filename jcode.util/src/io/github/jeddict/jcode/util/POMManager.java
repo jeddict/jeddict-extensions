@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -34,7 +35,10 @@ import org.netbeans.api.project.Project;
 import org.netbeans.modules.maven.NbMavenProjectImpl;
 import org.netbeans.modules.maven.api.ModelUtils;
 import org.netbeans.modules.maven.api.NbMavenProject;
+import org.netbeans.modules.maven.api.customizer.ModelHandle2;
+import org.netbeans.modules.maven.configurations.M2ConfigProvider;
 import org.netbeans.modules.maven.embedder.EmbedderFactory;
+import org.netbeans.modules.maven.execute.model.NetbeansActionMapping;
 import org.netbeans.modules.maven.model.ModelOperation;
 import org.netbeans.modules.maven.model.Utilities;
 import org.netbeans.modules.maven.model.pom.Activation;
@@ -354,20 +358,19 @@ public class POMManager {
                     targetProfile = pomModel.getFactory().createProfile();
                     pomProject.addProfile(targetProfile);
                     targetProfile.setId(sourceProfile.getId());
-                    targetProfile.setProperties(registerProperties(sourceProfile.getProperties(), targetProfile.getProperties()));
-                    if (sourceProfile.getActivation() != null) {
-                        Activation activation = pomModel.getFactory().createActivation();
-                        targetProfile.setActivation(activation);
-                        if (sourceProfile.getActivation().getProperty() != null) {
-                            org.apache.maven.model.ActivationProperty sourceProperty = sourceProfile.getActivation().getProperty();
-                            ActivationProperty targetProperty = pomModel.getFactory().createActivationProperty();
-                            activation.setActivationProperty(targetProperty);
-                            targetProperty.setName(sourceProperty.getName());
-                            targetProperty.setValue(sourceProperty.getValue());
-//                            activation.setChildElementText(sourceProperty.getName(), sourceProperty.getValue(), new QName(sourceProperty.getName()));
-                        } else {
-                            activation.setChildElementText("activeByDefault", Boolean.toString(sourceProfile.getActivation().isActiveByDefault()), new QName("activeByDefault"));
-                        }
+                }
+                targetProfile.setProperties(registerProperties(sourceProfile.getProperties(), targetProfile.getProperties()));
+                if (sourceProfile.getActivation() != null) {
+                    Activation activation = pomModel.getFactory().createActivation();
+                    targetProfile.setActivation(activation);
+                    if (sourceProfile.getActivation().getProperty() != null) {
+                        org.apache.maven.model.ActivationProperty sourceProperty = sourceProfile.getActivation().getProperty();
+                        ActivationProperty targetProperty = pomModel.getFactory().createActivationProperty();
+                        activation.setActivationProperty(targetProperty);
+                        targetProperty.setName(sourceProperty.getName());
+                        targetProperty.setValue(sourceProperty.getValue());
+                    } else {
+                        activation.setChildElementText("activeByDefault", Boolean.toString(sourceProfile.getActivation().isActiveByDefault()), new QName("activeByDefault"));
                     }
                 }
                 targetProfile.setDependencyManagement(registerDependencyManagement(sourceProfile.getDependencyManagement(), targetProfile.getDependencyManagement()));
@@ -490,4 +493,24 @@ public class POMManager {
 //                }
 //            });
 //    }
+    
+    public static void updateNBActionMapping(String actionName, Project project, List<String> profiles) {
+        try {
+            M2ConfigProvider usr = project.getLookup().lookup(M2ConfigProvider.class);
+            NetbeansActionMapping mapp = ModelHandle2.getMapping(actionName, project, usr.getActiveConfiguration());
+            if (mapp == null) {
+                mapp = ModelHandle2.getDefaultMapping(actionName, project);
+            }
+           Set<String> existingProfiles = new HashSet<>(mapp.getActivatedProfiles());
+           for(String profile : profiles){
+               if (!existingProfiles.contains(profile)) {
+                mapp.addActivatedProfile(profile);
+            }
+           }
+            ModelHandle2.putMapping(mapp, project, usr.getActiveConfiguration());
+        } catch (Exception e) {
+            Exceptions.attachMessage(e, "Cannot persist action configuration.");
+            Exceptions.printStackTrace(e);
+        }
+    }
 }

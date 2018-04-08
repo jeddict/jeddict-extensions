@@ -621,8 +621,8 @@
             </module-dependencies>
             <public-packages>
                 <package>io.github.jeddict.jcode.beanvalidation</package>
+                <package>io.github.jeddict.jcode.bv</package>
                 <package>io.github.jeddict.jcode.console</package>
-                <package>io.github.jeddict.jcode.util</package>
                 <package>io.github.jeddict.jcode.jpa</package>
                 <package>io.github.jeddict.jcode.jsonb</package>
                 <package>io.github.jeddict.jcode.task</package>

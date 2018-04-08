@@ -112,7 +112,7 @@ public class PersistenceUtil {
     public static void addClasses(Project project, PersistenceUnit persistenceUnit, List<String> classNames) {
         try {
             PUDataObject pud = ProviderUtil.getPUDataObject(project);
-            classNames.stream().forEach((entityClass) -> {
+            classNames.forEach((entityClass) -> {
                 pud.addClass(persistenceUnit, entityClass, false);
             });
         } catch (InvalidPersistenceXmlException ex) {
