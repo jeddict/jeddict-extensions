@@ -5,15 +5,18 @@ import ${appPackage}${User_FQN};
 import ${appPackage}${SecurityHelper_FQN};
 import ${appPackage}${MailService_FQN};
 import ${appPackage}${UserService_FQN};
-import ${appPackage}${KeyAndPasswordDTO_FQN};
-import ${appPackage}${ManagedUserDTO_FQN};
+import ${appPackage}${KeyAndPasswordVM_FQN};
+import ${appPackage}${ManagedUserVM_FQN};
+import ${appPackage}${PasswordChangeVM_FQN};
 import ${appPackage}${UserDTO_FQN};
-import ${appPackage}${HeaderUtil_FQN};
-<#if security == "JAXRS_JWT">import ${appPackage}${Secured_FQN};</#if>
+import ${appPackage}${HeaderUtil_FQN};<#if security == "JAXRS_JWT">
+import ${appPackage}${Secured_FQN};</#if>
 import static ${appPackage}${Constants_FQN}.EMAIL_ALREADY_USED_TYPE;
 import static ${appPackage}${Constants_FQN}.EMAIL_NOT_FOUND_TYPE;
 import static ${appPackage}${Constants_FQN}.INVALID_PASSWORD_TYPE;
 import static ${appPackage}${Constants_FQN}.LOGIN_ALREADY_USED_TYPE;
+import static ${appPackage}${Constants_FQN}.PASSWORD_MAX_LENGTH;
+import static ${appPackage}${Constants_FQN}.PASSWORD_MIN_LENGTH;
 import java.util.*;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -67,7 +70,7 @@ public class ${AccountController} {
     /**
      * POST /register : register the user.
      *
-     * @param managedUserDTO the managed user DTO
+     * @param managedUserVM the managed user DTO
      * @return the Response with status 201 (Created) if the user is
      * registered or 400 (Bad Request) if the login or e-mail is already in use
      */
@@ -80,18 +83,18 @@ public class ${AccountController} {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-    public Response registerAccount(@Valid ManagedUserDTO managedUserDTO) {
-        if (!checkPasswordLength(managedUserDTO.getPassword())) {
+    public Response registerAccount(@Valid ManagedUserVM managedUserVM) {
+        if (!checkPasswordLength(managedUserVM.getPassword())) {
             return Response.status(BAD_REQUEST).entity(INVALID_PASSWORD_TYPE).build();
         }
-        return ${userRepository}.findOneByLogin(managedUserDTO.getLogin().toLowerCase())
+        return ${userRepository}.findOneByLogin(managedUserVM.getLogin().toLowerCase())
                 .map(user -> Response.status(BAD_REQUEST).type(TEXT_PLAIN).entity(LOGIN_ALREADY_USED_TYPE).build())
-                .orElseGet(() -> ${userRepository}.findOneByEmail(managedUserDTO.getEmail())
+                .orElseGet(() -> ${userRepository}.findOneByEmail(managedUserVM.getEmail())
                         .map(user -> Response.status(BAD_REQUEST).type(TEXT_PLAIN).entity(EMAIL_ALREADY_USED_TYPE).build())
                         .orElseGet(() -> {
-                            User user = userService.createUser(managedUserDTO.getLogin(), managedUserDTO.getPassword(),
-                                    managedUserDTO.getFirstName(), managedUserDTO.getLastName(),
-                                    managedUserDTO.getEmail().toLowerCase(), managedUserDTO.getLangKey());
+                            User user = userService.createUser(managedUserVM.getLogin(), managedUserVM.getPassword(),
+                                    managedUserVM.getFirstName(), managedUserVM.getLastName(),
+                                    managedUserVM.getEmail().toLowerCase(), managedUserVM.getLangKey());
                                 mailService.sendActivationEmail(user);
                             return Response.status(CREATED).build();
                         })
@@ -194,9 +197,9 @@ public class ${AccountController} {
     /**
      * POST /account/change-password : changes the current user's password
      *
-     * @param password the new password
-     * @return the Response with status 200 (OK), or status 400 (Bad
-     * Request) if the new password is not strong enough
+     * @param passwordChangeVM current and new password
+     * @return the Response with status 200 (OK), or status 400 (Bad Request) 
+     * if the new password is not strong enough
      */
     <#if metrics>@Timed</#if>
     <#if docs>@ApiOperation(value = "changes the current user's password" )
@@ -205,14 +208,14 @@ public class ${AccountController} {
         @ApiResponse(code = 400, message = "Bad Request")})</#if>
     @Path("/account/change-password")
     @POST
-    <#--@Consumes({MediaType.TEXT_PLAIN}) should be TEXT_HTML -->
+    @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.TEXT_PLAIN})<#if security == "JAXRS_JWT">
     @Secured</#if>
-    public Response changePassword(String password) {
-        if (!checkPasswordLength(password)) {
+    public Response changePassword(PasswordChangeVM passwordChangeVM) {
+        if (!checkPasswordLength(passwordChangeVM.getNewPassword())) {
             return Response.status(BAD_REQUEST).entity(INVALID_PASSWORD_TYPE).build();
         }
-        userService.changePassword(password);
+        userService.changePassword(passwordChangeVM.getCurrentPassword(),passwordChangeVM.getNewPassword());
         return Response.ok().build();
     }
 
@@ -259,7 +262,7 @@ public class ${AccountController} {
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.TEXT_PLAIN})
-    public Response finishPasswordReset(KeyAndPasswordDTO keyAndPassword) {
+    public Response finishPasswordReset(KeyAndPasswordVM keyAndPassword) {
         if (!checkPasswordLength(keyAndPassword.getNewPassword())) {
             return Response.status(BAD_REQUEST).entity(INVALID_PASSWORD_TYPE).build();
         }
@@ -270,7 +273,7 @@ public class ${AccountController} {
 
     private boolean checkPasswordLength(String password) {
         return !StringUtils.isEmpty(password)
-                && password.length() >= ManagedUserDTO.PASSWORD_MIN_LENGTH
-                && password.length() <= ManagedUserDTO.PASSWORD_MAX_LENGTH;
+                && password.length() >= PASSWORD_MIN_LENGTH
+                && password.length() <= PASSWORD_MAX_LENGTH;
     }
 }

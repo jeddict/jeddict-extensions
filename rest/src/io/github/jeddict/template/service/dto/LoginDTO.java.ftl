@@ -1,6 +1,8 @@
 package ${package};
 
-import ${appPackage}${Constants_FQN};
+import static ${appPackage}${Constants_FQN}.LOGIN_REGEX;
+import static ${appPackage}${Constants_FQN}.PASSWORD_MAX_LENGTH;
+import static ${appPackage}${Constants_FQN}.PASSWORD_MIN_LENGTH;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -10,13 +12,13 @@ import javax.validation.constraints.Size;
  */
 public class LoginDTO {
 
-    @Pattern(regexp = Constants.LOGIN_REGEX)
+    @Pattern(regexp = LOGIN_REGEX)
     @NotNull
     @Size(min = 1, max = 50)
     private String username;
 
     @NotNull
-    @Size(min = ManagedUserDTO.PASSWORD_MIN_LENGTH, max = ManagedUserDTO.PASSWORD_MAX_LENGTH)
+    @Size(min = PASSWORD_MIN_LENGTH, max = PASSWORD_MAX_LENGTH)
     private String password;
 
     private Boolean rememberMe = true;

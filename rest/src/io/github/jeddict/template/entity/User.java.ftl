@@ -1,6 +1,8 @@
 package ${package};
 
-import ${appPackage}${Constants_FQN};
+import static ${appPackage}${Constants_FQN}.LOGIN_REGEX;
+import static ${appPackage}${Constants_FQN}.EMAIL_REGEX;
+import static ${appPackage}${Constants_FQN}.EMAIL_REGEX_MESSAGE;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.HashSet;
@@ -33,7 +35,7 @@ public class User extends AbstractAuditingEntity implements Serializable {
     private Long id;
 
     @NotNull
-    @Pattern(regexp = Constants.LOGIN_REGEX)
+    @Pattern(regexp = LOGIN_REGEX)
     @Size(min = 1, max = 50)
     @Column(length = 50, unique = true, nullable = false)
     private String login;
@@ -52,7 +54,7 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @Column(name = "last_name", length = 50)
     private String lastName;
 
-    @Email(regexp = Constants.EMAIL_REGEX, message = Constants.EMAIL_REGEX_MESSAGE)
+    @Email(regexp = EMAIL_REGEX, message = EMAIL_REGEX_MESSAGE)
     @Size(min = 5, max = 100)
     @Column(length = 100, unique = true)
     private String email;

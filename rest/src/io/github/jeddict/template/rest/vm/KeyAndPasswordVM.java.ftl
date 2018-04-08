@@ -1,9 +1,9 @@
 package ${package};
 
 /**
- * DTO for storing the user's key and password.
+ * VM for storing the user's key and password.
  */
-public class KeyAndPasswordDTO {
+public class KeyAndPasswordVM {
 
     private String key;
 

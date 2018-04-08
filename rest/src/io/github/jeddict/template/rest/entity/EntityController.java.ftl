@@ -42,6 +42,8 @@ public class ${controllerClass} {
     @Inject
     private ${EntityRepository} ${entityRepository};
 
+    private static final String ENTITY_NAME = "${entityTranslationKey}";
+
     /**
      * POST : Create a new ${entityInstance}.
      *
@@ -61,7 +63,7 @@ public class ${controllerClass} {
         log.debug("REST request to save ${EntityClass} : {}", ${instanceName});
         ${entityRepository}.create(${instanceName});
         return HeaderUtil.createEntityCreationAlert(Response.created(new URI("/${applicationPath}/api/${entityApiUrl}/" + ${instanceName}.${pkGetter}())),
-                "${entityInstance}", <#if isPKPrimitive>String.valueOf(${instanceName}.${pkGetter}())<#elseif pkType == "String">${instanceName}.${pkGetter}()<#else>${instanceName}.${pkGetter}().toString()</#if>)
+                ENTITY_NAME, <#if isPKPrimitive>String.valueOf(${instanceName}.${pkGetter}())<#elseif pkType == "String">${instanceName}.${pkGetter}()<#else>${instanceName}.${pkGetter}().toString()</#if>)
                 .entity(${instanceName}).build();
     }
 
@@ -84,7 +86,7 @@ public class ${controllerClass} {
     public Response update${EntityClass}(${instanceType} ${instanceName}) throws URISyntaxException {
         log.debug("REST request to update ${EntityClass} : {}", ${instanceName});
         ${entityRepository}.edit(${instanceName});
-        return HeaderUtil.createEntityUpdateAlert(Response.ok(), "${entityInstance}", <#if isPKPrimitive>String.valueOf(${instanceName}.${pkGetter}())<#else>${instanceName}.${pkGetter}().toString()</#if>)
+        return HeaderUtil.createEntityUpdateAlert(Response.ok(), ENTITY_NAME, <#if isPKPrimitive>String.valueOf(${instanceName}.${pkGetter}())<#else>${instanceName}.${pkGetter}().toString()</#if>)
                 .entity(${instanceName}).build();
     }
 
@@ -155,7 +157,7 @@ public class ${controllerClass} {
     public Response remove${EntityClass}(@PathParam("${pkName}") ${pkType} ${pkName}) {
         log.debug("REST request to delete ${EntityClass} : {}", ${pkName});
         ${entityRepository}.remove(${entityRepository}.find(${pkName}));
-        return HeaderUtil.createEntityDeletionAlert(Response.ok(), "${entityInstance}", <#if isPKPrimitive>String.valueOf(${pkName})<#else>${pkName}.toString()</#if>).build();
+        return HeaderUtil.createEntityDeletionAlert(Response.ok(), ENTITY_NAME, <#if isPKPrimitive>String.valueOf(${pkName})<#else>${pkName}.toString()</#if>).build();
     }
 
 }

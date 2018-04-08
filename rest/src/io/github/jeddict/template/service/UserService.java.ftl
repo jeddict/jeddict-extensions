@@ -166,13 +166,15 @@ public class UserService {
         });
     }
 
-    public void changePassword(String password) {
-        ${userRepository}.findOneByLogin(securityHelper.getCurrentUserLogin()).ifPresent(user -> {
-            String encryptedPassword = passwordEncoder.encode(password);
-            user.setPassword(encryptedPassword);
-            ${userRepository}.edit(user);
-            log.debug("Changed password for User: {}", user);
-        });
+    public void changePassword(String currentPassword, String newPassword) {
+        ${userRepository}.findOneByLogin(securityHelper.getCurrentUserLogin())
+                .filter(user -> user.getPassword().equals(passwordEncoder.encode(currentPassword)))
+                .ifPresent(user -> {
+                    String encryptedPassword = passwordEncoder.encode(newPassword);
+                    user.setPassword(encryptedPassword);
+                    ${userRepository}.edit(user);
+                    log.debug("Changed password for User: {}", user);
+                });
     }
 
     public Optional<User> getUserWithAuthoritiesByLogin(String login) {

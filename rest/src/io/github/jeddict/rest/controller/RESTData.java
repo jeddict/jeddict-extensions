@@ -15,7 +15,7 @@
  */
 package io.github.jeddict.rest.controller;
 
-import io.github.jeddict.jcode.stack.config.data.LayerConfigData;
+import io.github.jeddict.jcode.LayerConfigData;
 import io.github.jeddict.repository.RepositoryData;
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -15,8 +15,8 @@ import javax.ws.rs.Path;
  * Controller for view and managing Log Level at runtime.
  */
 
-@Path("/management")
-public class LogsResource {
+@Path("/api")
+public class ${LogsController} {
 
     @Path("/logs")
     @GET

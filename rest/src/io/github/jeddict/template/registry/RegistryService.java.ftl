@@ -33,7 +33,7 @@ public class RegistryService {
 
     @Inject
     @ConfigProperty(name = "context.path")
-    private String registryService;
+    private String contextPath;
 
     private AgentClient agentClient;
 
@@ -46,20 +46,20 @@ public class RegistryService {
         agentClient = consul.agentClient();
 
         final ImmutableRegistration registration = ImmutableRegistration.builder()
-                .id(registryService)
-                .name(registryService)
+                .id(contextPath)
+                .name(contextPath)
                 .address(webHost)
                 .port(Integer.parseInt(webPort))
-                .check(http(webHost + ":" + webPort + "/"+  registryService + "/health", 5))
+                .check(http(webHost + ":" + webPort + "/health", 5))
                 .build();
         agentClient.register(registration);
 
-        log.info(registryService + " is registered in consul on " + webHost + ":" + webPort);
+        log.info(contextPath + " is registered in consul on " + webHost + ":" + webPort);
     }
 
     @PreDestroy
     protected void unregisterService() {
-        agentClient.deregister(registryService);
-        log.info(registryService + " is un-registered from consul");
+        agentClient.deregister(contextPath);
+        log.info(contextPath + " is un-registered from consul");
     }
 }

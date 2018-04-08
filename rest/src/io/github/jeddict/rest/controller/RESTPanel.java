@@ -15,7 +15,7 @@
  */
 package io.github.jeddict.rest.controller;
 
-import io.github.jeddict.jcode.stack.config.panel.LayerConfigPanel;
+import io.github.jeddict.jcode.LayerConfigPanel;
 import static javax.lang.model.SourceVersion.isName;
 import static javax.swing.JOptionPane.OK_OPTION;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;

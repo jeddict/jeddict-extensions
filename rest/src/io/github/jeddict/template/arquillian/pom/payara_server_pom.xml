@@ -8,109 +8,6 @@
     <packaging>war</packaging>
     <name>arquillian_pom</name>
 
-    <properties>
-        <version.arquillian>1.1.13.Final</version.arquillian>
-        <version.jacoco>0.7.4.201502262128</version.jacoco>
-        <version.valid4j>1.1</version.valid4j>
-        <version.payara>5.181-SNAPSHOT</version.payara>
-        <version.junit>4.12</version.junit>
-        <version.commons-lang>2.6</version.commons-lang>
-        <version.arquillian-payara-client>1.0.Beta3-m1</version.arquillian-payara-client>
-        <version.arquillian-payara-server>1.0.Beta3-m1</version.arquillian-payara-server>
-    </properties>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.jboss.arquillian</groupId>
-                <artifactId>arquillian-bom</artifactId>
-                <version>${version.arquillian}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.arquillian.container</groupId>
-                <artifactId>arquillian-container-test-api</artifactId>
-                <version>${version.arquillian}</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-lang</groupId>
-                <artifactId>commons-lang</artifactId>
-                <version>${version.commons-lang}</version>
-            </dependency>
-            <dependency>
-                <groupId>fish.payara.arquillian</groupId>
-                <artifactId>payara-client-ee8</artifactId>
-                <version>${version.arquillian-payara-client}</version>
-                <scope>test</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-    
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${version.junit}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.arquillian.junit</groupId>
-            <artifactId>arquillian-junit-container</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.shrinkwrap.resolver</groupId>
-            <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
-            <scope>test</scope>
-        </dependency>
-        
-        <!--        <dependency>
-            <groupId>org.jboss.arquillian.protocol</groupId>
-            <artifactId>arquillian-protocol-servlet</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.shrinkwrap.resolver</groupId>
-            <artifactId>shrinkwrap-resolver-impl-maven-archive</artifactId>
-            <scope>test</scope>
-        </dependency>-->
-        
-        <dependency>
-            <groupId>org.valid4j</groupId>
-            <artifactId>http-matchers</artifactId>
-            <version>${version.valid4j}</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${version.jacoco}</version>
-                <configuration>
-                    <destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
-                    <dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>jacoco-initialize</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>jacoco-site</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
     <profiles>
         <profile>
             <id>payara-ci-managed</id>
@@ -187,11 +84,6 @@
              
         <profile>
             <id>payara-remote</id>
-            <activation>
-                <property>
-                    <name>!skipTests</name>
-                </property>
-            </activation>
             <dependencies>
                 <dependency>
                     <groupId>fish.payara.arquillian</groupId>
@@ -222,12 +114,5 @@
             </build>
         </profile>
     </profiles>
-    
-    <repositories>
-        <repository>
-            <id>payara-milestones</id>
-            <name>Payara Milestones</name>
-            <url>https://raw.github.com/payara/Payara_PatchedProjects/master</url>
-        </repository>
-    </repositories>
+   
 </project>

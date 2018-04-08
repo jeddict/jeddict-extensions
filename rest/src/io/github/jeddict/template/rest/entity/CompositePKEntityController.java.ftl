@@ -42,6 +42,8 @@ public class ${controllerClass} {
     @Inject
     private ${EntityRepository} ${entityRepository};
 
+    private static final String ENTITY_NAME = "${entityTranslationKey}";
+
     /**
      * POST : Create a new ${entityInstance}.
      *
@@ -61,7 +63,7 @@ public class ${controllerClass} {
         log.debug("REST request to save ${EntityClass} : {}", ${instanceName});
         ${entityRepository}.create(${instanceName});
         return HeaderUtil.createEntityCreationAlert(Response.created(new URI("/${applicationPath}/api/${entityApiUrl}")),
-                "${entityInstance}", ${entityRepository}.getIdentifier(${instanceName}).toString())
+                ENTITY_NAME, ${entityRepository}.getIdentifier(${instanceName}).toString())
                 .entity(${instanceName}).build();
     }
 
@@ -84,7 +86,7 @@ public class ${controllerClass} {
     public Response update${EntityClass}(${instanceType} ${instanceName}) throws URISyntaxException {
         log.debug("REST request to update ${EntityClass} : {}", ${instanceName});
         ${entityRepository}.edit(${instanceName});
-        return HeaderUtil.createEntityUpdateAlert(Response.ok(), "${entityInstance}", ${entityRepository}.getIdentifier(${instanceName}).toString())
+        return HeaderUtil.createEntityUpdateAlert(Response.ok(), ENTITY_NAME, ${entityRepository}.getIdentifier(${instanceName}).toString())
                 .entity(${instanceName}).build();
     }
 
@@ -156,7 +158,7 @@ public class ${controllerClass} {
         ${pkType} ${pkName} = new ${pkType}(${restParamNameList});
         log.debug("REST request to delete ${EntityClass} : {}", ${pkName});
         ${entityRepository}.remove(${entityRepository}.find(${pkName}));
-        return HeaderUtil.createEntityDeletionAlert(Response.ok(), "${entityInstance}", ${pkName}.toString()).build();
+        return HeaderUtil.createEntityDeletionAlert(Response.ok(), ENTITY_NAME, ${pkName}.toString()).build();
     }
 
 }

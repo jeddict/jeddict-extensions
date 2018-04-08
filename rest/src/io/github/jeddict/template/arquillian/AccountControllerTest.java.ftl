@@ -3,8 +3,9 @@ package ${package};
 import ${appPackage}${AuthoritiesConstants_FQN};
 import ${appPackage}${AuthorityRepository_FQN};
 import ${appPackage}${UserRepository_FQN};
-import ${appPackage}${KeyAndPasswordDTO_FQN};
-import ${appPackage}${ManagedUserDTO_FQN};
+import ${appPackage}${KeyAndPasswordVM_FQN};
+import ${appPackage}${ManagedUserVM_FQN};
+import ${appPackage}${PasswordChangeVM_FQN};
 import ${appPackage}${UserDTO_FQN};
 import ${appPackage}${User_FQN};
 import java.util.Arrays;
@@ -14,7 +15,6 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.ws.rs.client.Entity;
 import static javax.ws.rs.client.Entity.json;
-import static javax.ws.rs.client.Entity.text;
 import javax.ws.rs.core.Response;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.CREATED;
@@ -70,7 +70,7 @@ public class ${AccountControllerTest} extends ApplicationTest {
 
     @Test
     public void testRegisterValid() throws Exception {
-        ManagedUserDTO validUser = new ManagedUserDTO(
+        ManagedUserVM validUser = new ManagedUserVM(
                 null, // id
                 "joe", // login
                 "password", // password
@@ -97,7 +97,7 @@ public class ${AccountControllerTest} extends ApplicationTest {
     @Test
     @Ignore
     public void testRegisterInvalidLogin() throws Exception {
-        ManagedUserDTO invalidUser = new ManagedUserDTO(
+        ManagedUserVM invalidUser = new ManagedUserVM(
                 null, // id
                 "funky-log!n", // login <-- invalid
                 "password", // password
@@ -122,7 +122,7 @@ public class ${AccountControllerTest} extends ApplicationTest {
     @Test
     @Ignore
     public void testRegisterInvalidEmail() throws Exception {
-        ManagedUserDTO invalidUser = new ManagedUserDTO(
+        ManagedUserVM invalidUser = new ManagedUserVM(
                 null, // id
                 "bob", // login
                 "password", // password
@@ -148,7 +148,7 @@ public class ${AccountControllerTest} extends ApplicationTest {
     @Test
     @Ignore
     public void testRegisterInvalidPassword() throws Exception {
-        ManagedUserDTO invalidUser = new ManagedUserDTO(
+        ManagedUserVM invalidUser = new ManagedUserVM(
                 null, // id
                 "bob", // login
                 "123", // password with only 3 digits
@@ -194,7 +194,7 @@ public class ${AccountControllerTest} extends ApplicationTest {
     @Test
     public void testRegisterDuplicateLogin() throws Exception {
         // Good
-        ManagedUserDTO validUser = new ManagedUserDTO(
+        ManagedUserVM validUser = new ManagedUserVM(
                 null, // id
                 "alice", // login
                 "password", // password
@@ -211,7 +211,7 @@ public class ${AccountControllerTest} extends ApplicationTest {
         );
 
         // Duplicate login, different e-mail
-        ManagedUserDTO duplicatedUser = new ManagedUserDTO(
+        ManagedUserVM duplicatedUser = new ManagedUserVM(
                 validUser.getId(), validUser.getLogin(), validUser.getPassword(),
                 validUser.getFirstName(), validUser.getLastName(),
                 "alicejr@example.com", validUser.isActivated(), validUser.getLangKey(),
@@ -235,7 +235,7 @@ public class ${AccountControllerTest} extends ApplicationTest {
     @Test
     public void testRegisterDuplicateEmail() throws Exception {
         // Good
-        ManagedUserDTO validUser = new ManagedUserDTO(
+        ManagedUserVM validUser = new ManagedUserVM(
                 null, // id
                 "john", // login
                 "password", // password
@@ -252,7 +252,7 @@ public class ${AccountControllerTest} extends ApplicationTest {
         );
 
         // Duplicate e-mail, different login
-        ManagedUserDTO duplicatedUser = new ManagedUserDTO(
+        ManagedUserVM duplicatedUser = new ManagedUserVM(
                 validUser.getId(), "johnjr", validUser.getPassword(), 
                 validUser.getFirstName(), validUser.getLastName(),
                 validUser.getEmail(), true, validUser.getLangKey(), 
@@ -275,7 +275,7 @@ public class ${AccountControllerTest} extends ApplicationTest {
 
     @Test
     public void testRegisterAdminIsIgnored() throws Exception {
-        ManagedUserDTO validUser = new ManagedUserDTO(
+        ManagedUserVM validUser = new ManagedUserVM(
                 null, // id
                 "badguy", // login
                 "password", // password
@@ -303,7 +303,7 @@ public class ${AccountControllerTest} extends ApplicationTest {
 
     @Test
     public void assertThatOnlyActivatedUserCanRequestPasswordReset() {
-        ManagedUserDTO user = new ManagedUserDTO(
+        ManagedUserVM user = new ManagedUserVM(
                 null, // id
                 "gaurav", // login
                 "password", // password
@@ -337,15 +337,15 @@ public class ${AccountControllerTest} extends ApplicationTest {
 
     @Test
     public void testfinishPasswordReset() {
-        KeyAndPasswordDTO dto = new KeyAndPasswordDTO();
-        dto.setKey("invalid_reset_key");
-        dto.setNewPassword(PASSWORD);
+        KeyAndPasswordVM keyAndPasswordVM = new KeyAndPasswordVM();
+        keyAndPasswordVM.setKey("invalid_reset_key");
+        keyAndPasswordVM.setNewPassword(PASSWORD);
 
-        Response response = target("api/account/reset-password/finish").post(json(dto));
+        Response response = target("api/account/reset-password/finish").post(json(keyAndPasswordVM));
         assertThat(response, hasStatus(INTERNAL_SERVER_ERROR));
 
-        dto.setNewPassword(INCORRECT_PASSWORD);
-        response = target("api/account/reset-password/finish").post(json(dto));
+        keyAndPasswordVM.setNewPassword(INCORRECT_PASSWORD);
+        response = target("api/account/reset-password/finish").post(json(keyAndPasswordVM));
         assertThat(response, hasStatus(BAD_REQUEST));
     }
 
@@ -353,7 +353,7 @@ public class ${AccountControllerTest} extends ApplicationTest {
     public void testSaveAccount() throws Exception {
         Response response = target("api/account").get();
         assertThat(response, hasStatus(Response.Status.OK));
-        ManagedUserDTO user = response.readEntity(ManagedUserDTO.class);
+        ManagedUserVM user = response.readEntity(ManagedUserVM.class);
         user.setLastName("Gupta");
 
         response = target("api/account").post(json(user));
@@ -364,7 +364,7 @@ public class ${AccountControllerTest} extends ApplicationTest {
     public void testSaveUserDuplicateEmail() throws Exception {
         Response response = target("api/account").get();
         assertThat(response, hasStatus(Response.Status.OK));
-        ManagedUserDTO user = response.readEntity(ManagedUserDTO.class);
+        ManagedUserVM user = response.readEntity(ManagedUserVM.class);
         user.setEmail("user@example.com");
 
         response = target("api/account").post(json(user));
@@ -373,12 +373,24 @@ public class ${AccountControllerTest} extends ApplicationTest {
 
     @Test
     public void testChangePassword() throws Exception {
+        
+        PasswordChangeVM passwordChangeVM = new PasswordChangeVM();
+        
         //Invalid password
-        Response response = target("api/account/change-password").post(text(INCORRECT_PASSWORD));
+        passwordChangeVM.setCurrentPassword(PASSWORD);
+        passwordChangeVM.setNewPassword(INCORRECT_PASSWORD);
+        Response response = target("api/account/change-password").post(json(passwordChangeVM));
         assertThat(response, hasStatus(BAD_REQUEST));
 
         //Valid password
-        response = target("api/account/change-password").post(text(PASSWORD));
+        passwordChangeVM.setNewPassword(NEW_PASSWORD);
+        response = target("api/account/change-password").post(json(passwordChangeVM));
+        assertThat(response, hasStatus(OK));
+        
+        //Valid password
+        passwordChangeVM.setCurrentPassword(NEW_PASSWORD);
+        passwordChangeVM.setNewPassword(PASSWORD);
+        response = target("api/account/change-password").post(json(passwordChangeVM));
         assertThat(response, hasStatus(OK));
     }
 

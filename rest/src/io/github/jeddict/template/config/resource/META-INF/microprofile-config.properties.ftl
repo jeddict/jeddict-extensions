@@ -12,8 +12,9 @@ security.authentication.jwt.secret: my-secret-sample-token
 security.authentication.jwt.tokenValidityInSeconds: 86400
 security.authentication.jwt.tokenValidityInSecondsForRememberMe: 1314000
 
+context.path = ${r"${context.path}"}
 <#if microservices>
 web.host = ${r"${web.host}"}
 web.port = ${r"${web.port}"}
-context.path = ${r"${context.path}"}</#if><#if microservices || gateway>
+</#if><#if microservices || gateway>
 registry.url: ${r"${registry.url}"}</#if>

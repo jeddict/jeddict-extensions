@@ -22,6 +22,10 @@ public final class Constants {
     public static final String LOGIN_ALREADY_USED_TYPE = "login-already-used";
     
     public static final String EMAIL_NOT_FOUND_TYPE = "email-not-found";
+
+    public static final int PASSWORD_MIN_LENGTH = 4;
+
+    public static final int PASSWORD_MAX_LENGTH = 100;
     
     private Constants() {
     }

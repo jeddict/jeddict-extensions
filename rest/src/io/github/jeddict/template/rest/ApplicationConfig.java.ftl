@@ -36,7 +36,7 @@ public class ${applicationConfig} extends Application {
         resources.add(${appPackage}${AccountController_FQN}.class);
         resources.add(${appPackage}${AuthenticationController_FQN}.class);
         resources.add(${appPackage}${UserController_FQN}.class);</#if><#if log>
-        resources.add(${appPackage}${LogsResource_FQN}.class);</#if>
+        resources.add(${appPackage}${LogsController_FQN}.class);</#if>
     }
 
 }

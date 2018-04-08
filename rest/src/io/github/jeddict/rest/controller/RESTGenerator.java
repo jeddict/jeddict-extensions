@@ -38,6 +38,8 @@ import static java.util.stream.Collectors.toSet;
 import org.apache.commons.lang3.StringUtils;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import io.github.jeddict.docker.generator.DockerConfigData;
+import io.github.jeddict.infra.ServerFamily;
+import io.github.jeddict.infra.ServerType;
 import io.github.jeddict.jcode.console.Console;
 import static io.github.jeddict.jcode.console.Console.BOLD;
 import static io.github.jeddict.jcode.console.Console.FG_DARK_RED;
@@ -60,13 +62,13 @@ import static io.github.jeddict.jcode.util.StringHelper.kebabCase;
 import static io.github.jeddict.jcode.util.StringHelper.pluralize;
 import static io.github.jeddict.jcode.util.StringHelper.startCase;
 import static io.github.jeddict.jcode.util.StringHelper.toConstant;
-import io.github.jeddict.jcode.layer.ConfigData;
-import io.github.jeddict.jcode.layer.Generator;
-import io.github.jeddict.jcode.layer.Technology;
-import static io.github.jeddict.jcode.layer.Technology.Type.CONTROLLER;
-import io.github.jeddict.jcode.stack.config.data.ApplicationConfigData;
-import static io.github.jeddict.jcode.stack.config.data.RegistryType.CONSUL;
-import static io.github.jeddict.jcode.stack.config.data.RegistryType.SNOOPEE;
+import io.github.jeddict.jcode.Generator;
+import io.github.jeddict.jcode.ApplicationConfigData;
+import static io.github.jeddict.jcode.RegistryType.CONSUL;
+import static io.github.jeddict.jcode.RegistryType.SNOOPEE;
+import io.github.jeddict.jcode.annotation.ConfigData;
+import io.github.jeddict.jcode.annotation.Technology;
+import static io.github.jeddict.jcode.annotation.Technology.Type.CONTROLLER;
 import io.github.jeddict.jcode.task.progress.ProgressHandler;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
@@ -78,6 +80,7 @@ import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 import static io.github.jeddict.jcode.util.FileUtil.expandTemplate;
+import static io.github.jeddict.jcode.util.StringHelper.camelCase;
 import io.github.jeddict.jpa.spec.DefaultAttribute;
 import io.github.jeddict.jpa.spec.EmbeddedId;
 import io.github.jeddict.jpa.spec.EntityMappings;
@@ -89,6 +92,8 @@ import static io.github.jeddict.repository.RepositoryGenerator.REPOSITORY_ABSTRA
 import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
 import io.github.jeddict.jpa.spec.Entity;
 import io.github.jeddict.jpa.spec.DefaultClass;
+import static java.util.Collections.singletonList;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
  *
@@ -142,11 +147,13 @@ public class RESTGenerator implements Generator {
     private List<Template> CONFIG_TEMPLATES, ENTITY_TEMPLATES,
             ENTITY_LISTENER_TEMPLATES,
             REPOSITORY_TEMPLATES, SERVICE_TEMPLATES, POST_SERVICE_TEMPLATES,
-            CONTROLLER_TEMPLATES, CONTROLLER_UTIL_TEMPLATES, CONTROLLER_EXT_TEMPLATES,
-            METRICS_TEMPLATES, LOGGER_TEMPLATES,
+            CONTROLLER_TEMPLATES, CONTROLLER_UTIL_TEMPLATES, DTO_TEMPLATES,
+            METRICS_TEMPLATES, VM_TEMPLATES,
             TEST_CASE_TEMPLATES, TEST_CASE_CONTROLLER_TEMPLATES, 
             MICROSERVICES_TEMPLATES, MICROSERVICES_CONTROLLER_TEMPLATES, 
-            GATEWAY_TEMPLATES;
+            GATEWAY_TEMPLATES, GATEWAY_CONTROLLER_TEMPLATES, GATEWAY_VM_TEMPLATES;
+    
+    private Template LOGGER_VM = new Template("logger/LoggerVM.java.ftl", "LoggerVM", "vm");
   
     private void registerTemplates() {
 
@@ -158,14 +165,16 @@ public class RESTGenerator implements Generator {
         POST_SERVICE_TEMPLATES = new ArrayList<>();
         CONTROLLER_TEMPLATES = new ArrayList<>();
         CONTROLLER_UTIL_TEMPLATES = new ArrayList<>();
-        CONTROLLER_EXT_TEMPLATES = new ArrayList<>();
+        DTO_TEMPLATES = new ArrayList<>();
         METRICS_TEMPLATES = new ArrayList<>();
-        LOGGER_TEMPLATES = new ArrayList<>();
+        VM_TEMPLATES = new ArrayList<>();
         TEST_CASE_TEMPLATES = new ArrayList<>();
         TEST_CASE_CONTROLLER_TEMPLATES = new ArrayList<>();
         MICROSERVICES_TEMPLATES = new ArrayList<>();
         MICROSERVICES_CONTROLLER_TEMPLATES = new ArrayList<>();
         GATEWAY_TEMPLATES = new ArrayList<>();
+        GATEWAY_CONTROLLER_TEMPLATES = new ArrayList<>();
+        GATEWAY_VM_TEMPLATES = new ArrayList<>();
 
         ENTITY_TEMPLATES.add(new Template("entity/AbstractAuditingEntity.java.ftl", "AbstractAuditingEntity"));
         ENTITY_TEMPLATES.add(new Template("entity/Authority.java.ftl", "Authority"));
@@ -184,10 +193,12 @@ public class RESTGenerator implements Generator {
         CONTROLLER_UTIL_TEMPLATES.add(new Template("rest/util/Page.java.ftl", "Page", "util"));
         CONTROLLER_UTIL_TEMPLATES.add(new Template("rest/util/PaginationUtil.java.ftl", "PaginationUtil", "util"));
 
-        CONTROLLER_EXT_TEMPLATES.add(new Template("rest/dto/KeyAndPasswordDTO.java.ftl", "KeyAndPasswordDTO", "dto"));
-        CONTROLLER_EXT_TEMPLATES.add(new Template("rest/dto/LoginDTO.java.ftl", "LoginDTO", "dto"));
-        CONTROLLER_EXT_TEMPLATES.add(new Template("rest/dto/ManagedUserDTO.java.ftl", "ManagedUserDTO", "dto"));
-        CONTROLLER_EXT_TEMPLATES.add(new Template("rest/dto/UserDTO.java.ftl", "UserDTO", "dto"));
+        DTO_TEMPLATES.add(new Template("service/dto/UserDTO.java.ftl", "UserDTO", "service.dto"));
+        DTO_TEMPLATES.add(new Template("service/dto/LoginDTO.java.ftl", "LoginDTO", "service.dto"));
+        
+        VM_TEMPLATES.add(new Template("rest/vm/PasswordChangeVM.java.ftl", "PasswordChangeVM", "vm"));
+        VM_TEMPLATES.add(new Template("rest/vm/ManagedUserVM.java.ftl", "ManagedUserVM", "vm"));
+        VM_TEMPLATES.add(new Template("rest/vm/KeyAndPasswordVM.java.ftl", "KeyAndPasswordVM", "vm"));
 
         if (restData.isMetrics()) {
 //            METRICS_TEMPLATES.add(new Template("config/MetricsConfig.java.ftl", "MetricsConfig", "config"));
@@ -197,8 +208,8 @@ public class RESTGenerator implements Generator {
         }
                
         if (restData.isLogger()) {
-            LOGGER_TEMPLATES.add(new Template("logger/LoggerVM.java.ftl", "LoggerVM", "dto"));
-            LOGGER_TEMPLATES.add(new Template("logger/LogsResource.java.ftl", "LogsResource"));
+            VM_TEMPLATES.add(LOGGER_VM);
+            CONTROLLER_TEMPLATES.add(new Template("logger/LogsController.java.ftl", "Logs"));
         }
 
         SERVICE_TEMPLATES.add(new Template("security/AuthoritiesConstants.java.ftl", "AuthoritiesConstants", "security"));
@@ -256,12 +267,15 @@ public class RESTGenerator implements Generator {
             MICROSERVICES_TEMPLATES.add(new Template("registry/RegistryService.java.ftl", "RegistryService", "registry"));
         }
         MICROSERVICES_CONTROLLER_TEMPLATES.add(new Template("rest/HealthController.java.ftl", "Health"));
+        MICROSERVICES_CONTROLLER_TEMPLATES.add(new Template("logger/LogsController.java.ftl", "Logs"));
     
         GATEWAY_TEMPLATES.add(new Template("routing/FilterRegistryListener.java.ftl", "FilterRegistryListener", "routing"));
         GATEWAY_TEMPLATES.add(new Template("routing/ServiceDiscoveryFilter.java.ftl", "ServiceDiscoveryFilter", "routing"));
         GATEWAY_TEMPLATES.add(new Template("routing/RoutingFilter.java.ftl", "RoutingFilter", "routing"));
         GATEWAY_TEMPLATES.add(new Template("routing/SendResponseFilter.java.ftl", "SendResponseFilter", "routing"));
-
+        GATEWAY_VM_TEMPLATES.add(new Template("gateway/RouteVM.java.ftl", "RouteVM", "vm"));
+        GATEWAY_VM_TEMPLATES.add(new Template("gateway/ServiceInstanceVM.java.ftl", "ServiceInstanceVM", "vm"));
+        GATEWAY_CONTROLLER_TEMPLATES.add(new Template("gateway/GatewayController.java.ftl", "Gateway"));
     }
 
     @Override
@@ -390,6 +404,7 @@ public class RESTGenerator implements Generator {
         String entityClass = firstUpper(entitySimpleName);
         String entityInstance = firstLower(entitySimpleName);
         String entityNameSpinalCased = kebabCase(entityInstance);
+        String clientRootFolder = appConfigData.isMicroservice() ?appConfigData.getTargetContextPath() : null;
 
         Map<String, Object> contollerParams = new HashMap<>(params);
         reloadTargetPackage(contollerParams);
@@ -398,6 +413,7 @@ public class RESTGenerator implements Generator {
         contollerParams.put("EntityClass_FQN", '.' + entity.getRelativeFQN());
         contollerParams.put("entityInstance", entityInstance);
         contollerParams.put("entityInstancePlural", pluralize(entityInstance));
+        contollerParams.put("entityTranslationKey", isNotEmpty(clientRootFolder) ? camelCase(clientRootFolder + "-" + entityInstance) : entityInstance);
 
         contollerParams.put("controllerClass", controllerFileName);
         contollerParams.put("controllerClassHumanized", startCase(controllerFileName));
@@ -581,13 +597,13 @@ public class RESTGenerator implements Generator {
             //contoller util
             expandServerSideComponent(gatewaySource, appConfigData.getGatewayPackage(), restData.getPackage(), EMPTY, EMPTY, CONTROLLER_UTIL_TEMPLATES, params);
             //contoller ext
-            expandServerSideComponent(gatewaySource, appConfigData.getGatewayPackage(), restData.getPackage(), EMPTY, EMPTY, CONTROLLER_EXT_TEMPLATES, params);
+            expandServerSideComponent(gatewaySource, appConfigData.getGatewayPackage(), null, EMPTY, EMPTY, DTO_TEMPLATES, params);
             //repository
             expandServerSideComponent(gatewaySource, appConfigData.getGatewayPackage(), repositoryData.getPackage(), repositoryData.getPrefixName(), repositoryData.getSuffixName(), REPOSITORY_TEMPLATES, params);
             //metrics
             expandServerSideComponent(gatewaySource, appConfigData.getGatewayPackage(), null, EMPTY, EMPTY, METRICS_TEMPLATES, params);
-            //logger
-            expandServerSideComponent(gatewaySource, appConfigData.getGatewayPackage(), restData.getPackage(), EMPTY, EMPTY, LOGGER_TEMPLATES, params);
+            //vm
+            expandServerSideComponent(gatewaySource, appConfigData.getGatewayPackage(), restData.getPackage(), EMPTY, EMPTY, VM_TEMPLATES, params);
             //service
             expandServerSideComponent(gatewaySource, appConfigData.getGatewayPackage(), null, EMPTY, EMPTY, SERVICE_TEMPLATES, params);
             //entity
@@ -599,7 +615,12 @@ public class RESTGenerator implements Generator {
         }
         
         if (appConfigData.isGateway()) {
-            expandServerSideComponent(targetSource, appConfigData.getTargetPackage(), null, EMPTY, EMPTY, GATEWAY_TEMPLATES, params);
+            expandServerSideComponent(gatewaySource, appConfigData.getGatewayPackage(), null, EMPTY, EMPTY, GATEWAY_TEMPLATES, params);
+            //vm
+            expandServerSideComponent(gatewaySource, appConfigData.getGatewayPackage(), restData.getPackage(), EMPTY, EMPTY, GATEWAY_VM_TEMPLATES, params);
+            //controller
+            expandServerSideComponent(gatewaySource, appConfigData.getGatewayPackage(), restData.getPackage(), restData.getPrefixName(), restData.getSuffixName(), GATEWAY_CONTROLLER_TEMPLATES, params);
+            
         }
 
         if (appConfigData.isMicroservice()) {
@@ -611,7 +632,8 @@ public class RESTGenerator implements Generator {
             //metrics
             expandServerSideComponent(targetSource, appConfigData.getTargetPackage(), null, EMPTY, EMPTY, METRICS_TEMPLATES, params);
             //logger
-            expandServerSideComponent(targetSource, appConfigData.getTargetPackage(), restData.getPackage(), EMPTY, EMPTY, LOGGER_TEMPLATES, params);
+            expandServerSideComponent(targetSource, appConfigData.getTargetPackage(), restData.getPackage(), EMPTY, EMPTY, 
+                    singletonList(LOGGER_VM), params);
             //microservices
             expandServerSideComponent(targetSource, appConfigData.getTargetPackage(), null, EMPTY, EMPTY, MICROSERVICES_TEMPLATES, params);
             expandServerSideComponent(targetSource, appConfigData.getTargetPackage(), restData.getPackage(), restData.getPrefixName(), restData.getSuffixName(), MICROSERVICES_CONTROLLER_TEMPLATES, params);
@@ -788,7 +810,19 @@ public class RESTGenerator implements Generator {
             addMavenDependencies("docs/pom/_pom.xml", project);
         }
         if (restData.isTestCase()) {
-            addMavenDependencies("arquillian/pom/_pom.xml", project);
+            if (dockerConfigData.getServerType().getFamily() == ServerFamily.PAYARA_FAMILY) {
+                addMavenDependencies("arquillian/pom/payara_common_pom.xml", project);
+               if(dockerConfigData.getServerType() == ServerType.PAYARA) {
+                  addMavenDependencies("arquillian/pom/payara_server_pom.xml", project);
+                  if(dockerConfigData.isDockerActivated()){
+                      addMavenDependencies("arquillian/pom/payara_server_docker_pom.xml", project);
+                  } else {
+                      addMavenDependencies("arquillian/pom/payara_server_non_docker_pom.xml", project);
+                  }
+               } else if(dockerConfigData.getServerType() == ServerType.PAYARA_MICRO) {
+                  addMavenDependencies("arquillian/pom/payara_micro_pom.xml", project);
+               } 
+            }
         }
         if (appConfigData.isGateway()) {
             addMavenDependencies("routing/pom/_pom.xml", project);

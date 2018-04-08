@@ -30,6 +30,10 @@
                     <groupId>javax.enterprise</groupId>
                     <artifactId>cdi-api</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>javax.json</groupId>
+                    <artifactId>javax.json-api</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>

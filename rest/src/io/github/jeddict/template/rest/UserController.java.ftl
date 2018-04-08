@@ -4,7 +4,7 @@ import ${appPackage}${UserRepository_FQN};
 import ${appPackage}${User_FQN};
 import ${appPackage}${MailService_FQN};
 import ${appPackage}${UserService_FQN};
-import ${appPackage}${ManagedUserDTO_FQN};
+import ${appPackage}${ManagedUserVM_FQN};
 import ${appPackage}${UserDTO_FQN};
 import ${appPackage}${HeaderUtil_FQN};
 import ${appPackage}${Page_FQN};
@@ -71,7 +71,7 @@ public class ${UserController} {
      * creation.
      * </p>
      *
-     * @param managedUserDTO the user to create
+     * @param managedUserVM the user to create
      * @return the Response with status 201 (Created) and with body the
      * new user, or with status 400 (Bad Request) if the login or email is
      * already in use
@@ -87,16 +87,16 @@ public class ${UserController} {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)<#if security == "JAXRS_JWT">
     @Secured(AuthoritiesConstants.ADMIN)</#if>
-    public Response createUser(ManagedUserDTO managedUserDTO) throws URISyntaxException {
-        log.debug("REST request to save User : {}", managedUserDTO);
+    public Response createUser(ManagedUserVM managedUserVM) throws URISyntaxException {
+        log.debug("REST request to save User : {}", managedUserVM);
 
         //Lowercase the user login before comparing with database
-        if (${userRepository}.findOneByLogin(managedUserDTO.getLogin().toLowerCase()).isPresent()) {
+        if (${userRepository}.findOneByLogin(managedUserVM.getLogin().toLowerCase()).isPresent()) {
             return HeaderUtil.createFailureAlert(Response.status(BAD_REQUEST), "userManagement", "userexists", LOGIN_ALREADY_USED_TYPE).build();
-        } else if (${userRepository}.findOneByEmail(managedUserDTO.getEmail()).isPresent()) {
+        } else if (${userRepository}.findOneByEmail(managedUserVM.getEmail()).isPresent()) {
             return HeaderUtil.createFailureAlert(Response.status(BAD_REQUEST), "userManagement", "emailexists", EMAIL_ALREADY_USED_TYPE).build();
         } else {
-            User newUser = userService.createUser(managedUserDTO);
+            User newUser = userService.createUser(managedUserVM);
             mailService.sendCreationEmail(newUser);
             return HeaderUtil.createAlert(Response.created(new URI("/${applicationPath}/api/users/" + newUser.getLogin())),
                     "userManagement.created", newUser.getLogin()).entity(new UserDTO(newUser)).build();
@@ -106,7 +106,7 @@ public class ${UserController} {
     /**
      * PUT /users : Updates an existing User.
      *
-     * @param managedUserDTO the user to update
+     * @param managedUserVM the user to update
      * @return the Response with status 200 (OK) and with body the updated
      * user, or with status 400 (Bad Request) if the login or email is already
      * in use, or with status 500 (Internal Server Error) if the user couldn't be
@@ -123,20 +123,20 @@ public class ${UserController} {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)<#if security == "JAXRS_JWT">
     @Secured(AuthoritiesConstants.ADMIN)</#if>
-    public Response updateUser(ManagedUserDTO managedUserDTO) {
-        log.debug("REST request to update User : {}", managedUserDTO);
-        Optional<User> existingUser = ${userRepository}.findOneByEmail(managedUserDTO.getEmail());
-        if (existingUser.isPresent() && (!existingUser.get().getId().equals(managedUserDTO.getId()))) {
+    public Response updateUser(ManagedUserVM managedUserVM) {
+        log.debug("REST request to update User : {}", managedUserVM);
+        Optional<User> existingUser = ${userRepository}.findOneByEmail(managedUserVM.getEmail());
+        if (existingUser.isPresent() && (!existingUser.get().getId().equals(managedUserVM.getId()))) {
             return HeaderUtil.createFailureAlert(Response.status(BAD_REQUEST), "userManagement", "emailexists", EMAIL_ALREADY_USED_TYPE).build();
         }
-        existingUser = ${userRepository}.findOneByLogin(managedUserDTO.getLogin().toLowerCase());
-        if (existingUser.isPresent() && (!existingUser.get().getId().equals(managedUserDTO.getId()))) {
+        existingUser = ${userRepository}.findOneByLogin(managedUserVM.getLogin().toLowerCase());
+        if (existingUser.isPresent() && (!existingUser.get().getId().equals(managedUserVM.getId()))) {
             return HeaderUtil.createFailureAlert(Response.status(BAD_REQUEST), "userManagement", "userexists", LOGIN_ALREADY_USED_TYPE).build();
         }
-        Optional<UserDTO> updatedUser = userService.updateUser(managedUserDTO);
+        Optional<UserDTO> updatedUser = userService.updateUser(managedUserVM);
         
         return updatedUser.map(userDTO -> HeaderUtil.createAlert(Response.ok(userDTO),
-                "userManagement.updated", managedUserDTO.getLogin()).build())
+                "userManagement.updated", managedUserVM.getLogin()).build())
                 .orElseGet(() -> Response.status(NOT_FOUND).build());
     }
 

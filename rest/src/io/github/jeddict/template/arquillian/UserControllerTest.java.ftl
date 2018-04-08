@@ -1,7 +1,7 @@
 package ${package};
 
 import ${appPackage}${AuthoritiesConstants_FQN};
-import ${appPackage}${ManagedUserDTO_FQN};
+import ${appPackage}${ManagedUserVM_FQN};
 import ${appPackage}${User_FQN};
 import ${appPackage}${UserRepository_FQN};
 import java.util.Arrays;
@@ -46,7 +46,7 @@ public class ${UserControllerTest} extends ApplicationTest {
     @Test
     public void testCreateUser() throws Exception {
 
-        ManagedUserDTO validUser = new ManagedUserDTO(
+        ManagedUserVM validUser = new ManagedUserVM(
                 null, // id
                 "joe", // login
                 "password", // password
@@ -73,7 +73,7 @@ public class ${UserControllerTest} extends ApplicationTest {
     public void testCreateUserDuplicateLogin() throws Exception {
 
         // Good
-        ManagedUserDTO validUser = new ManagedUserDTO(
+        ManagedUserVM validUser = new ManagedUserVM(
                 null, // id
                 "alice", // login
                 "password", // password
@@ -90,7 +90,7 @@ public class ${UserControllerTest} extends ApplicationTest {
         );
 
         // Duplicate login, different e-mail
-        ManagedUserDTO duplicatedUser = new ManagedUserDTO(
+        ManagedUserVM duplicatedUser = new ManagedUserVM(
                 validUser.getId(), validUser.getLogin(), validUser.getPassword(), 
                 validUser.getFirstName(), validUser.getLastName(),
                 "alicejr@example.com", validUser.isActivated(), validUser.getLangKey(), 
@@ -114,7 +114,7 @@ public class ${UserControllerTest} extends ApplicationTest {
     @Test
     public void testCreateUserDuplicateEmail() throws Exception {
         // Good
-        ManagedUserDTO validUser = new ManagedUserDTO(
+        ManagedUserVM validUser = new ManagedUserVM(
                 null, // id
                 "john", // login
                 "password", // password
@@ -131,7 +131,7 @@ public class ${UserControllerTest} extends ApplicationTest {
         );
 
         // Duplicate e-mail, different login
-        ManagedUserDTO duplicatedUser = new ManagedUserDTO(
+        ManagedUserVM duplicatedUser = new ManagedUserVM(
                 validUser.getId(), "johnjr", validUser.getPassword(), 
                 validUser.getFirstName(), validUser.getLastName(),
                 validUser.getEmail(), validUser.isActivated(), validUser.getLangKey(),
@@ -156,7 +156,7 @@ public class ${UserControllerTest} extends ApplicationTest {
     public void testGetExistingUser() throws Exception {
         Response response = target("api/users/admin").get();
         assertThat(response, hasStatus(Response.Status.OK));
-        ManagedUserDTO user = response.readEntity(ManagedUserDTO.class);
+        ManagedUserVM user = response.readEntity(ManagedUserVM.class);
         assertThat(user.getEmail(), is("admin@example.com"));
     }
 
@@ -164,7 +164,7 @@ public class ${UserControllerTest} extends ApplicationTest {
     public void testGetAllUser() throws Exception {
         Response response = target("api/users", singletonMap("size", 5)).get();
         assertThat(response, hasStatus(Response.Status.OK));
-        List<ManagedUserDTO> users = response.readEntity(List.class);
+        List<ManagedUserVM> users = response.readEntity(List.class);
         assertThat(users.size(), is(${userRepository}.findAll().size()));
     }
 
@@ -178,7 +178,7 @@ public class ${UserControllerTest} extends ApplicationTest {
     public void testUpdateUser() throws Exception {
         Response response = target("api/users/user").get();
         assertThat(response, hasStatus(Response.Status.OK));
-        ManagedUserDTO user = response.readEntity(ManagedUserDTO.class);
+        ManagedUserVM user = response.readEntity(ManagedUserVM.class);
         user.setLastName("Gupta");
 
         response = target("api/users").put(json(user));

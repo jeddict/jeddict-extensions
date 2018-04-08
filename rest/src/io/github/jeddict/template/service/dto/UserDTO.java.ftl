@@ -1,6 +1,8 @@
 package ${package};
 
-import ${appPackage}${Constants_FQN};
+import static ${appPackage}${Constants_FQN}.LOGIN_REGEX;
+import static ${appPackage}${Constants_FQN}.EMAIL_REGEX;
+import static ${appPackage}${Constants_FQN}.EMAIL_REGEX_MESSAGE;
 import ${entityPackage}.Authority;
 import ${entityPackage}.User;
 import java.io.Serializable;
@@ -20,7 +22,7 @@ public class UserDTO implements Serializable {
     private Long id;
 
     @NotBlank
-    @Pattern(regexp = Constants.LOGIN_REGEX)
+    @Pattern(regexp = LOGIN_REGEX)
     @Size(min = 1, max = 50)
     private String login;
 
@@ -30,7 +32,7 @@ public class UserDTO implements Serializable {
     @Size(max = 50)
     private String lastName;
 
-    @Email(regexp = Constants.EMAIL_REGEX, message = Constants.EMAIL_REGEX_MESSAGE)
+    @Email(regexp = EMAIL_REGEX, message = EMAIL_REGEX_MESSAGE)
     @Size(min = 5, max = 100)
     private String email;
 
