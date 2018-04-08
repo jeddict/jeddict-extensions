@@ -15,11 +15,8 @@
  */
 package io.github.jeddict.infra;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.EMPTY_LIST;
 import static java.util.Collections.EMPTY_MAP;
 import static java.util.Collections.singletonMap;
-import java.util.List;
 import java.util.Map;
 import static io.github.jeddict.infra.DatabaseType.DERBY;
 import static io.github.jeddict.infra.DatabaseType.H2;
@@ -28,6 +25,7 @@ import static io.github.jeddict.infra.ServerFamily.WILDFLY_FAMILY;
 import io.github.jeddict.jcode.jpa.PersistenceProviderType;
 import static io.github.jeddict.jcode.jpa.PersistenceProviderType.ECLIPSELINK;
 import static io.github.jeddict.jcode.jpa.PersistenceProviderType.HIBERNATE;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 /**
  *
@@ -37,30 +35,30 @@ public enum ServerType {
     
     NONE(true, null, "<No Server Selected>", 
             null, null, EMPTY_MAP, false,
-            null, null, EMPTY_LIST),
+            null, null, EMPTY),
     PAYARA(true, PAYARA_FAMILY, "Payara", 
             ECLIPSELINK, H2, singletonMap(DERBY, "jdbc/__derby"), false,
            "${build.name}.war", "DockerFile_PAYARA.ftl", 
-            asList("latest", "161", "161.1")),
+            "5.181"),
     PAYARA_MICRO(true, PAYARA_FAMILY, "Payara Micro", 
-            ECLIPSELINK, H2, singletonMap(DERBY, "jdbc/__derby"), false,
+            ECLIPSELINK, H2, EMPTY_MAP, false,
            "${build.name}.jar", "DockerFile_JAVA.ftl", 
-            EMPTY_LIST),
+            "5.181"),
     WILDFLY(false, WILDFLY_FAMILY, "Wildfly", 
             HIBERNATE, H2, EMPTY_MAP, false,
-           "${build.name}.war", "DockerFile_WILDFLY.ftl", 
-            asList("latest", "8.1.0.Final", "8.2.1.Final", "8.2.0.Final", "9.0.0.Final", "10.1.0.Final", "9.0.1.Final", "9.0.2.Final", "10.0.0.Final")),
+           "${build.name}.war", "DockerFile_WILDFLY.ftl",
+            EMPTY),
     WILDFLY_SWARM(false, WILDFLY_FAMILY, "Wildfly Swarm", 
             HIBERNATE, H2, EMPTY_MAP, true,
           "${build.name}-swarm.jar", "DockerFile_JAVA.ftl", 
-            EMPTY_LIST);
+            EMPTY);
 //    GLASSFISH("Glassfish", Arrays.asList("4.1.1","4.1.1-web")),
 
     private final ServerFamily family;
     private final String displayName;
     private final String binary;
     private final String template;
-    private final List<String> version;
+    private final String version;
     private final PersistenceProviderType persistenceProviderType;
     private final DatabaseType defaultDB;
     private final Map<DatabaseType, String> embeddedDBs;
@@ -76,7 +74,7 @@ public enum ServerType {
                         boolean                     embeddedDBDriverRequired,
                         String                      binary, 
                         String                      template, 
-                        List<String>                version) {
+                        String                version) {
         this.family = family;
         this.displayName = displayName;
         this.defaultDB = defaultDB;
@@ -93,7 +91,7 @@ public enum ServerType {
         return displayName;
     }
 
-    public List<String> getVersion() {
+    public String getVersion() {
         return version;
     }
 
@@ -106,7 +104,7 @@ public enum ServerType {
 
     @Override
     public String toString() {
-        return displayName;
+        return displayName + " " + version;
     }
 
     /**
