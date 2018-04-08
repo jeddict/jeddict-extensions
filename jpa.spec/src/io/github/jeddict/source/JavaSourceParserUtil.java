@@ -192,7 +192,7 @@ public class JavaSourceParserUtil {
 
     static {
         for (Class<? extends Constraint> bvClass : BEAN_VALIDATION_REVENG_CLASS_LIST) {
-            SUPPORTED_BV_REVENG_CLASS_SET.put(io.github.jeddict.jcode.beanvalidation.BeanVaildationConstants.BEAN_VAILDATION_PACKAGE + "." + bvClass.getSimpleName(), bvClass);
+            SUPPORTED_BV_REVENG_CLASS_SET.put(io.github.jeddict.jcode.bv.BeanVaildationConstants.BEAN_VAILDATION_PACKAGE + "." + bvClass.getSimpleName(), bvClass);
         }
     }
 

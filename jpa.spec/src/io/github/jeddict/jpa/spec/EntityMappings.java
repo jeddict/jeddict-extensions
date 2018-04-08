@@ -232,6 +232,9 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     private String dbTheme;
     @XmlAttribute(name = "jbthm")
     private String jbTheme;
+    
+    @XmlAttribute(name = "pu")
+    private Boolean generatePersistenceUnit;
     @XmlAttribute
     private String persistenceUnitName;
     @XmlAttribute(name = "pp")
@@ -1177,10 +1180,31 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         this.jpaDiagram = jpaDiagram;
     }
 
+    
+    /**
+     * @return the generatePersistenceUnit
+     */
+    public Boolean getGeneratePersistenceUnit() {
+        if(generatePersistenceUnit == null){
+            return true;
+        }
+        return generatePersistenceUnit;
+    }
+
+    /**
+     * @param generatePersistenceUnit the generatePersistenceUnit to set
+     */
+    public void setGeneratePersistenceUnit(Boolean generatePersistenceUnit) {
+        this.generatePersistenceUnit = generatePersistenceUnit;
+    }
+    
     /**
      * @return the persistenceUnitName
      */
     public String getPersistenceUnitName() {
+        if(persistenceUnitName == null){
+            persistenceUnitName = DEFAULT_PU_NAME;
+        }
         return persistenceUnitName;
     }
 
@@ -1587,12 +1611,12 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
 
     @Override
     public String getName() {
-        return persistenceUnitName;
+        return getPersistenceUnitName();
     }
 
     @Override
     public void setName(String persistenceUnitName) {
-        this.persistenceUnitName = persistenceUnitName;
+        setPersistenceUnitName(persistenceUnitName);
     }
 
     /**
@@ -1625,7 +1649,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
         List<IdentifiableClass> identifiableClasses = new ArrayList<>(this.getEntity());
         identifiableClasses.addAll(this.getMappedSuperclass());
         List<SqlResultSetMapping> sqlResultSetMappings = new ArrayList<>();
-        identifiableClasses.stream().forEach((identifiableClass) -> {
+        identifiableClasses.forEach((identifiableClass) -> {
             sqlResultSetMappings.addAll(identifiableClass.getSqlResultSetMapping());
         });
         return sqlResultSetMappings;
@@ -1700,7 +1724,7 @@ public class EntityMappings extends BaseElement implements IDefinitionElement, I
     public void setGenerateStaticMetamodel(Boolean generateStaticMetamodel) {
         this.generateStaticMetamodel = generateStaticMetamodel;
     }
-
+    
     public List<ManagedClass> getAllManagedClass() {
         List<ManagedClass> managedClasses = new ArrayList<>();
         managedClasses.addAll(getEntity());
