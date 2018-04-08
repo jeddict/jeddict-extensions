@@ -15,7 +15,7 @@
  */
 package io.github.jeddict.rest.applicationconfig;
 
-import io.github.jeddict.jcode.stack.config.panel.LayerConfigPanel;
+import io.github.jeddict.jcode.LayerConfigPanel;
 import java.util.prefs.Preferences;
 import javax.lang.model.SourceVersion;
 import javax.swing.event.ChangeEvent;
@@ -33,9 +33,8 @@ import org.openide.util.NbBundle;
 public class RestConfigPanel extends LayerConfigPanel<RestConfigData> {
 
     private Preferences pref;
-//    private static final String DEFAULT_PACKAGE = "util";
+    
     public static final String DEFAULT_RESOURCE_FOLDER = "webresources";
-//    private Map<String, RestApplication> restApplications = Collections.EMPTY_MAP;
 
     public RestConfigPanel() {
         initComponents();

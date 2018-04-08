@@ -15,7 +15,7 @@
  */
 package io.github.jeddict.rest.applicationconfig;
 
-import io.github.jeddict.jcode.window.GenericDialog;
+import io.github.jeddict.jcode.ui.GenericDialog;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.openide.util.NbBundle;

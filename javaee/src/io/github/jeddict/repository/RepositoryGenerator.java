@@ -33,11 +33,11 @@ import io.github.jeddict.jcode.util.SourceGroupSupport;
 import static io.github.jeddict.jcode.util.StringHelper.firstLower;
 import static io.github.jeddict.jcode.util.StringHelper.firstUpper;
 import static io.github.jeddict.jcode.util.StringHelper.pluralize;
-import io.github.jeddict.jcode.layer.ConfigData;
-import io.github.jeddict.jcode.layer.Generator;
-import io.github.jeddict.jcode.layer.Technology;
-import static io.github.jeddict.jcode.layer.Technology.Type.BUSINESS;
-import io.github.jeddict.jcode.stack.config.data.ApplicationConfigData;
+import io.github.jeddict.jcode.annotation.ConfigData;
+import io.github.jeddict.jcode.Generator;
+import io.github.jeddict.jcode.annotation.Technology;
+import static io.github.jeddict.jcode.annotation.Technology.Type.BUSINESS;
+import io.github.jeddict.jcode.ApplicationConfigData;
 import io.github.jeddict.jcode.task.progress.ProgressHandler;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
@@ -118,7 +118,7 @@ public final class RepositoryGenerator implements Generator {
     public void postExecute() {
         if (appConfigData.isCompleteApplication()) {
             handler.info("Maven Build",
-                    Console.wrap("mvn clean install ${profile} ${buildProperties}", BOLD),
+                    Console.wrap("mvn clean install ${profiles} ${buildProperties} ${goals}", BOLD),
                     appConfigData.isGateway() ? gatewayProject : targetProject);
         }
     }

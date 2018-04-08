@@ -15,7 +15,7 @@
  */
 package io.github.jeddict.repository;
 
-import io.github.jeddict.jcode.stack.config.panel.LayerConfigPanel;
+import io.github.jeddict.jcode.LayerConfigPanel;
 import javax.lang.model.SourceVersion;
 import org.apache.commons.lang3.StringUtils;
 import org.netbeans.api.project.Project;

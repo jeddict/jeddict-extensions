@@ -16,12 +16,12 @@
 package io.github.jeddict.generator.internal;
 
 import io.github.jeddict.jcode.util.POMManager;
-import io.github.jeddict.jcode.generator.AbstractGenerator;
-import io.github.jeddict.jcode.layer.ConfigData;
-import io.github.jeddict.jcode.layer.Generator;
-import io.github.jeddict.jcode.layer.TechContext;
-import io.github.jeddict.jcode.stack.config.data.ApplicationConfigData;
-import io.github.jeddict.jcode.stack.config.data.LayerConfigData;
+import io.github.jeddict.jcode.AbstractGenerator;
+import io.github.jeddict.jcode.annotation.ConfigData;
+import io.github.jeddict.jcode.Generator;
+import io.github.jeddict.jcode.TechContext;
+import io.github.jeddict.jcode.ApplicationConfigData;
+import io.github.jeddict.jcode.LayerConfigData;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -175,8 +175,10 @@ public class ApplicationGenerator extends AbstractGenerator {
         }
         
         String profiles = appConfigData.getProfiles();
-        handler.addDynamicVariable("profile", profiles.isEmpty() ? "" : "-P " + profiles);
+        String goals = appConfigData.getGoals();
+        handler.addDynamicVariable("profiles", profiles.isEmpty() ? "" : "-P " + profiles);
         handler.addDynamicVariable("buildProperties", appConfigData.getBuildProperties());
+        handler.addDynamicVariable("goals", goals.isEmpty() ? "" : goals);
         finishProgressReporting();
     }
 
