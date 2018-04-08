@@ -1,4 +1,4 @@
-FROM payara/server-full:5-SNAPSHOT
+FROM payara/server-full:5.181
 
 ARG BINARY
 ARG EXPOSE_PORT
