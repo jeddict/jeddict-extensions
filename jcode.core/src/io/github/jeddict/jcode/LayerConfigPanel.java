@@ -13,8 +13,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.github.jeddict.jcode.stack.config.panel;
+package io.github.jeddict.jcode;
 
+import io.github.jeddict.jcode.LayerConfigData;
 import java.awt.Panel;
 import java.awt.event.KeyAdapter;
 import java.lang.reflect.ParameterizedType;
@@ -27,7 +28,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
-import io.github.jeddict.jcode.stack.config.data.LayerConfigData;
 import org.openide.util.ChangeSupport;
 
 /**

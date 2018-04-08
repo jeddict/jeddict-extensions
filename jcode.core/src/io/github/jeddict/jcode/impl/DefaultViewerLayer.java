@@ -13,38 +13,25 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.github.jeddict.jcode.stack.config.panel;
+package io.github.jeddict.jcode.impl;
 
-import javax.swing.event.ChangeEvent;
-import org.netbeans.api.project.Project;
-import org.netbeans.api.project.SourceGroup;
-import io.github.jeddict.jcode.stack.config.data.DefaultLayerConfigData;
+import io.github.jeddict.jcode.Generator;
+import io.github.jeddict.jcode.annotation.Technology;
+import static io.github.jeddict.jcode.annotation.Technology.Type.VIEWER;
+import java.io.IOException;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
- * @author Gaurav Gupta
+ * @author jGauravGupta <gaurav.gupta.jc@gmail.com>
  */
-public class DefaultConfigPanel extends LayerConfigPanel<DefaultLayerConfigData> {
+@ServiceProvider(service=Generator.class)
+@Technology(type=VIEWER, microservice = true, listIndex = 0)
+public class DefaultViewerLayer implements Generator {
 
     @Override
-    public boolean hasError() {
-        return false;
+    public void execute() throws IOException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
-    @Override
-    public void stateChanged(ChangeEvent e) {
-    }
-
-    @Override
-    public void store() {
-    }
-
-    @Override
-    public void read() {
-    }
-
-    @Override
-    public void init(String _package, Project project, SourceGroup sourceGroup) {
-    }
-
+    
 }

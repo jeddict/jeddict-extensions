@@ -68,10 +68,10 @@ public final class EJSParser {
         try {
             try {
                 if (base == null) {
-                    base = IOUtils.toString(EJSParser.class.getClassLoader().getResource("io/github/jeddict/jcode/parser/resources/base.js"), "UTF-8");
+                    base = IOUtils.toString(EJSParser.class.getClassLoader().getResource("io/github/jeddict/jcode/parser/ejs/resources/base.js"), "UTF-8");
                 }
                 if (ejs == null) {
-                    ejs = IOUtils.toString(EJSParser.class.getClassLoader().getResource("io/github/jeddict/jcode/parser/resources/ejs.js"), "UTF-8");
+                    ejs = IOUtils.toString(EJSParser.class.getClassLoader().getResource("io/github/jeddict/jcode/parser/ejs/resources/ejs.js"), "UTF-8");
                 }
             } catch (IOException ex) {
                 Exceptions.printStackTrace(ex);
@@ -205,7 +205,15 @@ public final class EJSParser {
     public Consumer<FileTypeStream> getParserManager(List<String> skipFile) {
         return (fileType) -> {
             try {
-                if (!SKIP_FILE_TYPE.contains(fileType.getFileType()) && (skipFile == null || !SKIP_FILE_TYPE.contains(fileType.getFileName()))) {
+                if (SKIP_FILE_TYPE.contains(fileType.getFileType())
+                        || (skipFile != null && skipFile.contains(fileType.getFileName()))
+                        || fileType.isSkipParsing()) {
+                    IOUtils.copy(fileType.getInputStream(), fileType.getOutputStream());
+                    if (!(fileType.getInputStream() instanceof ZipInputStream)) {
+                        fileType.getInputStream().close();
+                    }
+                    fileType.getOutputStream().close();
+                } else {
                     Charset charset = Charset.forName("UTF-8");
                     Reader reader = new BufferedReader(new InputStreamReader(fileType.getInputStream(), charset));
                     Writer writer = new BufferedWriter(new OutputStreamWriter(fileType.getOutputStream(), charset));
@@ -215,12 +223,6 @@ public final class EJSParser {
                     }
                     writer.flush();
                     writer.close();
-                } else {
-                    IOUtils.copy(fileType.getInputStream(), fileType.getOutputStream());
-                    if (!(fileType.getInputStream() instanceof ZipInputStream)) {
-                        fileType.getInputStream().close();
-                    }
-                    fileType.getOutputStream().close();
                 }
 
             } catch (ScriptException | IOException ex) {

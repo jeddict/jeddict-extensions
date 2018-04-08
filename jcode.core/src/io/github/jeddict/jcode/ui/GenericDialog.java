@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.github.jeddict.jcode.window;
+package io.github.jeddict.jcode.ui;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import org.openide.windows.WindowManager;

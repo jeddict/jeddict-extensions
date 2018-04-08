@@ -13,10 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.github.jeddict.jcode.stack.config.data;
+package io.github.jeddict.jcode;
 
+import static io.github.jeddict.jcode.RegistryType.CONSUL;
+import static io.github.jeddict.jcode.util.POMManager.updateNBActionMapping;
+import io.github.jeddict.jpa.spec.EntityMappings;
+import io.github.jeddict.jpa.spec.extend.ProjectType;
 import java.io.Serializable;
 import java.util.ArrayList;
+import static java.util.Arrays.asList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -24,9 +29,6 @@ import java.util.Map;
 import java.util.Set;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
-import io.github.jeddict.jcode.layer.TechContext;
-import io.github.jeddict.jpa.spec.EntityMappings;
-import io.github.jeddict.jpa.spec.extend.ProjectType;
 
 /**
  *
@@ -53,10 +55,11 @@ public class ApplicationConfigData implements Serializable {
     private TechContext controllerTechContext;
     private TechContext viewerTechContext;
 
-    private Map<Project, StringBuilder> webDescriptorContent = new HashMap<>();
-    private Map<Project, StringBuilder> webDescriptorTestContent = new HashMap<>();
+    private final Map<Project, StringBuilder> webDescriptorContent = new HashMap<>();
+    private final Map<Project, StringBuilder> webDescriptorTestContent = new HashMap<>();
 
     private final Set<String> profiles = new LinkedHashSet<>();
+    private final Set<String> goals = new LinkedHashSet<>();
     private final List<String> buildProperties = new ArrayList<>();
     
     private RegistryType registryType = RegistryType.CONSUL;
@@ -97,6 +100,26 @@ public class ApplicationConfigData implements Serializable {
 
     public String getProfiles() {
         return String.join(",", profiles);
+    }
+    
+    public void addProfileAndActivate(Project project, String profile) {
+        addProfile(profile);
+        updateNBActionMapping("run", project, asList(profile));
+        updateNBActionMapping("run.single.deploy", project, asList(profile));
+        updateNBActionMapping("debug", project, asList(profile));
+        updateNBActionMapping("debug.single.deploy", project, asList(profile));
+    }
+    
+    public void addGoal(String goal) {
+        goals.add(goal);
+    }
+
+    public void removeGoal(String goal) {
+        goals.remove(goal);
+    }
+
+    public String getGoals() {
+        return String.join(" ", goals);
     }
     
     public void addBuildProperty(String propertyName, String propertyValue) {

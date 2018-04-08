@@ -13,14 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.github.jeddict.jcode.layer;
+package io.github.jeddict.jcode.annotation;
 
+import io.github.jeddict.jcode.Generator;
+import io.github.jeddict.jcode.LayerConfigPanel;
+import static io.github.jeddict.jcode.annotation.Technology.Type.NONE;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import static io.github.jeddict.jcode.layer.Technology.Type.NONE;
-import io.github.jeddict.jcode.stack.config.panel.LayerConfigPanel;
 
 /**
  *

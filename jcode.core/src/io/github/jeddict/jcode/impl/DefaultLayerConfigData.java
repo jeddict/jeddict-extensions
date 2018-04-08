@@ -13,23 +13,21 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.github.jeddict.jcode.layer;
+package io.github.jeddict.jcode.impl;
 
-import java.io.IOException;
-import static io.github.jeddict.jcode.layer.Technology.Type.CONTROLLER;
-import org.openide.util.lookup.ServiceProvider;
+import io.github.jeddict.jcode.LayerConfigData;
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
- * @author jGauravGupta <gaurav.gupta.jc@gmail.com>
+ * @author Gaurav Gupta
  */
-@ServiceProvider(service=Generator.class)
-@Technology(type=CONTROLLER, microservice = true, listIndex = 0)
-public class DefaultControllerLayer implements Generator {
+public class DefaultLayerConfigData extends LayerConfigData{
 
     @Override
-    public void execute() throws IOException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public List<String> getUsageDetails(){
+        return Collections.<String>emptyList();
     }
     
 }

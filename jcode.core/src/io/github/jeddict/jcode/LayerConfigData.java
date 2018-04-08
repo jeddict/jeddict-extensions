@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.github.jeddict.jcode.stack.config.data;
+package io.github.jeddict.jcode;
 
 import java.io.Serializable;
 import java.util.List;

@@ -13,9 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.github.jeddict.jcode.layer;
+package io.github.jeddict.jcode;
 
+import io.github.jeddict.jcode.annotation.ConfigData;
+import io.github.jeddict.jcode.annotation.Technology;
+import io.github.jeddict.jcode.impl.DefaultConfigPanel;
+import io.github.jeddict.jcode.util.PreferenceUtils;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,10 +32,6 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
-import io.github.jeddict.jcode.stack.config.data.LayerConfigData;
-import io.github.jeddict.jcode.stack.config.panel.DefaultConfigPanel;
-import io.github.jeddict.jcode.stack.config.panel.LayerConfigPanel;
-import io.github.jeddict.jcode.util.PreferenceUtils;
 import org.openide.util.Exceptions;
 
 /**
@@ -111,6 +113,13 @@ public class TechContext {
 
     public LayerConfigPanel getPanel() {
         return panel;
+    }
+    
+    public void resetPanel() {
+        this.panel = null;
+        for (TechContext siblingContext : getSiblingTechContext()) {
+            siblingContext.resetPanel();
+        }
     }
 
     /**

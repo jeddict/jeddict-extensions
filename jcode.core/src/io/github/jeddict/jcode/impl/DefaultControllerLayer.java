@@ -13,10 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.github.jeddict.jcode.layer;
+package io.github.jeddict.jcode.impl;
 
+import io.github.jeddict.jcode.Generator;
+import io.github.jeddict.jcode.annotation.Technology;
+import static io.github.jeddict.jcode.annotation.Technology.Type.CONTROLLER;
 import java.io.IOException;
-import static io.github.jeddict.jcode.layer.Technology.Type.VIEWER;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -24,8 +26,8 @@ import org.openide.util.lookup.ServiceProvider;
  * @author jGauravGupta <gaurav.gupta.jc@gmail.com>
  */
 @ServiceProvider(service=Generator.class)
-@Technology(type=VIEWER, microservice = true, listIndex = 0)
-public class DefaultViewerLayer implements Generator {
+@Technology(type=CONTROLLER, microservice = true, listIndex = 0)
+public class DefaultControllerLayer implements Generator {
 
     @Override
     public void execute() throws IOException {

@@ -15,6 +15,11 @@
  */
 package io.github.jeddict.jcode.parser.ejs;
 
+import io.github.jeddict.jcode.console.Console;
+import static io.github.jeddict.jcode.console.Console.FG_BLUE;
+import static io.github.jeddict.jcode.console.Console.FG_DARK_RED;
+import io.github.jeddict.jcode.task.progress.ProgressHandler;
+import static io.github.jeddict.jcode.util.FileUtil.loadResource;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -35,17 +40,12 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import io.github.jeddict.jcode.console.Console;
-import static io.github.jeddict.jcode.console.Console.FG_BLUE;
-import static io.github.jeddict.jcode.console.Console.FG_DARK_RED;
-import static io.github.jeddict.jcode.util.FileUtil.loadResource;
-import io.github.jeddict.jcode.task.progress.ProgressHandler;
 import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.util.Exceptions;
-import org.apache.commons.io.IOUtils;
 
 /**
  *
@@ -58,10 +58,16 @@ public class EJSUtil {
         try (ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
             ZipEntry entry;
             while ((entry = zipInputStream.getNextEntry()) != null) {
-                if (entry.getName().lastIndexOf('.') == -1) {
+                if(entry.isDirectory()){
                     continue;
                 }
-                String targetPath = pathResolver.apply(entry.getName());
+                boolean skipParsing = true;
+                String entryName = entry.getName();                
+                if (entryName.endsWith(".ejs")) {
+                    skipParsing = false;
+                    entryName = entryName.substring(0, entryName.lastIndexOf("."));
+                }
+                String targetPath = pathResolver.apply(entryName);
                 if (targetPath == null) {
                     continue;
                 }
@@ -70,13 +76,13 @@ public class EJSUtil {
                 FileLock lock = target.lock();
                 try {
                     OutputStream outputStream = target.getOutputStream(lock);
-                    parserManager.accept(new FileTypeStream(entry.getName(), zipInputStream, outputStream));
+                    parserManager.accept(new FileTypeStream(entryName, zipInputStream, outputStream, skipParsing));
                     zipInputStream.closeEntry();
                 } finally {
                     lock.releaseLock();
                 }
             }
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             Exceptions.printStackTrace(ex);
             System.out.println("InputResource : " + inputResource);
         }

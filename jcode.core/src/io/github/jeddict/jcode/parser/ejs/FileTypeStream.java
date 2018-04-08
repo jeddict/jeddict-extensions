@@ -27,11 +27,17 @@ public class FileTypeStream {
     private final String fileName;
     private final InputStream inputStream;
     private final OutputStream outputStream;
+    private final boolean skipParsing;
 
     public FileTypeStream(String fileName, InputStream inputStream, OutputStream outputStream) {
+        this(fileName, inputStream, outputStream, false);
+    }
+
+    public FileTypeStream(String fileName, InputStream inputStream, OutputStream outputStream, boolean skipParsing) {
         this.fileName = fileName;
         this.inputStream = inputStream;
         this.outputStream = outputStream;
+        this.skipParsing = skipParsing;
     }
 
     /**
@@ -60,6 +66,10 @@ public class FileTypeStream {
      */
     public OutputStream getOutputStream() {
         return outputStream;
+    }
+
+    public boolean isSkipParsing() {
+        return skipParsing;
     }
 
 }

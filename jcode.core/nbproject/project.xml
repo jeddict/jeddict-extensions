@@ -627,11 +627,15 @@
                 </dependency>
             </module-dependencies>
             <public-packages>
+                <package>io.github.jeddict.jcode</package>
+                <package>io.github.jeddict.jcode.annotation</package>
                 <package>io.github.jeddict.jcode.generator</package>
+                <package>io.github.jeddict.jcode.impl</package>
                 <package>io.github.jeddict.jcode.layer</package>
                 <package>io.github.jeddict.jcode.parser.ejs</package>
                 <package>io.github.jeddict.jcode.stack.config.data</package>
                 <package>io.github.jeddict.jcode.stack.config.panel</package>
+                <package>io.github.jeddict.jcode.ui</package>
                 <package>io.github.jeddict.jcode.ui.browse</package>
                 <package>io.github.jeddict.jcode.ui.source</package>
                 <package>io.github.jeddict.jcode.window</package>

@@ -13,23 +13,39 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.github.jeddict.jcode.layer;
+package io.github.jeddict.jcode.impl;
 
-import java.io.IOException;
-import static io.github.jeddict.jcode.layer.Technology.Type.BUSINESS;
-import org.openide.util.lookup.ServiceProvider;
+import io.github.jeddict.jcode.impl.DefaultLayerConfigData;
+import io.github.jeddict.jcode.LayerConfigPanel;
+import javax.swing.event.ChangeEvent;
+import org.netbeans.api.project.Project;
+import org.netbeans.api.project.SourceGroup;
 
 /**
  *
- * @author jGauravGupta <gaurav.gupta.jc@gmail.com>
+ * @author Gaurav Gupta
  */
-@ServiceProvider(service=Generator.class)
-@Technology(type=BUSINESS, microservice = true, listIndex = 0)
-public class DefaultBusinessLayer implements Generator {
+public class DefaultConfigPanel extends LayerConfigPanel<DefaultLayerConfigData> {
 
     @Override
-    public void execute() throws IOException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean hasError() {
+        return false;
     }
-    
+
+    @Override
+    public void stateChanged(ChangeEvent e) {
+    }
+
+    @Override
+    public void store() {
+    }
+
+    @Override
+    public void read() {
+    }
+
+    @Override
+    public void init(String _package, Project project, SourceGroup sourceGroup) {
+    }
+
 }

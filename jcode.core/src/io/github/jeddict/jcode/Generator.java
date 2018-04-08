@@ -13,8 +13,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.github.jeddict.jcode.layer;
+package io.github.jeddict.jcode;
 
+import io.github.jeddict.jcode.annotation.Technology;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,7 +78,7 @@ public interface Generator {
         Technology rootTechnology = rootCodeGeneratorClass.getAnnotation(Technology.class);
         Set<Class<? extends Generator>> rootCodeGeneratorSibling = Arrays.stream(rootTechnology.sibling()).collect(toSet());
         Set<TechContext> siblingCodeGenerators = new LinkedHashSet<>();
-        Lookup.getDefault().lookupAll(Generator.class).stream().forEach(codeGenerator -> {
+        Lookup.getDefault().lookupAll(Generator.class).forEach(codeGenerator -> {
             Technology technology = codeGenerator.getClass().getAnnotation(Technology.class);
             //if direct lookup || reverse lookup
             if (technology != null 
@@ -103,7 +104,7 @@ public interface Generator {
                         return;
                     }
                     if (technology.type() == type) {
-                        if (technology.panel() == io.github.jeddict.jcode.stack.config.panel.LayerConfigPanel.class) {
+                        if (technology.panel() == LayerConfigPanel.class) {
                             codeGenerators.add(new TechContext((Class<Generator>) codeGenerator.getClass()));
                         } else {
                             if (parentCodeGenerator != null) {

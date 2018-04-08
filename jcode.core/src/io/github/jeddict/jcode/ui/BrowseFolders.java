@@ -14,13 +14,12 @@
  * the License.
  */
 
-package io.github.jeddict.jcode.ui.browse;
+package io.github.jeddict.jcode.ui;
 
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Arrays;
