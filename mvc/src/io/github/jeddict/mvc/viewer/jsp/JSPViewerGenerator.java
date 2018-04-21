@@ -44,7 +44,7 @@ import io.github.jeddict.jcode.annotation.ConfigData;
 import io.github.jeddict.jcode.annotation.Technology;
 import static io.github.jeddict.jcode.annotation.Technology.Type.VIEWER;
 import io.github.jeddict.jcode.task.progress.ProgressHandler;
-import io.github.jeddict.web.dd.util.WebDDUtil;
+import io.github.jeddict.jcode.util.WebDDUtil;
 import io.github.jeddict.jpa.spec.Entity;
 import io.github.jeddict.jpa.spec.EntityMappings;
 import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;

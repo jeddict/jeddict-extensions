@@ -25,6 +25,7 @@ import com.sun.source.tree.ParameterizedTypeTree;
 import com.sun.source.tree.Tree;
 import com.sun.source.tree.TypeParameterTree;
 import com.sun.source.tree.VariableTree;
+import com.sun.source.tree.WildcardTree;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -102,7 +103,7 @@ import static io.github.jeddict.rest.RestConstants.RESPONSE;
 import static io.github.jeddict.rest.RestConstants.RESPONSE_UNQF;
 import io.github.jeddict.rest.converter.ParamConvertorGenerator;
 import io.github.jeddict.rest.util.RestGenerationOptions;
-import io.github.jeddict.rest.util.RestUtils;
+import io.github.jeddict.jcode.rest.RestUtil;
 import static io.github.jeddict.security.SecurityConstants.CALLER_NAME;
 import static io.github.jeddict.security.SecurityConstants.CREDENTIALS;
 import static io.github.jeddict.security.SecurityConstants.DEFAULT_CREDENTIALS;
@@ -128,6 +129,9 @@ import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
 import org.netbeans.modules.j2ee.core.api.support.java.SourceUtils;
 import io.github.jeddict.jcode.util.JavaIdentifiers;
 import static io.github.jeddict.rest.applicationconfig.RestConfigPanel.DEFAULT_RESOURCE_FOLDER;
+import org.netbeans.modules.websvc.rest.spi.MiscUtilities;
+import static org.netbeans.modules.websvc.rest.spi.RestSupport.JAX_RS_APPLICATION_CLASS;
+import io.github.jeddict.rest.applicationconfig.RestConfigData;
 
 /**
  *
@@ -136,8 +140,8 @@ import static io.github.jeddict.rest.applicationconfig.RestConfigPanel.DEFAULT_R
 @ServiceProvider(service = Generator.class)
 @Technology(
         type = CONTROLLER,
-        label = "MVC 1.0", 
-        panel = MVCPanel.class, 
+        label = "MVC 1.0",
+        panel = MVCPanel.class,
         parents = {RepositoryGenerator.class}
 )
 
@@ -153,15 +157,15 @@ public class MVCControllerGenerator implements Generator {
     private final static String MODEL_VAR_DECLARATION = "model";
     private final static String REPOSITORY_REF_DECLARATION = "repository";
     private final static String VALIDATION_FILTER = "       if (validationResult.isFailed()) {\n"
-                                                  + "            return ValidationUtil.getResponse(validationResult, error);\n"
-                                                  + "        }\n\n";
+            + "            return ValidationUtil.getResponse(validationResult, error);\n"
+            + "        }\n\n";
 
     @ConfigData
     private RepositoryData repositoryData;
-    
+
     @ConfigData
     private JSPData jspData;
-    
+
     @ConfigData
     private MVCData mvcData;
 
@@ -170,25 +174,25 @@ public class MVCControllerGenerator implements Generator {
 
     @ConfigData
     private ProgressHandler handler;
-        
+
     @ConfigData
     private ApplicationConfigData appConfigData;
-    
+
     private Project project;
 
     private SourceGroup source;
 
     @Override
-    public void preExecute(){
+    public void preExecute() {
         addFormParam();
     }
-    
+
     @Override
     public void execute() throws IOException {
-        
+
         project = appConfigData.getTargetProject();
         source = appConfigData.getTargetSourceGroup();
-        
+
         handler.progress(Console.wrap(MVCControllerGenerator.class, "MSG_Progress_Now_Generating", FG_DARK_RED, BOLD, UNDERLINE));
         if (appConfigData.isCompleteApplication()) {
             generateUtil();
@@ -235,8 +239,6 @@ public class MVCControllerGenerator implements Generator {
         } else {
             webPath = JSPData.DEFAULT_FOLDER;
         }
-
-        
 
         // add implements and extends clauses to the repository
         final Task<WorkingCopy> modificationTask = (WorkingCopy wc) -> {
@@ -444,7 +446,7 @@ public class MVCControllerGenerator implements Generator {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-        
+
         generatePrimaryKeyMethod(controllerFile, entity, entityMapping);
 
         return createdFiles;
@@ -452,7 +454,7 @@ public class MVCControllerGenerator implements Generator {
 
     public void generatePrimaryKeyMethod(final FileObject restResourceClass, Entity entity, EntityMappings entityMappings) throws IOException {
         if ((entity.isEmbeddedIdType() && entity.getAttributes().getEmbeddedId() != null) || entity.isIdClassType()) {
-            final String idType = entity.getRootPackage()+'.'+ entity.getCompositePrimaryKeyClass();
+            final String idType = entity.getRootPackage() + '.' + entity.getCompositePrimaryKeyClass();
             JavaSource javaSource = JavaSource.forFileObject(restResourceClass);
             Task<WorkingCopy> task = new Task<WorkingCopy>() {
 
@@ -477,8 +479,8 @@ public class MVCControllerGenerator implements Generator {
                             Collections.<TypeParameterTree>emptyList(),
                             vars,
                             Collections.<ExpressionTree>emptyList(),
-                            getBody(entity.isEmbeddedIdType()?entity.getAttributes().getEmbeddedId().getConnectedClass():
-                                    entityMapping.findDefaultClass(entity.getIdClass().getClazz()).orElse(null), workingCopy), null);
+                            getBody(entity.isEmbeddedIdType() ? entity.getAttributes().getEmbeddedId().getConnectedClass()
+                                    : entityMapping.findDefaultClass(entity.getIdClass().getClazz()).orElse(null), workingCopy), null);
 
                     for (Tree typeDeclaration : tree.getTypeDecls()) {
                         if (TreeUtilities.CLASS_TREE_KINDS.contains(typeDeclaration.getKind())) {
@@ -537,34 +539,34 @@ public class MVCControllerGenerator implements Generator {
                             keyBuidler.append(fieldInfo.getDataTypeLabel());
                             keyBuidler.append(" field=new ").append(fieldInfo.getDataTypeLabel());
                             keyBuidler.deleteCharAt(keyBuidler.length() - 1);
-                            keyBuidler.append(name).append(".size()];"); 
-                            keyBuidler.append("for( int i=0;i<").append(name).append(".size();i++){"); 
+                            keyBuidler.append(name).append(".size()];");
+                            keyBuidler.append("for( int i=0;i<").append(name).append(".size();i++){");
                             keyBuidler.append("field[i]= new ");
                             if (type == PRIMITIVE_ARRAY) {
-                                keyBuidler.append(getWrapperType(dataType))  ;//todo remove array
+                                keyBuidler.append(getWrapperType(dataType));//todo remove array
                             } else {
                                 keyBuidler.append(dataType);
                             }
                             keyBuidler.append("(").append(name).append(".get(i));");
                             keyBuidler.append('}');
-                            keyBuidler.append("key.").append(getSetterName(fieldInfo)).append("(field);"); 
+                            keyBuidler.append("key.").append(getSetterName(fieldInfo)).append("(field);");
                         } else {
                             keyBuidler.append("key.").append(getSetterName(fieldInfo)).append('(');
                             if (type == STRING) {
                                 keyBuidler.append(name).append(".get(0)");
                             } else if (type == PRIMITIVE) {
                                 keyBuidler.append(getWrapperType(dataType)).append(".valueOf(").append(name).append(".get(0))");             // NOI18N
-                            }  else if (type == WRAPPER) {
+                            } else if (type == WRAPPER) {
                                 keyBuidler.append(dataType).append(".valueOf(").append(name).append(".get(0))");
-                            }  else {
+                            } else {
                                 keyBuidler.append("new ").append(dataType).append("(").append(name).append(".get(0))");
                             }
                             keyBuidler.append(");");
                         }
                         keyBuidler.append('}');
                     }
-                        builder.append(keyBuidler);
-                     
+                    builder.append(keyBuidler);
+
                     builder.append("return key;");                             // NOI18N
                     builder.append(" }");                                          // NOI18N
                     return builder.toString();
@@ -629,14 +631,13 @@ public class MVCControllerGenerator implements Generator {
         }
 
         FileObject restAppPack = SourceGroupSupport.getFolderForPackage(sourceGroup, mvcData.getPackage(), true);
-        
 
         final String appClassName = mvcData.getRestConfigData().getApplicationClass();
         try {
             if (restAppPack != null && appClassName != null) {
 
-                FileObject configFO = RestUtils.createApplicationConfigClass(restSupport, mvcData.getRestConfigData(),
-                        restAppPack, null, null, null, handler);
+                FileObject configFO = createApplicationConfigClass(restSupport, mvcData.getRestConfigData(),
+                        restAppPack, null, null, handler);
                 JavaSource javaSource = JavaSource.forFileObject(configFO);//add some cutom properties/method specific to MVC
                 if (javaSource != null) {
 
@@ -653,13 +654,79 @@ public class MVCControllerGenerator implements Generator {
                 }
 
             }
-            RestUtils.disableRestServicesChangeListner(project);
+            RestUtil.disableRestServicesChangeListner(project);
             restSupport.configure("Jeddict - REST support");
         } catch (Exception iox) {
             Exceptions.printStackTrace(iox);
         } finally {
-            RestUtils.enableRestServicesChangeListner(project);
+            RestUtil.enableRestServicesChangeListner(project);
         }
+    }
+
+    public static FileObject createApplicationConfigClass(final RestSupport restSupport, RestConfigData configData,
+            FileObject packageFolder, String appPackage,
+            List<String> providerClasses, ProgressHandler handler) throws IOException {
+
+        final String className = configData.getApplicationClass();
+        final String applicationPath = configData.getApplicationPath();
+
+        FileObject configFO = packageFolder.getFileObject(className, JAVA_EXT);
+        if (configFO != null) {
+            configFO.delete();
+        }
+
+        FileObject appClass = GenerationUtils.createClass(packageFolder, className, null);
+        JavaSource javaSource = JavaSource.forFileObject(appClass);
+        if (javaSource == null) {
+            return null;
+        }
+
+        javaSource.runModificationTask((WorkingCopy workingCopy) -> {
+            workingCopy.toPhase(JavaSource.Phase.RESOLVED);
+            JavaSourceHelper.addClassAnnotation(workingCopy,
+                    new String[]{"javax.ws.rs.ApplicationPath"},
+                    new String[]{applicationPath});         // NOI18N
+            ClassTree tree = JavaSourceHelper.getTopLevelClassTree(workingCopy);//
+            TreeMaker maker = workingCopy.getTreeMaker();
+            ClassTree newTree = maker.setExtends(tree,
+                    maker.QualIdent(JAX_RS_APPLICATION_CLASS)); // NOI18N
+
+            //Singletons imports
+            TypeElement classElement = SourceUtils.getPublicTopLevelElement(workingCopy);
+            GenerationUtils genUtils = GenerationUtils.newInstance(workingCopy);
+
+            newTree = createGetClasses(workingCopy, maker, newTree, restSupport, providerClasses);
+            newTree = MiscUtilities.createAddResourceClasses(maker, newTree, workingCopy, "{}", true);
+
+            workingCopy.rewrite(tree, newTree);
+        }).commit();
+        return appClass;
+    }
+
+    private static ClassTree createGetClasses(WorkingCopy workingCopy, TreeMaker maker, ClassTree newTree, RestSupport restSupport, List<String> providerClasses) {
+
+        ModifiersTree modifiersTree = maker.Modifiers(
+                EnumSet.of(Modifier.PUBLIC), Collections.singletonList(
+                maker.Annotation(maker.QualIdent(
+                        Override.class.getCanonicalName()),
+                        Collections.<ExpressionTree>emptyList())));
+
+        WildcardTree wildCard = maker.Wildcard(Tree.Kind.UNBOUNDED_WILDCARD,
+                null);
+        ParameterizedTypeTree wildClass = maker.ParameterizedType(
+                maker.QualIdent(Class.class.getCanonicalName()),
+                Collections.singletonList(wildCard));
+        ParameterizedTypeTree wildSet = maker.ParameterizedType(
+                maker.QualIdent(Set.class.getCanonicalName()),
+                Collections.singletonList(wildClass));
+
+        MethodTree methodTree = maker.Method(modifiersTree,
+                RestConstants.GET_CLASSES, wildSet,
+                Collections.<TypeParameterTree>emptyList(),
+                Collections.<VariableTree>emptyList(),
+                Collections.<ExpressionTree>emptyList(),
+                RestUtil.createBodyForGetClassesMethod(restSupport, providerClasses), null);
+        return maker.addClassMember(newTree, methodTree);
     }
 
     private ClassTree addAuthAnnotation(WorkingCopy workingCopy, TreeMaker maker, ClassTree newTree) {
@@ -743,13 +810,13 @@ public class MVCControllerGenerator implements Generator {
     }
 
     private List<RestGenerationOptions> getRestRepositoryMethodOptions(String entityFQN, String idClass) {
-        String paramArg = "java.lang.Character".equals(idClass)? "id.charAt(0)" : "id";
+        String paramArg = "java.lang.Character".equals(idClass) ? "id.charAt(0)" : "id";
         String idType = "id".equals(paramArg) ? idClass : "java.lang.String";
         String entityClass = JavaIdentifiers.unqualify(entityFQN);
         boolean needPathSegment = false;
         Optional<Entity> entityOpt = entityMapping.findEntity(entityClass);
         if (entityOpt.isPresent()) {
-            needPathSegment = entityOpt.get().isIdClassType()|| (entityOpt.get().isEmbeddedIdType() && entityOpt.get().getAttributes().getEmbeddedId() != null);
+            needPathSegment = entityOpt.get().isIdClassType() || (entityOpt.get().isEmbeddedIdType() && entityOpt.get().getAttributes().getEmbeddedId() != null);
         }
         String KEY_NAME = entityClass.toUpperCase();
 
@@ -862,7 +929,7 @@ public class MVCControllerGenerator implements Generator {
         }
     }
 
-    private void addFormParam(){
+    private void addFormParam() {
         for (Entity entity : entityMapping.getEntity()) {
             List<Attribute> attributes = new ArrayList<>(entity.getAttributes().getId());
             attributes.addAll(entity.getAttributes().getBasic());

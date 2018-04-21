@@ -1,3 +1,3 @@
-# jCode
-Module to generate Java code
+# Jeddict Extensions
+Extensions to generate Java EE source
 
