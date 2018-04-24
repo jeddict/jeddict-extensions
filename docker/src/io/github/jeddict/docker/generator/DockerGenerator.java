@@ -55,6 +55,9 @@ import io.github.jeddict.jcode.annotation.ConfigData;
 import io.github.jeddict.jcode.annotation.Technology;
 import io.github.jeddict.jcode.task.progress.ProgressHandler;
 import io.github.jeddict.jpa.spec.EntityMappings;
+import java.security.SecureRandom;
+import javax.xml.namespace.QName;
+import org.netbeans.modules.maven.model.pom.POMExtensibilityElement;
 
 /**
  * Generates Docker image.
@@ -272,9 +275,24 @@ public class DockerGenerator implements Generator {
 
             if (config.getServerType() == ServerType.PAYARA_MICRO) {
                 pomManager = new POMManager(TEMPLATE + "payara/micro/pom/_pom.xml", project);
+                pomManager.setExtensionOverrideFilter((source, target) -> {
+                    if ("option".equalsIgnoreCase(source.getName())) {
+                        for (POMExtensibilityElement element : target.getExtensibilityElements()) {
+                            if ("key".equals(element.getQName().getLocalPart())) {
+                                return source.getChild("key").getValue().equals(element.getElementText());
+                            }
+                        }
+                    }
+                    return true;
+                });
                 pomManager.commit();
-//                appConfigData.addGoal("payara-micro:bundle");
-                appConfigData.addGoal("payara-micro:start");
+                appConfigData.addGoal("payara-micro:" + (config.isDockerEnable()? "bundle":"start"));
+                
+                if(config.isDockerEnable()) {
+                    pomManager = new POMManager(TEMPLATE + "payara/micro/pom/_pom_docker.xml", project);
+                    pomManager.commit();
+                }
+                
             } else if (config.getServerType() == ServerType.WILDFLY_SWARM) {
                 pomManager = new POMManager(TEMPLATE + "wildfly/swarm/pom/_pom.xml", project);
                 pomManager.commit();
@@ -328,12 +346,12 @@ public class DockerGenerator implements Generator {
                 properties.put(WEB_SVC, getWebService());
             }
             
-            String registryPort = appConfigData.getRegistryType() == CONSUL ? "8500" : "8081";
+            String registryPort = appConfigData.getRegistryType() == CONSUL ? "8500" : "8091";
             
             properties.put(CONTEXT_PATH, appConfigData.getTargetContextPath());
             if (appConfigData.isMicroservice()){
                 properties.put(WEB_HOST, "http://localhost");
-                properties.put(WEB_PORT, "8080");
+                properties.put(WEB_PORT, (8080 + new SecureRandom().nextInt(1000)) + "");
                 properties.put(REGISTRY_URL, "http://localhost:"+registryPort);
                 appConfigData.addBuildProperty(WEB_HOST, "<container host>");
                 appConfigData.addBuildProperty(WEB_PORT, "<container port>");

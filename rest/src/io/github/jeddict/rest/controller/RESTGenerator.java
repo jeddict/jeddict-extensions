@@ -714,7 +714,7 @@ public class RESTGenerator implements Generator {
                 expandTemplate(TEMPLATE + "config/resource/META-INF/sql/insert.sql.ftl",
                         getFolderForPackage(testConfigGatwayRoot, "META-INF.sql", true),
                         "insert.sql",
-                        singletonMap("database", "Derby"));
+                        singletonMap("database", dockerConfigData.getServerType().getDeafultDB()));
             }
         }
 

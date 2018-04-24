@@ -17,11 +17,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>eu.agilejava</groupId>
-            <artifactId>snoop-client</artifactId>
-            <version>${version.snoop}</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>${version.httpclient}</version>

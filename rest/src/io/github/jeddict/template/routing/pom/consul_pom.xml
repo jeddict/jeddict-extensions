@@ -8,7 +8,7 @@
     <packaging>war</packaging>
 
     <properties>
-        <version.consul>0.17.0</version.consul>
+        <version.consul>1.1.2</version.consul>
     </properties>
 
     <dependencies>

@@ -42,7 +42,7 @@ public enum ServerType {
             "5.181"),
     PAYARA_MICRO(true, PAYARA_FAMILY, "Payara Micro", 
             ECLIPSELINK, H2, EMPTY_MAP, false,
-           "${build.name}.jar", "DockerFile_JAVA.ftl", 
+           "${build.name}-microbundle.jar", "DockerFile_JAVA.ftl", 
             "5.181"),
     WILDFLY(false, WILDFLY_FAMILY, "Wildfly", 
             HIBERNATE, H2, EMPTY_MAP, false,

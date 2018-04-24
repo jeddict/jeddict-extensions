@@ -28,6 +28,10 @@
                             <value>true</value>
                         </option>
                         <option>
+                            <key>--port</key>
+                            <value>${web.port}</value>
+                        </option>
+                        <option>
                             <key>--deploy</key>
                             <value>${project.build.directory}/${project.build.finalName}</value>
                         </option>

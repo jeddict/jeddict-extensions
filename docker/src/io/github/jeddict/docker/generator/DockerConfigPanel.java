@@ -223,7 +223,7 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
 
     @Override
     public void init(String _package, Project project, SourceGroup sourceGroup) {
-        
+        serverPortComboBox.setVisible(false);
     }
 
     private ServerType getServerType() {
@@ -262,6 +262,7 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
         serverComboBox = new javax.swing.JComboBox<>();
         serverLabel = new javax.swing.JLabel();
         paddingLayeredPane = new javax.swing.JLayeredPane();
+        serverPortComboBox = new javax.swing.JTextField();
         dbWrapperPanel = new javax.swing.JPanel();
         dbLabel = new javax.swing.JLabel();
         dbComboBox = new javax.swing.JComboBox<>();
@@ -379,15 +380,27 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
 
         paddingLayeredPane.setPreferredSize(new java.awt.Dimension(86, 10));
 
+        serverPortComboBox.setText(org.openide.util.NbBundle.getMessage(DockerConfigPanel.class, "DockerConfigPanel.serverPortComboBox.text")); // NOI18N
+        serverPortComboBox.setToolTipText(org.openide.util.NbBundle.getMessage(DockerConfigPanel.class, "DockerConfigPanel.serverPortComboBox.toolTipText")); // NOI18N
+        serverPortComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                serverPortComboBoxActionPerformed(evt);
+            }
+        });
+
+        paddingLayeredPane.setLayer(serverPortComboBox, javax.swing.JLayeredPane.DEFAULT_LAYER);
+
         javax.swing.GroupLayout paddingLayeredPaneLayout = new javax.swing.GroupLayout(paddingLayeredPane);
         paddingLayeredPane.setLayout(paddingLayeredPaneLayout);
         paddingLayeredPaneLayout.setHorizontalGroup(
             paddingLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 86, Short.MAX_VALUE)
+            .addComponent(serverPortComboBox, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE)
         );
         paddingLayeredPaneLayout.setVerticalGroup(
             paddingLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(paddingLayeredPaneLayout.createSequentialGroup()
+                .addComponent(serverPortComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 2, Short.MAX_VALUE))
         );
 
         serverWrapperPanel.add(paddingLayeredPane, java.awt.BorderLayout.EAST);
@@ -581,6 +594,10 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
         // TODO add your handling code here:
     }//GEN-LAST:event_namespaceTextFieldActionPerformed
 
+    private void serverPortComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverPortComboBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_serverPortComboBoxActionPerformed
+
     private void setVisibility(boolean status) {
         if (dbNamePanel.isVisible() != status) {
             dbVersionComboBox.setEnabled(status);
@@ -673,6 +690,7 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
     private javax.swing.JTextField repositoryTextField;
     private javax.swing.JComboBox<ServerType> serverComboBox;
     private javax.swing.JLabel serverLabel;
+    private javax.swing.JTextField serverPortComboBox;
     private javax.swing.JPanel serverWrapperPanel;
     private javax.swing.JLabel warningLabel;
     // End of variables declaration//GEN-END:variables
