@@ -11,7 +11,7 @@ import javax.persistence.PreUpdate;
  */
 public class AuditListner {
 
-    <#assign wf = serverFamily == "WILDFLY_FAMILY" >
+    <#assign wf = (runtime == "WILDFLY_SERVER" || runtime == "WILDFLY_SWARM") >
     <#if wf>//Issue : https://issues.jboss.org/browse/WFLY-2387</#if>
     <#if wf>//</#if>@Inject
     <#if wf>//</#if>private SecurityHelper securityHelper;

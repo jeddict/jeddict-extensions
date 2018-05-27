@@ -3,10 +3,6 @@ package ${package};
 import java.net.URI;
 import java.util.List;
 
-/**
- *
- * @author gaura
- */
 public class ServiceInstanceVM {
 
     /**

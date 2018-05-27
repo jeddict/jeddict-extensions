@@ -21,19 +21,15 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
-import io.github.jeddict.infra.DatabaseDriver;
-import io.github.jeddict.infra.DatabaseType;
-import io.github.jeddict.infra.ServerFamily;
-import static io.github.jeddict.infra.ServerFamily.WILDFLY_FAMILY;
-import io.github.jeddict.infra.ServerType;
-import static io.github.jeddict.infra.ServerType.NONE;
+import io.github.jeddict.jcode.DatabaseDriver;
+import io.github.jeddict.jcode.DatabaseType;
+import io.github.jeddict.jcode.annotation.Runtime;
 import io.github.jeddict.jcode.console.Console;
 import static io.github.jeddict.jcode.console.Console.*;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import io.github.jeddict.jcode.util.POMManager;
 import io.github.jeddict.jcode.util.PersistenceUtil;
-import static io.github.jeddict.jcode.util.PersistenceUtil.addProperty;
 import static io.github.jeddict.jcode.util.PersistenceUtil.removeProperty;
 import static io.github.jeddict.jcode.util.ProjectHelper.getDockerDirectory;
 import org.netbeans.modules.j2ee.persistence.dd.common.PersistenceUnit;
@@ -41,8 +37,6 @@ import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 import static io.github.jeddict.jcode.util.FileUtil.expandTemplate;
-import static io.github.jeddict.jcode.jpa.JPAConstants.JAVA_DATASOURCE_PREFIX;
-import static io.github.jeddict.jcode.jpa.JPAConstants.JAVA_GLOBAL_DATASOURCE_PREFIX;
 import static io.github.jeddict.jcode.jpa.JPAConstants.JDBC_DRIVER;
 import static io.github.jeddict.jcode.jpa.JPAConstants.JDBC_PASSWORD;
 import static io.github.jeddict.jcode.jpa.JPAConstants.JDBC_URL;
@@ -53,11 +47,11 @@ import io.github.jeddict.jcode.ApplicationConfigData;
 import static io.github.jeddict.jcode.RegistryType.CONSUL;
 import io.github.jeddict.jcode.annotation.ConfigData;
 import io.github.jeddict.jcode.annotation.Technology;
+import io.github.jeddict.jcode.generator.ApplicationGenerator;
 import io.github.jeddict.jcode.task.progress.ProgressHandler;
 import io.github.jeddict.jpa.spec.EntityMappings;
 import java.security.SecureRandom;
-import javax.xml.namespace.QName;
-import org.netbeans.modules.maven.model.pom.POMExtensibilityElement;
+import java.util.Collections;
 
 /**
  * Generates Docker image.
@@ -116,6 +110,15 @@ public class DockerGenerator implements Generator {
     public void preExecute() {
         project = appConfigData.isGateway() ? appConfigData.getGatewayProject() : appConfigData.getTargetProject();
         source = appConfigData.isGateway() ? appConfigData.getGatewaySourceGroup() : appConfigData.getTargetSourceGroup();
+        ApplicationGenerator.inject(
+                config.getRuntimeProvider(),
+                appConfigData,
+                Collections.EMPTY_MAP,
+                handler,
+                project,
+                source
+        );
+        config.getRuntimeProvider().preExecute();
     }
     
     @Override
@@ -134,10 +137,10 @@ public class DockerGenerator implements Generator {
 
             FileObject targetFolder = getDockerDirectory(source);
             Map<String, Object> params = getParams();
-            handler.progress(expandTemplate(TEMPLATE + config.getServerType().getTemplate(), targetFolder, DOCKER_FILE, params));
+            handler.progress(expandTemplate(config.getRuntimeProvider().getDockerTemplate(), targetFolder, DOCKER_FILE, params));
             handler.progress(expandTemplate(TEMPLATE + DOCKER_COMPOSE + ".ftl", targetFolder, DOCKER_COMPOSE, params));
             if (POMManager.isMavenProject(project)) {
-                POMManager pomManager = new POMManager(TEMPLATE + "fabric8io/pom/_pom.xml", project);
+                POMManager pomManager = new POMManager(project, TEMPLATE + "fabric8io/pom/_pom.xml");
                 pomManager.commit();
                 appConfigData.addProfile(DOCKER_PROFILE);
                 handler.info("Docker", "Use \"docker\" profile to create and run Docker image");
@@ -147,11 +150,11 @@ public class DockerGenerator implements Generator {
 //                            NbBundle.getMessage(DockerGenerator.class, "MSG_Docker_Machine_Not_Found"));
 //                    properties.put(DOCKER_MACHINE_PROPERTY, "local");
                 if (!StringUtils.isBlank(config.getDockerMachine())) {
-                    pomManager = new POMManager(TEMPLATE + "fabric8io/pom/docker_machine_pom.xml", project);
+                    pomManager = new POMManager(project, TEMPLATE + "fabric8io/pom/docker_machine_pom.xml");
                     pomManager.commit();
                     properties.put(DOCKER_MACHINE_PROPERTY, config.getDockerMachine());
                 } 
-                properties.put(BINARY, config.getServerType().getBinary());
+                properties.put(BINARY, config.getRuntimeProvider().getBuildName());
                 properties.put(DOCKER_IMAGE, config.getDockerNamespace()
                         + "/" + config.getDockerRepository() + ":${project.version}");
                 pomManager.addProperties(DOCKER_PROFILE, properties);
@@ -161,7 +164,7 @@ public class DockerGenerator implements Generator {
 
     private void manageDBSettingGeneration() throws IOException {
         updatePersistenceXml();
-        hibernateUpdate();
+        config.getRuntimeProvider().updatePersistenceProvider(config.getDatabaseType());
         addDatabaseDriverDependency();
         if (config.isDbInfoExist()) {
             addDatabaseProperties();
@@ -181,122 +184,33 @@ public class DockerGenerator implements Generator {
             removeProperty(punit, JDBC_PASSWORD);
             removeProperty(punit, JDBC_DRIVER);
             removeProperty(punit, JDBC_USER);
-
-            String datasource = config.getServerType().getEmbeddedDBs().get(config.getDatabaseType());
-            if (datasource != null) {
-                punit.setJtaDataSource(datasource);
-            } else {
-                punit.setJtaDataSource(config.isDbInfoExist() ? getJNDI(config.getServerType(), config.getDataSource()) : null);
-            }
-            punit.setProvider(getPersistenceProvider(config.getServerType(), entityMapping, punit.getProvider()));
+    
+            punit.setJtaDataSource(config.isDbInfoExist() ? config.getRuntimeProvider().getJNDIPrefix() + config.getDataSource() : null);
+            punit.setProvider(getPersistenceProvider(config.getRuntime(), entityMapping, punit.getProvider()));
             PersistenceUtil.updatePersistenceUnit(project, punit);
         }
     }
 
-    private void hibernateUpdate() {
-        if (config.getServerType().getFamily() == ServerFamily.PAYARA_FAMILY
-                && entityMapping.getPersistenceProviderType() == PersistenceProviderType.HIBERNATE) {
-            String puName = entityMapping.getPersistenceUnitName();
-            Optional<PersistenceUnit> punitOptional = PersistenceUtil.getPersistenceUnit(project, puName);
-            if (punitOptional.isPresent()) {
-                PersistenceUnit punit = punitOptional.get();
-                addProperty(punit, "hibernate.dialect", getHibernateDialect());
-//                addProperty(punit, "hibernate.hbm2ddl.auto", "create");
-                addProperty(punit, "hibernate.show_sql", "true");
-                addProperty(punit, "hibernate.transaction.jta.platform", "org.hibernate.service.jta.platform.internal.SunOneJtaPlatform");
-                PersistenceUtil.updatePersistenceUnit(project, punit);
-            }
-            if (POMManager.isMavenProject(project)) {
-//                POMManager pomManager = new POMManager(TEMPLATE + "persistence/provider/pom/" + config.getServerType().name() + "_"+persistenceProviderType.name() + ".xml", project);
-                POMManager pomManager = new POMManager(TEMPLATE + "persistence/provider/pom/PAYARA_HIBERNATE.xml", project);
-                pomManager.commit();
-            }
-        } else if (config.getServerType().getFamily() == ServerFamily.WILDFLY_FAMILY
-                && entityMapping.getPersistenceProviderType() == PersistenceProviderType.ECLIPSELINK) {
-            if (POMManager.isMavenProject(project)) {
-                POMManager pomManager = new POMManager(TEMPLATE + "persistence/provider/pom/WILDFLY_ECLIPSELINK.xml", project);
-                pomManager.commit();
-            }
-        }
-    }
-
-    private String getHibernateDialect() {
-        if (config.getDatabaseType() != null) {
-            switch (config.getDatabaseType()) {
-                case MYSQL:
-                    return "org.hibernate.dialect.MySQL5Dialect";
-                case POSTGRESQL:
-                    return "org.hibernate.dialect.PostgreSQLDialect";
-                case MARIADB:
-                    return "org.hibernate.dialect.MariaDBDialect";
-                case DERBY:
-                    return "org.hibernate.dialect.DB2Dialect";
-                case H2:
-                    return "org.hibernate.dialect.H2Dialect";
-                default:
-                    break;
-            }
-        }
-        throw new IllegalStateException("DB type not supported");
-    }
-
-    private String getPersistenceProvider(ServerType server, EntityMappings entityMappings, String existingProvider) {
+    private String getPersistenceProvider(Runtime runtime, EntityMappings entityMappings, String existingProvider) {
         if (persistenceProviderType == null) {
             if (entityMappings.getPersistenceProviderType() != null) {
                 persistenceProviderType = entityMappings.getPersistenceProviderType();
-            } else if (server != NONE || server != null) {
-                persistenceProviderType = server.getPersistenceProviderType();
+            } else if (runtime != null && !runtime.name().isEmpty()) {
+                persistenceProviderType = runtime.persistenceProvider();
             } else {
                 return existingProvider;
             }
         }
         return persistenceProviderType.getProviderClass();
     }
-
-    private String getJNDI(ServerType server, String dataSource) {
-        if (server.getFamily() == WILDFLY_FAMILY) {
-            return JAVA_DATASOURCE_PREFIX + "jdbc/" + dataSource;
-//        } else if (server.getFamily() == PAYARA_FAMILY) {
-//            if (setupDataSourceLocally) {
-//                return JAVA_GLOBAL_DATASOURCE_PREFIX + "jdbc/" + dataSource;
-//            } else {
-//                return "jdbc/" + dataSource;
-//            }
-        } else {
-            return JAVA_GLOBAL_DATASOURCE_PREFIX + "jdbc/" + dataSource;
-        }
-    }
     
     private void manageServerSettingGeneration() {
         if (POMManager.isMavenProject(project)) {
-            POMManager pomManager = new POMManager(TEMPLATE + "profile/dev/pom/_pom.xml", project);
+            POMManager pomManager = new POMManager(project, TEMPLATE + "profile/dev/pom/_pom.xml");
             pomManager.fixDistributionProperties();
             pomManager.commit();
-
-            if (config.getServerType() == ServerType.PAYARA_MICRO) {
-                pomManager = new POMManager(TEMPLATE + "payara/micro/pom/_pom.xml", project);
-                pomManager.setExtensionOverrideFilter((source, target) -> {
-                    if ("option".equalsIgnoreCase(source.getName())) {
-                        for (POMExtensibilityElement element : target.getExtensibilityElements()) {
-                            if ("key".equals(element.getQName().getLocalPart())) {
-                                return source.getChild("key").getValue().equals(element.getElementText());
-                            }
-                        }
-                    }
-                    return true;
-                });
-                pomManager.commit();
-                appConfigData.addGoal("payara-micro:" + (config.isDockerEnable()? "bundle":"start"));
-                
-                if(config.isDockerEnable()) {
-                    pomManager = new POMManager(TEMPLATE + "payara/micro/pom/_pom_docker.xml", project);
-                    pomManager.commit();
-                }
-                
-            } else if (config.getServerType() == ServerType.WILDFLY_SWARM) {
-                pomManager = new POMManager(TEMPLATE + "wildfly/swarm/pom/_pom.xml", project);
-                pomManager.commit();
-            }
+            
+            config.getRuntimeProvider().addDependency(config.isDockerEnable());
             addWebProperties();
         } else {
             handler.warning(NbBundle.getMessage(DockerGenerator.class, "TITLE_Maven_Project_Not_Found"),
@@ -307,10 +221,10 @@ public class DockerGenerator implements Generator {
 
     private void addDatabaseDriverDependency() {
         if (POMManager.isMavenProject(project)) {
-            ServerType serverType = config.getServerType();
+            Runtime runtime = config.getRuntime();
             DatabaseType databaseType = config.getDatabaseType();
-            boolean addDependency = (config.isDbInfoExist() && !serverType.isEmbeddedDB(databaseType))
-                    || (serverType.isEmbeddedDB(databaseType) && serverType.isEmbeddedDBDriverRequired());
+            boolean addDependency = (config.isDbInfoExist() && runtime.embeddedDB() != databaseType)
+                    || (runtime.embeddedDB() == databaseType && runtime.embeddedDBDriverRequired());
             if (databaseType.getDriver() != null && addDependency) {
                 POMManager pomManager = new POMManager(project);
                 DatabaseDriver driver = databaseType.getDriver();
@@ -376,7 +290,7 @@ public class DockerGenerator implements Generator {
     private void generateDataSourceDD() throws IOException {
         handler.progress("web.xml <data-source>");
         Map<String, Object> params = new HashMap<>(getParams());
-        params.put("JNDI", getJNDI(config.getServerType(), config.getDataSource()));
+        params.put("JNDI", config.getRuntimeProvider().getJNDIPrefix() + config.getDataSource());
         params.put("DRIVER_CLASS", config.getDatabaseType().getDriver().getClassName());
         appConfigData.addWebDescriptorContent(
                 expandTemplate("/io/github/jeddict/docker/template/datasource/web/descriptor/_web.xml.ftl", params), 
@@ -393,7 +307,7 @@ public class DockerGenerator implements Generator {
         params.put("DB_VERSION", config.getDatabaseVersion());
         params.put("DB_TYPE", config.getDatabaseType().getDockerImage());
 //        params.put("DATASOURCE", config.getDataSource());
-        params.put("SERVER_TYPE", config.getServerType().name());
+        params.put("SERVER_TYPE", config.getRuntime().name());
         return params;
     }
 
@@ -425,5 +339,9 @@ public class DockerGenerator implements Generator {
         }
         return projectPOMManager;
     }
-
+    
+    @Override
+    public void postExecute() {
+        config.getRuntimeProvider().postExecute();
+    }
 }

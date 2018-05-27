@@ -39,6 +39,7 @@ import io.github.jeddict.jcode.annotation.Technology;
 import static io.github.jeddict.jcode.annotation.Technology.Type.BUSINESS;
 import io.github.jeddict.jcode.ApplicationConfigData;
 import io.github.jeddict.jcode.task.progress.ProgressHandler;
+import io.github.jeddict.jcode.util.BuildManager;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import io.github.jeddict.jpa.spec.DefaultAttribute;
@@ -124,15 +125,11 @@ public final class RepositoryGenerator implements Generator {
     }
     
     private void addMavenDependencies(String pom, Project project) {
-        if (POMManager.isMavenProject(project)) {
-            POMManager pomManager = new POMManager(TEMPLATE + pom, project);
-            pomManager.setSourceVersion("1.8");
-            pomManager.commit();
-            pomManager.reload();
-        } else {
-            handler.warning(NbBundle.getMessage(RepositoryGenerator.class, "TITLE_Maven_Project_Not_Found"),
-                    NbBundle.getMessage(RepositoryGenerator.class, "MSG_Maven_Project_Not_Found"));
-        }
+        BuildManager.getInstance(project)
+                .copy(TEMPLATE + pom)
+                .setSourceVersion("1.8")
+                .commit()
+                .reload();
     }
 
     private Set<FileObject> generateRepository() throws IOException {

@@ -18,9 +18,11 @@ package io.github.jeddict.docker.generator;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
-import io.github.jeddict.infra.DatabaseType;
-import io.github.jeddict.infra.ServerType;
+import io.github.jeddict.jcode.DatabaseType;
 import io.github.jeddict.jcode.LayerConfigData;
+import io.github.jeddict.jcode.RuntimeProvider;
+import io.github.jeddict.jcode.annotation.Runtime;
+import org.openide.util.Lookup;
 
 /**
  *
@@ -28,7 +30,7 @@ import io.github.jeddict.jcode.LayerConfigData;
  */
 public class DockerConfigData extends LayerConfigData {
 
-    private ServerType serverType;
+    private Class<? extends RuntimeProvider> runtimeProviderClass;
     private DatabaseType databaseType;
     private String databaseVersion;
     private String dbUserName = "myuser";
@@ -44,16 +46,34 @@ public class DockerConfigData extends LayerConfigData {
     private String dockerNamespace;
     private String dockerRepository;
     
-    public ServerType getServerType() {
-        return serverType;
+    public Class<? extends RuntimeProvider> getRuntimeProviderClass() {
+        return runtimeProviderClass;
     }
 
-    public void setServerType(ServerType serverType) {
-        this.serverType = serverType;
+    public void setRuntimeProviderClass(Class<? extends RuntimeProvider> runtimeProviderClass) {
+        this.runtimeProviderClass = runtimeProviderClass;
+    }
+
+    public Runtime getRuntime() {
+        Runtime runtime = null;
+        if (getRuntimeProviderClass() != null) {
+            runtime = getRuntimeProviderClass().getAnnotation(Runtime.class);
+        }
+        return runtime;
+    }
+    
+    public RuntimeProvider getRuntimeProvider() {
+        return Lookup.getDefault()
+                .lookupAll(RuntimeProvider.class)
+                .stream()
+                .filter(provider -> provider.getClass() == runtimeProviderClass)
+                .findAny()
+                .map(provider -> provider)
+                .orElseThrow(() -> new IllegalStateException());
     }
 
     public DatabaseType getDatabaseType() {
-        if (serverType == null || serverType == ServerType.NONE) {
+        if (getRuntime() == null || getRuntime().name().isEmpty()) {
             return null;
         }
         return databaseType;
@@ -179,8 +199,11 @@ public class DockerConfigData extends LayerConfigData {
 
     @Override
     public List<String> getUsageDetails() {
-        return Arrays.asList(getDatabaseType().getDisplayName(),
-                getServerType().getDisplayName(), dockerEnable ? "Docker" : null);
+        return Arrays.asList(
+                getDatabaseType().getDisplayName(),
+                getRuntime().displayName(), 
+                dockerEnable ? "Docker" : null
+        );
     }
 
     /**

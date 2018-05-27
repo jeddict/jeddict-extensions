@@ -17,7 +17,7 @@ package io.github.jeddict.rest.controller;
 
 /**
  *
- * @author gaura
+ * @author Gaurav Gupta
  */
 public class RestEntityInfo{
     

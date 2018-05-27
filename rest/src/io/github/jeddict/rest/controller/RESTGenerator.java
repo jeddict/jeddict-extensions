@@ -1,5 +1,5 @@
 /**
- * Copyright [2016-2017] Gaurav Gupta
+ * Copyright 2013-2018 the original author or authors from the Jeddict project (https://jeddict.github.io/).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -27,7 +27,6 @@ import java.util.Collections;
 import static java.util.Collections.EMPTY_MAP;
 import static java.util.Collections.singletonMap;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -38,8 +37,6 @@ import static java.util.stream.Collectors.toSet;
 import org.apache.commons.lang3.StringUtils;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import io.github.jeddict.docker.generator.DockerConfigData;
-import io.github.jeddict.infra.ServerFamily;
-import io.github.jeddict.infra.ServerType;
 import io.github.jeddict.jcode.console.Console;
 import static io.github.jeddict.jcode.console.Console.BOLD;
 import static io.github.jeddict.jcode.console.Console.FG_DARK_RED;
@@ -70,6 +67,7 @@ import io.github.jeddict.jcode.annotation.ConfigData;
 import io.github.jeddict.jcode.annotation.Technology;
 import static io.github.jeddict.jcode.annotation.Technology.Type.CONTROLLER;
 import io.github.jeddict.jcode.task.progress.ProgressHandler;
+import io.github.jeddict.jcode.util.BuildManager;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import static io.github.jeddict.jcode.util.SourceGroupSupport.getFolderForPackage;
@@ -118,7 +116,7 @@ public class RESTGenerator implements Generator {
     private RESTData restData;
 
     @ConfigData
-    private DockerConfigData dockerConfigData;
+    private DockerConfigData infraConfig;
 
     @ConfigData
     private EntityMappings entityMapping;
@@ -582,8 +580,7 @@ public class RESTGenerator implements Generator {
         params.put("LoggerProducer_FQN", ".producer.LoggerProducer");
         params.put("PU", entityMapping.getPersistenceUnitName());
 
-        params.put("serverType", dockerConfigData.getServerType().name());
-        params.put("serverFamily", dockerConfigData.getServerType().getFamily().name());
+        params.put("runtime", infraConfig.getRuntime().name());
         params.put("frontendAppName", restData.getFrontendAppName());
         params.put("registryType", appConfigData.getRegistryType().name());
         
@@ -666,7 +663,7 @@ public class RESTGenerator implements Generator {
             expandTemplate(TEMPLATE + "config/resource/META-INF/sql/insert.sql.ftl",
                     getFolderForPackage(configGatwayRoot, "META-INF.sql", true),
                     "insert.sql",
-                    singletonMap("database", dockerConfigData.getDatabaseType() != null ? dockerConfigData.getDatabaseType() : "Derby"));
+                    singletonMap("database", infraConfig.getDatabaseType()));
             expandTemplate(TEMPLATE + "config/resource/i18n/messages.properties.ftl",
                     getFolderForPackage(configGatwayRoot, "i18n", true),
                     "messages.properties",
@@ -714,7 +711,7 @@ public class RESTGenerator implements Generator {
                 expandTemplate(TEMPLATE + "config/resource/META-INF/sql/insert.sql.ftl",
                         getFolderForPackage(testConfigGatwayRoot, "META-INF.sql", true),
                         "insert.sql",
-                        singletonMap("database", dockerConfigData.getServerType().getDeafultDB()));
+                        singletonMap("database", infraConfig.getRuntime().embeddedDB()));
             }
         }
 
@@ -804,19 +801,7 @@ public class RESTGenerator implements Generator {
             addMavenDependencies("docs/pom/_pom.xml", project);
         }
         if (restData.isTestCase()) {
-            if (dockerConfigData.getServerType().getFamily() == ServerFamily.PAYARA_FAMILY) {
-                addMavenDependencies("arquillian/pom/payara_common_pom.xml", project);
-               if(dockerConfigData.getServerType() == ServerType.PAYARA) {
-                  addMavenDependencies("arquillian/pom/payara_server_pom.xml", project);
-                  if(dockerConfigData.isDockerActivated()){
-                      addMavenDependencies("arquillian/pom/payara_server_docker_pom.xml", project);
-                  } else {
-                      addMavenDependencies("arquillian/pom/payara_server_non_docker_pom.xml", project);
-                  }
-               } else if(dockerConfigData.getServerType() == ServerType.PAYARA_MICRO) {
-                  addMavenDependencies("arquillian/pom/payara_micro_pom.xml", project);
-               } 
-            }
+            infraConfig.getRuntimeProvider().addTestDependency(infraConfig.isDockerActivated());
         }
         if (appConfigData.isGateway()) {
             addMavenDependencies("routing/pom/_pom.xml", project);
@@ -839,13 +824,9 @@ public class RESTGenerator implements Generator {
     }
 
     private void addMavenDependencies(String pom, Project project) {
-        if (POMManager.isMavenProject(project)) {
-            POMManager pomManager = new POMManager(TEMPLATE + pom, project);
-            pomManager.commit();
-        } else {
-            handler.warning(NbBundle.getMessage(RESTGenerator.class, "TITLE_Maven_Project_Not_Found"),
-                    NbBundle.getMessage(RESTGenerator.class, "MSG_Maven_Project_Not_Found"));
-        }
+        BuildManager.getInstance(project)
+                .copy(TEMPLATE + pom)
+                .commit();
     }
 
 }

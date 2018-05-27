@@ -24,11 +24,12 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import org.apache.commons.lang3.StringUtils;
-import io.github.jeddict.infra.DatabaseType;
-import io.github.jeddict.infra.ServerType;
-import static io.github.jeddict.infra.ServerType.NONE;
+import io.github.jeddict.jcode.DatabaseType;
+import io.github.jeddict.jcode.annotation.Runtime;
 import io.github.jeddict.jcode.LayerConfigPanel;
+import io.github.jeddict.jcode.RuntimeProvider;
 import io.github.jeddict.jcode.util.JdbcUrl;
+import java.util.Objects;
 import org.netbeans.api.db.explorer.ConnectionManager;
 import org.netbeans.api.db.explorer.DatabaseConnection;
 import org.netbeans.api.db.explorer.support.DatabaseExplorerUIs;
@@ -36,6 +37,7 @@ import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.modules.docker.api.DockerInstance;
 import org.netbeans.modules.docker.api.DockerSupport;
+import org.openide.util.Lookup;
 import static org.openide.util.NbBundle.getMessage;
 
 /**
@@ -52,7 +54,7 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
     @Override
     public boolean hasError() {
         warningLabel.setText("");
-        if (getServerType() == null || getServerType() == NONE) {
+        if (getRuntime() == null || getRuntime().name().isEmpty()) {
             warningLabel.setText(getMessage(DockerConfigPanel.class, "DockerConfigPanel.serverRequired.message"));
             return true;
         }
@@ -119,8 +121,8 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
     public void read() {
         
         DockerConfigData data = this.getConfigData();
-        if (data.getServerType() != null) {
-            serverComboBox.setSelectedItem(data.getServerType());
+        if (data.getRuntimeProviderClass() != null) {
+            serverComboBox.setSelectedItem(new RuntimeItem(data.getRuntimeProviderClass()));
         }
         if (StringUtils.isNotBlank(data.getDatabaseVersion())) {
             dbVersionComboBox.setSelectedItem(data.getDatabaseVersion());
@@ -181,7 +183,7 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
     @Override
     public void store() {
         DockerConfigData data = this.getConfigData();
-        data.setServerType(getServerType());
+        data.setRuntimeProviderClass(getRuntimeProvider().getClass());
         data.setDatabaseType(getDatabaseType());
         data.setDatabaseVersion((String) dbVersionComboBox.getSelectedItem());
         data.setDbName(null);
@@ -226,8 +228,12 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
         serverPortComboBox.setVisible(false);
     }
 
-    private ServerType getServerType() {
-        return (ServerType) serverComboBox.getSelectedItem();
+    private Runtime getRuntime() {
+        return ((RuntimeItem) serverComboBox.getSelectedItem()).getRuntime();
+    }
+    
+    private RuntimeProvider getRuntimeProvider() {
+        return ((RuntimeItem) serverComboBox.getSelectedItem()).getRuntimeProvider();
     }
 
     private DatabaseType getDatabaseType() {
@@ -235,8 +241,8 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
     }
 
     private void setDockerMachine(String machineName) {
-        DockerSupport integration = DockerSupport.getDefault();
-        integration.getInstances()
+        DockerSupport.getDefault()
+                .getInstances()
                 .stream()
                 .filter(inst -> inst.getKeyFile() != null && StringUtils.equals(machineName, inst.getKeyFile().getParentFile().getName()))
                 .findAny()
@@ -567,7 +573,7 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
     }// </editor-fold>//GEN-END:initComponents
 
     private void serverComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverComboBoxActionPerformed
-        setVisibility(dockerMachineCheckBox.isSelected());//getServerType() != ServerType.NONE);
+        setVisibility(dockerMachineCheckBox.isSelected());
         checkDockerStatus();
         loadDatabaseTypeModel();
     }//GEN-LAST:event_serverComboBoxActionPerformed
@@ -617,7 +623,7 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
     private boolean checkDockerStatus() {
         if (!dockerMachineCheckBox.isSelected()) {
             infoLabel.setText(getMessage(DockerConfigPanel.class, "DOCKER_DISABLED_MESSAGE"));
-        } else if (!dockerMachineCheckBox.isSelected() && (getServerType() == null || getServerType() == NONE)) {
+        } else if (!dockerMachineCheckBox.isSelected() && (getRuntime() == null || getRuntime().name().isEmpty())) {
             infoLabel.setText(getMessage(DockerConfigPanel.class, "DOCKER_DISABLED", getMessage(DockerConfigPanel.class, "SERVER_REQUIRED")));
         } else {
             infoLabel.setText("");
@@ -628,9 +634,12 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
 
     private void loadServerTypeModel() {
         serverComboBox.setModel(new DefaultComboBoxModel(
-                Stream.of(ServerType.values())
-                        .filter(ServerType::isVisible)
-                        .toArray(ServerType[]::new))
+                Lookup.getDefault()
+                        .lookupAll(RuntimeProvider.class)
+                        .stream()
+                        .map(RuntimeItem::new)
+                        .toArray(RuntimeItem[]::new)
+            )
         );
     }
 
@@ -638,7 +647,7 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
         dbComboBox.setModel(
                 new DefaultComboBoxModel(Stream.of(DatabaseType.values())
                         .filter(type -> type.isDockerSupport() || !dockerMachineCheckBox.isSelected())
-                        .filter(type -> !type.isEmbeddedDB() || (type.isEmbeddedDB() && getServerType().isEmbeddedDB(type)))
+                        .filter(type -> !type.isEmbeddedDB() || (type.isEmbeddedDB() && getRuntime().embeddedDB() == type))
                         .toArray(DatabaseType[]::new))
         );
         dbComboBoxActionPerformed(null);
@@ -688,11 +697,75 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
     private javax.swing.JLayeredPane paddingLayeredPane;
     private javax.swing.JButton reloadConnectionButton;
     private javax.swing.JTextField repositoryTextField;
-    private javax.swing.JComboBox<ServerType> serverComboBox;
+    private javax.swing.JComboBox<RuntimeItem> serverComboBox;
     private javax.swing.JLabel serverLabel;
     private javax.swing.JTextField serverPortComboBox;
     private javax.swing.JPanel serverWrapperPanel;
     private javax.swing.JLabel warningLabel;
     // End of variables declaration//GEN-END:variables
 
+    class RuntimeItem {
+
+        private Runtime runtime;
+        
+        private RuntimeProvider runtimeProvider;
+        
+        public RuntimeItem(Class<? extends RuntimeProvider> runtimeProviderClass) {
+            Lookup.getDefault()
+                    .lookupAll(RuntimeProvider.class)
+                    .stream()
+                    .filter(provider -> provider.getClass() == runtimeProviderClass)
+                    .findAny()
+                    .map(provider -> {
+                        this.runtimeProvider = provider;
+                        this.runtime = provider.getRuntime();
+                        return this;
+                    })
+                    .orElseThrow(() -> new IllegalStateException());
+        }
+        
+        public RuntimeItem(RuntimeProvider provider) {
+            this.runtimeProvider = provider;
+            this.runtime = provider.getRuntime();
+        }
+
+        public RuntimeProvider getRuntimeProvider() {
+            return runtimeProvider;
+        }
+
+        public Runtime getRuntime() {
+            return runtime;
+        }
+
+        @Override
+        public String toString() {
+            return runtime.displayName() + " " + runtime.version();
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 5;
+            hash = 31 * hash + Objects.hashCode(this.runtime);
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final RuntimeItem other = (RuntimeItem) obj;
+            if (!Objects.equals(this.runtime, other.runtime)) {
+                return false;
+            }
+            return true;
+        }
+        
+    }
 }

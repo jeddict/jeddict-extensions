@@ -113,6 +113,7 @@ import io.github.jeddict.jcode.annotation.ConfigData;
 import io.github.jeddict.jcode.annotation.Technology;
 import static io.github.jeddict.jcode.annotation.Technology.Type.CONTROLLER;
 import io.github.jeddict.jcode.task.progress.ProgressHandler;
+import io.github.jeddict.jcode.util.BuildManager;
 import io.github.jeddict.jpa.spec.DefaultAttribute;
 import io.github.jeddict.jpa.spec.DefaultClass;
 import io.github.jeddict.jpa.spec.Entity;
@@ -919,14 +920,10 @@ public class MVCControllerGenerator implements Generator {
     }
 
     private void addMavenDependencies() {
-        if (POMManager.isMavenProject(project)) {
-            POMManager pomManager = new POMManager(TEMPLATE + "pom/_pom.xml", project);
-            pomManager.setSourceVersion("1.8");
-            pomManager.commit();
-        } else {
-            handler.warning(NbBundle.getMessage(MVCControllerGenerator.class, "TITLE_Maven_Project_Not_Found"),
-                    NbBundle.getMessage(MVCControllerGenerator.class, "MSG_Maven_Project_Not_Found"));
-        }
+        BuildManager.getInstance(project)
+                .copy(TEMPLATE + "pom/_pom.xml")
+                .setSourceVersion("1.8")
+                .commit();
     }
 
     private void addFormParam() {
