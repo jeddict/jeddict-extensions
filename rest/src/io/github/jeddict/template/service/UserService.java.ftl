@@ -7,6 +7,7 @@ import ${appPackage}${PasswordEncoder_FQN};
 import ${appPackage}${User_FQN};
 import ${appPackage}${Authority_FQN};
 import ${appPackage}${SecurityHelper_FQN};
+import ${appPackage}${LoginDTO_FQN};
 import ${appPackage}${RandomUtil_FQN};
 import ${appPackage}${UserDTO_FQN};
 import java.time.Instant;
@@ -14,7 +15,6 @@ import java.util.*;
 import static java.util.stream.Collectors.*;
 import javax.inject.Inject;
 import javax.security.enterprise.AuthenticationException;
-import javax.security.enterprise.credential.UsernamePasswordCredential;
 import org.slf4j.Logger;
 
 /**
@@ -189,10 +189,10 @@ public class UserService {
         return ${userRepository}.findOneWithAuthoritiesByLogin(securityHelper.getCurrentUserLogin()).orElse(null);
     }
 
-    public User authenticate(UsernamePasswordCredential credential) throws AuthenticationException {
-        Optional<User> userOptional = ${userRepository}.findOneWithAuthoritiesByLogin(credential.getCaller());
+    public User authenticate(LoginDTO loginDTO) throws AuthenticationException {
+        Optional<User> userOptional = ${userRepository}.findOneWithAuthoritiesByLogin(loginDTO.getUsername());
         return userOptional.filter(User::getActivated)
-                .filter(user -> user.getPassword().equals(passwordEncoder.encode(credential.getPasswordAsString())))
+                .filter(user -> user.getPassword().equals(passwordEncoder.encode(loginDTO.getPassword())))
                 .orElseThrow(AuthenticationException::new);
     }
 

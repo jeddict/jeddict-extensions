@@ -8,9 +8,9 @@ service.mail.from = from@example.com
 service.mail.baseurl = http://127.0.0.1:8080/myContextPath
 
 #SECURITY
-security.authentication.jwt.secret: my-secret-sample-token
-security.authentication.jwt.tokenValidityInSeconds: 86400
-security.authentication.jwt.tokenValidityInSecondsForRememberMe: 1314000
+security.jwt.issuer=com.mycompany
+security.jwt.validityInSeconds: 86400
+security.jwt.validityInSecondsForRememberMe: 1314000
 
 context.path = ${r"${context.path}"}
 <#if microservices>

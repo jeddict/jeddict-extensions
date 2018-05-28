@@ -21,7 +21,6 @@ import java.util.Map;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
-import org.jboss.shrinkwrap.api.asset.ClassLoaderAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Before;
@@ -63,9 +62,13 @@ public abstract class ApplicationTest extends AbstractTest {
                 .addClass(${AuthenticationController}.class)
                 .addClass(AbstractTest.class)
                 .addClass(ApplicationTest.class)
-                .addAsResource(new ClassLoaderAsset("META-INF/sql/insert.sql"), "META-INF/sql/insert.sql")
-                .addAsResource(new ClassLoaderAsset("META-INF/microprofile-config.properties"), "META-INF/microprofile-config.properties")
-                .addAsResource(new ClassLoaderAsset("i18n/messages.properties"), "i18n/messages.properties");
+                .addClass(ApplicationTestConfig.class)
+                .addAsResource("META-INF/sql/insert.sql")
+                .addAsResource("META-INF/microprofile-config.properties")
+                .addAsResource("i18n/messages.properties")
+                .addAsResource("payara-mp-jwt.properties")
+                .addAsResource("publicKey.pem")
+                .addAsResource("privateKey.pem");
     }
 
     @Before

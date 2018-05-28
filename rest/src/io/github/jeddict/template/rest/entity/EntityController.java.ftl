@@ -3,12 +3,14 @@ package ${package};
 import ${appPackage}${EntityClass_FQN};
 import ${appPackage}${EntityRepository_FQN};
 import ${appPackage}${HeaderUtil_FQN};
+import static ${appPackage}${AuthoritiesConstants_FQN}.USER;
 import org.slf4j.Logger;
 import javax.inject.Inject;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -34,6 +36,7 @@ import com.wordnik.swagger.annotations.ApiResponses;</#if>
 <#if docs>@Api(value = "/api/${entityApiUrl}", description = "${controllerClassHumanized}")</#if>
 @Path("/api/${entityApiUrl}")<#if security == "JAXRS_JWT">
 @Secured</#if>
+@RolesAllowed(USER)
 public class ${controllerClass} {
 
     @Inject

@@ -213,12 +213,7 @@ public class RESTGenerator implements Generator {
         SERVICE_TEMPLATES.add(new Template("security/AuthoritiesConstants.java.ftl", "AuthoritiesConstants", "security"));
         SERVICE_TEMPLATES.add(new Template("security/PasswordEncoder.java.ftl", "PasswordEncoder", "security"));
         SERVICE_TEMPLATES.add(new Template("security/SecurityHelper.java.ftl", "SecurityHelper", "security"));
-        SERVICE_TEMPLATES.add(new Template("security/JWTCredential.java.ftl", "JWTCredential", "security"));
         SERVICE_TEMPLATES.add(new Template("security/TokenProvider.java.ftl", "TokenProvider", "security"));
-        if (restData.getSecurityType() == SecurityType.JAXRS_JWT) {
-            SERVICE_TEMPLATES.add(new Template("security/JWTAuthenticationFilter.java.ftl", "JWTAuthenticationFilter", "security"));
-            SERVICE_TEMPLATES.add(new Template("security/Secured.java.ftl", "Secured", "security"));
-        }
         SERVICE_TEMPLATES.add(new Template("producer/TemplateEngineProducer.java.ftl", "TemplateEngineProducer", "producer"));
         SERVICE_TEMPLATES.add(new Template("util/RandomUtil.java.ftl", "RandomUtil", "util"));
         SERVICE_TEMPLATES.add(new Template("service/UserService.java.ftl", "UserService", "service"));
@@ -231,11 +226,6 @@ public class RESTGenerator implements Generator {
         SERVICE_TEMPLATES.add(new Template("mail/MailNotifier.java.ftl", "MailNotifier", "mail"));
         SERVICE_TEMPLATES.add(new Template("mail/MailService.java.ftl", "MailService", "service"));
 
-        if (restData.getSecurityType() == SecurityType.SECURITY_JWT) {
-            POST_SERVICE_TEMPLATES.add(new Template("security/AuthenticationIdentityStore.java.ftl", "AuthenticationIdentityStore", "security"));
-            POST_SERVICE_TEMPLATES.add(new Template("security/JWTAuthenticationMechanism.java.ftl", "JWTAuthenticationMechanism", "security"));
-        }
-
         CONTROLLER_TEMPLATES.add(new Template("rest/AccountController.java.ftl", "Account"));
         CONTROLLER_TEMPLATES.add(new Template("rest/UserController.java.ftl", "User"));
         CONTROLLER_TEMPLATES.add(new Template("rest/AuthenticationController.java.ftl", "Authentication"));
@@ -245,22 +235,15 @@ public class RESTGenerator implements Generator {
             TEST_CASE_TEMPLATES.add(new Template("arquillian/AbstractTest.java.ftl", "AbstractTest"));
             if (appConfigData.isMonolith() || appConfigData.isGateway()) {
                 TEST_CASE_TEMPLATES.add(new Template("arquillian/ApplicationTest.java.ftl", "ApplicationTest"));
+                TEST_CASE_TEMPLATES.add(new Template("arquillian/ApplicationTestConfig.java.ftl", "ApplicationTestConfig"));
+                TEST_CASE_CONTROLLER_TEMPLATES.add(new Template("arquillian/AccountControllerTest.java.ftl", "Account"));
+                TEST_CASE_CONTROLLER_TEMPLATES.add(new Template("arquillian/UserControllerTest.java.ftl", "User"));
             }
-            TEST_CASE_CONTROLLER_TEMPLATES.add(new Template("arquillian/AccountControllerTest.java.ftl", "Account"));
-            TEST_CASE_CONTROLLER_TEMPLATES.add(new Template("arquillian/UserControllerTest.java.ftl", "User"));
         }
 
         MICROSERVICES_TEMPLATES.add(new Template("web/CORSFilter.java.ftl", "CORSFilter", "web"));
         MICROSERVICES_TEMPLATES.add(new Template("security/SecurityHelper.java.ftl", "SecurityHelper", "security"));
-        MICROSERVICES_TEMPLATES.add(new Template("security/JWTCredential.java.ftl", "JWTCredential", "security"));
-        MICROSERVICES_TEMPLATES.add(new Template("security/TokenProvider.java.ftl", "TokenProvider", "security"));
-        if (restData.getSecurityType() == SecurityType.JAXRS_JWT) {
-            MICROSERVICES_TEMPLATES.add(new Template("security/JWTAuthenticationFilter.java.ftl", "JWTAuthenticationFilter", "security"));
-            MICROSERVICES_TEMPLATES.add(new Template("security/Secured.java.ftl", "Secured", "security"));
-        } else if (restData.getSecurityType() == SecurityType.SECURITY_JWT) {
-            MICROSERVICES_TEMPLATES.add(new Template("security/JWTAuthenticationMechanism.java.ftl", "JWTAuthenticationMechanism", "security"));
-        }
-        
+        MICROSERVICES_TEMPLATES.add(new Template("security/TokenProvider.java.ftl", "TokenProvider", "security"));        
         if(appConfigData.getRegistryType() == CONSUL){
             MICROSERVICES_TEMPLATES.add(new Template("registry/RegistryService.java.ftl", "RegistryService", "registry"));
         }
@@ -318,30 +301,6 @@ public class RESTGenerator implements Generator {
         if (appConfigData.isMonolith() || appConfigData.isMicroservice()) {
             for (Entity entity : entityMapping.getGeneratedEntity().collect(toList())) {
                 generateEntityController(entity, params);
-            }
-        }
-
-        if (restData.getSecurityType() == SecurityType.SECURITY_JWT) {
-            if (appConfigData.isMonolith() || appConfigData.isGateway()) {
-                if (appConfigData.isCompleteApplication()) {
-                    appConfigData.addWebDescriptorContent(
-                            expandTemplate("/io/github/jeddict/template/security/web/descriptor/_web.xml.ftl", params), gatewayProject);
-                    if (restData.isTestCase()) {
-                        appConfigData.addWebDescriptorTestContent(
-                                expandTemplate("/io/github/jeddict/template/security/web/descriptor/_web.xml.ftl", params), gatewayProject);
-                    }
-                }
-            }
-            if (appConfigData.isMonolith() || appConfigData.isMicroservice()) {
-                if (!restEntityInfo.isEmpty()) {
-                    params.put("entityConstraints", restEntityInfo);
-                    appConfigData.addWebDescriptorContent(
-                            expandTemplate("/io/github/jeddict/template/security/web/descriptor/entity_web.xml.ftl", params), targetProject);
-                    if (appConfigData.isMonolith() && restData.isTestCase()) {
-                        appConfigData.addWebDescriptorTestContent(
-                                expandTemplate("/io/github/jeddict/template/security/web/descriptor/entity_web.xml.ftl", params), targetProject);
-                    }
-                }
             }
         }
         
@@ -659,6 +618,12 @@ public class RESTGenerator implements Generator {
                 getFolderForPackage(appConfigData.isMicroservice() ? configTargetRoot : configGatwayRoot, "META-INF", true),
                 "microprofile-config.properties",
                 params);
+        FileUtil.copyFile(TEMPLATE + "config/resource/payara-mp-jwt.properties", 
+                appConfigData.isMicroservice() ? configTargetRoot : configGatwayRoot, 
+                "payara-mp-jwt.properties");
+        FileUtil.copyFile(TEMPLATE + "config/resource/publicKey.pem", 
+                appConfigData.isMicroservice() ? configTargetRoot : configGatwayRoot, 
+                "publicKey.pem");
         if (appConfigData.isGateway() || appConfigData.isMonolith()) {
             expandTemplate(TEMPLATE + "config/resource/META-INF/sql/insert.sql.ftl",
                     getFolderForPackage(configGatwayRoot, "META-INF.sql", true),
@@ -668,6 +633,7 @@ public class RESTGenerator implements Generator {
                     getFolderForPackage(configGatwayRoot, "i18n", true),
                     "messages.properties",
                     EMPTY_MAP);
+            FileUtil.copyFile(TEMPLATE + "config/resource/privateKey.pem", configGatwayRoot, "privateKey.pem");
             FileUtil.copyStaticResource(TEMPLATE + "config/resource/mail-resources.zip", configGatwayRoot, null, handler);
             updatePersistenceXml(Arrays.asList(
                     appConfigData.getGatewayPackage() + "." + entityPackage + ".User",
@@ -703,9 +669,6 @@ public class RESTGenerator implements Generator {
                     appConfigData.isMicroservice() ? testConfigTargetRoot : testConfigGatwayRoot,
                     "arquillian.xml",
                     EMPTY_MAP);
-            appConfigData.addWebDescriptorTestContent(
-                    expandTemplate(TEMPLATE + "arquillian/config/web.xml.ftl", params),
-                    appConfigData.isMicroservice() ? targetProject : gatewayProject);
             
             if (appConfigData.isGateway() || appConfigData.isMonolith()) {
                 expandTemplate(TEMPLATE + "config/resource/META-INF/sql/insert.sql.ftl",

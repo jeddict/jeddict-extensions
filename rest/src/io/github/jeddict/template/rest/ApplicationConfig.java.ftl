@@ -1,12 +1,23 @@
 package ${package};
 
+import static ${appPackage}${AuthoritiesConstants_FQN}.ADMIN;
+import static ${appPackage}${AuthoritiesConstants_FQN}.USER;
 import java.util.HashSet;
 import java.util.Set;
-import javax.ws.rs.core.Application;<#if microservices && registryType == "SNOOPEE">
+import javax.annotation.security.DeclareRoles;
+import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.core.Application;
+import org.eclipse.microprofile.auth.LoginConfig;
+<#if microservices && registryType == "SNOOPEE">
 import eu.agilejava.snoop.annotation.EnableSnoopClient;
 
 @EnableSnoopClient(serviceName = "${contextPath}")</#if>
-@javax.ws.rs.ApplicationPath("${applicationPath}")
+@LoginConfig(
+    authMethod = "MP-JWT",
+    realmName = "MP-JWT"
+)
+@DeclareRoles({ADMIN, USER})
+@ApplicationPath("${applicationPath}")
 public class ${applicationConfig} extends Application {
 
     @Override

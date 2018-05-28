@@ -21,8 +21,7 @@ package io.github.jeddict.rest.controller;
  */
 public enum SecurityType {
     
-    SECURITY_JWT("Security API 1.0"), 
-    JAXRS_JWT("JAX-RS Filter");
+    SECURITY_JWT("Security API 1.0");
 
     private final String value;
 

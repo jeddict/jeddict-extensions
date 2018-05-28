@@ -17,7 +17,9 @@ import static ${appPackage}${Constants_FQN}.INVALID_PASSWORD_TYPE;
 import static ${appPackage}${Constants_FQN}.LOGIN_ALREADY_USED_TYPE;
 import static ${appPackage}${Constants_FQN}.PASSWORD_MAX_LENGTH;
 import static ${appPackage}${Constants_FQN}.PASSWORD_MIN_LENGTH;
+import static ${appPackage}${AuthoritiesConstants_FQN}.USER;
 import java.util.*;
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -134,6 +136,7 @@ public class ${AccountController} {
     @GET
     @Produces({MediaType.TEXT_PLAIN})<#if security == "JAXRS_JWT">
     @Secured</#if>
+    @RolesAllowed(USER)
     public String isAuthenticated() {
         log.debug("REST request to check if the current user is authenticated");
         return request.getRemoteUser();
@@ -154,6 +157,7 @@ public class ${AccountController} {
     @GET
     @Produces({MediaType.APPLICATION_JSON})<#if security == "JAXRS_JWT">
     @Secured</#if>
+    @RolesAllowed(USER)
     public Response getAccount() {
         return Optional.ofNullable(userService.getUserWithAuthorities())
                 .map(user -> Response.ok(new UserDTO(user)).build())
@@ -178,6 +182,7 @@ public class ${AccountController} {
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})<#if security == "JAXRS_JWT">
     @Secured</#if>
+    @RolesAllowed(USER)
     public Response saveAccount(@Valid UserDTO userDTO) {
         final String userLogin = securityHelper.getCurrentUserLogin();
         Optional<User> existingUser = ${userRepository}.findOneByEmail(userDTO.getEmail());
@@ -211,6 +216,7 @@ public class ${AccountController} {
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.TEXT_PLAIN})<#if security == "JAXRS_JWT">
     @Secured</#if>
+    @RolesAllowed(USER)
     public Response changePassword(PasswordChangeVM passwordChangeVM) {
         if (!checkPasswordLength(passwordChangeVM.getNewPassword())) {
             return Response.status(BAD_REQUEST).entity(INVALID_PASSWORD_TYPE).build();

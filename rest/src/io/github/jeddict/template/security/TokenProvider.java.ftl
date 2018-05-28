@@ -1,74 +1,85 @@
 package ${package};
 
 import ${appPackage}${SecurityConfig_FQN};
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import static io.jsonwebtoken.Header.JWT_TYPE;
+import static io.jsonwebtoken.Header.TYPE;
+import static java.lang.Thread.currentThread;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.*;
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toSet;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import org.eclipse.microprofile.jwt.Claims;
 import org.slf4j.Logger;
 
 public class TokenProvider {
 
+    private PrivateKey privateKey;
+    
+    private String issuer;
+
+    private long tokenValidityMillis;
+
+    private long tokenValidityMillisForRememberMe;
+
     @Inject
     private Logger log;
-
-    private static final String AUTHORITIES_KEY = "auth";
-
-    private String secretKey;
-
-    private long tokenValidityInSeconds;
-
-    private long tokenValidityInSecondsForRememberMe;
 
     @Inject
     private SecurityConfig securityConfig;
 
     @PostConstruct
     public void init() {
-        this.secretKey
-                = securityConfig.getSecret();
+        try {
+            this.privateKey = readPrivateKey("privateKey.pem");
+        } catch (Exception ex) {
+            log.error("Unable to read privateKey.pem ", ex);
+            throw new IllegalStateException(ex);
+        }
 
-        this.tokenValidityInSeconds
+        this.issuer = securityConfig.getIssuer();
+        this.tokenValidityMillis
                 = 1000 * securityConfig.getTokenValidityInSeconds();
-        this.tokenValidityInSecondsForRememberMe
+        this.tokenValidityMillisForRememberMe
                 = 1000 * securityConfig.getTokenValidityInSecondsForRememberMe();
     }
 
-    public String createToken(String username, Set<String> authorities, Boolean rememberMe) {
-        long now = (new Date()).getTime();
-        long validity = now + (rememberMe ? tokenValidityInSecondsForRememberMe : tokenValidityInSeconds);
-
+    public String createToken(String username, Set<String> groups, Boolean rememberMe) {
+        long issuedTime = System.currentTimeMillis();
+        long expirationTime = issuedTime 
+                + (rememberMe ? tokenValidityMillisForRememberMe : tokenValidityMillis);
+        
         return Jwts.builder()
+                .setHeaderParam(TYPE, JWT_TYPE)
+                .setId(UUID.randomUUID().toString())
                 .setSubject(username)
-                .claim(AUTHORITIES_KEY, authorities.stream().collect(joining(",")))
-                .signWith(SignatureAlgorithm.HS512, secretKey)
-                .setExpiration(new Date(validity))
+                .claim(Claims.groups.name(), groups)
+                .setIssuer(issuer)
+                .setIssuedAt(new Date(issuedTime))
+                .setExpiration(new Date(expirationTime))
+                .signWith(SignatureAlgorithm.RS256, privateKey)
                 .compact();
     }
 
-    public JWTCredential getCredential(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody();
+    private PrivateKey readPrivateKey(String resourceName) throws Exception {
+                byte[] byteBuffer = new byte[16384];
+        int length = currentThread().getContextClassLoader()
+                .getResource(resourceName)
+                .openStream()
+                .read(byteBuffer);
 
-        Set<String> authorities
-                = Arrays.asList(claims.get(AUTHORITIES_KEY).toString().split(","))
-                        .stream()
-                        .collect(toSet());
+        String key = new String(byteBuffer, 0, length)
+                .replaceAll("-----BEGIN (.*)-----", "")
+                .replaceAll("-----END (.*)----", "")
+                .replaceAll("\r\n", "")
+                .replaceAll("\n", "")
+                .trim();
 
-        return new JWTCredential(claims.getSubject(), authorities);
+        return KeyFactory.getInstance("RSA")
+                .generatePrivate(new PKCS8EncodedKeySpec(Base64.getDecoder().decode(key)));
     }
 
-    public boolean validateToken(String authToken) {
-        try {
-            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(authToken);
-            return true;
-        } catch (SignatureException e) {
-            log.info("Invalid JWT signature: {0}", e.getMessage());
-            return false;
-        }
-    }
 }

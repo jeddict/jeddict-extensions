@@ -13,12 +13,15 @@ import static ${appPackage}${Constants_FQN}.EMAIL_ALREADY_USED_TYPE;
 import static ${appPackage}${Constants_FQN}.LOGIN_ALREADY_USED_TYPE;
 <#if security == "JAXRS_JWT">import ${appPackage}${Secured_FQN};
 import ${appPackage}${AuthoritiesConstants_FQN};</#if>
+import static ${appPackage}${AuthoritiesConstants_FQN}.ADMIN;
+import static ${appPackage}${AuthoritiesConstants_FQN}.USER;
 import org.slf4j.Logger;
 import javax.inject.Inject;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 import static java.util.stream.Collectors.toList;
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -87,6 +90,7 @@ public class ${UserController} {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)<#if security == "JAXRS_JWT">
     @Secured(AuthoritiesConstants.ADMIN)</#if>
+    @RolesAllowed(ADMIN)
     public Response createUser(ManagedUserVM managedUserVM) throws URISyntaxException {
         log.debug("REST request to save User : {}", managedUserVM);
 
@@ -123,6 +127,7 @@ public class ${UserController} {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)<#if security == "JAXRS_JWT">
     @Secured(AuthoritiesConstants.ADMIN)</#if>
+    @RolesAllowed(ADMIN)
     public Response updateUser(ManagedUserVM managedUserVM) {
         log.debug("REST request to update User : {}", managedUserVM);
         Optional<User> existingUser = ${userRepository}.findOneByEmail(managedUserVM.getEmail());
@@ -157,6 +162,7 @@ public class ${UserController} {
     @Produces(MediaType.APPLICATION_JSON)<#if security == "JAXRS_JWT">
     @Secured</#if>
     @Timeout
+    @RolesAllowed(USER)
     public Response getAllUsers(@QueryParam("page") int page, @QueryParam("size") int size) throws URISyntaxException {
         List<User> userList = ${userRepository}.getUsersWithAuthorities(page * size, size);
         List<UserDTO> userDTOs = userList.stream()
@@ -178,6 +184,7 @@ public class ${UserController} {
     @Path("/users/authorities")
     @GET<#if security == "JAXRS_JWT">
     @Secured(AuthoritiesConstants.ADMIN)</#if>
+    @RolesAllowed(ADMIN)
     public List<String> getAuthorities() {
         return userService.getAuthorities();
     }
@@ -198,6 +205,7 @@ public class ${UserController} {
     @GET
     @Produces(MediaType.APPLICATION_JSON)<#if security == "JAXRS_JWT">
     @Secured</#if>
+    @RolesAllowed(USER)
     public Response getUser(@PathParam("login") String login) {
         log.debug("REST request to get User : {}", login);
         return userService.getUserWithAuthoritiesByLogin(login)
@@ -221,6 +229,7 @@ public class ${UserController} {
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)<#if security == "JAXRS_JWT">
     @Secured(AuthoritiesConstants.ADMIN)</#if>
+    @RolesAllowed(ADMIN)
     public Response deleteUser(@PathParam("login") String login) {
         log.debug("REST request to delete User: {}", login);
         userService.deleteUser(login);
