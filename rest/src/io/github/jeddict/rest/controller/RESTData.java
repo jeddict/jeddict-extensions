@@ -39,7 +39,7 @@ public class RESTData extends LayerConfigData<RepositoryData> {
     private List<FilterType> filterTypes;
     private boolean metrics = true;
     private boolean logger = true;
-    private boolean docsEnable = true;
+    private boolean openAPI = true;
     private boolean testCase = true;
     private String frontendAppName = "app";
     private SecurityType securityType;
@@ -157,17 +157,17 @@ public class RESTData extends LayerConfigData<RepositoryData> {
     }
 
     /**
-     * @return the swagger
+     * @return the openAPI
      */
-    public boolean isDocsEnable() {
-        return docsEnable;
+    public boolean isOpenAPI() {
+        return openAPI;
     }
 
     /**
-     * @param swagger the swagger to set
+     * @param openAPI the openAPI to set
      */
-    public void setDocsEnable(boolean swagger) {
-        this.docsEnable = swagger;
+    public void setOpenAPI(boolean openAPI) {
+        this.openAPI = openAPI;
     }
 
     /**
@@ -235,7 +235,7 @@ public class RESTData extends LayerConfigData<RepositoryData> {
     public List<String> getUsageDetails() {
         return Arrays.asList(metrics ? "Metrics" : null,
                 logger ? "Log-Manager" : null,
-                docsEnable ? "Swagger" : null,
+                openAPI ? "OpenAPI" : null,
                 testCase ? "TestCase" : null,
                 securityType.name());
     }

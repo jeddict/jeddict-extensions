@@ -22,11 +22,7 @@ public class ${applicationConfig} extends Application {
 
     @Override
     public Set<Class<?>> getClasses() {
-        Set<Class<?>> resources = new HashSet<>();<#if docs>
-        resources.add(com.wordnik.swagger.jaxrs.listing.ApiListingResource.class);
-        resources.add(com.wordnik.swagger.jaxrs.listing.ApiDeclarationProvider.class);
-        resources.add(com.wordnik.swagger.jaxrs.listing.ApiListingResourceJSON.class);
-        resources.add(com.wordnik.swagger.jaxrs.listing.ResourceListingProvider.class);</#if>
+        Set<Class<?>> resources = new HashSet<>();
         <#if metrics>resources.add(${appPackage}${DiagnosticFilter_FQN}.class);</#if>
         resources.add(${appPackage}${SecurityHelper_FQN}.class);
         resources.add(${appPackage}${CORSFilter_FQN}.class);

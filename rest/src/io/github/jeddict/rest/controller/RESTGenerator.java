@@ -217,7 +217,7 @@ public class RESTGenerator implements Generator {
         SERVICE_TEMPLATES.add(new Template("producer/TemplateEngineProducer.java.ftl", "TemplateEngineProducer", "producer"));
         SERVICE_TEMPLATES.add(new Template("util/RandomUtil.java.ftl", "RandomUtil", "util"));
         SERVICE_TEMPLATES.add(new Template("service/UserService.java.ftl", "UserService", "service"));
-        if (restData.isMetrics() || restData.isDocsEnable()) {
+        if (restData.isMetrics()) {
             SERVICE_TEMPLATES.add(new Template("web/WebConfigurer.java.ftl", "WebConfigurer", "web"));
         }
         SERVICE_TEMPLATES.add(new Template("web/CORSFilter.java.ftl", "CORSFilter", "web"));
@@ -283,7 +283,7 @@ public class RESTGenerator implements Generator {
         params.put("security", restData.getSecurityType().name());
         params.put("metrics", restData.isMetrics());
         params.put("log", restData.isLogger());
-        params.put("docs", restData.isDocsEnable());
+        params.put("openAPI", restData.isOpenAPI());
         if (appConfigData.isMonolith() || appConfigData.isMicroservice()) {
             if (appConfigData.isCompleteApplication()) {
                 generateServerSideComponent(params);
@@ -428,7 +428,7 @@ public class RESTGenerator implements Generator {
         contollerParams.put("package", entity.getAbsolutePackage(appConfigData.getTargetPackage() + '.' + restData.getPackage()));
         contollerParams.put("applicationPath", restData.getRestConfigData().getApplicationPath());
         contollerParams.put("metrics", appConfigData.isCompleteApplication() && restData.isMetrics());
-        contollerParams.put("docs", appConfigData.isCompleteApplication() && restData.isDocsEnable());
+        contollerParams.put("openAPI", appConfigData.isCompleteApplication() && restData.isOpenAPI());
 
         FileObject targetFolder = SourceGroupSupport.getFolderForPackage(targetSource, entity.getAbsolutePackage(appConfigData.getTargetPackage() + '.' + restData.getPackage()), true);
 
@@ -759,9 +759,6 @@ public class RESTGenerator implements Generator {
         }
         if (restData.isLogger()) {
             addMavenDependencies("logger/pom/_pom.xml", project);
-        }
-        if (restData.isDocsEnable()) {
-            addMavenDependencies("docs/pom/_pom.xml", project);
         }
         if (restData.isTestCase()) {
             infraConfig.getRuntimeProvider().addTestDependency(infraConfig.isDockerActivated());

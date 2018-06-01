@@ -24,16 +24,14 @@ import ${appPackage}${Page_FQN};
 import ${appPackage}${PaginationUtil_FQN};</#if><#if security == "JAXRS_JWT">
 import ${appPackage}${Secured_FQN};</#if><#if metrics>
 import org.eclipse.microprofile.metrics.annotation.Timed;</#if>
-import org.eclipse.microprofile.faulttolerance.Timeout;<#if docs>
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiResponse;
-import com.wordnik.swagger.annotations.ApiResponses;</#if>
+import org.eclipse.microprofile.faulttolerance.Timeout;<#if openAPI>
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;</#if>
 
 /**
  * REST controller for managing ${EntityClass}.
  */
-<#if docs>@Api(value = "/api/${entityApiUrl}", description = "${controllerClassHumanized}")</#if>
 @Path("/api/${entityApiUrl}")<#if security == "JAXRS_JWT">
 @Secured</#if>
 @RolesAllowed(USER)
@@ -57,10 +55,10 @@ public class ${controllerClass} {
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     <#if metrics>@Timed</#if>
-    <#if docs>@ApiOperation(value = "create a new ${entityInstance}", notes = "Create a new ${entityInstance}")
-    @ApiResponses(value = {
-        @ApiResponse(code = 201, message = "Created"),
-        @ApiResponse(code = 400, message = "Bad Request")})</#if>
+    <#if openAPI>@Operation(summary = "create a new ${entityInstance}", notes = "Create a new ${entityInstance}")
+    @APIResponses(value = {
+        @APIResponse(responseCode = "201", description = "Created"),
+        @APIResponse(responseCode = "400", description = "Bad Request")})</#if>
     @POST
     public Response create${EntityClass}(${instanceType} ${instanceName}) throws URISyntaxException {
         log.debug("REST request to save ${EntityClass} : {}", ${instanceName});
@@ -80,11 +78,11 @@ public class ${controllerClass} {
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     <#if metrics>@Timed</#if>
-    <#if docs>@ApiOperation(value = "update ${entityInstance}", notes = "Updates an existing ${entityInstance}")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "OK"),
-        @ApiResponse(code = 400, message = "Bad Request"),
-        @ApiResponse(code = 500, message = "Internal Server Error")})</#if>
+    <#if openAPI>@Operation(summary = "update ${entityInstance}", notes = "Updates an existing ${entityInstance}")
+    @APIResponses(value = {
+        @APIResponse(responseCode = "200", description = "OK"),
+        @APIResponse(responseCode = "400", description = "Bad Request"),
+        @APIResponse(responseCode = "500", description = "Internal Server Error")})</#if>
     @PUT
     public Response update${EntityClass}(${instanceType} ${instanceName}) throws URISyntaxException {
         log.debug("REST request to update ${EntityClass} : {}", ${instanceName});
@@ -102,9 +100,9 @@ public class ${controllerClass} {
      <#if pagination!= "no">* @throws URISyntaxException if there is an error to generate the pagination HTTP headers</#if>
      */
     <#if metrics>@Timed</#if>
-    <#if docs>@ApiOperation(value = "get all the ${entityInstancePlural}")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "OK")})</#if>
+    <#if openAPI>@Operation(summary = "get all the ${entityInstancePlural}")
+    @APIResponses(value = {
+        @APIResponse(responseCode = "200", description = "OK")})</#if>
     @GET
     @Timeout
     <#if pagination == "no">
@@ -130,10 +128,10 @@ public class ${controllerClass} {
      * @return the Response with status 200 (OK) and with body the ${instanceName}, or with status 404 (Not Found)
      */
     <#if metrics>@Timed</#if>
-    <#if docs>@ApiOperation(value = "get the ${entityInstance}")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "OK"),
-        @ApiResponse(code = 404, message = "Not Found")})</#if>
+    <#if openAPI>@Operation(summary = "get the ${entityInstance}")
+    @APIResponses(value = {
+        @APIResponse(responseCode = "200", description = "OK"),
+        @APIResponse(responseCode = "404", description = "Not Found")})</#if>
     @Path("/${pkName}")
     @GET
     public Response get${EntityClass}(${restParamList}) {
@@ -152,10 +150,10 @@ public class ${controllerClass} {
      * @return the Response with status 200 (OK)
      */
     <#if metrics>@Timed</#if>
-    <#if docs>@ApiOperation(value = "remove the ${entityInstance}" )
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "OK"),
-        @ApiResponse(code = 404, message = "Not Found")})</#if>
+    <#if openAPI>@Operation(summary = "remove the ${entityInstance}" )
+    @APIResponses(value = {
+        @APIResponse(responseCode = "200", description = "OK"),
+        @APIResponse(responseCode = "404", description = "Not Found")})</#if>
     @DELETE
     public Response remove${EntityClass}(${restParamList}) {
         ${pkType} ${pkName} = new ${pkType}(${restParamNameList});

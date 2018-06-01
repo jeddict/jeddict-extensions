@@ -83,7 +83,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         }
         setLogger(data.isLogger());
         setMetrics(data.isMetrics());
-        setDocsEnable(data.isDocsEnable());
+        setOpenAPI(data.isOpenAPI());
         setTestCase(data.isTestCase());
     }
 
@@ -99,7 +99,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         }
         data.setMetrics(isMetrics());
         data.setLogger(isLogger());
-        data.setDocsEnable(isDocsEnable());
+        data.setOpenAPI(isOpenAPI());
         data.setTestCase(isTestCase());
         data.setSecurityType(SecurityType.SECURITY_JWT);//getSecurityType());
     }
@@ -177,12 +177,12 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         testcaseCheckBox.setSelected(testCase);
     }
     
-    private boolean isDocsEnable() {
-        return docsCheckBox.isSelected();
+    private boolean isOpenAPI() {
+        return openAPICheckBox.isSelected();
     }
 
-    private void setDocsEnable(boolean docsEnable) {
-        docsCheckBox.setSelected(docsEnable);
+    private void setOpenAPI(boolean openAPI) {
+        openAPICheckBox.setSelected(openAPI);
     }
    
     private boolean isLogger() {
@@ -223,8 +223,8 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         miscPanel = new javax.swing.JPanel();
         testcaseCheckBox = new javax.swing.JCheckBox();
         metricsCheckbox = new javax.swing.JCheckBox();
+        openAPICheckBox = new javax.swing.JCheckBox();
         loggerCheckBox = new javax.swing.JCheckBox();
-        docsCheckBox = new javax.swing.JCheckBox();
 
         warningPanel.setLayout(new java.awt.BorderLayout(10, 0));
 
@@ -242,7 +242,6 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         namePane.setLayout(new javax.swing.BoxLayout(namePane, javax.swing.BoxLayout.LINE_AXIS));
 
         prefixField.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        prefixField.setText(org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.prefixField.text")); // NOI18N
         prefixField.setToolTipText(org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.prefixField.toolTipText")); // NOI18N
         prefixField.setPreferredSize(new java.awt.Dimension(50, 27));
         prefixField.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
@@ -317,7 +316,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
                 .addComponent(securityTypeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(securityTypeCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 217, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 208, Short.MAX_VALUE)
                 .addComponent(applicationConfigButton))
         );
         appPanelLayout.setVerticalGroup(
@@ -340,13 +339,13 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         org.openide.awt.Mnemonics.setLocalizedText(metricsCheckbox, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.metricsCheckbox.text")); // NOI18N
         miscPanel.add(metricsCheckbox);
 
+        openAPICheckBox.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(openAPICheckBox, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.openAPICheckBox.text")); // NOI18N
+        miscPanel.add(openAPICheckBox);
+
         loggerCheckBox.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(loggerCheckBox, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.loggerCheckBox.text")); // NOI18N
         miscPanel.add(loggerCheckBox);
-
-        docsCheckBox.setSelected(true);
-        org.openide.awt.Mnemonics.setLocalizedText(docsCheckBox, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.docsCheckBox.text")); // NOI18N
-        miscPanel.add(docsCheckBox);
 
         jPanel1.add(miscPanel);
 
@@ -380,46 +379,19 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
     }//GEN-LAST:event_suffixFieldPropertyChange
 
     private void applicationConfigButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applicationConfigButtonActionPerformed
-//        if (useJersey) {
-//            NotifyDescriptor d = new NotifyDescriptor.Message(getMessage(RESTPanel.class, "RESTPanel.notSupported.text"), NotifyDescriptor.INFORMATION_MESSAGE);
-//            d.setTitle(getMessage(RESTPanel.class, "RESTPanel.notSupported.title"));
-//            DialogDisplayer.getDefault().notify(d);
-//        } else if (configuredREST) { //Don't delete it
-//            final RestSupport restSupport = project.getLookup().lookup(RestSupport.class);
-//            List<RestApplication> restApplications = restSupport.getRestApplications();
-//            List<String> restApplicationClasses = restApplications.stream().map(a -> a.getApplicationClass()).collect(Collectors.toList());
-//            int reply = javax.swing.JOptionPane.showConfirmDialog(WindowManager.getDefault().getMainWindow(),
-//                    getMessage(RESTPanel.class, "RESTPanel.pathExist.text", restApplicationClasses),
-//                    getMessage(RESTPanel.class, "RESTPanel.pathExist.title"), JOptionPane.YES_NO_OPTION);
-//            if (reply == JOptionPane.YES_OPTION) {
-//                openApplicationConfig();
-//            }
-//        } else {
-            openApplicationConfig();
-//        }
-    }//GEN-LAST:event_applicationConfigButtonActionPerformed
-    private void openApplicationConfig() {
         if (configDialog == null) {
             configDialog = new RestConfigDialog();
             configDialog.init(getPackage(), project, sourceGroup);
-//            final RestSupport restSupport = project.getLookup().lookup(RestSupport.class);
-//            if (restSupport != null) {
-//                runWhenScanFinished(() -> {
-//                    configDialog.setRestApplicationClasses(restSupport.getRestApplications());
-//                    configDialog.setVisible(true);
-//                }, getMessage(RESTPanel.class, "RESTPanel.scanningExistingApp.text"));
-//            }
-//        } else {
         }
         configDialog.setVisible(true);
         if (configDialog.getDialogResult() == OK_OPTION) {
             this.getConfigData().setRestConfigData(configDialog.getRestConfigData());
         }
-    }
+    }//GEN-LAST:event_applicationConfigButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel appPanel;
     private javax.swing.JButton applicationConfigButton;
-    private javax.swing.JCheckBox docsCheckBox;
     private javax.swing.JLabel entityLabel;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JCheckBox loggerCheckBox;
@@ -427,6 +399,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
     private javax.swing.JPanel miscPanel;
     private javax.swing.JLabel nameLabel;
     private javax.swing.JLayeredPane namePane;
+    private javax.swing.JCheckBox openAPICheckBox;
     private javax.swing.JLabel packageLabel;
     private javax.swing.JPanel packagePanel;
     private javax.swing.JLabel packagePrefixLabel;

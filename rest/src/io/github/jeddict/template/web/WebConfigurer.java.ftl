@@ -1,11 +1,5 @@
 package ${package};
 
-<#if docs>import com.wordnik.swagger.config.ConfigFactory;
-import com.wordnik.swagger.config.ScannerFactory;
-import com.wordnik.swagger.config.SwaggerConfig;
-import com.wordnik.swagger.jaxrs.config.DefaultJaxrsScanner;
-import com.wordnik.swagger.jaxrs.reader.DefaultJaxrsApiReader;
-import com.wordnik.swagger.reader.ClassReaders;</#if>
 import java.util.EnumSet;
 import javax.inject.Inject;
 import static javax.servlet.DispatcherType.ASYNC;
@@ -31,7 +25,6 @@ public class WebConfigurer implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         <#if metrics>initMetrics(sce.getServletContext());</#if>
-        <#if docs>initDocs(sce.getServletContext());</#if>
         log.info("Web application fully configured");
     }
 
@@ -46,20 +39,7 @@ public class WebConfigurer implements ServletContextListener {
         metricsFilter.setAsyncSupported(true);
     }
     </#if>
-    <#if docs>
-    /**
-     * Initializes Swagger.
-     */
-    private void initDocs(ServletContext servletContext) {
-        SwaggerConfig swaggerConfig = new SwaggerConfig();
-        ConfigFactory.setConfig(swaggerConfig);
-        String contextPath = servletContext.getContextPath();
-        swaggerConfig.setBasePath(contextPath + "/${applicationPath}");
-        swaggerConfig.setApiVersion("1.0.0");
-        ScannerFactory.setScanner(new DefaultJaxrsScanner());
-        ClassReaders.setReader(new DefaultJaxrsApiReader());
-    }
-    </#if>
+
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
     }

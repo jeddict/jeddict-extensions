@@ -16,14 +16,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.MediaType;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
-import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
-<#if metrics>import org.eclipse.microprofile.metrics.annotation.Timed;</#if>
-<#if docs>import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiResponse;
-import com.wordnik.swagger.annotations.ApiResponses;</#if>
+import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;<#if metrics>
+import org.eclipse.microprofile.metrics.annotation.Timed;</#if><#if openAPI>
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;</#if>
 
-<#if docs>@Api(value = "/api")</#if>
 @Path("/api")
 public class ${AuthenticationController} {
 
@@ -44,10 +42,10 @@ public class ${AuthenticationController} {
      * token, or with status 401 (Unauthorized) if the authentication fails
      */
     <#if metrics>@Timed</#if>
-    <#if docs>@ApiOperation(value = "authenticate the credential" )
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "OK"),
-        @ApiResponse(code = 401, message = "Unauthorized")})</#if>
+    <#if openAPI>@Operation(summary = "authenticate the credential" )
+    @APIResponses(value = {
+        @APIResponse(responseCode = "200", description = "OK"),
+        @APIResponse(responseCode = "401", description = "Unauthorized")})</#if>
     @Path("/authenticate")
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
