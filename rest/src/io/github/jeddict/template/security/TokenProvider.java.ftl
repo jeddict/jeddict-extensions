@@ -1,6 +1,12 @@
 package ${package};
 
 import ${appPackage}${SecurityConfig_FQN};
+<#--import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.crypto.RSASSASigner;
+import com.nimbusds.jose.JOSEObjectType;
+import com.nimbusds.jwt.SignedJWT;
+import com.nimbusds.jwt.JWTClaimsSet;-->
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import static io.jsonwebtoken.Header.JWT_TYPE;
@@ -46,6 +52,28 @@ public class TokenProvider {
         this.tokenValidityMillisForRememberMe
                 = 1000 * securityConfig.getTokenValidityInSecondsForRememberMe();
     }
+<#-- 
+   public String createToken(String username, Set<String> groups, Boolean rememberMe) throws Exception {
+        long issuedTime = System.currentTimeMillis();
+        long expirationTime = issuedTime 
+                + (rememberMe ? tokenValidityMillisForRememberMe : tokenValidityMillis);
+
+        JWSHeader headers = new JWSHeader.Builder(JWSAlgorithm.RS256)
+                .type(JOSEObjectType.JWT)
+                .build();
+        JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
+                .jwtID(UUID.randomUUID().toString())
+                .subject(username)
+                .claim(Claims.groups.name(), groups)
+                .issuer(issuer)
+                .issueTime(new Date(issuedTime))
+                .expirationTime(new Date(expirationTime))
+                .build();
+
+        SignedJWT signedJWT = new SignedJWT(headers, claimsSet);
+        signedJWT.sign(new RSASSASigner(privateKey));
+        return signedJWT.serialize();
+    }-->
 
     public String createToken(String username, Set<String> groups, Boolean rememberMe) {
         long issuedTime = System.currentTimeMillis();
