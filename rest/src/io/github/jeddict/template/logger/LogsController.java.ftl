@@ -19,8 +19,8 @@ import javax.ws.rs.Path;
 public class ${LogsController} {
 
     @Path("/logs")
-    @GET
-    <#if metrics>@Timed</#if>
+    @GET<#if metrics>
+    @Timed</#if>
     public List<LoggerVM> getList() {
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
         return context.getLoggerList()
@@ -30,8 +30,8 @@ public class ${LogsController} {
     }
     
     @Path("/logs")
-    @PUT
-    <#if metrics>@Timed</#if>
+    @PUT<#if metrics>
+    @Timed</#if>
     public void changeLevel(LoggerVM jsonLogger) {
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
         context.getLogger(jsonLogger.getName()).setLevel(Level.valueOf(jsonLogger.getLevel()));

@@ -8,7 +8,7 @@ import ${entityPackage}.User;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Set;
-import java.util.stream.Collectors;
+import static java.util.stream.Collectors.toSet;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
@@ -58,7 +58,7 @@ public class UserDTO implements Serializable {
         this(user.getId(), user.getLogin(), user.getFirstName(), user.getLastName(),
                 user.getEmail(), user.getActivated(), user.getLangKey(),
                 user.getCreatedBy(), user.getCreatedDate(), user.getLastModifiedBy(), user.getLastModifiedDate(),
-                user.getAuthorities().stream().map(Authority::getName).collect(Collectors.toSet()));
+                user.getAuthorities().stream().map(Authority::getName).collect(toSet()));
     }
 
     public UserDTO(Long id, String login, String firstName, String lastName,
