@@ -9,8 +9,7 @@ import ${appPackage}${KeyAndPasswordVM_FQN};
 import ${appPackage}${ManagedUserVM_FQN};
 import ${appPackage}${PasswordChangeVM_FQN};
 import ${appPackage}${UserDTO_FQN};
-import ${appPackage}${HeaderUtil_FQN};<#if security == "JAXRS_JWT">
-import ${appPackage}${Secured_FQN};</#if>
+import ${appPackage}${HeaderUtil_FQN};
 import static ${appPackage}${Constants_FQN}.EMAIL_ALREADY_USED_TYPE;
 import static ${appPackage}${Constants_FQN}.EMAIL_NOT_FOUND_TYPE;
 import static ${appPackage}${Constants_FQN}.INVALID_PASSWORD_TYPE;
@@ -129,8 +128,7 @@ public class ${AccountController} {
     <#if openAPI>@Operation(summary = "check if the user is authenticated")</#if>
     @Path("/authenticate")
     @GET
-    @Produces({MediaType.TEXT_PLAIN})<#if security == "JAXRS_JWT">
-    @Secured</#if>
+    @Produces({MediaType.TEXT_PLAIN})
     @RolesAllowed(USER)
     public String isAuthenticated() {
         log.debug("REST request to check if the current user is authenticated");
@@ -149,8 +147,7 @@ public class ${AccountController} {
     @APIResponse(responseCode = "500", description = "Internal Server Error")</#if>
     @Path("/account")
     @GET
-    @Produces({MediaType.APPLICATION_JSON})<#if security == "JAXRS_JWT">
-    @Secured</#if>
+    @Produces({MediaType.APPLICATION_JSON})
     @RolesAllowed(USER)
     public Response getAccount() {
         return Optional.ofNullable(userService.getUserWithAuthorities())
@@ -173,8 +170,7 @@ public class ${AccountController} {
     @Path("/account")
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})<#if security == "JAXRS_JWT">
-    @Secured</#if>
+    @Produces({MediaType.APPLICATION_JSON})
     @RolesAllowed(USER)
     public Response saveAccount(@Valid UserDTO userDTO) {
         final String userLogin = securityHelper.getCurrentUserLogin();
@@ -206,8 +202,7 @@ public class ${AccountController} {
     @Path("/account/change-password")
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.TEXT_PLAIN})<#if security == "JAXRS_JWT">
-    @Secured</#if>
+    @Produces({MediaType.TEXT_PLAIN})
     @RolesAllowed(USER)
     public Response changePassword(PasswordChangeVM passwordChangeVM) {
         if (!checkPasswordLength(passwordChangeVM.getNewPassword())) {

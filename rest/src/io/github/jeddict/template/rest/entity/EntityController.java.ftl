@@ -21,8 +21,7 @@ import javax.ws.rs.core.Response;<#if pagination != "no">
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import ${appPackage}${Page_FQN};
-import ${appPackage}${PaginationUtil_FQN};</#if><#if security == "JAXRS_JWT">
-import ${appPackage}${Secured_FQN};</#if><#if metrics>
+import ${appPackage}${PaginationUtil_FQN};</#if><#if metrics>
 import org.eclipse.microprofile.metrics.annotation.Timed;</#if>
 import org.eclipse.microprofile.faulttolerance.Timeout;<#if openAPI>
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -31,8 +30,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;</#if>
 /**
  * REST controller for managing ${EntityClass}.
  */
-@Path("/api/${entityApiUrl}")<#if security == "JAXRS_JWT">
-@Secured</#if>
+@Path("/api/${entityApiUrl}")
 @RolesAllowed(USER)
 public class ${controllerClass} {
 

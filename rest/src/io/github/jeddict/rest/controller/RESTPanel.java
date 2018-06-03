@@ -101,7 +101,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         data.setLogger(isLogger());
         data.setOpenAPI(isOpenAPI());
         data.setTestCase(isTestCase());
-        data.setSecurityType(SecurityType.SECURITY_JWT);//getSecurityType());
+        data.setSecurityType(SecurityType.SECURITY_JWT);
     }
 
     private Project project;

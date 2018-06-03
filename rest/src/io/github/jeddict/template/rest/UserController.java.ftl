@@ -11,8 +11,6 @@ import ${appPackage}${Page_FQN};
 import ${appPackage}${PaginationUtil_FQN};
 import static ${appPackage}${Constants_FQN}.EMAIL_ALREADY_USED_TYPE;
 import static ${appPackage}${Constants_FQN}.LOGIN_ALREADY_USED_TYPE;
-<#if security == "JAXRS_JWT">import ${appPackage}${Secured_FQN};
-import ${appPackage}${AuthoritiesConstants_FQN};</#if>
 import static ${appPackage}${AuthoritiesConstants_FQN}.ADMIN;
 import static ${appPackage}${AuthoritiesConstants_FQN}.USER;
 import org.slf4j.Logger;
@@ -84,8 +82,7 @@ public class ${UserController} {
     @Path(value = "/users")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)<#if security == "JAXRS_JWT">
-    @Secured(AuthoritiesConstants.ADMIN)</#if>
+    @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed(ADMIN)
     public Response createUser(ManagedUserVM managedUserVM) throws URISyntaxException {
         log.debug("REST request to save User : {}", managedUserVM);
@@ -120,8 +117,7 @@ public class ${UserController} {
     @Path(value = "/users")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)<#if security == "JAXRS_JWT">
-    @Secured(AuthoritiesConstants.ADMIN)</#if>
+    @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed(ADMIN)
     public Response updateUser(ManagedUserVM managedUserVM) {
         log.debug("REST request to update User : {}", managedUserVM);
@@ -153,8 +149,7 @@ public class ${UserController} {
     @APIResponse(responseCode = "200", description = "OK")</#if>
     @Path(value = "/users")
     @GET
-    @Produces(MediaType.APPLICATION_JSON)<#if security == "JAXRS_JWT">
-    @Secured</#if>
+    @Produces(MediaType.APPLICATION_JSON)
     @Timeout
     @RolesAllowed(USER)
     public Response getAllUsers(@QueryParam("page") int page, @QueryParam("size") int size) throws URISyntaxException {
@@ -175,8 +170,7 @@ public class ${UserController} {
     <#if openAPI>@Operation(summary = "get roles")
     @APIResponse(responseCode = "200", description = "OK")</#if>
     @Path("/users/authorities")
-    @GET<#if security == "JAXRS_JWT">
-    @Secured(AuthoritiesConstants.ADMIN)</#if>
+    @GET
     @RolesAllowed(ADMIN)
     public List<String> getAuthorities() {
         return userService.getAuthorities();
@@ -195,8 +189,7 @@ public class ${UserController} {
     @APIResponse(responseCode = "404", description = "Not Found")</#if>
     @Path(value = "/users/{login}")
     @GET
-    @Produces(MediaType.APPLICATION_JSON)<#if security == "JAXRS_JWT">
-    @Secured</#if>
+    @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed(USER)
     public Response getUser(@PathParam("login") String login) {
         log.debug("REST request to get User : {}", login);
@@ -218,8 +211,7 @@ public class ${UserController} {
     @APIResponse(responseCode = "404", description = "Not Found")</#if>
     @Path(value = "/users/{login}")
     @DELETE
-    @Produces(MediaType.APPLICATION_JSON)<#if security == "JAXRS_JWT">
-    @Secured(AuthoritiesConstants.ADMIN)</#if>
+    @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed(ADMIN)
     public Response deleteUser(@PathParam("login") String login) {
         log.debug("REST request to delete User: {}", login);

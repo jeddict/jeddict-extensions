@@ -3,10 +3,8 @@ package ${package};
 import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-<#if security == "JAXRS_JWT">import javax.ws.rs.core.Context;
-import javax.ws.rs.core.SecurityContext;<#assign type = "User" ><#elseif security == "SECURITY_JWT">
 import javax.inject.Inject;
-import javax.security.enterprise.SecurityContext;<#assign type = "Caller" ></#if>
+import javax.security.enterprise.SecurityContext;
 
 /**
  * Utility class for Security.
@@ -15,15 +13,15 @@ import javax.security.enterprise.SecurityContext;<#assign type = "Caller" ></#if
 @Path("/api")
 public class SecurityHelper {
 
-    <#if security == "JAXRS_JWT">@Context<#elseif security == "SECURITY_JWT">@Inject</#if>
+    @Inject
     private SecurityContext securityContext;
 
     @Path(value = "/current-user")
     @GET
     public String getCurrentUserLogin() {
-        if (securityContext == null || securityContext.get${type}Principal() == null) {
+        if (securityContext == null || securityContext.getCallerPrincipal() == null) {
             return null;   
         }
-        return securityContext.get${type}Principal().getName();
+        return securityContext.getCallerPrincipal().getName();
     }
 }
