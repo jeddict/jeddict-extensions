@@ -52,7 +52,7 @@ public class ${controllerClass} {
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     <#if metrics>@Timed</#if>
-    <#if openAPI>@Operation(summary = "create a new ${entityInstance}", notes = "Create a new ${entityInstance}")
+    <#if openAPI>@Operation(summary = "create a new ${entityInstance}", description = "Create a new ${entityInstance}")
     @APIResponse(responseCode = "201", description = "Created")
     @APIResponse(responseCode = "400", description = "Bad Request")</#if>
     @POST
@@ -74,7 +74,7 @@ public class ${controllerClass} {
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     <#if metrics>@Timed</#if>
-    <#if openAPI>@Operation(summary = "update ${entityInstance}", notes = "Updates an existing ${entityInstance}")
+    <#if openAPI>@Operation(summary = "update ${entityInstance}", description = "Updates an existing ${entityInstance}")
     @APIResponse(responseCode = "200", description = "OK")
     @APIResponse(responseCode = "400", description = "Bad Request")
     @APIResponse(responseCode = "500", description = "Internal Server Error")</#if>
