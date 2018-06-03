@@ -40,8 +40,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;<#if metrics>
 import org.eclipse.microprofile.metrics.annotation.Timed;</#if><#if openAPI>
 import org.eclipse.microprofile.openapi.annotations.Operation;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;</#if>
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;</#if>
 
 /**
  * REST controller for managing the current user's account.
@@ -76,9 +75,8 @@ public class ${AccountController} {
      */
     <#if metrics>@Timed</#if>
     <#if openAPI>@Operation(summary = "register the user" )
-    @APIResponses(value = {
-        @APIResponse(responseCode = "201", description = "Created"),
-        @APIResponse(responseCode = "400", description = "Bad Request")})</#if>
+    @APIResponse(responseCode = "201", description = "Created")
+    @APIResponse(responseCode = "400", description = "Bad Request")</#if>
     @Path("/register")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -110,9 +108,8 @@ public class ${AccountController} {
      */
     <#if metrics>@Timed</#if>
     <#if openAPI>@Operation(summary = "activate the registered user" )
-    @APIResponses(value = {
-        @APIResponse(responseCode = "200", description = "OK"),
-        @APIResponse(responseCode = "500", description = "Internal Server Error")})</#if>
+    @APIResponse(responseCode = "200", description = "OK")
+    @APIResponse(responseCode = "500", description = "Internal Server Error")</#if>
     @Path("/activate")
     @GET
     @Produces({MediaType.APPLICATION_JSON})
@@ -129,7 +126,7 @@ public class ${AccountController} {
      * @return the login if the user is authenticated
      */
     <#if metrics>@Timed</#if>
-    <#if openAPI>@Operation(summary = "check if the user is authenticated" )</#if>
+    <#if openAPI>@Operation(summary = "check if the user is authenticated")</#if>
     @Path("/authenticate")
     @GET
     @Produces({MediaType.TEXT_PLAIN})<#if security == "JAXRS_JWT">
@@ -148,9 +145,8 @@ public class ${AccountController} {
      */
     <#if metrics>@Timed</#if>
     <#if openAPI>@Operation(summary = "get the current user" )
-    @APIResponses(value = {
-        @APIResponse(responseCode = "200", description = "OK"),
-        @APIResponse(responseCode = "500", description = "Internal Server Error")})</#if>
+    @APIResponse(responseCode = "200", description = "OK")
+    @APIResponse(responseCode = "500", description = "Internal Server Error")</#if>
     @Path("/account")
     @GET
     @Produces({MediaType.APPLICATION_JSON})<#if security == "JAXRS_JWT">
@@ -171,10 +167,9 @@ public class ${AccountController} {
      */
     <#if metrics>@Timed</#if>
     <#if openAPI>@Operation(summary = "update the current user information" )
-    @APIResponses(value = {
-        @APIResponse(responseCode = "200", description = "OK"),
-        @APIResponse(responseCode = "400", description = "Bad Request"),
-        @APIResponse(responseCode = "500", description = "Internal Server Error")})</#if>
+    @APIResponse(responseCode = "200", description = "OK")
+    @APIResponse(responseCode = "400", description = "Bad Request")
+    @APIResponse(responseCode = "500", description = "Internal Server Error")</#if>
     @Path("/account")
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
@@ -206,9 +201,8 @@ public class ${AccountController} {
      */
     <#if metrics>@Timed</#if>
     <#if openAPI>@Operation(summary = "changes the current user's password" )
-    @APIResponses(value = {
-        @APIResponse(responseCode = "200", description = "OK"),
-        @APIResponse(responseCode = "400", description = "Bad Request")})</#if>
+    @APIResponse(responseCode = "200", description = "OK")
+    @APIResponse(responseCode = "400", description = "Bad Request")</#if>
     @Path("/account/change-password")
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
@@ -233,9 +227,8 @@ public class ${AccountController} {
      */
     <#if metrics>@Timed</#if>
     <#if openAPI>@Operation(summary = "Send an e-mail to reset the password" )
-    @APIResponses(value = {
-        @APIResponse(responseCode = "200", description = "OK"),
-        @APIResponse(responseCode = "400", description = "Bad Request")})</#if>
+    @APIResponse(responseCode = "200", description = "OK")
+    @APIResponse(responseCode = "400", description = "Bad Request")</#if>
     @Path("/account/reset-password/init")
     @POST
     @Produces({MediaType.APPLICATION_JSON})
@@ -258,10 +251,9 @@ public class ${AccountController} {
      */
     <#if metrics>@Timed</#if>
     <#if openAPI>@Operation(summary = "reset the password" )
-    @APIResponses(value = {
-        @APIResponse(responseCode = "200", description = "OK"),
-        @APIResponse(responseCode = "400", description = "Bad Request"),
-        @APIResponse(responseCode = "500", description = "Internal Server Error")})</#if>
+    @APIResponse(responseCode = "200", description = "OK")
+    @APIResponse(responseCode = "400", description = "Bad Request")
+    @APIResponse(responseCode = "500", description = "Internal Server Error")</#if>
     @Path("/account/reset-password/finish")
     @POST
     @Consumes({MediaType.APPLICATION_JSON})

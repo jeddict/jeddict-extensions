@@ -39,8 +39,7 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;<#if metrics>
 import org.eclipse.microprofile.metrics.annotation.Timed;</#if>
 import org.eclipse.microprofile.faulttolerance.Timeout;<#if openAPI>
 import org.eclipse.microprofile.openapi.annotations.Operation;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;</#if>
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;</#if>
 
 /**
  * REST controller for managing users.
@@ -80,9 +79,8 @@ public class ${UserController} {
      */
     <#if metrics>@Timed</#if>
     <#if openAPI>@Operation(summary = "create a new user")
-    @APIResponses(value = {
-        @APIResponse(responseCode = "201", description = "Created"),
-        @APIResponse(responseCode = "400", description = "Bad Request")})</#if>
+    @APIResponse(responseCode = "201", description = "Created")
+    @APIResponse(responseCode = "400", description = "Bad Request")</#if>
     @Path(value = "/users")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -116,10 +114,9 @@ public class ${UserController} {
      */
     <#if metrics>@Timed</#if>
     <#if openAPI>@Operation(summary = "update user")
-    @APIResponses(value = {
-        @APIResponse(responseCode = "200", description = "OK"),
-        @APIResponse(responseCode = "400", description = "Bad Request"),
-        @APIResponse(responseCode = "500", description = "Internal Server Error")})</#if>
+    @APIResponse(responseCode = "200", description = "OK")
+    @APIResponse(responseCode = "400", description = "Bad Request")
+    @APIResponse(responseCode = "500", description = "Internal Server Error")</#if>
     @Path(value = "/users")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
@@ -153,8 +150,7 @@ public class ${UserController} {
      */
     <#if metrics>@Timed</#if>
     <#if openAPI>@Operation(summary = "get all the users")
-    @APIResponses(value = {
-        @APIResponse(responseCode = "200", description = "OK")})</#if>
+    @APIResponse(responseCode = "200", description = "OK")</#if>
     @Path(value = "/users")
     @GET
     @Produces(MediaType.APPLICATION_JSON)<#if security == "JAXRS_JWT">
@@ -177,8 +173,7 @@ public class ${UserController} {
      */
     <#if metrics>@Timed</#if>
     <#if openAPI>@Operation(summary = "get roles")
-    @APIResponses(value = {
-        @APIResponse(responseCode = "200", description = "OK")})</#if>
+    @APIResponse(responseCode = "200", description = "OK")</#if>
     @Path("/users/authorities")
     @GET<#if security == "JAXRS_JWT">
     @Secured(AuthoritiesConstants.ADMIN)</#if>
@@ -196,9 +191,8 @@ public class ${UserController} {
      */
     <#if metrics>@Timed</#if>
     <#if openAPI>@Operation(summary = "get the user")
-    @APIResponses(value = {
-        @APIResponse(responseCode = "200", description = "OK"),
-        @APIResponse(responseCode = "404", description = "Not Found")})</#if>
+    @APIResponse(responseCode = "200", description = "OK")
+    @APIResponse(responseCode = "404", description = "Not Found")</#if>
     @Path(value = "/users/{login}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)<#if security == "JAXRS_JWT">
@@ -220,9 +214,8 @@ public class ${UserController} {
      */
     <#if metrics>@Timed</#if>
     <#if openAPI>@Operation(summary = "remove the user" )
-    @APIResponses(value = {
-        @APIResponse(responseCode = "200", description = "OK"),
-        @APIResponse(responseCode = "404", description = "Not Found")})</#if>
+    @APIResponse(responseCode = "200", description = "OK")
+    @APIResponse(responseCode = "404", description = "Not Found")</#if>
     @Path(value = "/users/{login}")
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)<#if security == "JAXRS_JWT">

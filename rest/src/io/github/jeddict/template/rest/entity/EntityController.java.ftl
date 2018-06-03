@@ -26,8 +26,7 @@ import ${appPackage}${Secured_FQN};</#if><#if metrics>
 import org.eclipse.microprofile.metrics.annotation.Timed;</#if>
 import org.eclipse.microprofile.faulttolerance.Timeout;<#if openAPI>
 import org.eclipse.microprofile.openapi.annotations.Operation;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;</#if>
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;</#if>
 
 /**
  * REST controller for managing ${EntityClass}.
@@ -56,9 +55,8 @@ public class ${controllerClass} {
      */
     <#if metrics>@Timed</#if>
     <#if openAPI>@Operation(summary = "create a new ${entityInstance}", notes = "Create a new ${entityInstance}")
-    @APIResponses(value = {
-        @APIResponse(responseCode = "201", description = "Created"),
-        @APIResponse(responseCode = "400", description = "Bad Request")})</#if>
+    @APIResponse(responseCode = "201", description = "Created")
+    @APIResponse(responseCode = "400", description = "Bad Request")</#if>
     @POST
     public Response create${EntityClass}(${instanceType} ${instanceName}) throws URISyntaxException {
         log.debug("REST request to save ${EntityClass} : {}", ${instanceName});
@@ -79,10 +77,9 @@ public class ${controllerClass} {
      */
     <#if metrics>@Timed</#if>
     <#if openAPI>@Operation(summary = "update ${entityInstance}", notes = "Updates an existing ${entityInstance}")
-    @APIResponses(value = {
-        @APIResponse(responseCode = "200", description = "OK"),
-        @APIResponse(responseCode = "400", description = "Bad Request"),
-        @APIResponse(responseCode = "500", description = "Internal Server Error")})</#if>
+    @APIResponse(responseCode = "200", description = "OK")
+    @APIResponse(responseCode = "400", description = "Bad Request")
+    @APIResponse(responseCode = "500", description = "Internal Server Error")</#if>
     @PUT
     public Response update${EntityClass}(${instanceType} ${instanceName}) throws URISyntaxException {
         log.debug("REST request to update ${EntityClass} : {}", ${instanceName});
@@ -101,8 +98,7 @@ public class ${controllerClass} {
      */
     <#if metrics>@Timed</#if>
     <#if openAPI>@Operation(summary = "get all the ${entityInstancePlural}")
-    @APIResponses(value = {
-        @APIResponse(responseCode = "200", description = "OK")})</#if>
+    @APIResponse(responseCode = "200", description = "OK")</#if>
     @GET
     @Timeout
     <#if pagination == "no">
@@ -129,9 +125,8 @@ public class ${controllerClass} {
      */
     <#if metrics>@Timed</#if>
     <#if openAPI>@Operation(summary = "get the ${entityInstance}")
-    @APIResponses(value = {
-        @APIResponse(responseCode = "200", description = "OK"),
-        @APIResponse(responseCode = "404", description = "Not Found")})</#if>
+    @APIResponse(responseCode = "200", description = "OK")
+    @APIResponse(responseCode = "404", description = "Not Found")</#if>
     @Path("/{${pkName}}")
     @GET
     public Response get${EntityClass}(@PathParam("${pkName}") ${pkType} ${pkName}) {
@@ -150,9 +145,8 @@ public class ${controllerClass} {
      */
     <#if metrics>@Timed</#if>
     <#if openAPI>@Operation(summary = "remove the ${entityInstance}" )
-    @APIResponses(value = {
-        @APIResponse(responseCode = "200", description = "OK"),
-        @APIResponse(responseCode = "404", description = "Not Found")})</#if>
+    @APIResponse(responseCode = "200", description = "OK")
+    @APIResponse(responseCode = "404", description = "Not Found")</#if>
     @Path("/{${pkName}}")
     @DELETE
     public Response remove${EntityClass}(@PathParam("${pkName}") ${pkType} ${pkName}) {

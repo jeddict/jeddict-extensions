@@ -19,8 +19,7 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;<#if metrics>
 import org.eclipse.microprofile.metrics.annotation.Timed;</#if><#if openAPI>
 import org.eclipse.microprofile.openapi.annotations.Operation;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;</#if>
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;</#if>
 
 @Path("/api")
 public class ${AuthenticationController} {
@@ -43,9 +42,8 @@ public class ${AuthenticationController} {
      */
     <#if metrics>@Timed</#if>
     <#if openAPI>@Operation(summary = "authenticate the credential" )
-    @APIResponses(value = {
-        @APIResponse(responseCode = "200", description = "OK"),
-        @APIResponse(responseCode = "401", description = "Unauthorized")})</#if>
+    @APIResponse(responseCode = "200", description = "OK")
+    @APIResponse(responseCode = "401", description = "Unauthorized")</#if>
     @Path("/authenticate")
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
