@@ -45,6 +45,7 @@ import io.github.jeddict.jcode.annotation.Technology;
 import static io.github.jeddict.jcode.annotation.Technology.Type.VIEWER;
 import io.github.jeddict.jcode.task.progress.ProgressHandler;
 import io.github.jeddict.jcode.util.WebDDUtil;
+import static io.github.jeddict.jcode.util.WebDDUtil.DD_NAME;
 import io.github.jeddict.jpa.spec.Entity;
 import io.github.jeddict.jpa.spec.EntityMappings;
 import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
@@ -150,7 +151,7 @@ public class JSPViewerGenerator implements Generator{
             handler.progress(Console.wrap(NbBundle.getMessage(WebDDUtil.class, "MSG_Init_WelcomeFile", jspData.getFolder()), FG_MAGENTA, BOLD, UNDERLINE));
             Map<String, Object> params = new HashMap<>();
             params.put("WELCOME_FILE", welcomeFile);
-            WebDDUtil.createDD(project, WEB_XML_DD, params);
+            WebDDUtil.createDD(project, WEB_XML_DD, params, targetDir -> true);
         }
         handler.progress(Console.wrap(NbBundle.getMessage(WebDDUtil.class, "MSG_Progress_WelcomeFile", jspData.getFolder()), FG_MAGENTA, BOLD, UNDERLINE));
     }
