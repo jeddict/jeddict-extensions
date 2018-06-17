@@ -22,16 +22,20 @@ import io.github.jeddict.jcode.annotation.Runtime;
 import static io.github.jeddict.jcode.jpa.PersistenceProviderType.ECLIPSELINK;
 import io.github.jeddict.jcode.util.BuildManager;
 import io.github.jeddict.jcode.util.POMManager;
+import java.util.Properties;
 import org.openide.util.lookup.ServiceProvider;
 import org.netbeans.modules.maven.model.pom.POMExtensibilityElement;
 
 @ServiceProvider(service = RuntimeProvider.class)
 @Runtime(name = "PAYARA_MICRO",
         displayName = "Payara Micro",
-        version = "5.181",
+        version = "5.182",
         persistenceProvider = ECLIPSELINK,
         embeddedDB = H2)
 public final class PayaraMicro extends Payara {
+    
+    private static final String WEB_PORT = "web.port";
+    private static final String DEVELOPMENT_PROFILE = "dev";
     
     @Override
     public String getDockerTemplate() {
@@ -57,8 +61,14 @@ public final class PayaraMicro extends Payara {
             return true;
         });
         pomManager.commit();
-        appConfigData.addGoal("payara-micro:" + (docker ? "bundle" : "start"));
+        appConfigData.addGoalAndActivate(project, "payara-micro:" + (docker ? "bundle" : "start"));
 
+        Properties properties = new Properties();
+        properties.put(WEB_PORT, "8080");//for micro maven plugin
+        BuildManager.getInstance(project)
+                .addDefaultProperties(DEVELOPMENT_PROFILE, properties)
+                .commit();
+        
         if (docker) {
             BuildManager.getInstance(project)
                 .copy(TEMPLATE + "payara/micro/pom/_pom_docker.xml")

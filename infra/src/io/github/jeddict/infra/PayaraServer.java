@@ -20,13 +20,12 @@ import io.github.jeddict.jcode.RuntimeProvider;
 import io.github.jeddict.jcode.annotation.Runtime;
 import static io.github.jeddict.jcode.jpa.PersistenceProviderType.ECLIPSELINK;
 import io.github.jeddict.jcode.util.BuildManager;
-import io.github.jeddict.jcode.util.POMManager;
 import org.openide.util.lookup.ServiceProvider;
 
 @ServiceProvider(service = RuntimeProvider.class)
 @Runtime(name = "PAYARA_SERVER",
         displayName = "Payara Server",
-        version = "5.181",
+        version = "5.182",
         persistenceProvider = ECLIPSELINK,
         embeddedDB = H2)
 public final class PayaraServer extends Payara {
