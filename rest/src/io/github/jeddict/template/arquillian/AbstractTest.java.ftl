@@ -5,11 +5,13 @@ import ${appPackage}${AbstractRepository_FQN};
 import ${appPackage}${EntityManagerProducer_FQN};
 import ${appPackage}${LoggerProducer_FQN};
 import java.io.File;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Map;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
+import junit.framework.AssertionFailedError;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -17,7 +19,6 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.jboss.shrinkwrap.resolver.api.maven.MavenResolverSystem;
-import org.junit.Before;
 
 /**
  * Abstract class for base application packaging.
@@ -26,51 +27,45 @@ import org.junit.Before;
 public abstract class AbstractTest {
 
     @ArquillianResource
-    private URL deploymentUrl;
-    private WebTarget webTarget;
-    protected final static MavenResolverSystem RESOLVER = Maven.resolver();
+    protected static URL deploymentUrl;
+
+    private final static MavenResolverSystem RESOLVER = Maven.resolver();
 
     public static WebArchive buildArchive() {
-        File[] shrinkwrapResolverLib = 
-                RESOLVER.resolve("org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-impl-maven:2.2.0")
-                        .withTransitivity()
-                        .asFile();
-        File[] httpMatchersLib = 
-                RESOLVER.resolve("org.valid4j:http-matchers:1.0")
-                        .withTransitivity()
-                        .asFile();
-        File[] libs = 
-                RESOLVER.loadPomFromFile("pom.xml")
+        File[] libs
+                = RESOLVER.loadPomFromFile("pom.xml")
                         .importCompileAndRuntimeDependencies()
+                        .importTestDependencies()
                         .resolve()
                         .withTransitivity()
                         .asFile();
 
-        final WebArchive archive = ShrinkWrap.create(WebArchive.class);
-        archive.addClass(${AbstractRepository}.class)
+        return ShrinkWrap.create(WebArchive.class)
                 .addPackage(HeaderUtil.class.getPackage())
-                .addClass(EntityManagerProducer.class)
-                .addClass(LoggerProducer.class)
-                .addAsLibraries(shrinkwrapResolverLib)
-                .addAsLibraries(httpMatchersLib)
+                .addClasses(
+                        ${AbstractRepository}.class,
+                        EntityManagerProducer.class,
+                        LoggerProducer.class)
                 .addAsLibraries(libs)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"))
                 .addAsResource("test-persistence.xml", "META-INF/persistence.xml")
                 .setWebXML("web.xml");
-        return archive;
     }
 
-    @Before
-    public void buildWebTarget() throws Exception {
-        webTarget = ClientBuilder.newClient().target(deploymentUrl.toURI().toString() + "${applicationPath}/");
+    protected WebTarget buildWebTarget() {
+        try {
+            return ClientBuilder.newClient().target(deploymentUrl.toURI().toString() + "resources/");
+        } catch (URISyntaxException ex) {
+            throw new AssertionFailedError(ex.getMessage());
+        }
     }
 
     protected Invocation.Builder target(String path) {
-        return webTarget.path(path).request();
+        return buildWebTarget().path(path).request();
     }
 
     protected Invocation.Builder target(String path, Map<String, Object> params) {
-        WebTarget target = webTarget.path(path);
+        WebTarget target = buildWebTarget().path(path);
         for (String key : params.keySet()) {
             if (path.contains(String.format("{%s}", key))) {
                 target = target.resolveTemplate(key, params.get(key));

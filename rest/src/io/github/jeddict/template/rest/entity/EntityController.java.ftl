@@ -11,12 +11,15 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.security.RolesAllowed;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;<#if pagination != "no">
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -56,6 +59,8 @@ public class ${controllerClass} {
     @APIResponse(responseCode = "201", description = "Created")
     @APIResponse(responseCode = "400", description = "Bad Request")</#if>
     @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response create${EntityClass}(${instanceType} ${instanceName}) throws URISyntaxException {
         log.debug("REST request to save ${EntityClass} : {}", ${instanceName});
         ${entityRepository}.create(${instanceName});
@@ -79,6 +84,8 @@ public class ${controllerClass} {
     @APIResponse(responseCode = "400", description = "Bad Request")
     @APIResponse(responseCode = "500", description = "Internal Server Error")</#if>
     @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response update${EntityClass}(${instanceType} ${instanceName}) throws URISyntaxException {
         log.debug("REST request to update ${EntityClass} : {}", ${instanceName});
         ${entityRepository}.edit(${instanceName});
@@ -98,6 +105,7 @@ public class ${controllerClass} {
     <#if openAPI>@Operation(summary = "get all the ${entityInstancePlural}")
     @APIResponse(responseCode = "200", description = "OK")</#if>
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @Timeout
     <#if pagination == "no">
     public List<${instanceType}> getAll${EntityClassPlural}() {
@@ -125,8 +133,9 @@ public class ${controllerClass} {
     <#if openAPI>@Operation(summary = "get the ${entityInstance}")
     @APIResponse(responseCode = "200", description = "OK")
     @APIResponse(responseCode = "404", description = "Not Found")</#if>
-    @Path("/{${pkName}}")
     @GET
+    @Path("/{${pkName}}")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response get${EntityClass}(@PathParam("${pkName}") ${pkType} ${pkName}) {
         log.debug("REST request to get ${EntityClass} : {}", ${pkName});
         ${instanceType} ${instanceName} = ${entityRepository}.find(${pkName});
@@ -145,8 +154,8 @@ public class ${controllerClass} {
     <#if openAPI>@Operation(summary = "remove the ${entityInstance}" )
     @APIResponse(responseCode = "200", description = "OK")
     @APIResponse(responseCode = "404", description = "Not Found")</#if>
-    @Path("/{${pkName}}")
     @DELETE
+    @Path("/{${pkName}}")
     public Response remove${EntityClass}(@PathParam("${pkName}") ${pkType} ${pkName}) {
         log.debug("REST request to delete ${EntityClass} : {}", ${pkName});
         ${entityRepository}.remove(${entityRepository}.find(${pkName}));

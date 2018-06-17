@@ -6,7 +6,7 @@
     <defaultProtocol type="Servlet 3.0"/>
     <container qualifier="payara">
         <configuration>
-            <property name="domain">payaradomain</property>
+            <property name="domain">production</property>
         </configuration>
     </container>
     

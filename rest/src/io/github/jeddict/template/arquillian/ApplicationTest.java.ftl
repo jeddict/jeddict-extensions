@@ -17,14 +17,23 @@ import ${appPackage}${User_FQN};
 import ${appPackage}${AuthorityRepository_FQN};
 import ${appPackage}${UserRepository_FQN};
 import static ${package}.AbstractTest.buildArchive;
+import java.net.URL;
 import java.util.Map;
-import javax.ws.rs.client.Entity;
+import java.util.function.Supplier;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Before;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import javax.ws.rs.core.Response.Status;
+import junit.framework.AssertionFailedError;
+import org.eclipse.microprofile.rest.client.RestClientBuilder;
+import org.junit.After;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import org.junit.Before;
+import static org.valid4j.matchers.http.HttpResponseMatchers.hasStatus;
 
 /**
  * Abstract class for application packaging.
@@ -37,9 +46,11 @@ public abstract class ApplicationTest extends AbstractTest {
     protected static final String INVALID_PASSWORD = "invalid_password";
     protected static final String INCORRECT_PASSWORD = "pw";
     protected static final String NEW_PASSWORD = "newpw";
-    private static final String AUTH_RESOURCE_PATH = "api/authenticate";
+    protected static final String INVALID_RESET_KEY = "invalid_reset_key";
 
     protected String tokenId;
+
+    protected AuthenticationControllerClient authClient;
 
     public static WebArchive buildApplication() {
         return buildArchive()
@@ -51,18 +62,20 @@ public abstract class ApplicationTest extends AbstractTest {
                         ManagedUserVM.class.getPackage(),
                         SecurityHelper.class.getPackage(), 
                         RandomUtil.class.getPackage())
-                .addClass(TemplateEngineProducer.class)
-                .addClass(User.class)
-                .addClass(Authority.class)
-                .addClass(AbstractAuditingEntity.class)
-                .addClass(AuditListner.class)
-                .addClass(${UserRepository}.class)
-                .addClass(${AuthorityRepository}.class)
-                .addClass(${UserService}.class)
-                .addClass(${AuthenticationController}.class)
-                .addClass(AbstractTest.class)
-                .addClass(ApplicationTest.class)
-                .addClass(ApplicationTestConfig.class)
+                .addClasses(
+                        TemplateEngineProducer.class,
+                        User.class,
+                        Authority.class,
+                        AbstractAuditingEntity.class,
+                        AuditListner.class,
+                        ${UserRepository}.class,
+                        ${AuthorityRepository}.class,
+                        ${UserService}.class,
+                        ${AuthenticationController}.class,
+                        ${AuthenticationController}Client.class,
+                        AbstractTest.class,
+                        ApplicationTest.class,
+                        ApplicationTestConfig.class)
                 .addAsResource("META-INF/sql/insert.sql")
                 .addAsResource("META-INF/microprofile-config.properties")
                 .addAsResource("i18n/messages.properties")
@@ -73,6 +86,11 @@ public abstract class ApplicationTest extends AbstractTest {
 
     @Before
     public void setUp() throws Exception {
+        try {
+            authClient = buildClient(AuthenticationControllerClient.class);
+        } catch (Exception ex) {
+            throw new AssertionFailedError(ex.getMessage());
+        }
         login(USERNAME, PASSWORD);
     }
 
@@ -85,7 +103,8 @@ public abstract class ApplicationTest extends AbstractTest {
         LoginDTO loginDTO = new LoginDTO();
         loginDTO.setUsername(username);
         loginDTO.setPassword(password);
-        Response response = target(AUTH_RESOURCE_PATH).post(Entity.json(loginDTO));
+
+        Response response = authClient.login(loginDTO);
         tokenId = response.getHeaderString(AUTHORIZATION);
         return response;
     }
@@ -104,4 +123,23 @@ public abstract class ApplicationTest extends AbstractTest {
         return super.target(path, params).header(AUTHORIZATION, tokenId);
     }
 
+    protected <T> T buildClient(Class<? extends T> type) throws Exception {
+        RestClientBuilder builder = RestClientBuilder.newBuilder();
+        if (tokenId != null) {
+            builder.register((ClientRequestFilter) context -> context.getHeaders().add(AUTHORIZATION, tokenId));
+}
+        return builder.baseUrl(new URL(deploymentUrl.toURI().toString() + "resources/"))
+                .build(type);
+    }
+
+    public <T> void assertWebException(Status status, Supplier supplier) {
+        try {
+            supplier.get();
+            fail("WebApplicationException not thrown");
+        } catch (WebApplicationException wae) {
+            assertThat(wae.getResponse(), hasStatus(status));
+        } catch (Throwable throwable) {
+            throw new AssertionFailedError("Unexpected exception type thrown : " + throwable.getClass());
+        }
+    }
 }

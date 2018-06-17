@@ -1,5 +1,6 @@
 package ${package};
 
+import static ${appPackage}${ApplicationTest_FQN}.USERNAME;
 import ${appPackage}${AuthoritiesConstants_FQN};
 import ${appPackage}${AuthorityRepository_FQN};
 import ${appPackage}${UserRepository_FQN};
@@ -8,13 +9,11 @@ import ${appPackage}${ManagedUserVM_FQN};
 import ${appPackage}${PasswordChangeVM_FQN};
 import ${appPackage}${UserDTO_FQN};
 import ${appPackage}${User_FQN};
-import java.util.Arrays;
-import static java.util.Collections.singletonMap;
-import java.util.HashSet;
+import static ${appPackage}${AuthoritiesConstants_FQN}.ADMIN;
+import static ${appPackage}${AuthoritiesConstants_FQN}.USER;
+import static java.util.Collections.singleton;
 import java.util.Optional;
 import javax.inject.Inject;
-import javax.ws.rs.client.Entity;
-import static javax.ws.rs.client.Entity.json;
 import javax.ws.rs.core.Response;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.CREATED;
@@ -32,6 +31,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
+import org.junit.Before;
 import static org.valid4j.matchers.http.HttpResponseMatchers.hasStatus;
 
 /**
@@ -47,14 +47,23 @@ public class ${AccountControllerTest} extends ApplicationTest {
     @Inject
     private ${AuthorityRepository} ${authorityRepository};
 
+    private ${AccountController}Client client;
+
     @Deployment
     public static WebArchive createDeployment() {
-        return buildApplication().addClass(${AccountController}.class);
+        return buildApplication()
+                .addClass(${AccountController}.class)
+                .addClass(${AccountController}Client.class);
+    }
+
+    @Before
+    public void buildClient() throws Exception {
+        client = buildClient(${AccountController}Client.class);
     }
 
     @Test
-    public void testGetExistingAccount() throws Exception {
-        Response response = target("api/account").get();
+    public void testGetExistingAccount() {
+        Response response = client.getAccount();
         assertThat(response, hasStatus(OK));
         UserDTO user = response.readEntity(UserDTO.class);
         assertNotNull(user);
@@ -64,8 +73,7 @@ public class ${AccountControllerTest} extends ApplicationTest {
     @Test
     public void testGetUnknownAccount() throws Exception {
         logout();
-        Response response = target("api/account").get();
-        assertThat(response, hasStatus(UNAUTHORIZED));
+        assertWebException(UNAUTHORIZED, () -> client.getAccount());
     }
 
     @Test
@@ -83,10 +91,10 @@ public class ${AccountControllerTest} extends ApplicationTest {
                 null, // createdDate
                 null, // lastModifiedBy
                 null, // lastModifiedDate
-                new HashSet<>(Arrays.asList(AuthoritiesConstants.USER))
+                singleton(USER) // authorities
         );
 
-        Response response = target("api/register").post(json(validUser));
+        Response response = client.registerAccount(validUser);
         assertThat(response, hasStatus(CREATED));
 
         Optional<User> user = ${userRepository}.findOneByLogin("joe");
@@ -207,7 +215,7 @@ public class ${AccountControllerTest} extends ApplicationTest {
                 null, // createdDate
                 null, // lastModifiedBy
                 null, // lastModifiedDate
-                new HashSet<>(Arrays.asList(AuthoritiesConstants.USER))
+                singleton(USER) // authorities
         );
 
         // Duplicate login, different e-mail
@@ -221,12 +229,11 @@ public class ${AccountControllerTest} extends ApplicationTest {
         );
 
         // Good user
-        Response response = target("api/register").post(json(validUser));
+        Response response = client.registerAccount(validUser);
         assertThat(response, hasStatus(CREATED));
 
         // Duplicate login
-        Response errorResponse = target("api/register").post(json(duplicatedUser));
-        assertThat(errorResponse, hasStatus(BAD_REQUEST));
+        assertWebException(BAD_REQUEST, () -> client.registerAccount(duplicatedUser));
 
         Optional<User> userDup = ${userRepository}.findOneByEmail("alicejr@example.com");
         assertFalse(userDup.isPresent());
@@ -248,7 +255,7 @@ public class ${AccountControllerTest} extends ApplicationTest {
                 null, // createdDate
                 null, // lastModifiedBy
                 null, // lastModifiedDate
-                new HashSet<>(Arrays.asList(AuthoritiesConstants.USER))
+                singleton(USER) // authorities
         );
 
         // Duplicate e-mail, different login
@@ -262,12 +269,11 @@ public class ${AccountControllerTest} extends ApplicationTest {
         );
 
         // Good user
-        Response response = target("api/register").post(json(validUser));
+        Response response = client.registerAccount(validUser);
         assertThat(response, hasStatus(CREATED));
 
         // Duplicate  e-mail
-        Response errorResponse = target("api/register").post(json(duplicatedUser));
-        assertThat(errorResponse, hasStatus(BAD_REQUEST));
+        assertWebException(BAD_REQUEST, () -> client.registerAccount(duplicatedUser));
 
         Optional<User> userDup = ${userRepository}.findOneByLogin("johnjr");
         assertFalse(userDup.isPresent());
@@ -288,10 +294,10 @@ public class ${AccountControllerTest} extends ApplicationTest {
                 null, // createdDate
                 null, // lastModifiedBy
                 null, // lastModifiedDate
-                new HashSet<>(Arrays.asList(AuthoritiesConstants.ADMIN))
+                singleton(ADMIN) // authorities
         );
 
-        Response response = target("api/register").post(json(validUser));
+        Response response = client.registerAccount(validUser);
         assertThat(response, hasStatus(CREATED));
 
         Optional<User> userDup = ${userRepository}.findOneByLogin("badguy");
@@ -316,89 +322,80 @@ public class ${AccountControllerTest} extends ApplicationTest {
                 null, // createdDate
                 null, // lastModifiedBy
                 null, // lastModifiedDate
-                new HashSet<>(Arrays.asList(AuthoritiesConstants.USER))
+                singleton(USER) // authorities
         );
 
-        Response response = target("api/register").post(json(user));
+        Response response = client.registerAccount(user);
         assertThat(response, hasStatus(CREATED));
 
-        Response resetResponse = target("api/account/reset-password/init").post(Entity.text("gaurav.gupta.jc@example.com"));
-        assertThat(resetResponse, hasStatus(BAD_REQUEST));
+        assertWebException(BAD_REQUEST, () -> client.requestPasswordReset("gaurav.gupta.jc@example.com"));
     }
 
     @Test
     public void assertThatUserMustExistToResetPassword() {
-        Response resetResponse = target("api/account/reset-password/init").post(Entity.text("john.doe@example.com"));
-        assertThat(resetResponse, hasStatus(BAD_REQUEST));
+        assertWebException(BAD_REQUEST, () -> client.requestPasswordReset("john.doe@example.com"));
 
-        resetResponse = target("api/account/reset-password/init").post(Entity.text("admin@example.com"));
-        assertThat(resetResponse, hasStatus(OK));
+        Response response = client.requestPasswordReset("admin@example.com");
+        assertThat(response, hasStatus(OK));
     }
 
     @Test
     public void testfinishPasswordReset() {
         KeyAndPasswordVM keyAndPasswordVM = new KeyAndPasswordVM();
-        keyAndPasswordVM.setKey("invalid_reset_key");
+        keyAndPasswordVM.setKey(INVALID_RESET_KEY);
         keyAndPasswordVM.setNewPassword(PASSWORD);
-
-        Response response = target("api/account/reset-password/finish").post(json(keyAndPasswordVM));
-        assertThat(response, hasStatus(INTERNAL_SERVER_ERROR));
+        assertWebException(INTERNAL_SERVER_ERROR, () -> client.finishPasswordReset(keyAndPasswordVM));
 
         keyAndPasswordVM.setNewPassword(INCORRECT_PASSWORD);
-        response = target("api/account/reset-password/finish").post(json(keyAndPasswordVM));
-        assertThat(response, hasStatus(BAD_REQUEST));
+        assertWebException(BAD_REQUEST, () -> client.finishPasswordReset(keyAndPasswordVM));
     }
 
     @Test
     public void testSaveAccount() throws Exception {
-        Response response = target("api/account").get();
-        assertThat(response, hasStatus(Response.Status.OK));
+        Response response = client.getAccount();
+        assertThat(response, hasStatus(OK));
         ManagedUserVM user = response.readEntity(ManagedUserVM.class);
         user.setLastName("Gupta");
 
-        response = target("api/account").post(json(user));
+        response = client.saveAccount(user);
         assertThat(response, hasStatus(OK));
     }
 
     @Test
     public void testSaveUserDuplicateEmail() throws Exception {
-        Response response = target("api/account").get();
-        assertThat(response, hasStatus(Response.Status.OK));
+        Response response = client.getAccount();
+        assertThat(response, hasStatus(OK));
         ManagedUserVM user = response.readEntity(ManagedUserVM.class);
         user.setEmail("user@example.com");
-
-        response = target("api/account").post(json(user));
-        assertThat(response, hasStatus(BAD_REQUEST));
+        assertWebException(BAD_REQUEST, () -> client.saveAccount(user));
     }
 
     @Test
     public void testChangePassword() throws Exception {
-        
+        Response response;
         PasswordChangeVM passwordChangeVM = new PasswordChangeVM();
         
         //Invalid password
         passwordChangeVM.setCurrentPassword(PASSWORD);
         passwordChangeVM.setNewPassword(INCORRECT_PASSWORD);
-        Response response = target("api/account/change-password").post(json(passwordChangeVM));
-        assertThat(response, hasStatus(BAD_REQUEST));
+        assertWebException(BAD_REQUEST, () -> client.changePassword(passwordChangeVM));
 
         //Valid password
         passwordChangeVM.setNewPassword(NEW_PASSWORD);
-        response = target("api/account/change-password").post(json(passwordChangeVM));
+        response = client.changePassword(passwordChangeVM);
         assertThat(response, hasStatus(OK));
         
         //Valid password
         passwordChangeVM.setCurrentPassword(NEW_PASSWORD);
         passwordChangeVM.setNewPassword(PASSWORD);
-        response = target("api/account/change-password").post(json(passwordChangeVM));
+        response = client.changePassword(passwordChangeVM);
         assertThat(response, hasStatus(OK));
     }
 
     @Test
     public void testActivateAccountInvalidResetKey() throws Exception {
         //Invalid Reset Key
-        Response response = target("api/activate", singletonMap("key", "invalid_reset_key")).get();
-        assertThat(response, hasStatus(INTERNAL_SERVER_ERROR));
+        assertWebException(INTERNAL_SERVER_ERROR, () -> client.activateAccount(INVALID_RESET_KEY));
     }
 
 }

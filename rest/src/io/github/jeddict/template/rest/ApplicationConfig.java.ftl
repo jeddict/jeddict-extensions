@@ -2,8 +2,6 @@ package ${package};
 
 import static ${appPackage}${AuthoritiesConstants_FQN}.ADMIN;
 import static ${appPackage}${AuthoritiesConstants_FQN}.USER;
-import java.util.HashSet;
-import java.util.Set;
 import javax.annotation.security.DeclareRoles;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
@@ -19,7 +17,7 @@ import eu.agilejava.snoop.annotation.EnableSnoopClient;
 @DeclareRoles({ADMIN, USER})
 @ApplicationPath("${applicationPath}")
 public class ${applicationConfig} extends Application {
-
+<#--
     @Override
     public Set<Class<?>> getClasses() {
         Set<Class<?>> resources = new HashSet<>();
@@ -36,17 +34,7 @@ public class ${applicationConfig} extends Application {
         <#if microservices || monolith><#list entityControllerList as entityController>
         resources.add(${entityController.package}.${entityController.name}.class);
         </#list></#if>
-        //addRestResourceClasses(resources);
         return resources;
     }
-
-    /**
-     * Do not modify addRestResourceClasses() method.
-     * It is automatically populated with
-     * all resources defined in the project.
-     * If required, comment out calling this method in getClasses().
-     */
-    private void addRestResourceClasses(Set<Class<?>> resources) {
-    }
-
+-->
 }

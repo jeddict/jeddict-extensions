@@ -147,7 +147,7 @@ public class RESTGenerator implements Generator {
             REPOSITORY_TEMPLATES, SERVICE_TEMPLATES, POST_SERVICE_TEMPLATES,
             CONTROLLER_TEMPLATES, CONTROLLER_UTIL_TEMPLATES, DTO_TEMPLATES,
             METRICS_TEMPLATES, VM_TEMPLATES,
-            TEST_CASE_TEMPLATES, TEST_CASE_CONTROLLER_TEMPLATES, 
+            TEST_CASE_TEMPLATES, TEST_CASE_CONTROLLER_TEMPLATES, TEST_CASE_CONTROLLER_CLINET_TEMPLATES, 
             MICROSERVICES_TEMPLATES, MICROSERVICES_CONTROLLER_TEMPLATES, 
             GATEWAY_TEMPLATES, GATEWAY_CONTROLLER_TEMPLATES, GATEWAY_VM_TEMPLATES;
     
@@ -168,6 +168,7 @@ public class RESTGenerator implements Generator {
         VM_TEMPLATES = new ArrayList<>();
         TEST_CASE_TEMPLATES = new ArrayList<>();
         TEST_CASE_CONTROLLER_TEMPLATES = new ArrayList<>();
+        TEST_CASE_CONTROLLER_CLINET_TEMPLATES = new ArrayList<>();
         MICROSERVICES_TEMPLATES = new ArrayList<>();
         MICROSERVICES_CONTROLLER_TEMPLATES = new ArrayList<>();
         GATEWAY_TEMPLATES = new ArrayList<>();
@@ -236,8 +237,13 @@ public class RESTGenerator implements Generator {
             if (appConfigData.isMonolith() || appConfigData.isGateway()) {
                 TEST_CASE_TEMPLATES.add(new Template("arquillian/ApplicationTest.java.ftl", "ApplicationTest"));
                 TEST_CASE_TEMPLATES.add(new Template("arquillian/ApplicationTestConfig.java.ftl", "ApplicationTestConfig"));
+            
                 TEST_CASE_CONTROLLER_TEMPLATES.add(new Template("arquillian/AccountControllerTest.java.ftl", "Account"));
                 TEST_CASE_CONTROLLER_TEMPLATES.add(new Template("arquillian/UserControllerTest.java.ftl", "User"));
+                
+                TEST_CASE_CONTROLLER_CLINET_TEMPLATES.add(new Template("arquillian/AuthenticationControllerClient.java.ftl", "Authentication"));
+                TEST_CASE_CONTROLLER_CLINET_TEMPLATES.add(new Template("arquillian/AccountControllerClient.java.ftl", "Account"));
+                TEST_CASE_CONTROLLER_CLINET_TEMPLATES.add(new Template("arquillian/UserControllerClient.java.ftl", "User"));
             }
         }
 
@@ -491,12 +497,12 @@ public class RESTGenerator implements Generator {
                     .filter(attr -> !attr.getJsonbTransient())
                     .filter(attr -> getAttributeDefaultValue(attr.getDataTypeLabel()) != null)
                     .filter(attr -> isAllowedConstraint(
-                    attr.getAttributeConstraints()
-                            .stream()
-                            .filter(Constraint::getSelected)
-                            .map(Constraint::getClass)
-                            .collect(toSet())
-            ))
+                                        attr.getAttributeConstraints()
+                                                .stream()
+                                                .filter(Constraint::getSelected)
+                                                .map(Constraint::getClass)
+                                                .collect(toSet())
+                    ))
                     .map(con)
                     .collect(toList());
             contollerParams.put("attributes", basicAttributes);
@@ -505,12 +511,12 @@ public class RESTGenerator implements Generator {
             contollerParams.put("connectedClasses", connectedClasses.stream().map(jc -> JavaIdentifiers.unqualify(jc)).collect(toList()));
             contollerParams.put("connectedFQClasses", connectedClasses);
 
-            String controllerTestFileName = controllerFileName + "Test";
             FileObject targetTestFolder = SourceGroupSupport.getFolderForPackage(targetTestSource,
                     entity.getAbsolutePackage(appConfigData.getTargetPackage() + '.' + restData.getPackage()),
                     true);
+            
+            String controllerTestFileName = controllerFileName + "Test";
             controllerFO = targetTestFolder.getFileObject(controllerTestFileName, JAVA_EXT);
-
             if (controllerFO != null) {
                 if (overrideExisting) {
                     controllerFO.delete();
@@ -520,6 +526,18 @@ public class RESTGenerator implements Generator {
             }
             handler.progress(controllerTestFileName);
             expandTemplate(TEMPLATE + "arquillian/EntityControllerTest.java.ftl", targetTestFolder, controllerTestFileName + '.' + JAVA_EXT, contollerParams);
+            
+            String controllerClientFileName = controllerFileName + "Client";
+            controllerFO = targetTestFolder.getFileObject(controllerClientFileName, JAVA_EXT);
+            if (controllerFO != null) {
+                if (overrideExisting) {
+                    controllerFO.delete();
+                } else {
+                    throw new IOException("File already exists exception: " + controllerFO.getPath());
+                }
+            }
+            handler.progress(controllerClientFileName);
+            expandTemplate(TEMPLATE + "arquillian/EntityControllerClient.java.ftl", targetTestFolder, controllerClientFileName + '.' + JAVA_EXT, contollerParams);
         }
 
         restEntityInfo.add(new RestEntityInfo(entity.getAbsolutePackage(appConfigData.getTargetPackage() + '.' + restData.getPackage()), controllerFileName, entityNameSpinalCased));
@@ -601,6 +619,7 @@ public class RESTGenerator implements Generator {
                 reloadGatewayPackage(params);
                 expandServerSideComponent(gatewayTestSource, appConfigData.getGatewayPackage(), restData.getPackage(), EMPTY, EMPTY, TEST_CASE_TEMPLATES, params);
                 expandServerSideComponent(gatewayTestSource, appConfigData.getGatewayPackage(), restData.getPackage(), restData.getPrefixName(), restData.getSuffixName() + "Test", TEST_CASE_CONTROLLER_TEMPLATES, params);
+                expandServerSideComponent(gatewayTestSource, appConfigData.getGatewayPackage(), restData.getPackage(), restData.getPrefixName(), restData.getSuffixName() + "Client", TEST_CASE_CONTROLLER_CLINET_TEMPLATES, params);
             }
             if (appConfigData.isMicroservice()) {
                 reloadTargetPackage(params);
