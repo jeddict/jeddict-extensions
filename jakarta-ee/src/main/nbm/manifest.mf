@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Display-Category: Jeddict
+OpenIDE-Module: io.github.jeddict.jakarta.ee
+OpenIDE-Module-Short-Description: Jakarta EE (Java EE) templates

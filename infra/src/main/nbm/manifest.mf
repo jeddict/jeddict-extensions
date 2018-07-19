@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+OpenIDE-Module: io.github.jeddict.infra
+OpenIDE-Module-Display-Category: Jeddict
+OpenIDE-Module-Short-Description: Infa module provides docker, server and db connection functionality.

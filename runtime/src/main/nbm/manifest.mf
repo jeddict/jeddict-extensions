@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+OpenIDE-Module: io.github.jeddict.runtime
+OpenIDE-Module-Display-Category: Jeddict
+OpenIDE-Module-Short-Description: Runtime module is used for vendor(Payara, Wildfly etc) specific extesnion
