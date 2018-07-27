@@ -15,6 +15,15 @@
  */
 package io.github.jeddict.mvc.viewer.dto;
 
+import io.github.jeddict.mvc.util.CustomJpaControllerUtil;
+import io.github.jeddict.mvc.util.NotGetterMethodException;
+import static io.github.jeddict.jcode.util.JavaUtil.isGetterMethod;
+import io.github.jeddict.jcode.util.StringHelper;
+import static io.github.jeddict.mvc.viewer.dto.HtmlType.CHECKBOX;
+import static io.github.jeddict.mvc.viewer.dto.HtmlType.DATE;
+import static io.github.jeddict.mvc.viewer.dto.HtmlType.INVALID;
+import static io.github.jeddict.mvc.viewer.dto.HtmlType.NUMBER;
+import static io.github.jeddict.mvc.viewer.dto.HtmlType.TEXT;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -35,15 +44,6 @@ import javax.lang.model.util.Types;
 import org.netbeans.api.java.source.CompilationController;
 import org.netbeans.api.java.source.JavaSource;
 import org.netbeans.api.java.source.Task;
-import io.github.jeddict.jcode.util.StringHelper;
-import static io.github.jeddict.jcode.util.StringHelper.isGetterMethod;
-import io.github.jeddict.generator.internal.util.CustomJpaControllerUtil;
-import io.github.jeddict.generator.internal.util.NotGetterMethodException;
-import static io.github.jeddict.mvc.viewer.dto.HtmlType.CHECKBOX;
-import static io.github.jeddict.mvc.viewer.dto.HtmlType.DATE;
-import static io.github.jeddict.mvc.viewer.dto.HtmlType.INVALID;
-import static io.github.jeddict.mvc.viewer.dto.HtmlType.NUMBER;
-import static io.github.jeddict.mvc.viewer.dto.HtmlType.TEXT;
 import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
 import static org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers.getPackageName;
 import org.openide.filesystems.FileObject;

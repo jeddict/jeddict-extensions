@@ -15,6 +15,29 @@
  */
 package io.github.jeddict.repository;
 
+import io.github.jeddict.docker.generator.DockerGenerator;
+import io.github.jeddict.jcode.ApplicationConfigData;
+import io.github.jeddict.jcode.Generator;
+import io.github.jeddict.jcode.annotation.ConfigData;
+import io.github.jeddict.jcode.annotation.Technology;
+import static io.github.jeddict.jcode.annotation.Technology.Type.BUSINESS;
+import io.github.jeddict.jcode.console.Console;
+import static io.github.jeddict.jcode.console.Console.*;
+import io.github.jeddict.jcode.task.progress.ProgressHandler;
+import static io.github.jeddict.jcode.util.AttributeType.getWrapperType;
+import static io.github.jeddict.jcode.util.AttributeType.isPrimitive;
+import io.github.jeddict.jcode.util.BuildManager;
+import static io.github.jeddict.jcode.util.Constants.JAVA_EXT;
+import static io.github.jeddict.jcode.util.ProjectHelper.getFolderForPackage;
+import static io.github.jeddict.jcode.util.StringHelper.firstLower;
+import static io.github.jeddict.jcode.util.StringHelper.firstUpper;
+import static io.github.jeddict.jcode.util.StringHelper.pluralize;
+import io.github.jeddict.jpa.spec.DefaultAttribute;
+import io.github.jeddict.jpa.spec.EmbeddedId;
+import io.github.jeddict.jpa.spec.Entity;
+import io.github.jeddict.jpa.spec.EntityMappings;
+import io.github.jeddict.jpa.spec.Id;
+import io.github.jeddict.jpa.spec.extend.Attribute;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,35 +45,10 @@ import java.util.Map;
 import java.util.Set;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import io.github.jeddict.docker.generator.DockerGenerator;
-import io.github.jeddict.jcode.console.Console;
-import static io.github.jeddict.jcode.console.Console.*;
-import static io.github.jeddict.jcode.util.AttributeType.getWrapperType;
-import static io.github.jeddict.jcode.util.AttributeType.isPrimitive;
-import static io.github.jeddict.jcode.util.Constants.JAVA_EXT;
-import io.github.jeddict.jcode.util.POMManager;
-import io.github.jeddict.jcode.util.SourceGroupSupport;
-import static io.github.jeddict.jcode.util.StringHelper.firstLower;
-import static io.github.jeddict.jcode.util.StringHelper.firstUpper;
-import static io.github.jeddict.jcode.util.StringHelper.pluralize;
-import io.github.jeddict.jcode.annotation.ConfigData;
-import io.github.jeddict.jcode.Generator;
-import io.github.jeddict.jcode.annotation.Technology;
-import static io.github.jeddict.jcode.annotation.Technology.Type.BUSINESS;
-import io.github.jeddict.jcode.ApplicationConfigData;
-import io.github.jeddict.jcode.task.progress.ProgressHandler;
-import io.github.jeddict.jcode.util.BuildManager;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
-import io.github.jeddict.jpa.spec.DefaultAttribute;
-import io.github.jeddict.jpa.spec.EmbeddedId;
-import io.github.jeddict.jpa.spec.Entity;
-import io.github.jeddict.jpa.spec.EntityMappings;
-import io.github.jeddict.jpa.spec.Id;
-import io.github.jeddict.jpa.spec.extend.Attribute;
 import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
 import org.openide.filesystems.FileObject;
-import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -144,7 +142,7 @@ public final class RepositoryGenerator implements Generator {
 
     private FileObject generateProducer(SourceGroup source, String appPackage) throws IOException {
         String _package = appPackage + ".producer";
-        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, _package, true);
+        FileObject targetFolder = getFolderForPackage(source, _package, true);
         String fileName = "EntityManagerProducer";
         FileObject afFO = targetFolder.getFileObject(fileName, JAVA_EXT);//skips here
         if (afFO == null) {
@@ -159,7 +157,7 @@ public final class RepositoryGenerator implements Generator {
 
     private FileObject generateAbstract(boolean overrideExisting, SourceGroup source, String appPackage) throws IOException {
         //create the abstract repository class
-        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, appPackage + '.' + repositoryData.getPackage(), true);
+        FileObject targetFolder = getFolderForPackage(source, appPackage + '.' + repositoryData.getPackage(), true);
         String fileName = repositoryData.getPrefixName() + REPOSITORY_ABSTRACT + repositoryData.getSuffixName();
         FileObject afFO = targetFolder.getFileObject(fileName, JAVA_EXT);//skips here
 
@@ -188,7 +186,7 @@ public final class RepositoryGenerator implements Generator {
      * @return the generated files.
      */
     private FileObject generate(final Entity entity, boolean overrideExisting) throws IOException {
-        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(appConfigData.getTargetSourceGroup(), 
+        FileObject targetFolder = getFolderForPackage(appConfigData.getTargetSourceGroup(),
                 entity.getAbsolutePackage(appConfigData.getTargetPackage() + '.' + repositoryData.getPackage()), 
                 true);
         String entityFQN = entity.getFQN();

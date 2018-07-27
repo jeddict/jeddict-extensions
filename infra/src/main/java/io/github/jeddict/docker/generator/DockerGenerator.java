@@ -15,43 +15,43 @@
  */
 package io.github.jeddict.docker.generator;
 
+import io.github.jeddict.jcode.ApplicationConfigData;
+import io.github.jeddict.jcode.DatabaseDriver;
+import io.github.jeddict.jcode.DatabaseType;
+import io.github.jeddict.jcode.Generator;
+import static io.github.jeddict.jcode.JPAConstants.JDBC_DRIVER;
+import static io.github.jeddict.jcode.JPAConstants.JDBC_PASSWORD;
+import static io.github.jeddict.jcode.JPAConstants.JDBC_URL;
+import static io.github.jeddict.jcode.JPAConstants.JDBC_USER;
+import static io.github.jeddict.jcode.RegistryType.CONSUL;
+import io.github.jeddict.jcode.annotation.ConfigData;
+import io.github.jeddict.jcode.annotation.Runtime;
+import io.github.jeddict.jcode.annotation.Technology;
+import io.github.jeddict.jcode.console.Console;
+import static io.github.jeddict.jcode.console.Console.*;
+import io.github.jeddict.jcode.generator.ApplicationGenerator;
+import io.github.jeddict.jcode.jpa.PersistenceProviderType;
+import io.github.jeddict.jcode.task.progress.ProgressHandler;
+import static io.github.jeddict.jcode.util.FileUtil.expandTemplate;
+import io.github.jeddict.jcode.util.POMManager;
+import io.github.jeddict.jcode.util.PersistenceUtil;
+import static io.github.jeddict.jcode.util.PersistenceUtil.removeProperty;
+import static io.github.jeddict.jcode.util.ProjectHelper.getDockerDirectory;
+import io.github.jeddict.jpa.spec.EntityMappings;
 import java.io.IOException;
+import java.security.SecureRandom;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
-import io.github.jeddict.jcode.DatabaseDriver;
-import io.github.jeddict.jcode.DatabaseType;
-import io.github.jeddict.jcode.annotation.Runtime;
-import io.github.jeddict.jcode.console.Console;
-import static io.github.jeddict.jcode.console.Console.*;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
-import io.github.jeddict.jcode.util.POMManager;
-import io.github.jeddict.jcode.util.PersistenceUtil;
-import static io.github.jeddict.jcode.util.PersistenceUtil.removeProperty;
-import static io.github.jeddict.jcode.util.ProjectHelper.getDockerDirectory;
 import org.netbeans.modules.j2ee.persistence.dd.common.PersistenceUnit;
 import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
-import static io.github.jeddict.jcode.util.FileUtil.expandTemplate;
-import static io.github.jeddict.jcode.jpa.JPAConstants.JDBC_DRIVER;
-import static io.github.jeddict.jcode.jpa.JPAConstants.JDBC_PASSWORD;
-import static io.github.jeddict.jcode.jpa.JPAConstants.JDBC_URL;
-import static io.github.jeddict.jcode.jpa.JPAConstants.JDBC_USER;
-import io.github.jeddict.jcode.jpa.PersistenceProviderType;
-import io.github.jeddict.jcode.Generator;
-import io.github.jeddict.jcode.ApplicationConfigData;
-import static io.github.jeddict.jcode.RegistryType.CONSUL;
-import io.github.jeddict.jcode.annotation.ConfigData;
-import io.github.jeddict.jcode.annotation.Technology;
-import io.github.jeddict.jcode.generator.ApplicationGenerator;
-import io.github.jeddict.jcode.task.progress.ProgressHandler;
-import io.github.jeddict.jpa.spec.EntityMappings;
-import java.security.SecureRandom;
-import java.util.Collections;
 
 /**
  * Generates Docker image.

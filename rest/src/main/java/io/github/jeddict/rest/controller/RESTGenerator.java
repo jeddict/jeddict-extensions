@@ -20,11 +20,56 @@ import static io.github.jeddict.bv.constraints.ConstraintUtil.getAttributeDefaul
 import static io.github.jeddict.bv.constraints.ConstraintUtil.getAttributeUpdateValue;
 import static io.github.jeddict.bv.constraints.ConstraintUtil.isAllowedConstraint;
 import io.github.jeddict.cdi.CDIUtil;
+import io.github.jeddict.docker.generator.DockerConfigData;
+import io.github.jeddict.jcode.ApplicationConfigData;
+import io.github.jeddict.jcode.Generator;
+import static io.github.jeddict.jcode.RegistryType.CONSUL;
+import static io.github.jeddict.jcode.RegistryType.SNOOPEE;
+import io.github.jeddict.jcode.annotation.ConfigData;
+import io.github.jeddict.jcode.annotation.Technology;
+import static io.github.jeddict.jcode.annotation.Technology.Type.CONTROLLER;
+import io.github.jeddict.jcode.console.Console;
+import static io.github.jeddict.jcode.console.Console.BOLD;
+import static io.github.jeddict.jcode.console.Console.FG_DARK_RED;
+import static io.github.jeddict.jcode.console.Console.UNDERLINE;
+import io.github.jeddict.jcode.task.progress.ProgressHandler;
+import static io.github.jeddict.jcode.util.AttributeType.isBoolean;
+import static io.github.jeddict.jcode.util.AttributeType.isPrimitive;
+import io.github.jeddict.jcode.util.BuildManager;
+import static io.github.jeddict.jcode.util.Constants.JAVA_EXT;
+import io.github.jeddict.jcode.util.FileUtil;
+import static io.github.jeddict.jcode.util.FileUtil.expandTemplate;
+import static io.github.jeddict.jcode.util.JavaUtil.getMethodName;
+import static io.github.jeddict.jcode.util.PersistenceUtil.addClasses;
+import static io.github.jeddict.jcode.util.PersistenceUtil.addProperty;
+import static io.github.jeddict.jcode.util.PersistenceUtil.getPersistenceUnit;
+import static io.github.jeddict.jcode.util.PersistenceUtil.updatePersistenceUnit;
+import io.github.jeddict.jcode.util.ProjectHelper;
+import static io.github.jeddict.jcode.util.ProjectHelper.getFolderForPackage;
+import static io.github.jeddict.jcode.util.ProjectHelper.getTestSourceGroup;
+import static io.github.jeddict.jcode.util.StringHelper.camelCase;
+import static io.github.jeddict.jcode.util.StringHelper.firstLower;
+import static io.github.jeddict.jcode.util.StringHelper.firstUpper;
+import static io.github.jeddict.jcode.util.StringHelper.kebabCase;
+import static io.github.jeddict.jcode.util.StringHelper.pluralize;
+import static io.github.jeddict.jcode.util.StringHelper.startCase;
+import static io.github.jeddict.jcode.util.StringHelper.toConstant;
+import io.github.jeddict.jpa.spec.DefaultAttribute;
+import io.github.jeddict.jpa.spec.DefaultClass;
+import io.github.jeddict.jpa.spec.EmbeddedId;
+import io.github.jeddict.jpa.spec.Entity;
+import io.github.jeddict.jpa.spec.EntityMappings;
+import io.github.jeddict.jpa.spec.extend.Attribute;
+import io.github.jeddict.jpa.spec.extend.PaginationType;
+import io.github.jeddict.repository.RepositoryData;
+import io.github.jeddict.repository.RepositoryGenerator;
+import static io.github.jeddict.repository.RepositoryGenerator.REPOSITORY_ABSTRACT;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import static java.util.Collections.EMPTY_MAP;
+import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import java.util.HashMap;
 import java.util.List;
@@ -36,62 +81,15 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import org.apache.commons.lang3.StringUtils;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import io.github.jeddict.docker.generator.DockerConfigData;
-import io.github.jeddict.jcode.console.Console;
-import static io.github.jeddict.jcode.console.Console.BOLD;
-import static io.github.jeddict.jcode.console.Console.FG_DARK_RED;
-import static io.github.jeddict.jcode.console.Console.UNDERLINE;
-import static io.github.jeddict.jcode.util.AttributeType.isBoolean;
-import static io.github.jeddict.jcode.util.AttributeType.isPrimitive;
-import static io.github.jeddict.jcode.util.Constants.JAVA_EXT;
-import io.github.jeddict.jcode.util.FileUtil;
-import io.github.jeddict.jcode.util.POMManager;
-import static io.github.jeddict.jcode.util.PersistenceUtil.addClasses;
-import static io.github.jeddict.jcode.util.PersistenceUtil.addProperty;
-import static io.github.jeddict.jcode.util.PersistenceUtil.getPersistenceUnit;
-import static io.github.jeddict.jcode.util.PersistenceUtil.updatePersistenceUnit;
-import io.github.jeddict.jcode.util.ProjectHelper;
-import io.github.jeddict.jcode.util.SourceGroupSupport;
-import static io.github.jeddict.jcode.util.StringHelper.firstLower;
-import static io.github.jeddict.jcode.util.StringHelper.firstUpper;
-import static io.github.jeddict.jcode.util.StringHelper.getMethodName;
-import static io.github.jeddict.jcode.util.StringHelper.kebabCase;
-import static io.github.jeddict.jcode.util.StringHelper.pluralize;
-import static io.github.jeddict.jcode.util.StringHelper.startCase;
-import static io.github.jeddict.jcode.util.StringHelper.toConstant;
-import io.github.jeddict.jcode.Generator;
-import io.github.jeddict.jcode.ApplicationConfigData;
-import static io.github.jeddict.jcode.RegistryType.CONSUL;
-import static io.github.jeddict.jcode.RegistryType.SNOOPEE;
-import io.github.jeddict.jcode.annotation.ConfigData;
-import io.github.jeddict.jcode.annotation.Technology;
-import static io.github.jeddict.jcode.annotation.Technology.Type.CONTROLLER;
-import io.github.jeddict.jcode.task.progress.ProgressHandler;
-import io.github.jeddict.jcode.util.BuildManager;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
-import static io.github.jeddict.jcode.util.SourceGroupSupport.getFolderForPackage;
+import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
 import org.netbeans.modules.j2ee.persistence.dd.common.PersistenceUnit;
 import org.netbeans.modules.j2ee.persistence.dd.common.Property;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
-import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
-import static io.github.jeddict.jcode.util.FileUtil.expandTemplate;
-import static io.github.jeddict.jcode.util.StringHelper.camelCase;
-import io.github.jeddict.jpa.spec.DefaultAttribute;
-import io.github.jeddict.jpa.spec.EmbeddedId;
-import io.github.jeddict.jpa.spec.EntityMappings;
-import io.github.jeddict.jpa.spec.extend.Attribute;
-import io.github.jeddict.jpa.spec.extend.PaginationType;
-import io.github.jeddict.repository.RepositoryData;
-import io.github.jeddict.repository.RepositoryGenerator;
-import static io.github.jeddict.repository.RepositoryGenerator.REPOSITORY_ABSTRACT;
-import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
-import io.github.jeddict.jpa.spec.Entity;
-import io.github.jeddict.jpa.spec.DefaultClass;
-import static java.util.Collections.singletonList;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
  *
@@ -271,8 +269,8 @@ public class RESTGenerator implements Generator {
         targetSource = appConfigData.getTargetSourceGroup();
         gatewayProject = appConfigData.getGatewayProject();
         gatewaySource = appConfigData.getGatewaySourceGroup();
-        targetTestSource = SourceGroupSupport.getTestSourceGroup(targetProject);
-        gatewayTestSource = SourceGroupSupport.getTestSourceGroup(gatewayProject);
+        targetTestSource = getTestSourceGroup(targetProject);
+        gatewayTestSource = getTestSourceGroup(gatewayProject);
 
         handler.progress(Console.wrap(RESTGenerator.class, "MSG_Progress_Generating_REST", FG_DARK_RED, BOLD, UNDERLINE));
         entityPackage = entityMapping.getEntityPackage();
@@ -397,8 +395,8 @@ public class RESTGenerator implements Generator {
         if (idAttribute != null) {
             String dataType = idAttribute.getDataTypeLabel();
             contollerParams.put("pkName", firstLower(idAttribute.getName()));
-            contollerParams.put("pkGetter", "get" + getMethodName(idAttribute.getName()));
-            contollerParams.put("pkSetter", "set" + getMethodName(idAttribute.getName()));
+            contollerParams.put("pkGetter", getMethodName("get", idAttribute.getName()));
+            contollerParams.put("pkSetter", getMethodName("set", idAttribute.getName()));
             contollerParams.put("pkType", dataType);
             contollerParams.put("isPKPrimitive", isPrimitive(dataType));
         }
@@ -436,7 +434,7 @@ public class RESTGenerator implements Generator {
         contollerParams.put("metrics", appConfigData.isCompleteApplication() && restData.isMetrics());
         contollerParams.put("openAPI", appConfigData.isCompleteApplication() && restData.isOpenAPI());
 
-        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(targetSource, entity.getAbsolutePackage(appConfigData.getTargetPackage() + '.' + restData.getPackage()), true);
+        FileObject targetFolder = getFolderForPackage(targetSource, entity.getAbsolutePackage(appConfigData.getTargetPackage() + '.' + restData.getPackage()), true);
 
         controllerFO = targetFolder.getFileObject(controllerFileName, JAVA_EXT);
         if (controllerFO != null) {
@@ -511,7 +509,7 @@ public class RESTGenerator implements Generator {
             contollerParams.put("connectedClasses", connectedClasses.stream().map(jc -> JavaIdentifiers.unqualify(jc)).collect(toList()));
             contollerParams.put("connectedFQClasses", connectedClasses);
 
-            FileObject targetTestFolder = SourceGroupSupport.getFolderForPackage(targetTestSource,
+            FileObject targetTestFolder = getFolderForPackage(targetTestSource,
                     entity.getAbsolutePackage(appConfigData.getTargetPackage() + '.' + restData.getPackage()),
                     true);
             
@@ -747,7 +745,7 @@ public class RESTGenerator implements Generator {
                     }
                     param.put(templateFile + "_FQN", templatePackage + '.' + fileName);
                     if (appConfigData.isCompleteApplication()) {
-                        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(targetSourceGroup, (String) param.get("package"), true);
+                        FileObject targetFolder = getFolderForPackage(targetSourceGroup, (String) param.get("package"), true);
                         handler.progress(fileName);
                         expandTemplate(TEMPLATE + template.getPath(), targetFolder, fileName + '.' + JAVA_EXT, param);
                     }
@@ -761,7 +759,7 @@ public class RESTGenerator implements Generator {
     }
 
     private void generateApplicationConfig(Map<String, Object> params, String contextPath, SourceGroup source, String appPackage) throws IOException {
-        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, appPackage + '.' + restData.getPackage(), true);
+        FileObject targetFolder = getFolderForPackage(source, appPackage + '.' + restData.getPackage(), true);
         Map<String, Object> appParams = new HashMap<>(params);
         appParams.put("entityControllerList", restEntityInfo);
         appParams.put("package", appPackage + '.' + restData.getPackage());
@@ -792,7 +790,7 @@ public class RESTGenerator implements Generator {
 
     private FileObject generateLoggerProducer(SourceGroup source, String appPackage) throws IOException {
         String _package = appPackage + ".producer";
-        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, _package, true);
+        FileObject targetFolder = getFolderForPackage(source, _package, true);
         String fileName = "LoggerProducer";
         FileObject afFO = targetFolder.getFileObject(fileName, JAVA_EXT);
         if (afFO == null) {

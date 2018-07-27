@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.github.jeddict.mvc.auth.controller;
+package io.github.jeddict.rest.converter;
 
 import io.github.jeddict.jcode.task.progress.ProgressHandler;
 import io.github.jeddict.jcode.util.Constants;
@@ -30,16 +30,16 @@ import org.openide.filesystems.FileObject;
  *
  * @author Gaurav Gupta
  */
-public class AuthMechanismGenerator {
+public class ParamConvertorGenerator {
 
-    private static final String AUTH_MECHANISM_CLASS = "AuthenticationMechanismHandler";
-    private static final String TEMPLATE = "/io/github/jeddict/mvc/auth/controller/AuthenticationMechanismHandler.ftl";
+    private static final String PARAM_CONVERTER_CLASS = "CustomParamConverterProvider";
+    private static final String TEMPLATE = "/io/github/jeddict/rest/converter/CustomParamConverterProvider.ftl";
 
     public static void generate(final Project project, final SourceGroup sourceGroup, FileObject packageFolder, ProgressHandler handler) throws IOException {
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("package", getPackageForFolder(sourceGroup, packageFolder));
-        handler.progress(AUTH_MECHANISM_CLASS);
-        FileUtil.expandTemplate(TEMPLATE, packageFolder, AUTH_MECHANISM_CLASS + Constants.JAVA_EXT_SUFFIX, params);
+        handler.progress(PARAM_CONVERTER_CLASS);
+        FileUtil.expandTemplate(TEMPLATE, packageFolder, PARAM_CONVERTER_CLASS + Constants.JAVA_EXT_SUFFIX, params);
         
     }
 

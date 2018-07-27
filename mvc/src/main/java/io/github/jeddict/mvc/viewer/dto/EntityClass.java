@@ -22,11 +22,11 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import org.netbeans.api.java.classpath.ClassPath;
 import org.netbeans.api.java.source.ClasspathInfo;
-import io.github.jeddict.generator.internal.util.CustomJpaControllerUtil;
-import static io.github.jeddict.jcode.jpa.JPAConstants.EMBEDDED_ID_FQN;
-import static io.github.jeddict.jcode.jpa.JPAConstants.GENERATED_VALUE_FQN;
-import static io.github.jeddict.jcode.jpa.JPAConstants.ID_FQN;
-import static io.github.jeddict.jcode.jpa.JPAConstants.TEMPORAL_FQN;
+import io.github.jeddict.mvc.util.CustomJpaControllerUtil;
+import static io.github.jeddict.jcode.JPAConstants.EMBEDDED_ID_FQN;
+import static io.github.jeddict.jcode.JPAConstants.GENERATED_VALUE_FQN;
+import static io.github.jeddict.jcode.JPAConstants.ID_FQN;
+import static io.github.jeddict.jcode.JPAConstants.TEMPORAL_FQN;
 import org.openide.filesystems.FileObject;
 
 

@@ -15,15 +15,13 @@
  */
 package io.github.jeddict.runtime;
 
-import static io.github.jeddict.runtime.Payara.TEMPLATE;
 import io.github.jeddict.jcode.ApplicationConfigData;
 import io.github.jeddict.jcode.DatabaseType;
+import static io.github.jeddict.jcode.JPAConstants.JAVA_DATASOURCE_PREFIX;
 import io.github.jeddict.jcode.RuntimeProvider;
 import io.github.jeddict.jcode.annotation.ConfigData;
-import static io.github.jeddict.jcode.jpa.JPAConstants.JAVA_DATASOURCE_PREFIX;
 import io.github.jeddict.jcode.jpa.PersistenceProviderType;
 import io.github.jeddict.jcode.util.BuildManager;
-import io.github.jeddict.jcode.util.POMManager;
 import io.github.jeddict.jpa.spec.EntityMappings;
 import org.netbeans.api.project.Project;
 

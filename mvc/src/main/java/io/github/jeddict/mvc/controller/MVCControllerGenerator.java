@@ -26,6 +26,75 @@ import com.sun.source.tree.Tree;
 import com.sun.source.tree.TypeParameterTree;
 import com.sun.source.tree.VariableTree;
 import com.sun.source.tree.WildcardTree;
+import static io.github.jeddict.cdi.CDIConstants.INJECT;
+import io.github.jeddict.cdi.CDIUtil;
+import io.github.jeddict.cdi.logger.LoggerProducerGenerator;
+import io.github.jeddict.jcode.ApplicationConfigData;
+import static io.github.jeddict.jcode.BeanVaildationConstants.EXECUTABLE_TYPE;
+import static io.github.jeddict.jcode.BeanVaildationConstants.VALID;
+import static io.github.jeddict.jcode.BeanVaildationConstants.VALIDATE_ON_EXECUTION;
+import io.github.jeddict.jcode.Generator;
+import io.github.jeddict.jcode.annotation.ConfigData;
+import io.github.jeddict.jcode.annotation.Technology;
+import static io.github.jeddict.jcode.annotation.Technology.Type.CONTROLLER;
+import io.github.jeddict.jcode.console.Console;
+import static io.github.jeddict.jcode.console.Console.BOLD;
+import static io.github.jeddict.jcode.console.Console.FG_DARK_RED;
+import static io.github.jeddict.jcode.console.Console.UNDERLINE;
+import io.github.jeddict.jcode.task.progress.ProgressHandler;
+import io.github.jeddict.jcode.util.AttributeType.Type;
+import static io.github.jeddict.jcode.util.AttributeType.Type.ARRAY;
+import static io.github.jeddict.jcode.util.AttributeType.Type.PRIMITIVE;
+import static io.github.jeddict.jcode.util.AttributeType.Type.PRIMITIVE_ARRAY;
+import static io.github.jeddict.jcode.util.AttributeType.Type.STRING;
+import static io.github.jeddict.jcode.util.AttributeType.Type.WRAPPER;
+import static io.github.jeddict.jcode.util.AttributeType.getType;
+import static io.github.jeddict.jcode.util.AttributeType.getWrapperType;
+import io.github.jeddict.jcode.util.BuildManager;
+import static io.github.jeddict.jcode.util.Constants.JAVA_EXT;
+import io.github.jeddict.jcode.util.Constants.MimeType;
+import static io.github.jeddict.jcode.util.Constants.PASSWORD;
+import static io.github.jeddict.jcode.util.Constants.VOID;
+import io.github.jeddict.jcode.util.Inflector;
+import io.github.jeddict.jcode.util.JavaIdentifiers;
+import io.github.jeddict.jcode.util.JavaSourceHelper;
+import static io.github.jeddict.jcode.util.ProjectHelper.getFolderForPackage;
+import io.github.jeddict.jcode.util.StringHelper;
+import io.github.jeddict.jpa.spec.DefaultAttribute;
+import io.github.jeddict.jpa.spec.DefaultClass;
+import io.github.jeddict.jpa.spec.Entity;
+import io.github.jeddict.jpa.spec.EntityMappings;
+import io.github.jeddict.jpa.spec.extend.Attribute;
+import io.github.jeddict.jpa.spec.extend.AttributeAnnotation;
+import io.github.jeddict.mvc.MVCConstants;
+import static io.github.jeddict.mvc.MVCConstants.BINDING_RESULT;
+import static io.github.jeddict.mvc.MVCConstants.CSRF_VALID;
+import static io.github.jeddict.mvc.MVCConstants.MODELS;
+import static io.github.jeddict.mvc.MVCConstants.REDIRECT;
+import static io.github.jeddict.mvc.MVCConstants.VIEWABLE;
+import io.github.jeddict.mvc.auth.controller.AuthMechanismGenerator;
+import io.github.jeddict.mvc.auth.controller.LoginControllerGenerator;
+import static io.github.jeddict.mvc.controller.ErrorBeanGenerator.ERROR_BEAN_CLASS;
+import static io.github.jeddict.mvc.controller.ValidationUtilGenerator.BINDING_RESULT_VAR;
+import static io.github.jeddict.mvc.controller.ValidationUtilGenerator.ERROR_BEAN_VAR;
+import static io.github.jeddict.mvc.controller.ValidationUtilGenerator.VALIDATION_UTIL_CLASS;
+import io.github.jeddict.mvc.controller.event.ControllerEventGenerator;
+import io.github.jeddict.mvc.controller.returntype.ControllerReturnType;
+import io.github.jeddict.mvc.viewer.jsp.JSPData;
+import io.github.jeddict.repository.RepositoryData;
+import io.github.jeddict.repository.RepositoryGenerator;
+import static io.github.jeddict.rest.RestConstants.BEAN_PARAM;
+import static io.github.jeddict.rest.RestConstants.FORM_PARAM;
+import static io.github.jeddict.rest.RestConstants.RESPONSE;
+import static io.github.jeddict.rest.RestConstants.RESPONSE_UNQF;
+import io.github.jeddict.rest.applicationconfig.RestConfigData;
+import static io.github.jeddict.rest.applicationconfig.RestConfigPanel.DEFAULT_RESOURCE_FOLDER;
+import io.github.jeddict.rest.converter.ParamConvertorGenerator;
+import io.github.jeddict.rest.util.RestGenerationOptions;
+import static io.github.jeddict.security.SecurityConstants.CALLER_NAME;
+import static io.github.jeddict.security.SecurityConstants.CREDENTIALS;
+import static io.github.jeddict.security.SecurityConstants.DEFAULT_CREDENTIALS;
+import static io.github.jeddict.security.SecurityConstants.EMBEDDED_IDENTITY_STORE_DEFINITION;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -52,87 +121,16 @@ import org.netbeans.api.java.source.TreeUtilities;
 import org.netbeans.api.java.source.WorkingCopy;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
-import static io.github.jeddict.jcode.bv.BeanVaildationConstants.EXECUTABLE_TYPE;
-import static io.github.jeddict.jcode.bv.BeanVaildationConstants.VALID;
-import static io.github.jeddict.jcode.bv.BeanVaildationConstants.VALIDATE_ON_EXECUTION;
-import static io.github.jeddict.cdi.CDIConstants.INJECT;
-import io.github.jeddict.cdi.logger.LoggerProducerGenerator;
-import io.github.jeddict.cdi.CDIUtil;
-import io.github.jeddict.jcode.console.Console;
-import static io.github.jeddict.jcode.console.Console.BOLD;
-import static io.github.jeddict.jcode.console.Console.FG_DARK_RED;
-import static io.github.jeddict.jcode.console.Console.UNDERLINE;
-import io.github.jeddict.jcode.util.AttributeType.Type;
-import static io.github.jeddict.jcode.util.AttributeType.Type.ARRAY;
-import static io.github.jeddict.jcode.util.AttributeType.Type.PRIMITIVE;
-import static io.github.jeddict.jcode.util.AttributeType.Type.PRIMITIVE_ARRAY;
-import static io.github.jeddict.jcode.util.AttributeType.Type.STRING;
-import static io.github.jeddict.jcode.util.AttributeType.Type.WRAPPER;
-import static io.github.jeddict.jcode.util.AttributeType.getType;
-import static io.github.jeddict.jcode.util.AttributeType.getWrapperType;
-import static io.github.jeddict.jcode.util.Constants.JAVA_EXT;
-import io.github.jeddict.jcode.util.Constants.MimeType;
-import static io.github.jeddict.jcode.util.Constants.PASSWORD;
-import static io.github.jeddict.jcode.util.Constants.VOID;
-import io.github.jeddict.jcode.util.Inflector;
-import io.github.jeddict.jcode.util.JavaSourceHelper;
-import io.github.jeddict.jcode.util.POMManager;
-import io.github.jeddict.jcode.util.SourceGroupSupport;
-import io.github.jeddict.jcode.util.StringHelper;
-import io.github.jeddict.jcode.Generator;
-import io.github.jeddict.mvc.MVCConstants;
-import static io.github.jeddict.mvc.MVCConstants.BINDING_RESULT;
-import static io.github.jeddict.mvc.MVCConstants.CSRF_VALID;
-import static io.github.jeddict.mvc.MVCConstants.MODELS;
-import static io.github.jeddict.mvc.MVCConstants.REDIRECT;
-import static io.github.jeddict.mvc.MVCConstants.VIEWABLE;
-import io.github.jeddict.mvc.auth.controller.AuthMechanismGenerator;
-import io.github.jeddict.mvc.auth.controller.LoginControllerGenerator;
-import static io.github.jeddict.mvc.controller.ErrorBeanGenerator.ERROR_BEAN_CLASS;
-import static io.github.jeddict.mvc.controller.ValidationUtilGenerator.BINDING_RESULT_VAR;
-import static io.github.jeddict.mvc.controller.ValidationUtilGenerator.ERROR_BEAN_VAR;
-import static io.github.jeddict.mvc.controller.ValidationUtilGenerator.VALIDATION_UTIL_CLASS;
-import io.github.jeddict.mvc.controller.event.ControllerEventGenerator;
-import io.github.jeddict.mvc.controller.returntype.ControllerReturnType;
-import io.github.jeddict.mvc.viewer.jsp.JSPData;
-import io.github.jeddict.repository.RepositoryData;
-import io.github.jeddict.repository.RepositoryGenerator;
-import static io.github.jeddict.rest.RestConstants.BEAN_PARAM;
-import static io.github.jeddict.rest.RestConstants.FORM_PARAM;
-import static io.github.jeddict.rest.RestConstants.RESPONSE;
-import static io.github.jeddict.rest.RestConstants.RESPONSE_UNQF;
-import io.github.jeddict.rest.converter.ParamConvertorGenerator;
-import io.github.jeddict.rest.util.RestGenerationOptions;
-import io.github.jeddict.jcode.rest.RestUtil;
-import static io.github.jeddict.security.SecurityConstants.CALLER_NAME;
-import static io.github.jeddict.security.SecurityConstants.CREDENTIALS;
-import static io.github.jeddict.security.SecurityConstants.DEFAULT_CREDENTIALS;
-import static io.github.jeddict.security.SecurityConstants.EMBEDDED_IDENTITY_STORE_DEFINITION;
-import io.github.jeddict.jcode.ApplicationConfigData;
-import io.github.jeddict.jcode.annotation.ConfigData;
-import io.github.jeddict.jcode.annotation.Technology;
-import static io.github.jeddict.jcode.annotation.Technology.Type.CONTROLLER;
-import io.github.jeddict.jcode.task.progress.ProgressHandler;
-import io.github.jeddict.jcode.util.BuildManager;
-import io.github.jeddict.jpa.spec.DefaultAttribute;
-import io.github.jeddict.jpa.spec.DefaultClass;
-import io.github.jeddict.jpa.spec.Entity;
-import io.github.jeddict.jpa.spec.EntityMappings;
-import io.github.jeddict.jpa.spec.extend.Attribute;
-import io.github.jeddict.jpa.spec.extend.AttributeAnnotation;
-import org.netbeans.modules.websvc.rest.model.api.RestConstants;
-import org.netbeans.modules.websvc.rest.spi.RestSupport;
-import org.openide.filesystems.FileObject;
-import org.openide.util.Exceptions;
-import org.openide.util.NbBundle;
-import org.openide.util.lookup.ServiceProvider;
 import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
 import org.netbeans.modules.j2ee.core.api.support.java.SourceUtils;
-import io.github.jeddict.jcode.util.JavaIdentifiers;
-import static io.github.jeddict.rest.applicationconfig.RestConfigPanel.DEFAULT_RESOURCE_FOLDER;
+import org.netbeans.modules.websvc.rest.model.api.RestConstants;
+import org.netbeans.modules.websvc.rest.model.api.RestServicesModel;
 import org.netbeans.modules.websvc.rest.spi.MiscUtilities;
+import org.netbeans.modules.websvc.rest.spi.RestSupport;
 import static org.netbeans.modules.websvc.rest.spi.RestSupport.JAX_RS_APPLICATION_CLASS;
-import io.github.jeddict.rest.applicationconfig.RestConfigData;
+import org.openide.filesystems.FileObject;
+import org.openide.util.Exceptions;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
@@ -219,7 +217,7 @@ public class MVCControllerGenerator implements Generator {
         String controllerFileName = mvcData.getPrefixName() + entitySimpleName + mvcData.getSuffixName();
         handler.progress(controllerFileName);
 
-        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, entity.getAbsolutePackage(mvcData.getPackage()), true);
+        FileObject targetFolder = getFolderForPackage(source, entity.getAbsolutePackage(mvcData.getPackage()), true);
 
         FileObject controllerFO = targetFolder.getFileObject(controllerFileName, JAVA_EXT);//skips here
 
@@ -586,8 +584,8 @@ public class MVCControllerGenerator implements Generator {
     }
 
     public void generateUtil() throws IOException {
-        FileObject targetFolder = SourceGroupSupport.getFolderForPackage(source, mvcData.getPackage(), true);
-        FileObject utilFolder = SourceGroupSupport.getFolderForPackage(targetFolder, UTIL_PACKAGE, true);
+        FileObject targetFolder = getFolderForPackage(source, mvcData.getPackage(), true);
+        FileObject utilFolder = getFolderForPackage(targetFolder, UTIL_PACKAGE, true);
 
         String resourcePath = DEFAULT_RESOURCE_FOLDER;
         if (jspData != null) {
@@ -631,7 +629,7 @@ public class MVCControllerGenerator implements Generator {
             }
         }
 
-        FileObject restAppPack = SourceGroupSupport.getFolderForPackage(sourceGroup, mvcData.getPackage(), true);
+        FileObject restAppPack = getFolderForPackage(sourceGroup, mvcData.getPackage(), true);
 
         final String appClassName = mvcData.getRestConfigData().getApplicationClass();
         try {
@@ -655,12 +653,12 @@ public class MVCControllerGenerator implements Generator {
                 }
 
             }
-            RestUtil.disableRestServicesChangeListner(project);
+            disableRestServicesChangeListner(project);
             restSupport.configure("Jeddict - REST support");
-        } catch (Exception iox) {
+        } catch (IOException | IllegalArgumentException iox) {
             Exceptions.printStackTrace(iox);
         } finally {
-            RestUtil.enableRestServicesChangeListner(project);
+            enableRestServicesChangeListner(project);
         }
     }
 
@@ -726,8 +724,20 @@ public class MVCControllerGenerator implements Generator {
                 Collections.<TypeParameterTree>emptyList(),
                 Collections.<VariableTree>emptyList(),
                 Collections.<ExpressionTree>emptyList(),
-                RestUtil.createBodyForGetClassesMethod(restSupport, providerClasses), null);
+                createBodyForGetClassesMethod(providerClasses), null);
         return maker.addClassMember(newTree, methodTree);
+    }
+
+    private static String createBodyForGetClassesMethod(List<String> provideClasses) {
+        StringBuilder builder = new StringBuilder();
+        builder.append('{');
+        builder.append("Set<Class<?>> resources = new java.util.HashSet<>();");
+        if (provideClasses != null) {
+            provideClasses.forEach(_class -> builder.append("resources.add(").append(_class).append(".class);"));
+        }
+        builder.append(RestConstants.GET_REST_RESOURCE_CLASSES2 + "(resources);");
+        builder.append("return resources;}");
+        return builder.toString();
     }
 
     private ClassTree addAuthAnnotation(WorkingCopy workingCopy, TreeMaker maker, ClassTree newTree) {
@@ -935,4 +945,29 @@ public class MVCControllerGenerator implements Generator {
             }
         }
     }
+
+    public static RestServicesModel getRestServicesMetadataModel(Project project) {
+        RestSupport support = project.getLookup().lookup(RestSupport.class);;
+        if (support != null) {
+            return support.getRestServicesModel();
+        }
+        return null;
+    }
+
+    public static void disableRestServicesChangeListner(Project project) {
+        final RestServicesModel wsModel = getRestServicesMetadataModel(project);
+        if (wsModel == null) {
+            return;
+        }
+        wsModel.disablePropertyChangeListener();
+    }
+
+    public static void enableRestServicesChangeListner(Project project) {
+        final RestServicesModel wsModel = getRestServicesMetadataModel(project);
+        if (wsModel == null) {
+            return;
+        }
+        wsModel.enablePropertyChangeListener();
+    }
+
 }

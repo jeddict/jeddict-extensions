@@ -15,15 +15,15 @@
  */
 package io.github.jeddict.mvc.auth.controller;
 
+import io.github.jeddict.jcode.task.progress.ProgressHandler;
+import io.github.jeddict.jcode.util.Constants;
+import io.github.jeddict.jcode.util.FileUtil;
+import static io.github.jeddict.jcode.util.ProjectHelper.getPackageForFolder;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
-import io.github.jeddict.jcode.util.Constants;
-import io.github.jeddict.jcode.util.FileUtil;
-import static io.github.jeddict.jcode.util.SourceGroupSupport.getPackageForFolder;
-import io.github.jeddict.jcode.task.progress.ProgressHandler;
 import org.openide.filesystems.FileObject;
 
 /**

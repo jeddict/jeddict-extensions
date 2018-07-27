@@ -23,6 +23,10 @@
                 <configuration>
                     <moduleDependencies>
                         <dependency>
+                            <id>org.netbeans.modules:org-netbeans-modules-j2ee-persistence</id>
+                            <type>impl</type>
+                        </dependency>
+                        <dependency>
                             <id>org.netbeans.modules:org-netbeans-modules-j2ee-core-utilities</id>
                             <type>impl</type>
                         </dependency>
@@ -46,9 +50,14 @@
             <artifactId>org-netbeans-modules-projectapi</artifactId>
             <version>${netbeans.version}</version>
         </dependency>
-                <dependency>
+        <dependency>
             <groupId>org.netbeans.modules</groupId>
             <artifactId>org-netbeans-modules-j2ee-core-utilities</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.modules</groupId>
+            <artifactId>org-netbeans-modules-j2ee-persistence</artifactId>
             <version>${netbeans.version}</version>
         </dependency>
         <dependency>
@@ -66,7 +75,7 @@
             <artifactId>org-netbeans-api-java-classpath</artifactId>
             <version>${netbeans.version}</version>
         </dependency>
-                <dependency>
+        <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-libs-javacapi</artifactId>
             <version>${netbeans.version}</version>
