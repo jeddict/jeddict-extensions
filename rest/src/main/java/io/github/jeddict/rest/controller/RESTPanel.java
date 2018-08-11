@@ -18,7 +18,7 @@ package io.github.jeddict.rest.controller;
 import io.github.jeddict.jcode.LayerConfigPanel;
 import static javax.lang.model.SourceVersion.isName;
 import static javax.swing.JOptionPane.OK_OPTION;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import static io.github.jeddict.jcode.util.JavaSourceHelper.isValidPackageName;

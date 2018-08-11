@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import static java.util.stream.Collectors.toSet;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.SourceGroup;

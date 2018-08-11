@@ -16,13 +16,13 @@
 package io.github.jeddict.docker.generator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.Arrays;
-import java.util.List;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import io.github.jeddict.jcode.DatabaseType;
 import io.github.jeddict.jcode.LayerConfigData;
 import io.github.jeddict.jcode.RuntimeProvider;
 import io.github.jeddict.jcode.annotation.Runtime;
+import java.util.Arrays;
+import java.util.List;
 import org.openide.util.Lookup;
 
 /**

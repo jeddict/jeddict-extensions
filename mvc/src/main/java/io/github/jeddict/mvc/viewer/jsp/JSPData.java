@@ -18,7 +18,7 @@ package io.github.jeddict.mvc.viewer.jsp;
 import io.github.jeddict.jcode.LayerConfigData;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import static io.github.jeddict.rest.applicationconfig.RestConfigPanel.DEFAULT_RESOURCE_FOLDER;
 
 /**

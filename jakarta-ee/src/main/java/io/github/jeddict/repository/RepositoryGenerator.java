@@ -44,7 +44,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang.StringUtils.EMPTY;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;

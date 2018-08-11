@@ -19,7 +19,7 @@ import io.github.jeddict.jcode.LayerConfigData;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import io.github.jeddict.mvc.controller.event.ControllerEventType;
 import io.github.jeddict.mvc.controller.returntype.ControllerReturnType;
 import io.github.jeddict.repository.RepositoryData;

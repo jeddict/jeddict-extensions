@@ -20,7 +20,7 @@ import io.github.jeddict.jcode.LayerConfigData;
 import io.github.jeddict.repository.RepositoryData;
 import java.util.Arrays;
 import java.util.List;
-import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.isBlank;
 import io.github.jeddict.rest.applicationconfig.RestConfigData;
 
 /**

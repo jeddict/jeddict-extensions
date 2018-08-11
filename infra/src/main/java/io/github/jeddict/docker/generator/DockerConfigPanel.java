@@ -15,28 +15,23 @@
  */
 package io.github.jeddict.docker.generator;
 
+import org.apache.commons.lang.StringUtils;
+import io.github.jeddict.jcode.DatabaseType;
+import io.github.jeddict.jcode.LayerConfigPanel;
+import io.github.jeddict.jcode.RuntimeProvider;
+import io.github.jeddict.jcode.annotation.Runtime;
+import io.github.jeddict.jcode.util.JdbcUrl;
 import java.awt.CardLayout;
-import java.awt.Component;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import org.apache.commons.lang3.StringUtils;
-import io.github.jeddict.jcode.DatabaseType;
-import io.github.jeddict.jcode.annotation.Runtime;
-import io.github.jeddict.jcode.LayerConfigPanel;
-import io.github.jeddict.jcode.RuntimeProvider;
-import io.github.jeddict.jcode.util.JdbcUrl;
-import java.util.Objects;
 import org.netbeans.api.db.explorer.ConnectionManager;
 import org.netbeans.api.db.explorer.DatabaseConnection;
 import org.netbeans.api.db.explorer.support.DatabaseExplorerUIs;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
-//import org.netbeans.modules.docker.api.DockerInstance;
-//import org.netbeans.modules.docker.api.DockerSupport;
 import org.openide.util.Lookup;
 import static org.openide.util.NbBundle.getMessage;
 

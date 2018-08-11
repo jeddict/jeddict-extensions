@@ -15,6 +15,7 @@
  */
 package io.github.jeddict.docker.generator;
 
+import org.apache.commons.lang.StringUtils;
 import io.github.jeddict.jcode.ApplicationConfigData;
 import io.github.jeddict.jcode.DatabaseDriver;
 import io.github.jeddict.jcode.DatabaseType;
@@ -45,7 +46,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import org.apache.commons.lang3.StringUtils;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.modules.j2ee.persistence.dd.common.PersistenceUnit;
