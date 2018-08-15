@@ -30,8 +30,8 @@ import io.github.jeddict.cdi.CDIUtil;
 import io.github.jeddict.cdi.logger.LoggerProducerGenerator;
 import io.github.jeddict.jcode.ApplicationConfigData;
 import static io.github.jeddict.jcode.BeanVaildationConstants.EXECUTABLE_TYPE;
-import static io.github.jeddict.jcode.BeanVaildationConstants.VALID;
 import static io.github.jeddict.jcode.BeanVaildationConstants.VALIDATE_ON_EXECUTION;
+import static io.github.jeddict.jcode.BeanVaildationConstants.VALID_FQN;
 import static io.github.jeddict.jcode.CDIConstants.INJECT;
 import io.github.jeddict.jcode.Generator;
 import static io.github.jeddict.jcode.JAXRSConstants.BEAN_PARAM;
@@ -325,7 +325,7 @@ public class MVCControllerGenerator implements Generator {
 
                             if (mvcData.isBeanValidation() && BEAN_PARAM.equals(annotations[i])) {
                                 pathParamTree = maker.addModifiersAnnotation(pathParamTree,
-                                        genUtils.createAnnotation(VALID));
+                                        genUtils.createAnnotation(VALID_FQN));
                                 beanParamExist = true;
                             }
 

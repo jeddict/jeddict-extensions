@@ -159,7 +159,7 @@ public class RepositoryPanel extends LayerConfigPanel<RepositoryData> {
         entityLabel.setForeground(javax.swing.UIManager.getDefaults().getColor("Button.shadow"));
         entityLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         org.openide.awt.Mnemonics.setLocalizedText(entityLabel, org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.entityLabel.text")); // NOI18N
-        entityLabel.setPreferredSize(new java.awt.Dimension(58, 27));
+        entityLabel.setPreferredSize(new java.awt.Dimension(70, 27));
         entityLabel.setRequestFocusEnabled(false);
         namePane.add(entityLabel);
 
@@ -192,7 +192,7 @@ public class RepositoryPanel extends LayerConfigPanel<RepositoryData> {
 
         packagePrefixLabel.setForeground(new java.awt.Color(153, 153, 153));
         org.openide.awt.Mnemonics.setLocalizedText(packagePrefixLabel, org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.packagePrefixLabel.text")); // NOI18N
-        packagePrefixLabel.setPreferredSize(new java.awt.Dimension(130, 14));
+        packagePrefixLabel.setPreferredSize(new java.awt.Dimension(185, 14));
         packageWrapper.add(packagePrefixLabel, java.awt.BorderLayout.WEST);
 
         packageTextField.setText(org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.packageTextField.text")); // NOI18N

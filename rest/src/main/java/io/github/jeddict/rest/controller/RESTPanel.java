@@ -16,14 +16,14 @@
 package io.github.jeddict.rest.controller;
 
 import io.github.jeddict.jcode.LayerConfigPanel;
+import static io.github.jeddict.jcode.util.JavaSourceHelper.isValidPackageName;
+import io.github.jeddict.rest.applicationconfig.RestConfigData;
+import io.github.jeddict.rest.applicationconfig.RestConfigDialog;
 import static javax.lang.model.SourceVersion.isName;
 import static javax.swing.JOptionPane.OK_OPTION;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
-import static io.github.jeddict.jcode.util.JavaSourceHelper.isValidPackageName;
-import io.github.jeddict.rest.applicationconfig.RestConfigData;
-import io.github.jeddict.rest.applicationconfig.RestConfigDialog;
 import org.netbeans.modeler.properties.spec.ComboBoxValue;
 import static org.openide.util.NbBundle.getMessage;
 
@@ -243,7 +243,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
 
         prefixField.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         prefixField.setToolTipText(org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.prefixField.toolTipText")); // NOI18N
-        prefixField.setPreferredSize(new java.awt.Dimension(50, 27));
+        prefixField.setPreferredSize(new java.awt.Dimension(45, 27));
         prefixField.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
             public void propertyChange(java.beans.PropertyChangeEvent evt) {
                 prefixFieldPropertyChange(evt);
@@ -254,7 +254,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         entityLabel.setForeground(javax.swing.UIManager.getDefaults().getColor("Button.shadow"));
         entityLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         org.openide.awt.Mnemonics.setLocalizedText(entityLabel, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.entityLabel.text")); // NOI18N
-        entityLabel.setPreferredSize(new java.awt.Dimension(58, 27));
+        entityLabel.setPreferredSize(new java.awt.Dimension(70, 27));
         entityLabel.setRequestFocusEnabled(false);
         namePane.add(entityLabel);
 
@@ -278,14 +278,14 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         packagePanel.setLayout(new java.awt.BorderLayout(10, 0));
 
         org.openide.awt.Mnemonics.setLocalizedText(packageLabel, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.packageLabel.text")); // NOI18N
-        packageLabel.setPreferredSize(new java.awt.Dimension(100, 17));
+        packageLabel.setPreferredSize(new java.awt.Dimension(115, 17));
         packagePanel.add(packageLabel, java.awt.BorderLayout.LINE_START);
 
         packageWrapper.setLayout(new java.awt.BorderLayout());
 
         packagePrefixLabel.setForeground(new java.awt.Color(153, 153, 153));
         org.openide.awt.Mnemonics.setLocalizedText(packagePrefixLabel, org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.packagePrefixLabel.text")); // NOI18N
-        packagePrefixLabel.setPreferredSize(new java.awt.Dimension(130, 14));
+        packagePrefixLabel.setPreferredSize(new java.awt.Dimension(185, 14));
         packageWrapper.add(packagePrefixLabel, java.awt.BorderLayout.WEST);
 
         packageTextField.setText(org.openide.util.NbBundle.getMessage(RESTPanel.class, "RESTPanel.packageTextField.text")); // NOI18N
@@ -316,7 +316,7 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
                 .addComponent(securityTypeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(securityTypeCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 208, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 270, Short.MAX_VALUE)
                 .addComponent(applicationConfigButton))
         );
         appPanelLayout.setVerticalGroup(
@@ -356,15 +356,17 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, 27, Short.MAX_VALUE)
                 .addComponent(warningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );

@@ -19,8 +19,11 @@
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jPanel1" alignment="0" max="32767" attributes="0"/>
                   <Component id="warningPanel" max="32767" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <Component id="jPanel1" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                  </Group>
               </Group>
           </Group>
       </Group>
@@ -30,7 +33,7 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jPanel1" min="-2" pref="145" max="-2" attributes="0"/>
-              <EmptySpace type="unrelated" max="32767" attributes="0"/>
+              <EmptySpace type="unrelated" pref="27" max="32767" attributes="0"/>
               <Component id="warningPanel" min="-2" pref="20" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -102,7 +105,7 @@
                       <ResourceString bundle="io/github/jeddict/rest/controller/Bundle.properties" key="RESTPanel.prefixField.toolTipText" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                     <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                      <Dimension value="[50, 27]"/>
+                      <Dimension value="[45, 27]"/>
                     </Property>
                   </Properties>
                   <Events>
@@ -119,7 +122,7 @@
                       <ResourceString bundle="io/github/jeddict/rest/controller/Bundle.properties" key="RESTPanel.entityLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                     <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                      <Dimension value="[58, 27]"/>
+                      <Dimension value="[70, 27]"/>
                     </Property>
                     <Property name="requestFocusEnabled" type="boolean" value="false"/>
                   </Properties>
@@ -168,7 +171,7 @@
                   <ResourceString bundle="io/github/jeddict/rest/controller/Bundle.properties" key="RESTPanel.packageLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                 </Property>
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                  <Dimension value="[100, 17]"/>
+                  <Dimension value="[115, 17]"/>
                 </Property>
               </Properties>
               <Constraints>
@@ -195,7 +198,7 @@
                       <ResourceString bundle="io/github/jeddict/rest/controller/Bundle.properties" key="RESTPanel.packagePrefixLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                     <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                      <Dimension value="[130, 14]"/>
+                      <Dimension value="[185, 14]"/>
                     </Property>
                   </Properties>
                   <Constraints>
@@ -229,7 +232,7 @@
                       <Component id="securityTypeLabel" min="-2" pref="105" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="securityTypeCombo" min="-2" pref="136" max="-2" attributes="0"/>
-                      <EmptySpace pref="208" max="32767" attributes="0"/>
+                      <EmptySpace pref="270" max="32767" attributes="0"/>
                       <Component id="applicationConfigButton" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
