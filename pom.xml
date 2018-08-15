@@ -4,7 +4,7 @@
     <groupId>io.github.jeddict</groupId>
     <artifactId>jeddict-extensions</artifactId>
     <name>Jeddict Extensions</name>
-    <version>4.9</version>
+    <version>5.0</version>
     <packaging>pom</packaging>
     <modules>
         <module>rest</module>
