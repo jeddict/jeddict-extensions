@@ -26,14 +26,23 @@ import com.sun.source.tree.Tree;
 import com.sun.source.tree.TypeParameterTree;
 import com.sun.source.tree.VariableTree;
 import com.sun.source.tree.WildcardTree;
-import static io.github.jeddict.cdi.CDIConstants.INJECT;
 import io.github.jeddict.cdi.CDIUtil;
 import io.github.jeddict.cdi.logger.LoggerProducerGenerator;
 import io.github.jeddict.jcode.ApplicationConfigData;
 import static io.github.jeddict.jcode.BeanVaildationConstants.EXECUTABLE_TYPE;
 import static io.github.jeddict.jcode.BeanVaildationConstants.VALID;
 import static io.github.jeddict.jcode.BeanVaildationConstants.VALIDATE_ON_EXECUTION;
+import static io.github.jeddict.jcode.CDIConstants.INJECT;
 import io.github.jeddict.jcode.Generator;
+import static io.github.jeddict.jcode.JAXRSConstants.BEAN_PARAM;
+import static io.github.jeddict.jcode.JAXRSConstants.FORM_PARAM;
+import static io.github.jeddict.jcode.JAXRSConstants.GET_PROPERTIES;
+import static io.github.jeddict.jcode.JAXRSConstants.RESPONSE;
+import static io.github.jeddict.jcode.JAXRSConstants.RESPONSE_UNQF;
+import static io.github.jeddict.jcode.SecurityConstants.CALLER_NAME;
+import static io.github.jeddict.jcode.SecurityConstants.CREDENTIALS;
+import static io.github.jeddict.jcode.SecurityConstants.DEFAULT_CREDENTIALS;
+import static io.github.jeddict.jcode.SecurityConstants.EMBEDDED_IDENTITY_STORE_DEFINITION;
 import io.github.jeddict.jcode.annotation.ConfigData;
 import io.github.jeddict.jcode.annotation.Technology;
 import static io.github.jeddict.jcode.annotation.Technology.Type.CONTROLLER;
@@ -83,18 +92,10 @@ import io.github.jeddict.mvc.controller.returntype.ControllerReturnType;
 import io.github.jeddict.mvc.viewer.jsp.JSPData;
 import io.github.jeddict.repository.RepositoryData;
 import io.github.jeddict.repository.RepositoryGenerator;
-import static io.github.jeddict.rest.RestConstants.BEAN_PARAM;
-import static io.github.jeddict.rest.RestConstants.FORM_PARAM;
-import static io.github.jeddict.rest.RestConstants.RESPONSE;
-import static io.github.jeddict.rest.RestConstants.RESPONSE_UNQF;
 import io.github.jeddict.rest.applicationconfig.RestConfigData;
 import static io.github.jeddict.rest.applicationconfig.RestConfigPanel.DEFAULT_RESOURCE_FOLDER;
 import io.github.jeddict.rest.converter.ParamConvertorGenerator;
 import io.github.jeddict.rest.util.RestGenerationOptions;
-import static io.github.jeddict.security.SecurityConstants.CALLER_NAME;
-import static io.github.jeddict.security.SecurityConstants.CREDENTIALS;
-import static io.github.jeddict.security.SecurityConstants.DEFAULT_CREDENTIALS;
-import static io.github.jeddict.security.SecurityConstants.EMBEDDED_IDENTITY_STORE_DEFINITION;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -812,7 +813,7 @@ public class MVCControllerGenerator implements Generator {
         workingCopy.rewrite(cut, newCut);
 
         MethodTree methodTree = maker.Method(modifiersTree,
-                io.github.jeddict.rest.RestConstants.GET_PROPERTIES, wildMap,
+                GET_PROPERTIES, wildMap,
                 Collections.<TypeParameterTree>emptyList(),
                 Collections.<VariableTree>emptyList(),
                 Collections.<ExpressionTree>emptyList(),
