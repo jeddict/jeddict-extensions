@@ -635,9 +635,6 @@ public class RESTGenerator implements Generator {
                 getFolderForPackage(appConfigData.isMicroservice() ? configTargetRoot : configGatwayRoot, "META-INF", true),
                 "microprofile-config.properties",
                 params);
-        FileUtil.copyFile(TEMPLATE + "config/resource/payara-mp-jwt.properties", 
-                appConfigData.isMicroservice() ? configTargetRoot : configGatwayRoot, 
-                "payara-mp-jwt.properties");
         FileUtil.copyFile(TEMPLATE + "config/resource/publicKey.pem", 
                 appConfigData.isMicroservice() ? configTargetRoot : configGatwayRoot, 
                 "publicKey.pem");

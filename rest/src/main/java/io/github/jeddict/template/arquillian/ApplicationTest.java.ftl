@@ -79,7 +79,6 @@ public abstract class ApplicationTest extends AbstractTest {
                 .addAsResource("META-INF/sql/insert.sql")
                 .addAsResource("META-INF/microprofile-config.properties")
                 .addAsResource("i18n/messages.properties")
-                .addAsResource("payara-mp-jwt.properties")
                 .addAsResource("publicKey.pem")
                 .addAsResource("privateKey.pem");
     }

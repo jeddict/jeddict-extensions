@@ -18,3 +18,6 @@ web.host = ${r"${web.host}"}
 web.port = ${r"${web.port}"}
 </#if><#if microservices || gateway>
 registry.url: ${r"${registry.url}"}</#if>
+
+mp.jwt.verify.issuer = com.mycompany
+mp.jwt.verify.publickey.location = publicKey.pem
