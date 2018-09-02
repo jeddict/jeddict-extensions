@@ -14,11 +14,9 @@ import javax.ws.rs.Path;
 /**
  * Controller for view and managing Log Level at runtime.
  */
-
-@Path("/api")
+@Path("/api/logs")
 public class ${LogsController} {
 
-    @Path("/logs")
     @GET<#if metrics>
     @Timed</#if>
     public List<LoggerVM> getList() {
@@ -29,7 +27,6 @@ public class ${LogsController} {
             .collect(Collectors.toList());
     }
     
-    @Path("/logs")
     @PUT<#if metrics>
     @Timed</#if>
     public void changeLevel(LoggerVM jsonLogger) {

@@ -1,0 +1,1 @@
+active.profiles = prod,swagger

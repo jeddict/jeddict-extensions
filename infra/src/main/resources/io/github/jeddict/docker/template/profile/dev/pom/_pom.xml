@@ -5,12 +5,25 @@
     <artifactId>dev_pom</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <properties>
+        <environment>noenv</environment>
+    </properties>
+
     <profiles>
         <profile>
             <id>dev</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+            <properties>
+                <environment>dev</environment>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <environment>prod</environment>
+            </properties>
         </profile>
     </profiles>
 </project>

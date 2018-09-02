@@ -229,7 +229,8 @@ public class RESTGenerator implements Generator {
         CONTROLLER_TEMPLATES.add(new Template("rest/UserController.java.ftl", "User"));
         CONTROLLER_TEMPLATES.add(new Template("rest/AuthenticationController.java.ftl", "Authentication"));
         CONTROLLER_TEMPLATES.add(new Template("rest/HealthController.java.ftl", "Health"));
-    
+        CONTROLLER_TEMPLATES.add(new Template("rest/InfoController.java.ftl", "Info"));
+
         if (restData.isTestCase()) {
             TEST_CASE_TEMPLATES.add(new Template("arquillian/AbstractTest.java.ftl", "AbstractTest"));
             if (appConfigData.isMonolith() || appConfigData.isGateway()) {
@@ -246,6 +247,7 @@ public class RESTGenerator implements Generator {
         }
 
         MICROSERVICES_TEMPLATES.add(new Template("web/CORSFilter.java.ftl", "CORSFilter", "web"));
+        MICROSERVICES_TEMPLATES.add(new Template("security/AuthoritiesConstants.java.ftl", "AuthoritiesConstants", "security"));
         MICROSERVICES_TEMPLATES.add(new Template("security/SecurityHelper.java.ftl", "SecurityHelper", "security"));
         MICROSERVICES_TEMPLATES.add(new Template("security/TokenProvider.java.ftl", "TokenProvider", "security"));        
         if(appConfigData.getRegistryType() == CONSUL){
@@ -631,10 +633,28 @@ public class RESTGenerator implements Generator {
         if(webinfTargetRoot == null){
             webinfTargetRoot = ProjectHelper.getProjectWebRoot(targetProject).createFolder("WEB-INF");
         }
-        expandTemplate(TEMPLATE + "config/resource/META-INF/microprofile-config.properties.ftl",
-                getFolderForPackage(appConfigData.isMicroservice() ? configTargetRoot : configGatwayRoot, "META-INF", true),
-                "microprofile-config.properties",
-                params);
+
+        Map<String, Object> commonConfig = new HashMap<>(params);
+        commonConfig.putAll(appConfigData.getCommonConfig());
+        expandTemplate(TEMPLATE + "config/resources/config/application-common.properties.ftl",
+                getFolderForPackage(appConfigData.isMicroservice() ? configTargetRoot : configGatwayRoot, "config", true),
+                "application-common.properties",
+                commonConfig);
+
+        Map<String, Object> devConfig = new HashMap<>(params);
+        devConfig.putAll(appConfigData.getDevConfig());
+        expandTemplate(TEMPLATE + "config/resources/config/application-dev.properties.ftl",
+                getFolderForPackage(appConfigData.isMicroservice() ? configTargetRoot : configGatwayRoot, "config", true),
+                "application-dev.properties",
+                devConfig);
+
+        Map<String, Object> prodConfig = new HashMap<>(params);
+        prodConfig.putAll(appConfigData.getProdConfig());
+        expandTemplate(TEMPLATE + "config/resources/config/application-prod.properties.ftl",
+                getFolderForPackage(appConfigData.isMicroservice() ? configTargetRoot : configGatwayRoot, "config", true),
+                "application-prod.properties",
+                prodConfig);
+
         FileUtil.copyFile(TEMPLATE + "config/resource/publicKey.pem", 
                 appConfigData.isMicroservice() ? configTargetRoot : configGatwayRoot, 
                 "publicKey.pem");
@@ -800,6 +820,17 @@ public class RESTGenerator implements Generator {
     private void addMavenDependencies(String pom, Project project) {
         BuildManager.getInstance(project)
                 .copy(TEMPLATE + pom)
+                .setExtensionOverrideFilter((source, target) -> {
+            if ("fileset".equalsIgnoreCase(source.getName())) {
+                return false;
+            }
+            if ("concat".equals(source.getName())) {
+                target.getExtensibilityElements()
+                        .forEach(target::removeExtensibilityElement);
+                return true;
+            }
+            return true;
+                })
                 .commit();
     }
 
