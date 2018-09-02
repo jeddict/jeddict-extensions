@@ -17,6 +17,7 @@ import ${appPackage}${User_FQN};
 import ${appPackage}${AuthorityRepository_FQN};
 import ${appPackage}${UserRepository_FQN};
 import static ${package}.AbstractTest.buildArchive;
+import java.io.File;
 import java.net.URL;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -77,7 +78,7 @@ public abstract class ApplicationTest extends AbstractTest {
                         ApplicationTest.class,
                         ApplicationTestConfig.class)
                 .addAsResource("META-INF/sql/insert.sql")
-                .addAsResource("META-INF/microprofile-config.properties")
+                .addAsResource(new File("src/main/resources/config/application-common.properties"), "META-INF/microprofile-config.properties")
                 .addAsResource("i18n/messages.properties")
                 .addAsResource("publicKey.pem")
                 .addAsResource("privateKey.pem");
