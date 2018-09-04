@@ -15,21 +15,21 @@
  */
 package io.github.jeddict.runtime;
 
-import static io.github.jeddict.runtime.Payara.TEMPLATE;
 import static io.github.jeddict.jcode.DatabaseType.H2;
 import io.github.jeddict.jcode.RuntimeProvider;
 import io.github.jeddict.jcode.annotation.Runtime;
 import static io.github.jeddict.jcode.jpa.PersistenceProviderType.ECLIPSELINK;
 import io.github.jeddict.jcode.util.BuildManager;
 import io.github.jeddict.jcode.util.POMManager;
+import static io.github.jeddict.runtime.Payara.TEMPLATE;
 import java.util.Properties;
-import org.openide.util.lookup.ServiceProvider;
 import org.netbeans.modules.maven.model.pom.POMExtensibilityElement;
+import org.openide.util.lookup.ServiceProvider;
 
 @ServiceProvider(service = RuntimeProvider.class)
 @Runtime(name = "PAYARA_MICRO",
         displayName = "Payara Micro",
-        version = "5.182",
+        version = "5.183",
         persistenceProvider = ECLIPSELINK,
         embeddedDB = H2)
 public final class PayaraMicro extends Payara {
