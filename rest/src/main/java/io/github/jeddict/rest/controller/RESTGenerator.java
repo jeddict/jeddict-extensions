@@ -629,9 +629,10 @@ public class RESTGenerator implements Generator {
 
         final FileObject configGatwayRoot = ProjectHelper.getResourceDirectory(gatewayProject);
         final FileObject configTargetRoot = ProjectHelper.getResourceDirectory(targetProject);
-        FileObject webinfTargetRoot = ProjectHelper.getProjectWebRoot(targetProject).getFileObject("WEB-INF");
-        if(webinfTargetRoot == null){
-            webinfTargetRoot = ProjectHelper.getProjectWebRoot(targetProject).createFolder("WEB-INF");
+        FileObject webTargetRoot = ProjectHelper.getProjectWebRoot(targetProject);
+        FileObject webinfTargetRoot = webTargetRoot.getFileObject("WEB-INF");
+        if (webinfTargetRoot == null) {
+            webinfTargetRoot = webTargetRoot.createFolder("WEB-INF");
         }
 
         Map<String, Object> commonConfig = new HashMap<>(params);
