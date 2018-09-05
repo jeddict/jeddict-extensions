@@ -36,6 +36,7 @@ public final class PayaraMicro extends Payara {
     
     private static final String WEB_PORT = "web.port";
     private static final String DEVELOPMENT_PROFILE = "dev";
+    private static final String PRODUCTION_PROFILE = "prod";
     
     @Override
     public String getDockerTemplate() {
@@ -67,8 +68,9 @@ public final class PayaraMicro extends Payara {
         properties.put(WEB_PORT, "8080");//for micro maven plugin
         BuildManager.getInstance(project)
                 .addDefaultProperties(DEVELOPMENT_PROFILE, properties)
+                .addDefaultProperties(PRODUCTION_PROFILE, properties)
                 .commit();
-        
+
         if (docker) {
             BuildManager.getInstance(project)
                 .copy(TEMPLATE + "payara/micro/pom/_pom_docker.xml")

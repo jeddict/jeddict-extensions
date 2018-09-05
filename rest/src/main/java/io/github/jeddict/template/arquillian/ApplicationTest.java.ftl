@@ -20,21 +20,15 @@ import static ${package}.AbstractTest.buildArchive;
 import java.io.File;
 import java.net.URL;
 import java.util.Map;
-import java.util.function.Supplier;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.Response;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
-import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.Response;
 import junit.framework.AssertionFailedError;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 import org.junit.Before;
-import static org.valid4j.matchers.http.HttpResponseMatchers.hasStatus;
 
 /**
  * Abstract class for application packaging.
@@ -76,7 +70,7 @@ public abstract class ApplicationTest extends AbstractTest {
                         ${AuthenticationController}Client.class,
                         AbstractTest.class,
                         ApplicationTest.class,
-                        ApplicationTestConfig.class)
+                        ${applicationConfig}.class)
                 .addAsResource("META-INF/sql/insert.sql")
                 .addAsResource(new File("src/main/resources/config/application-common.properties"), "META-INF/microprofile-config.properties")
                 .addAsResource("i18n/messages.properties")
@@ -123,23 +117,14 @@ public abstract class ApplicationTest extends AbstractTest {
         return super.target(path, params).header(AUTHORIZATION, tokenId);
     }
 
+    @Override
     protected <T> T buildClient(Class<? extends T> type) throws Exception {
         RestClientBuilder builder = RestClientBuilder.newBuilder();
         if (tokenId != null) {
             builder.register((ClientRequestFilter) context -> context.getHeaders().add(AUTHORIZATION, tokenId));
-}
+        }
         return builder.baseUrl(new URL(deploymentUrl.toURI().toString() + "resources/"))
                 .build(type);
     }
 
-    public <T> void assertWebException(Status status, Supplier supplier) {
-        try {
-            supplier.get();
-            fail("WebApplicationException not thrown");
-        } catch (WebApplicationException wae) {
-            assertThat(wae.getResponse(), hasStatus(status));
-        } catch (Throwable throwable) {
-            throw new AssertionFailedError("Unexpected exception type thrown : " + throwable.getClass());
-        }
-    }
 }

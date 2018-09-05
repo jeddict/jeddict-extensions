@@ -15,7 +15,6 @@
  */
 package io.github.jeddict.docker.generator;
 
-import org.apache.commons.lang.StringUtils;
 import io.github.jeddict.jcode.DatabaseType;
 import io.github.jeddict.jcode.LayerConfigPanel;
 import io.github.jeddict.jcode.RuntimeProvider;
@@ -27,6 +26,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 import javax.swing.DefaultComboBoxModel;
+import org.apache.commons.lang.StringUtils;
 import org.netbeans.api.db.explorer.ConnectionManager;
 import org.netbeans.api.db.explorer.DatabaseConnection;
 import org.netbeans.api.db.explorer.support.DatabaseExplorerUIs;
@@ -592,7 +592,7 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLayeredPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
                 .addComponent(messagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );

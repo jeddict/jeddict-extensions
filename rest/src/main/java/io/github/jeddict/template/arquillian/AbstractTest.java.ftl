@@ -8,10 +8,14 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Map;
+import java.util.function.Supplier;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 import junit.framework.AssertionFailedError;
+import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -19,6 +23,9 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.jboss.shrinkwrap.resolver.api.maven.MavenResolverSystem;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.valid4j.matchers.http.HttpResponseMatchers.hasStatus;
 
 /**
  * Abstract class for base application packaging.
@@ -43,11 +50,13 @@ public abstract class AbstractTest {
         return ShrinkWrap.create(WebArchive.class)
                 .addPackage(HeaderUtil.class.getPackage())
                 .addClasses(
+                        <#if microservices>${applicationConfig}.class,</#if>
                         ${AbstractRepository}.class,
                         EntityManagerProducer.class,
                         LoggerProducer.class)
                 .addAsLibraries(libs)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"))
+                <#if microservices>.addAsWebInfResource("glassfish-web.xml")</#if>
                 .addAsResource("test-persistence.xml", "META-INF/persistence.xml")
                 .setWebXML("web.xml");
     }
@@ -58,6 +67,12 @@ public abstract class AbstractTest {
         } catch (URISyntaxException ex) {
             throw new AssertionFailedError(ex.getMessage());
         }
+    }
+
+    protected <T> T buildClient(Class<? extends T> type) throws Exception {
+        RestClientBuilder builder = RestClientBuilder.newBuilder();
+        return builder.baseUrl(new URL(deploymentUrl.toURI().toString() + "resources/"))
+                .build(type);
     }
 
     protected Invocation.Builder target(String path) {
@@ -74,6 +89,17 @@ public abstract class AbstractTest {
             }
         }
         return target.request();
+    }
+
+    public <T> void assertWebException(Response.Status status, Supplier supplier) {
+        try {
+            supplier.get();
+            fail("WebApplicationException not thrown");
+        } catch (WebApplicationException wae) {
+            assertThat(wae.getResponse(), hasStatus(status));
+        } catch (Throwable throwable) {
+            throw new AssertionFailedError("Unexpected exception type thrown : " + throwable.getClass());
+        }
     }
 
 }

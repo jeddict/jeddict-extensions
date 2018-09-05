@@ -40,6 +40,9 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
         initComponents();
         securityTypeLabel.setVisible(false);
         securityTypeCombo.setVisible(false);
+        metricsCheckbox.setVisible(false);
+        openAPICheckBox.setVisible(false);
+        loggerCheckBox.setVisible(false);
     }
 
     @Override

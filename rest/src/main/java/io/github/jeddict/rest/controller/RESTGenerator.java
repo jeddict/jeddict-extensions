@@ -235,7 +235,7 @@ public class RESTGenerator implements Generator {
             TEST_CASE_TEMPLATES.add(new Template("arquillian/AbstractTest.java.ftl", "AbstractTest"));
             if (appConfigData.isMonolith() || appConfigData.isGateway()) {
                 TEST_CASE_TEMPLATES.add(new Template("arquillian/ApplicationTest.java.ftl", "ApplicationTest"));
-                TEST_CASE_TEMPLATES.add(new Template("arquillian/ApplicationTestConfig.java.ftl", "ApplicationTestConfig"));
+//                TEST_CASE_TEMPLATES.add(new Template("arquillian/ApplicationTestConfig.java.ftl", "ApplicationTestConfig"));
             
                 TEST_CASE_CONTROLLER_TEMPLATES.add(new Template("arquillian/AccountControllerTest.java.ftl", "Account"));
                 TEST_CASE_CONTROLLER_TEMPLATES.add(new Template("arquillian/UserControllerTest.java.ftl", "User"));
@@ -281,6 +281,8 @@ public class RESTGenerator implements Generator {
         params.put("microservices", appConfigData.isMicroservice());
         params.put("monolith", appConfigData.isMonolith());
         reloadTargetPackage(params);
+        params.put("applicationConfig_FQN", appConfigData.isGateway() ? appConfigData.getGatewayPackage() : appConfigData.getTargetPackage() + '.' + restData.getPackage() + '.' + restData.getRestConfigData().getApplicationClass());
+        params.put("applicationConfig", restData.getRestConfigData().getApplicationClass());
         params.put("applicationPath", restData.getRestConfigData().getApplicationPath());
         params.put("beanPrefix", repositoryData.getPrefixName());
         params.put("beanSuffix", repositoryData.getSuffixName());
@@ -704,6 +706,12 @@ public class RESTGenerator implements Generator {
                     appConfigData.isMicroservice() ? testConfigTargetRoot : testConfigGatwayRoot,
                     "arquillian.xml",
                     EMPTY_MAP);
+            if (appConfigData.isMicroservice()) {
+                expandTemplate(TEMPLATE + "arquillian/config/glassfish-web.xml.ftl",
+                        testConfigTargetRoot,
+                        "glassfish-web.xml",
+                        param);
+            }
             
             if (appConfigData.isGateway() || appConfigData.isMonolith()) {
                 expandTemplate(TEMPLATE + "config/resource/META-INF/sql/insert.sql.ftl",
@@ -781,8 +789,6 @@ public class RESTGenerator implements Generator {
         Map<String, Object> appParams = new HashMap<>(params);
         appParams.put("entityControllerList", restEntityInfo);
         appParams.put("package", appPackage + '.' + restData.getPackage());
-        appParams.put("applicationConfig", restData.getRestConfigData().getApplicationClass());
-        appParams.put("applicationPath", restData.getRestConfigData().getApplicationPath());
         appParams.put("contextPath", contextPath);
         expandTemplate(TEMPLATE + "rest/ApplicationConfig.java.ftl", targetFolder, restData.getRestConfigData().getApplicationClass() + '.' + JAVA_EXT, appParams);
     }

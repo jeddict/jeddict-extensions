@@ -80,9 +80,7 @@ public class DockerGenerator implements Generator {
     private static final String WEB_SVC = "web.svc";
     private static final String WEB_HOST = "web.host";
     private static final String WEB_PORT = "web.port";
-
-    private static final String CONTEXT_PATH = "contextPath";
-    private static final String REGISTRY_URL = "registryURL";
+    private static final String REGISTRY_URL = "registry.url";
 
     private static final String DOCKER_PROFILE = "docker";
     private static final String DEVELOPMENT_PROFILE = "dev";
@@ -263,21 +261,19 @@ public class DockerGenerator implements Generator {
             
             String registryPort = appConfigData.getRegistryType() == CONSUL ? "8500" : "8091";
             
-            appConfigData.addCommonConfig(CONTEXT_PATH, appConfigData.getTargetContextPath());
+            appConfigData.addCommonConfig("contextPath", appConfigData.getTargetContextPath());
             if (appConfigData.isMicroservice()){
                 properties.put(WEB_HOST, "http://localhost");
                 properties.put(WEB_PORT, (8080 + new SecureRandom().nextInt(1000)) + "");
-                appConfigData.addDevConfig(REGISTRY_URL, "http://localhost:" + registryPort);
+                appConfigData.addDevConfig("registryURL", "http://localhost:" + registryPort);
                 appConfigData.addBuildProperty(WEB_HOST, "<container host>");
                 appConfigData.addBuildProperty(WEB_PORT, "<container port>");
-//                appConfigData.addBuildProperty(REGISTRY_URL, "<registry url>");
                 handler.info("Service Registry",
                         Console.wrap(String.join(", ", WEB_HOST, WEB_PORT, REGISTRY_URL), FG_MAGENTA)
                         + " properties are required for Service Registry");
             } else if (appConfigData.isGateway()) {
                 properties.put(WEB_PORT, "8080");//for docker
-                appConfigData.addDevConfig(REGISTRY_URL, "http://localhost:" + registryPort);
-//                appConfigData.addBuildProperty(REGISTRY_URL, "<registry url>");
+                appConfigData.addDevConfig("registryURL", "http://localhost:" + registryPort);
                 handler.info("Service Discovery",
                         Console.wrap(REGISTRY_URL, FG_MAGENTA)
                         + " property is required for Service Discovery");
