@@ -4,7 +4,7 @@
     <parent>
         <groupId>io.github.jeddict</groupId>
         <artifactId>jeddict-extensions</artifactId>
-        <version>5.0</version>
+        <version>5.1</version>
     </parent>
     <artifactId>jakarta-ee</artifactId>
     <name>Jakarta EE</name>
