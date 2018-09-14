@@ -53,6 +53,10 @@ public class RepositoryPanel extends LayerConfigPanel<RepositoryData> {
             warningLabel.setText(NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.invalidSuffix.message"));
             return true;
         }
+        if ("Service".equals(suffix)) {
+            warningLabel.setText(NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.reservedSuffix.message"));
+            return true;
+        }
         return false;
     }
 

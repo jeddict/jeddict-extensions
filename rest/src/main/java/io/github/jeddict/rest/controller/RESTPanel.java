@@ -63,6 +63,10 @@ public class RESTPanel extends LayerConfigPanel<RESTData> {
             warningLabel.setText(getMessage(RESTPanel.class, "RESTPanel.invalidSuffix.message"));
             return true;
         }
+        if ("Service".equals(suffix)) {
+            warningLabel.setText(getMessage(RESTPanel.class, "RESTPanel.reservedSuffix.message"));
+            return true;
+        }
         return false;
     }
 
