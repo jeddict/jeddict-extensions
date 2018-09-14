@@ -148,11 +148,11 @@ public class ${controllerClass}Test extends <#if microservices>Abstract<#else>Ap
     public void getNonExisting${EntityClass}() throws Exception {
         // Get the ${instanceName}
 <#if allIdAttributes?size=1>
-        assertWebException(NOT_FOUND, () -> client.get${EntityClass}(Long.MAX_VALUE));
+        assertWebException(NOT_FOUND, () -> client.get${EntityClass}(${allIdAttributes[0].updatedValue2}));
 <#else>
         assertWebException(NOT_FOUND, () -> client.get${EntityClass}(
         <#list allIdAttributes as attribute>
-                Long.MAX_VALUE<#if attribute_has_next>,</#if>
+                ${attribute.updatedValue2}<#if attribute_has_next>,</#if>
         </#list>
         ));
 </#if>

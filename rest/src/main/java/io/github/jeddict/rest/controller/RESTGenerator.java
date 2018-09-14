@@ -18,6 +18,7 @@ package io.github.jeddict.rest.controller;
 import io.github.jeddict.bv.constraints.Constraint;
 import static io.github.jeddict.bv.constraints.ConstraintUtil.getAttributeDefaultValue;
 import static io.github.jeddict.bv.constraints.ConstraintUtil.getAttributeUpdateValue;
+import static io.github.jeddict.bv.constraints.ConstraintUtil.getAttributeUpdateValue2;
 import static io.github.jeddict.bv.constraints.ConstraintUtil.isAllowedConstraint;
 import io.github.jeddict.cdi.CDIUtil;
 import io.github.jeddict.docker.generator.DockerConfigData;
@@ -464,6 +465,7 @@ public class RESTGenerator implements Generator {
                 attrConf.put("dataType", attr.getDataTypeLabel());
                 attrConf.put("defaultValue", getAttributeDefaultValue(attr.getDataTypeLabel(), attr.getAttributeConstraintsMap()));
                 attrConf.put("updatedValue", getAttributeUpdateValue(attr.getDataTypeLabel(), attr.getAttributeConstraintsMap()));
+                attrConf.put("updatedValue2", getAttributeUpdateValue2(attr.getDataTypeLabel(), attr.getAttributeConstraintsMap()));
 //            attrConf.put("array", isArray(attr.getDataTypeLabel()));
 //            attrConf.put("precision", isPrecision(attr.getDataTypeLabel()));
 //            attrConf.put("precisionType", isDouble(attr.getDataTypeLabel())?'d':'f');
