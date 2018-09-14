@@ -34,6 +34,8 @@ import static io.github.jeddict.jcode.console.Console.BOLD;
 import static io.github.jeddict.jcode.console.Console.FG_DARK_RED;
 import static io.github.jeddict.jcode.console.Console.UNDERLINE;
 import io.github.jeddict.jcode.task.progress.ProgressHandler;
+import static io.github.jeddict.jcode.util.AttributeType.BOOLEAN;
+import static io.github.jeddict.jcode.util.AttributeType.BOOLEAN_WRAPPER;
 import static io.github.jeddict.jcode.util.AttributeType.isBoolean;
 import static io.github.jeddict.jcode.util.AttributeType.isPrimitive;
 import io.github.jeddict.jcode.util.BuildManager;
@@ -400,7 +402,10 @@ public class RESTGenerator implements Generator {
         if (idAttribute != null) {
             String dataType = idAttribute.getDataTypeLabel();
             contollerParams.put("pkName", firstLower(idAttribute.getName()));
-            contollerParams.put("pkGetter", getMethodName("get", idAttribute.getName()));
+            contollerParams.put("pkGetter", getMethodName(
+                    BOOLEAN.equals(idAttribute.getDataTypeLabel()) || BOOLEAN_WRAPPER.equals(idAttribute.getDataTypeLabel()) ? "is" : "get",
+                    idAttribute.getName()
+            ));
             contollerParams.put("pkSetter", getMethodName("set", idAttribute.getName()));
             contollerParams.put("pkType", dataType);
             contollerParams.put("isPKPrimitive", isPrimitive(dataType));
