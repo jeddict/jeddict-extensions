@@ -34,8 +34,6 @@ import static io.github.jeddict.jcode.console.Console.BOLD;
 import static io.github.jeddict.jcode.console.Console.FG_DARK_RED;
 import static io.github.jeddict.jcode.console.Console.UNDERLINE;
 import io.github.jeddict.jcode.task.progress.ProgressHandler;
-import static io.github.jeddict.jcode.util.AttributeType.BOOLEAN;
-import static io.github.jeddict.jcode.util.AttributeType.BOOLEAN_WRAPPER;
 import static io.github.jeddict.jcode.util.AttributeType.isBoolean;
 import static io.github.jeddict.jcode.util.AttributeType.isPrimitive;
 import io.github.jeddict.jcode.util.BuildManager;
@@ -67,6 +65,7 @@ import io.github.jeddict.jpa.spec.extend.PaginationType;
 import io.github.jeddict.repository.RepositoryData;
 import io.github.jeddict.repository.RepositoryGenerator;
 import static io.github.jeddict.repository.RepositoryGenerator.REPOSITORY_ABSTRACT;
+import static io.github.jeddict.settings.generate.GenerateSettings.getIntrospectionPrefix;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -402,10 +401,7 @@ public class RESTGenerator implements Generator {
         if (idAttribute != null) {
             String dataType = idAttribute.getDataTypeLabel();
             contollerParams.put("pkName", firstLower(idAttribute.getName()));
-            contollerParams.put("pkGetter", getMethodName(
-                    BOOLEAN.equals(idAttribute.getDataTypeLabel()) || BOOLEAN_WRAPPER.equals(idAttribute.getDataTypeLabel()) ? "is" : "get",
-                    idAttribute.getName()
-            ));
+            contollerParams.put("pkGetter", getMethodName(getIntrospectionPrefix(isBoolean(idAttribute.getDataTypeLabel())), idAttribute.getName()));
             contollerParams.put("pkSetter", getMethodName("set", idAttribute.getName()));
             contollerParams.put("pkType", dataType);
             contollerParams.put("isPKPrimitive", isPrimitive(dataType));
@@ -466,7 +462,7 @@ public class RESTGenerator implements Generator {
                 attrConf.put("Name", firstUpper(attr.getName()));
                 attrConf.put("NAME", toConstant(attr.getName()));
                 attrConf.put("setter", "set" + firstUpper(attr.getName()));
-                attrConf.put("getter", (isBoolean(attr.getDataTypeLabel()) ? "is" : "get") + firstUpper(attr.getName()));
+                attrConf.put("getter", getIntrospectionPrefix(isBoolean(attr.getDataTypeLabel())) + firstUpper(attr.getName()));
                 attrConf.put("dataType", attr.getDataTypeLabel());
                 attrConf.put("defaultValue", getAttributeDefaultValue(attr.getDataTypeLabel(), attr.getAttributeConstraintsMap()));
                 attrConf.put("updatedValue", getAttributeUpdateValue(attr.getDataTypeLabel(), attr.getAttributeConstraintsMap()));
