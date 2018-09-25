@@ -8,15 +8,15 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 public class SecurityConfig {
 
     @Inject
-    @ConfigProperty(name = "security.jwt.issuer")
+    @ConfigProperty(name = "mp.jwt.verify.issuer")
     private String issuer;
 
     @Inject
-    @ConfigProperty(name = "security.jwt.validityInSeconds")
+    @ConfigProperty(name = "mp.jwt.verify.validityInSeconds")
     private long tokenValidityInSeconds;
 
     @Inject
-    @ConfigProperty(name = "security.jwt.validityInSecondsForRememberMe")
+    @ConfigProperty(name = "mp.jwt.verify.validityInSecondsForRememberMe")
     private long tokenValidityInSecondsForRememberMe;
 
     /**
