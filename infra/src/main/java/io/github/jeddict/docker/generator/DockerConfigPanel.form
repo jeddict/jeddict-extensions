@@ -211,9 +211,6 @@
                       <Dimension value="[10, 20]"/>
                     </Property>
                   </Properties>
-                  <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="namespaceTextFieldActionPerformed"/>
-                  </Events>
                 </Component>
                 <Component class="javax.swing.JLabel" name="groupArtifactSpeperatorLabel">
                   <Properties>

@@ -16,13 +16,14 @@
 package io.github.jeddict.docker.generator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.apache.commons.lang.StringUtils;
 import io.github.jeddict.jcode.DatabaseType;
 import io.github.jeddict.jcode.LayerConfigData;
 import io.github.jeddict.jcode.RuntimeProvider;
 import io.github.jeddict.jcode.annotation.Runtime;
 import java.util.Arrays;
 import java.util.List;
+import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import org.openide.util.Lookup;
 
 /**
@@ -139,7 +140,7 @@ public class DockerConfigData extends LayerConfigData {
 
     @JsonIgnore
     public boolean isDbInfoExist() {
-        return StringUtils.isNotBlank(this.dbName);
+        return isNotBlank(this.dbName);
     }
 
     /**
@@ -225,6 +226,9 @@ public class DockerConfigData extends LayerConfigData {
      * @return the dockerNamespace
      */
     public String getDockerNamespace() {
+        if (isBlank(dockerNamespace)) {
+            return "${project.groupId}";
+        }
         return dockerNamespace;
     }
 
@@ -239,6 +243,9 @@ public class DockerConfigData extends LayerConfigData {
      * @return the dockerRepository
      */
     public String getDockerRepository() {
+        if (isBlank(dockerRepository)) {
+            return "${project.artifactId}";
+        }
         return dockerRepository;
     }
 

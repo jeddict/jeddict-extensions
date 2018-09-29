@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import io.github.jeddict.rest.applicationconfig.RestConfigData;
+import static io.github.jeddict.rest.controller.SecurityType.SECURITY_JWT;
 
 /**
  *
@@ -90,6 +91,9 @@ public class RESTData extends LayerConfigData<RepositoryData> {
      * @return the restConfigData
      */
     public RestConfigData getRestConfigData() {
+        if (restConfigData == null) {
+            return new RestConfigData();
+        }
         return restConfigData;
     }
 
@@ -179,6 +183,9 @@ public class RESTData extends LayerConfigData<RepositoryData> {
      * @return the securityType
      */
     public SecurityType getSecurityType() {
+        if (securityType == null) {
+            securityType = SECURITY_JWT;
+        }
         return securityType;
     }
 

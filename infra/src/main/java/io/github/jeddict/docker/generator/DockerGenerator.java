@@ -83,7 +83,8 @@ public class DockerGenerator implements Generator {
     private static final String REGISTRY_URL = "registry.url";
 
     private static final String DOCKER_PROFILE = "docker";
-    private static final String DEVELOPMENT_PROFILE = "dev";
+    private static final String DEV_PROFILE = "dev";
+    private static final String PROD_PROFILE = "prod";
     private static final String DOCKER_FILE = "DockerFile";
     private static final String DOCKER_COMPOSE = "docker-compose.yml";
 
@@ -141,7 +142,10 @@ public class DockerGenerator implements Generator {
             if (POMManager.isMavenProject(project)) {
                 POMManager pomManager = new POMManager(project, TEMPLATE + "fabric8io/pom/_pom.xml");
                 pomManager.commit();
-                appConfigData.addProfile(DOCKER_PROFILE);
+                appConfigData.getEnvironment("dev")
+                        .addProfile(DOCKER_PROFILE);
+                appConfigData.getEnvironment("prod")
+                        .addProfile(DOCKER_PROFILE);
                 handler.info("Docker", "Use \"docker\" profile to create and run Docker image");
 
                 Properties properties = new Properties();
@@ -246,7 +250,7 @@ public class DockerGenerator implements Generator {
             properties.put(DB_NAME, config.getDbName());
             properties.put(DB_SVC, getDBService());
             properties.put(DB_PORT, config.getDbPort());
-            pomManager.addProperties(DEVELOPMENT_PROFILE, properties);
+            pomManager.addProperties(DEV_PROFILE, properties);
             pomManager.commit();
         }
     }
@@ -261,26 +265,40 @@ public class DockerGenerator implements Generator {
             
             String registryPort = appConfigData.getRegistryType() == CONSUL ? "8500" : "8091";
             
-            appConfigData.addCommonConfig("contextPath", appConfigData.getTargetContextPath());
+            appConfigData.getEnvironment("dev")
+                    .addConfig("contextPath", appConfigData.getTargetContextPath());
+            appConfigData.getEnvironment("prod")
+                    .addConfig("contextPath", appConfigData.getTargetContextPath());
             if (appConfigData.isMicroservice()){
                 properties.put(WEB_HOST, "http://localhost");
                 properties.put(WEB_PORT, (8080 + new SecureRandom().nextInt(1000)) + "");
-                appConfigData.addDevConfig("registryURL", "http://localhost:" + registryPort);
-                appConfigData.addBuildProperty(WEB_HOST, "<container host>");
-                appConfigData.addBuildProperty(WEB_PORT, "<container port>");
+                appConfigData.getEnvironment("dev")
+                        .addConfig("registryURL", "http://localhost:" + registryPort)
+                        .addBuildProperty(WEB_HOST, "<container host>")
+                        .addBuildProperty(WEB_PORT, "<container port>");
+                appConfigData.getEnvironment("prod")
+                        .addConfig("registryURL", "http://localhost:" + registryPort)
+                        .addBuildProperty(WEB_HOST, "<container host>")
+                        .addBuildProperty(WEB_PORT, "<container port>");
                 handler.info("Service Registry",
                         Console.wrap(String.join(", ", WEB_HOST, WEB_PORT, REGISTRY_URL), FG_MAGENTA)
                         + " properties are required for Service Registry");
             } else if (appConfigData.isGateway()) {
                 properties.put(WEB_PORT, "8080");//for docker
-                appConfigData.addDevConfig("registryURL", "http://localhost:" + registryPort);
+                appConfigData.getEnvironment("dev")
+                        .addConfig("registryURL", "http://localhost:" + registryPort);
+                appConfigData.getEnvironment("prod")
+                        .addConfig("registryURL", "http://localhost:" + registryPort);
                 handler.info("Service Discovery",
                         Console.wrap(REGISTRY_URL, FG_MAGENTA)
                         + " property is required for Service Discovery");
             }
-            pomManager.addProperties(DEVELOPMENT_PROFILE, properties);
+            pomManager.addProperties(DEV_PROFILE, properties);
             pomManager.commit();
-            appConfigData.addProfileAndActivate(project, DEVELOPMENT_PROFILE);
+            appConfigData.getEnvironment("dev")
+                    .addProfileAndActivate(DEV_PROFILE, project);
+            appConfigData.getEnvironment("prod")
+                    .addProfile(PROD_PROFILE);
         }
     }
 

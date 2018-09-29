@@ -20,7 +20,7 @@ import static io.github.jeddict.bv.constraints.ConstraintUtil.getAttributeDefaul
 import static io.github.jeddict.bv.constraints.ConstraintUtil.getAttributeUpdateValue;
 import static io.github.jeddict.bv.constraints.ConstraintUtil.getAttributeUpdateValue2;
 import static io.github.jeddict.bv.constraints.ConstraintUtil.isAllowedConstraint;
-import io.github.jeddict.cdi.CDIUtil;
+import io.github.jeddict.jcode.util.CDIUtil;
 import io.github.jeddict.docker.generator.DockerConfigData;
 import io.github.jeddict.jcode.ApplicationConfigData;
 import io.github.jeddict.jcode.Generator;
@@ -641,21 +641,21 @@ public class RESTGenerator implements Generator {
         }
 
         Map<String, Object> commonConfig = new HashMap<>(params);
-        commonConfig.putAll(appConfigData.getCommonConfig());
+        commonConfig.putAll(appConfigData.getEnvironment("dev").getConfig());
         expandTemplate(TEMPLATE + "config/resources/config/application-common.properties.ftl",
                 getFolderForPackage(appConfigData.isMicroservice() ? configTargetRoot : configGatwayRoot, "config", true),
                 "application-common.properties",
                 commonConfig);
 
         Map<String, Object> devConfig = new HashMap<>(params);
-        devConfig.putAll(appConfigData.getDevConfig());
+        devConfig.putAll(appConfigData.getEnvironment("dev").getConfig());
         expandTemplate(TEMPLATE + "config/resources/config/application-dev.properties.ftl",
                 getFolderForPackage(appConfigData.isMicroservice() ? configTargetRoot : configGatwayRoot, "config", true),
                 "application-dev.properties",
                 devConfig);
 
         Map<String, Object> prodConfig = new HashMap<>(params);
-        prodConfig.putAll(appConfigData.getProdConfig());
+        prodConfig.putAll(appConfigData.getEnvironment("prod").getConfig());
         expandTemplate(TEMPLATE + "config/resources/config/application-prod.properties.ftl",
                 getFolderForPackage(appConfigData.isMicroservice() ? configTargetRoot : configGatwayRoot, "config", true),
                 "application-prod.properties",

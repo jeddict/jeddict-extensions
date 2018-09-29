@@ -368,11 +368,6 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
         namespaceTextField.setText(org.openide.util.NbBundle.getMessage(DockerConfigPanel.class, "DockerConfigPanel.namespaceTextField.text")); // NOI18N
         namespaceTextField.setToolTipText(org.openide.util.NbBundle.getMessage(DockerConfigPanel.class, "DockerConfigPanel.namespaceTextField.toolTipText")); // NOI18N
         namespaceTextField.setPreferredSize(new java.awt.Dimension(10, 20));
-        namespaceTextField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                namespaceTextFieldActionPerformed(evt);
-            }
-        });
         dockerImageSubLayeredPane.add(namespaceTextField);
 
         groupArtifactSpeperatorLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -621,10 +616,6 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
         dbConnectionComboBox.setSelectedItem(null);
         dbConnectionComboBox.updateUI();
     }//GEN-LAST:event_reloadConnectionButtonActionPerformed
-
-    private void namespaceTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_namespaceTextFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_namespaceTextFieldActionPerformed
 
     private void serverPortComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverPortComboBoxActionPerformed
         // TODO add your handling code here:

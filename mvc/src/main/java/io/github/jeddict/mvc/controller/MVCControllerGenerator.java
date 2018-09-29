@@ -26,7 +26,7 @@ import com.sun.source.tree.Tree;
 import com.sun.source.tree.TypeParameterTree;
 import com.sun.source.tree.VariableTree;
 import com.sun.source.tree.WildcardTree;
-import io.github.jeddict.cdi.CDIUtil;
+import io.github.jeddict.jcode.util.CDIUtil;
 import io.github.jeddict.cdi.logger.LoggerProducerGenerator;
 import io.github.jeddict.jcode.ApplicationConfigData;
 import static io.github.jeddict.jcode.BeanVaildationConstants.EXECUTABLE_TYPE;
@@ -144,7 +144,6 @@ import org.openide.util.lookup.ServiceProvider;
         panel = MVCPanel.class,
         parents = {RepositoryGenerator.class}
 )
-
 public class MVCControllerGenerator implements Generator {
 
     private static final String TEMPLATE = "io/github/jeddict/mvc/template/";

@@ -11,7 +11,7 @@
 
     <properties>
         <version.arquillian>1.1.13.Final</version.arquillian>
-        <version.jacoco>0.7.4.201502262128</version.jacoco>
+        <version.jacoco>0.8.2</version.jacoco>
         <version.valid4j>1.1</version.valid4j>
         <version.junit>4.12</version.junit>
         <version.commons-lang>2.6</version.commons-lang>

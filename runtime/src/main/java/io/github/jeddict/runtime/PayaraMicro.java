@@ -62,7 +62,10 @@ public final class PayaraMicro extends Payara {
             return true;
         });
         pomManager.commit();
-        appConfigData.addGoalAndActivate(project, "payara-micro:" + (docker ? "bundle" : "start"));
+        appConfigData.getEnvironment("dev")
+                .addGoalAndActivate("payara-micro:" + (docker ? "bundle" : "start"), project);
+        appConfigData.getEnvironment("prod")
+                .addGoal("payara-micro:" + (docker ? "bundle" : "start"));
 
         Properties properties = new Properties();
         properties.put(WEB_PORT, "8080");//for micro maven plugin

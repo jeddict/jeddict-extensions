@@ -18,7 +18,8 @@ package io.github.jeddict.repository;
 import io.github.jeddict.jcode.LayerConfigData;
 import java.util.Collections;
 import java.util.List;
-import org.apache.commons.lang.StringUtils;
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  *
@@ -50,7 +51,7 @@ public class RepositoryData extends LayerConfigData {
      * @return the suffixName
      */
     public String getSuffixName() {
-        if(StringUtils.isBlank(suffixName)){
+        if (isBlank(suffixName)) {
             suffixName = "Repository";
         }
         return suffixName;
@@ -67,6 +68,9 @@ public class RepositoryData extends LayerConfigData {
      * @return the prefixName
      */
     public String getPrefixName() {
+        if (isBlank(suffixName)) {
+            suffixName = EMPTY;
+        }
         return prefixName;
     }
 

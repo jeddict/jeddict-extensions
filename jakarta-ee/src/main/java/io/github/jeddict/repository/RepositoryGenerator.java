@@ -112,16 +112,7 @@ public final class RepositoryGenerator implements Generator {
         }
 
     }
-    
-    @Override
-    public void postExecute() {
-        if (appConfigData.isCompleteApplication()) {
-            handler.info("Maven Build",
-                    Console.wrap("mvn clean install ${profiles} ${buildProperties} ${goals}", BOLD),
-                    appConfigData.isGateway() ? gatewayProject : targetProject);
-        }
-    }
-    
+
     private void addMavenDependencies(String pom, Project project) {
         BuildManager.getInstance(project)
                 .copy(TEMPLATE + pom)
