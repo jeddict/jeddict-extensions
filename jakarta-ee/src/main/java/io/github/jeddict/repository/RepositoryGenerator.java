@@ -20,7 +20,7 @@ import io.github.jeddict.jcode.ApplicationConfigData;
 import io.github.jeddict.jcode.Generator;
 import io.github.jeddict.jcode.annotation.ConfigData;
 import io.github.jeddict.jcode.annotation.Technology;
-import static io.github.jeddict.jcode.annotation.Technology.Type.BUSINESS;
+import static io.github.jeddict.jcode.annotation.Technology.Type.REPOSITORY;
 import io.github.jeddict.jcode.console.Console;
 import static io.github.jeddict.jcode.console.Console.*;
 import io.github.jeddict.jcode.task.progress.ProgressHandler;
@@ -58,7 +58,7 @@ import org.openide.util.lookup.ServiceProvider;
  */
 
 @ServiceProvider(service = Generator.class)
-@Technology(type = BUSINESS, 
+@Technology(type = REPOSITORY, 
         label = "CDI Repository", 
         panel = RepositoryPanel.class, 
         sibling = {DockerGenerator.class},
