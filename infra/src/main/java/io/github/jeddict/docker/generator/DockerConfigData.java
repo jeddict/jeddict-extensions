@@ -15,15 +15,15 @@
  */
 package io.github.jeddict.docker.generator;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.jeddict.jcode.DatabaseType;
 import io.github.jeddict.jcode.LayerConfigData;
 import io.github.jeddict.jcode.RuntimeProvider;
 import io.github.jeddict.jcode.annotation.Runtime;
 import java.util.Arrays;
 import java.util.List;
-import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
+import javax.json.bind.annotation.JsonbTransient;
+import static io.github.jeddict.util.StringUtils.isBlank;
+import static io.github.jeddict.util.StringUtils.isNotBlank;
 import org.openide.util.Lookup;
 
 /**
@@ -32,7 +32,7 @@ import org.openide.util.Lookup;
  */
 public class DockerConfigData extends LayerConfigData {
 
-    @JsonIgnore
+    @JsonbTransient
     private Class<? extends RuntimeProvider> runtimeProviderClass;
     private String runtimeProviderClassName;
     private DatabaseType databaseType;
@@ -54,7 +54,7 @@ public class DockerConfigData extends LayerConfigData {
         return runtimeProviderClassName;
     }
     
-    @JsonIgnore
+    @JsonbTransient
     public Class<? extends RuntimeProvider> getRuntimeProviderClass() {
         if (runtimeProviderClass == null && runtimeProviderClassName != null) {
             this.runtimeProviderClass = getRuntimeProvider().getClass();
@@ -67,7 +67,7 @@ public class DockerConfigData extends LayerConfigData {
         this.runtimeProviderClassName = runtimeProviderClass.getName();
     }
 
-    @JsonIgnore
+    @JsonbTransient
     public Runtime getRuntime() {
         Runtime runtime = null;
         if (getRuntimeProviderClass() != null) {
@@ -76,7 +76,7 @@ public class DockerConfigData extends LayerConfigData {
         return runtime;
     }
     
-    @JsonIgnore
+    @JsonbTransient
     public RuntimeProvider getRuntimeProvider() {
         return Lookup.getDefault()
                 .lookupAll(RuntimeProvider.class)
@@ -138,7 +138,7 @@ public class DockerConfigData extends LayerConfigData {
         this.dbName = dbName;
     }
 
-    @JsonIgnore
+    @JsonbTransient
     public boolean isDbInfoExist() {
         return isNotBlank(this.dbName);
     }

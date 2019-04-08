@@ -15,14 +15,15 @@
  */
 package io.github.jeddict.rest.controller;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.jeddict.jcode.LayerConfigData;
 import io.github.jeddict.repository.RepositoryData;
 import java.util.Arrays;
 import java.util.List;
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static io.github.jeddict.util.StringUtils.isBlank;
 import io.github.jeddict.rest.applicationconfig.RestConfigData;
 import static io.github.jeddict.rest.controller.SecurityType.SECURITY_JWT;
+import javax.json.bind.annotation.JsonbProperty;
+import javax.json.bind.annotation.JsonbTransient;
 
 /**
  *
@@ -31,15 +32,25 @@ import static io.github.jeddict.rest.controller.SecurityType.SECURITY_JWT;
 public class RESTData extends LayerConfigData<RepositoryData> {
 
     private String prefixName;
+
     private String suffixName;
+
+    @JsonbProperty("package")
     private String _package;
+
     private RestConfigData restConfigData;
+
     private boolean metrics = true;
+
     private boolean logger = true;
+
     private boolean openAPI = true;
+
     private boolean testCase = true;
-    @JsonIgnore
+
+    @JsonbTransient
     private String frontendAppName = "app";
+
     private SecurityType securityType;
 
     /**
