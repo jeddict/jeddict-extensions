@@ -18,7 +18,7 @@ package io.github.jeddict.mvc.viewer.jsp;
 import io.github.jeddict.jcode.LayerConfigPanel;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.apache.commons.lang.StringUtils;
+import io.github.jeddict.util.StringUtils;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.SourceGroup;

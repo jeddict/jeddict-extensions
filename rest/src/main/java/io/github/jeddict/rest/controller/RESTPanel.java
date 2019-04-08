@@ -21,7 +21,7 @@ import io.github.jeddict.rest.applicationconfig.RestConfigData;
 import io.github.jeddict.rest.applicationconfig.RestConfigDialog;
 import static javax.lang.model.SourceVersion.isName;
 import static javax.swing.JOptionPane.OK_OPTION;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static io.github.jeddict.util.StringUtils.isNotBlank;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.modeler.properties.spec.ComboBoxValue;

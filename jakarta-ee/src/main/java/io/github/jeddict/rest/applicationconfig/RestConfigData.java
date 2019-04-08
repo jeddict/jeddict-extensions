@@ -18,7 +18,7 @@ package io.github.jeddict.rest.applicationconfig;
 import io.github.jeddict.jcode.LayerConfigData;
 import java.util.Collections;
 import java.util.List;
-import org.apache.commons.lang.StringUtils;
+import io.github.jeddict.util.StringUtils;
 
 /**
  *

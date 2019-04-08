@@ -30,7 +30,7 @@ import javax.swing.JList;
 import static javax.swing.JOptionPane.OK_OPTION;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.text.JTextComponent;
-import org.apache.commons.lang.StringUtils;
+import io.github.jeddict.util.StringUtils;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import static io.github.jeddict.jcode.util.JavaSourceHelper.isValidPackageName;
