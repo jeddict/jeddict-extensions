@@ -14,9 +14,10 @@
         <module>jakarta-ee</module>
     </modules>
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <netbeans.version>RELEASE82</netbeans.version>
         <root.dir>${basedir}</root.dir>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <netbeans.version>RELEASE110</netbeans.version>
+        <netbeans.installation>${root.dir}/../incubator-netbeans/nbbuild/netbeans</netbeans.installation>
         <nbm.cluster>jeddict</nbm.cluster>
         <nbm.build.dir>${root.dir}/../jeddict-cluster</nbm.build.dir>
         <nbm.maven.plugin.version>4.1</nbm.maven.plugin.version>
@@ -112,11 +113,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>jpa-spec</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.modules</groupId>
-            <artifactId>org-netbeans-modules-maven-embedder</artifactId>
-            <version>${netbeans.version}</version>
         </dependency>
     </dependencies>
     

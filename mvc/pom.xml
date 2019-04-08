@@ -34,10 +34,6 @@
                             <id>org.netbeans.modules:org-netbeans-modules-websvc-restapi</id>
                             <type>impl</type>
                         </dependency>
-                        <dependency>
-                            <id>org.netbeans.modules:org-netbeans-modules-maven-embedder</id>
-                            <type>impl</type>
-                        </dependency>
                     </moduleDependencies>
                 </configuration>
             </plugin>
@@ -98,6 +94,12 @@
             <groupId>org.netbeans.modules</groupId>
             <artifactId>org-netbeans-modules-websvc-restapi</artifactId>
             <version>${netbeans.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.external</groupId>
+            <artifactId>nb-javac-api</artifactId>
+            <version>RELEASE82</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
