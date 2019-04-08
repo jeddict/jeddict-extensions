@@ -19,11 +19,12 @@ import io.github.jeddict.jcode.LayerConfigData;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.apache.commons.lang.StringUtils;
+import io.github.jeddict.util.StringUtils;
 import io.github.jeddict.mvc.controller.event.ControllerEventType;
 import io.github.jeddict.mvc.controller.returntype.ControllerReturnType;
 import io.github.jeddict.repository.RepositoryData;
 import io.github.jeddict.rest.applicationconfig.RestConfigData;
+import javax.json.bind.annotation.JsonbProperty;
 
 /**
  *
@@ -32,18 +33,28 @@ import io.github.jeddict.rest.applicationconfig.RestConfigData;
 public class MVCData extends LayerConfigData<RepositoryData> {
 
     private String prefixName;
+
     private String suffixName;
+
+    @JsonbProperty("package")
     private String _package;
+
     private boolean beanValidation;
+
     private ControllerReturnType returnType;
+
     private RestConfigData restConfigData;
+
     private List<ControllerEventType> eventTypes;
+
     private boolean csrf;
+
     private boolean xss;
+
     private boolean authentication;
-    
+
     private boolean hybridClass = true;
-    
+
 
     /**
      * @return the _package

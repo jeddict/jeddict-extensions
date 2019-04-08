@@ -25,7 +25,7 @@ import org.netbeans.api.java.source.WorkingCopy;
 import static io.github.jeddict.jcode.util.Constants.JAVA_EXT;
 import static io.github.jeddict.jcode.util.Constants.NAMED;
 import static io.github.jeddict.jcode.util.Constants.REQUEST_SCOPE;
-import io.github.jeddict.jcode.util.JavaSourceHelper;
+import io.github.jeddict.mvc.JavaSourceHelper;
 import io.github.jeddict.jcode.task.progress.ProgressHandler;
 import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
 import org.netbeans.modules.j2ee.core.api.support.java.SourceUtils;
@@ -55,7 +55,7 @@ public class ErrorBeanGenerator {
         javaSource.runModificationTask((WorkingCopy workingCopy) -> {
             workingCopy.toPhase(JavaSource.Phase.RESOLVED);
             GenerationUtils genUtils = GenerationUtils.newInstance(workingCopy);
-            ClassTree classTree = JavaSourceHelper.getTopLevelClassTree(workingCopy);
+            ClassTree classTree = io.github.jeddict.jcode.util.JavaSourceHelper.getTopLevelClassTree(workingCopy);
             TypeElement classElement = SourceUtils.getPublicTopLevelElement(workingCopy);
             TreeMaker maker = workingCopy.getTreeMaker();
             

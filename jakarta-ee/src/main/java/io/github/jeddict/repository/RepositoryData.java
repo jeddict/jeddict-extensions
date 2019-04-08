@@ -1,5 +1,5 @@
 /**
- * Copyright 2013-2018 the original author or authors from the Jeddict project (https://jeddict.github.io/).
+ * Copyright 2013-2019 the original author or authors from the Jeddict project (https://jeddict.github.io/).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -18,8 +18,9 @@ package io.github.jeddict.repository;
 import io.github.jeddict.jcode.LayerConfigData;
 import java.util.Collections;
 import java.util.List;
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static io.github.jeddict.util.StringUtils.EMPTY;
+import static io.github.jeddict.util.StringUtils.isBlank;
+import javax.json.bind.annotation.JsonbProperty;
 
 /**
  *
@@ -27,58 +28,122 @@ import static org.apache.commons.lang.StringUtils.isBlank;
  */
 public class RepositoryData extends LayerConfigData {
 
-    private String prefixName;
-    private String suffixName;
-    private String _package;
+    @JsonbProperty("package")
+    private String repositoryPackage;
+
+    @JsonbProperty("prefixName")
+    private String repositoryPrefixName;
+
+    @JsonbProperty("suffixName")
+    private String repositorySuffixName;
+
+    private String servicePackage;
+
+    private String servicePrefixName;
+
+    private String serviceSuffixName;
+
     private boolean isNamed;
+
     private boolean cdi = true;
-    
+
     /**
-     * @return the _package
+     * @return the repositoryPackage
      */
-    public String getPackage() {
-        return _package;
+    public String getRepositoryPackage() {
+        return repositoryPackage;
     }
 
     /**
-     * @param _package the _package to set
+     * @param repositoryPackage the repositoryPackage to set
      */
-    public void setPackage(String _package) {
-        this._package = _package;
+    public void setRepositoryPackage(String repositoryPackage) {
+        this.repositoryPackage = repositoryPackage;
     }
 
     /**
-     * @return the suffixName
+     * @return the repositorySuffixName
      */
-    public String getSuffixName() {
-        if (isBlank(suffixName)) {
-            suffixName = "Repository";
+    public String getRepositorySuffixName() {
+        if (isBlank(repositorySuffixName)) {
+            repositorySuffixName = "Repository";
         }
-        return suffixName;
+        return repositorySuffixName;
     }
 
     /**
-     * @param suffixName the suffixName to set
+     * @param repositorySuffixName the repositorySuffixName to set
      */
-    public void setSuffixName(String suffixName) {
-        this.suffixName = suffixName;
+    public void setRepositorySuffixName(String repositorySuffixName) {
+        this.repositorySuffixName = repositorySuffixName;
     }
 
     /**
-     * @return the prefixName
+     * @return the repositoryPrefixName
      */
-    public String getPrefixName() {
-        if (isBlank(suffixName)) {
-            suffixName = EMPTY;
+    public String getRepositoryPrefixName() {
+        if (isBlank(repositoryPrefixName)) {
+            repositoryPrefixName = EMPTY;
         }
-        return prefixName;
+        return repositoryPrefixName;
     }
 
     /**
-     * @param prefixName the prefixName to set
+     * @param repositoryPrefixName the repositoryPrefixName to set
      */
-    public void setPrefixName(String prefixName) {
-        this.prefixName = prefixName;
+    public void setRepositoryPrefixName(String repositoryPrefixName) {
+        this.repositoryPrefixName = repositoryPrefixName;
+    }
+
+    /**
+     * @return the servicePackage
+     */
+    public String getServicePackage() {
+        if (isBlank(repositorySuffixName)) {
+            repositorySuffixName = "Repository";
+        }
+        return servicePackage;
+    }
+
+    /**
+     * @param servicePackage the servicePackage to set
+     */
+    public void setServicePackage(String servicePackage) {
+        this.servicePackage = servicePackage;
+    }
+
+    /**
+     * @return the serviceSuffixName
+     */
+    public String getServiceSuffixName() {
+        if (isBlank(serviceSuffixName)) {
+            serviceSuffixName = "Service";
+        }
+        return serviceSuffixName;
+    }
+
+    /**
+     * @param serviceSuffixName the serviceSuffixName to set
+     */
+    public void setServiceSuffixName(String serviceSuffixName) {
+        this.serviceSuffixName = serviceSuffixName;
+    }
+
+    /**
+     * @return the servicePrefixName
+     */
+    public String getServicePrefixName() {
+        if (isBlank(servicePrefixName)) {
+            servicePrefixName = EMPTY;
+        }
+        return servicePrefixName;
+    }
+
+    /**
+     * @param servicePrefixName the servicePrefixName to set
+     */
+    public void setServicePrefixName(String servicePrefixName) {
+        this.servicePrefixName = servicePrefixName;
     }
 
     /**
@@ -108,7 +173,7 @@ public class RepositoryData extends LayerConfigData {
     public void setCDI(boolean cdi) {
         this.cdi = cdi;
     }
-    
+
     @Override
     public List<String> getUsageDetails() {
         return Collections.<String>emptyList();

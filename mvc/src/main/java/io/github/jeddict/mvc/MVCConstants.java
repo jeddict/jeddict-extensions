@@ -15,6 +15,8 @@
  */
 package io.github.jeddict.mvc;
 
+import org.netbeans.modules.websvc.rest.model.api.RestConstants;
+
 /**
  *
  * @author Gaurav Gupta
@@ -31,4 +33,78 @@ public class MVCConstants {
     public static final String REDIRECT  = "redirect:";
     public static final String BINDING_RESULT  = "javax.mvc.binding.BindingResult";
     public static final String CSRF_VALID  = "javax.mvc.annotation.CsrfValid";
+    
+    
+    public enum MimeType {
+
+        XML("application/xml", "Xml", "APPLICATION_XML"),
+        JSON("application/json", "Json", "APPLICATION_JSON"),
+        TEXT("text/plain", "Text", "TEXT_PLAIN"),
+        HTML("text/html", "Html", "TEXT_HTML"),
+        IMAGE("image/png", "Image", null);
+
+        private final String value;
+        private final String suffix;
+        private final String mediaTypeField;
+
+        MimeType(String value, String suffix, String mediaTypeField) {
+            this.value = value;
+            this.suffix = suffix;
+            this.mediaTypeField = mediaTypeField;
+        }
+
+        public String value() {
+            return value;
+        }
+
+        public String suffix() {
+            return suffix;
+        }
+
+        public static MimeType find(String value) {
+            for (MimeType m : values()) {
+                if (m.value().equals(value)) {
+                    return m;
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
+    }
+
+    public enum HttpMethodType {
+
+        GET("get", RestConstants.GET),
+        PUT("put", RestConstants.PUT),
+        POST("post", RestConstants.POST),
+        DELETE("delete", RestConstants.DELETE);
+
+        private final String prefix;
+        private final String annotationType;
+
+        HttpMethodType(String prefix, String annotationType) {
+            this.prefix = prefix;
+            this.annotationType = annotationType;
+        }
+
+        public String value() {
+            return name();
+        }
+
+        public String prefix() {
+            return prefix;
+        }
+
+        public String getAnnotationType() {
+            return annotationType;
+        }
+    }
+
+    public static final String REST_STUBS_DIR = "rest";
+
+    public static final String PASSWORD = "password";
 }

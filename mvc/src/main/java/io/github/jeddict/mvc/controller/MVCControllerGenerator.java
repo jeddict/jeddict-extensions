@@ -61,12 +61,10 @@ import static io.github.jeddict.jcode.util.AttributeType.getType;
 import static io.github.jeddict.jcode.util.AttributeType.getWrapperType;
 import io.github.jeddict.jcode.util.BuildManager;
 import static io.github.jeddict.jcode.util.Constants.JAVA_EXT;
-import io.github.jeddict.jcode.util.Constants.MimeType;
-import static io.github.jeddict.jcode.util.Constants.PASSWORD;
 import static io.github.jeddict.jcode.util.Constants.VOID;
 import io.github.jeddict.jcode.util.Inflector;
 import io.github.jeddict.jcode.util.JavaIdentifiers;
-import io.github.jeddict.jcode.util.JavaSourceHelper;
+import io.github.jeddict.mvc.JavaSourceHelper;
 import static io.github.jeddict.jcode.util.ProjectHelper.getFolderForPackage;
 import io.github.jeddict.jcode.util.StringHelper;
 import io.github.jeddict.jpa.spec.DefaultAttribute;
@@ -79,6 +77,8 @@ import io.github.jeddict.mvc.MVCConstants;
 import static io.github.jeddict.mvc.MVCConstants.BINDING_RESULT;
 import static io.github.jeddict.mvc.MVCConstants.CSRF_VALID;
 import static io.github.jeddict.mvc.MVCConstants.MODELS;
+import io.github.jeddict.mvc.MVCConstants.MimeType;
+import static io.github.jeddict.mvc.MVCConstants.PASSWORD;
 import static io.github.jeddict.mvc.MVCConstants.REDIRECT;
 import static io.github.jeddict.mvc.MVCConstants.VIEWABLE;
 import io.github.jeddict.mvc.auth.controller.AuthMechanismGenerator;
@@ -113,7 +113,7 @@ import static java.util.stream.Collectors.toList;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
-import org.apache.commons.lang.StringUtils;
+import io.github.jeddict.util.StringUtils;
 import org.netbeans.api.java.source.JavaSource;
 import org.netbeans.api.java.source.JavaSource.Phase;
 import org.netbeans.api.java.source.Task;
@@ -211,8 +211,8 @@ public class MVCControllerGenerator implements Generator {
         final String listVariableName = Inflector.getInstance().pluralize(variableName);
 //        final String constantName = StringHelper.toConstant(entitySimpleName);
 
-        String repositoryFileName = repositoryData.getPrefixName() + entitySimpleName + repositoryData.getSuffixName();
-        String fqRepositoryFileName = entity.getAbsolutePackage(appConfigData.getTargetPackage() + '.' + repositoryData.getPackage()) + '.' + repositoryFileName;
+        String repositoryFileName = repositoryData.getRepositoryPrefixName() + entitySimpleName + repositoryData.getRepositorySuffixName();
+        String fqRepositoryFileName = entity.getAbsolutePackage(appConfigData.getTargetPackage() + '.' + repositoryData.getRepositoryPackage()) + '.' + repositoryFileName;
 
         String controllerFileName = mvcData.getPrefixName() + entitySimpleName + mvcData.getSuffixName();
         handler.progress(controllerFileName);
@@ -642,7 +642,7 @@ public class MVCControllerGenerator implements Generator {
 
                     javaSource.runModificationTask((WorkingCopy workingCopy) -> {
                         workingCopy.toPhase(JavaSource.Phase.RESOLVED);
-                        ClassTree tree = JavaSourceHelper.getTopLevelClassTree(workingCopy);//
+                        ClassTree tree = io.github.jeddict.jcode.util.JavaSourceHelper.getTopLevelClassTree(workingCopy);//
                         TreeMaker maker = workingCopy.getTreeMaker();
                         ClassTree newTree = tree; // NOI18N
 
@@ -685,7 +685,7 @@ public class MVCControllerGenerator implements Generator {
             JavaSourceHelper.addClassAnnotation(workingCopy,
                     new String[]{"javax.ws.rs.ApplicationPath"},
                     new String[]{applicationPath});         // NOI18N
-            ClassTree tree = JavaSourceHelper.getTopLevelClassTree(workingCopy);//
+            ClassTree tree = io.github.jeddict.jcode.util.JavaSourceHelper.getTopLevelClassTree(workingCopy);//
             TreeMaker maker = workingCopy.getTreeMaker();
             ClassTree newTree = maker.setExtends(tree,
                     maker.QualIdent(JAX_RS_APPLICATION_CLASS)); // NOI18N

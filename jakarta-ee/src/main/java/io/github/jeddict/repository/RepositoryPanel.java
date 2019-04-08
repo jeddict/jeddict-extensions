@@ -1,5 +1,5 @@
 /**
- * Copyright 2013-2018 the original author or authors from the Jeddict project (https://jeddict.github.io/).
+ * Copyright 2013-2019 the original author or authors from the Jeddict project (https://jeddict.github.io/).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -17,11 +17,12 @@ package io.github.jeddict.repository;
 
 import io.github.jeddict.jcode.LayerConfigPanel;
 import javax.lang.model.SourceVersion;
-import org.apache.commons.lang.StringUtils;
+import static io.github.jeddict.util.StringUtils.equalsIgnoreCase;
+import static io.github.jeddict.util.StringUtils.isNotBlank;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import static org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers.isValidPackageName;
-import org.openide.util.NbBundle;
+import static org.openide.util.NbBundle.getMessage;
 
 /**
  *
@@ -33,28 +34,52 @@ public class RepositoryPanel extends LayerConfigPanel<RepositoryData> {
 
     public RepositoryPanel() {
         initComponents();
+        
+        servicePackagePanel.setVisible(false);
+        servicePanel.setVisible(false);
+        separatorPane.setVisible(false);
     }
 
     @Override
     public boolean hasError() {
         warningLabel.setText("");
-        if (!isValidPackageName(getPackage())) {
-            warningLabel.setText(NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.invalidPackage.message"));
-            return true;
-        }
-        String prefix = getPrefix();
-        String suffix = getSuffix();
 
-        if (StringUtils.isNotBlank(prefix) && !SourceVersion.isName(prefix)) {
-            warningLabel.setText(NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.invalidPrefix.message"));
+        String repositoryPackage = getRepositoryPackage();
+        String repositoryPrefix = getRepositoryPrefix();
+        String repositorySuffix = getRepositorySuffix();
+
+        if (!isValidPackageName(repositoryPackage)) {
+            warningLabel.setText(getMessage(RepositoryPanel.class, "RepositoryPanel.invalidRepositoryPackage.message"));
             return true;
         }
-        if (StringUtils.isNotBlank(suffix) && !SourceVersion.isName(prefix + '_' + suffix)) {
-            warningLabel.setText(NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.invalidSuffix.message"));
+        if (isNotBlank(repositoryPrefix) && !SourceVersion.isName(repositoryPrefix)) {
+            warningLabel.setText(getMessage(RepositoryPanel.class, "RepositoryPanel.invalidRepositoryPrefix.message"));
             return true;
         }
-        if ("Service".equals(suffix)) {
-            warningLabel.setText(NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.reservedSuffix.message"));
+        if (isNotBlank(repositorySuffix) && !SourceVersion.isName(repositoryPrefix + '_' + repositorySuffix)) {
+            warningLabel.setText(getMessage(RepositoryPanel.class, "RepositoryPanel.invalidRepositorySuffix.message"));
+            return true;
+        }
+
+        String servicePackage = getServicePackage();
+        String servicePrefix = getServicePrefix();
+        String serviceSuffix = getServiceSuffix();
+
+        if (!isValidPackageName(servicePackage)) {
+            warningLabel.setText(getMessage(RepositoryPanel.class, "RepositoryPanel.invalidServicePackage.message"));
+            return true;
+        }
+        if (isNotBlank(servicePrefix) && !SourceVersion.isName(servicePrefix)) {
+            warningLabel.setText(getMessage(RepositoryPanel.class, "RepositoryPanel.invalidServicePrefix.message"));
+            return true;
+        }
+        if (isNotBlank(serviceSuffix) && !SourceVersion.isName(servicePrefix + '_' + serviceSuffix)) {
+            warningLabel.setText(getMessage(RepositoryPanel.class, "RepositoryPanel.invalidServiceSuffix.message"));
+            return true;
+        }
+
+        if (equalsIgnoreCase(repositorySuffix, serviceSuffix)) {
+            warningLabel.setText(getMessage(RepositoryPanel.class, "RepositoryPanel.suffixValueSame.message"));
             return true;
         }
         return false;
@@ -63,54 +88,92 @@ public class RepositoryPanel extends LayerConfigPanel<RepositoryData> {
     @Override
     public void read() {
         RepositoryData data = this.getConfigData();
-        if (StringUtils.isNotBlank(data.getPackage())) {
-            setPackage(data.getPackage());
+        if (isNotBlank(data.getRepositoryPackage())) {
+            setRepositoryPackage(data.getRepositoryPackage());
         }
-        if (StringUtils.isNotBlank(data.getPrefixName())) {
-            setPrefix(data.getPrefixName());
+        if (isNotBlank(data.getRepositoryPrefixName())) {
+            setRepositoryPrefix(data.getRepositoryPrefixName());
         }
-        if (StringUtils.isNotBlank(data.getSuffixName())) {
-            setSuffix(data.getSuffixName());
+        if (isNotBlank(data.getRepositorySuffixName())) {
+            setRepositorySuffix(data.getRepositorySuffixName());
+        }
+        if (isNotBlank(data.getServicePackage())) {
+            setServicePackage(data.getServicePackage());
+        }
+        if (isNotBlank(data.getServicePrefixName())) {
+            setServicePrefix(data.getServicePrefixName());
+        }
+        if (isNotBlank(data.getServiceSuffixName())) {
+            setServiceSuffix(data.getServiceSuffixName());
         }
     }
 
     @Override
     public void store() {
         RepositoryData data = this.getConfigData();
-        data.setPrefixName(getPrefix());
-        data.setSuffixName(getSuffix());
-        data.setPackage(getPackage());
+        data.setRepositoryPackage(getRepositoryPackage());
+        data.setRepositoryPrefixName(getRepositoryPrefix());
+        data.setRepositorySuffixName(getRepositorySuffix());
+        data.setServicePackage(getServicePackage());
+        data.setServicePrefixName(getServicePrefix());
+        data.setServiceSuffixName(getServiceSuffix());
     }
 
     @Override
     public void init(String _package, Project project, SourceGroup sourceGroup) {
-        setPackage(DEFAULT_PACKAGE);
-        addChangeListener(prefixField);
-        addChangeListener(suffixField);
+        setRepositoryPackage(DEFAULT_PACKAGE);
+        addChangeListener(repositoryPrefixField);
+        addChangeListener(repositorySuffixField);
+        addChangeListener(servicePrefixField);
+        addChangeListener(serviceSuffixField);
     }
 
-    public String getPackage() {
-        return packageTextField.getText().trim();
+    public String getRepositoryPackage() {
+        return repositoryPackageTextField.getText().trim();
     }
 
-    private void setPackage(String _package) {
-        packageTextField.setText(_package);
+    private void setRepositoryPackage(String repositoryPackage) {
+        repositoryPackageTextField.setText(repositoryPackage);
     }
 
-    public String getSuffix() {
-        return suffixField.getText().trim();
+    public String getRepositorySuffix() {
+        return repositorySuffixField.getText().trim();
     }
 
-    public String getPrefix() {
-        return prefixField.getText().trim();
+    public String getRepositoryPrefix() {
+        return repositoryPrefixField.getText().trim();
     }
 
-    private void setPrefix(String prefix) {
-        prefixField.setText(prefix);
+    private void setRepositoryPrefix(String prefix) {
+        repositoryPrefixField.setText(prefix);
     }
 
-    private void setSuffix(String suffix) {
-        suffixField.setText(suffix);
+    private void setRepositorySuffix(String suffix) {
+        repositorySuffixField.setText(suffix);
+    }
+
+    public String getServicePackage() {
+        return servicePackageTextField.getText().trim();
+    }
+
+    private void setServicePackage(String servicePackage) {
+        servicePackageTextField.setText(servicePackage);
+    }
+
+    public String getServiceSuffix() {
+        return serviceSuffixField.getText().trim();
+    }
+
+    public String getServicePrefix() {
+        return servicePrefixField.getText().trim();
+    }
+
+    private void setServicePrefix(String prefix) {
+        servicePrefixField.setText(prefix);
+    }
+
+    private void setServiceSuffix(String suffix) {
+        serviceSuffixField.setText(suffix);
     }
 
     /**
@@ -125,17 +188,30 @@ public class RepositoryPanel extends LayerConfigPanel<RepositoryData> {
         warningPanel = new javax.swing.JPanel();
         warningLabel = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
-        suffixPanel = new javax.swing.JPanel();
-        namePane = new javax.swing.JLayeredPane();
-        prefixField = new javax.swing.JTextField();
-        entityLabel = new javax.swing.JLabel();
-        suffixField = new javax.swing.JTextField();
-        nameLabel = new javax.swing.JLabel();
-        packagePanel = new javax.swing.JPanel();
-        packageLabel = new javax.swing.JLabel();
-        packageWrapper = new javax.swing.JLayeredPane();
-        packagePrefixLabel = new javax.swing.JLabel();
-        packageTextField = new javax.swing.JTextField();
+        repositoryPanel = new javax.swing.JPanel();
+        repositoryInnerPanel = new javax.swing.JLayeredPane();
+        repositoryPrefixField = new javax.swing.JTextField();
+        repositoryEntityLabel = new javax.swing.JLabel();
+        repositorySuffixField = new javax.swing.JTextField();
+        repositoryPanelLabel = new javax.swing.JLabel();
+        repositoryPackagePanel = new javax.swing.JPanel();
+        repositoryPackageLabel = new javax.swing.JLabel();
+        repositoryPackageWrapper = new javax.swing.JLayeredPane();
+        repositoryPackagePrefixLabel = new javax.swing.JLabel();
+        repositoryPackageTextField = new javax.swing.JTextField();
+        separatorPane = new javax.swing.JLayeredPane();
+        separator = new javax.swing.JSeparator();
+        servicePanel = new javax.swing.JPanel();
+        serviceInnerPanel = new javax.swing.JLayeredPane();
+        servicePrefixField = new javax.swing.JTextField();
+        serviceEntityLabel = new javax.swing.JLabel();
+        serviceSuffixField = new javax.swing.JTextField();
+        servicePanelLabel = new javax.swing.JLabel();
+        servicePackagePanel = new javax.swing.JPanel();
+        servicePackageLabel = new javax.swing.JLabel();
+        servicePackageWrapper = new javax.swing.JLayeredPane();
+        servicePackagePrefixLabel = new javax.swing.JLabel();
+        servicePackageTextField = new javax.swing.JTextField();
 
         warningPanel.setLayout(new java.awt.BorderLayout(10, 0));
 
@@ -144,77 +220,155 @@ public class RepositoryPanel extends LayerConfigPanel<RepositoryData> {
         org.openide.awt.Mnemonics.setLocalizedText(warningLabel, org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.warningLabel.text")); // NOI18N
         warningPanel.add(warningLabel, java.awt.BorderLayout.CENTER);
 
-        jPanel1.setLayout(new java.awt.GridLayout(4, 0, 0, 15));
+        jPanel1.setLayout(new java.awt.GridLayout(5, 0, 0, 15));
 
-        suffixPanel.setLayout(new java.awt.BorderLayout(10, 0));
+        repositoryPanel.setLayout(new java.awt.BorderLayout(10, 0));
 
-        namePane.setLayout(new javax.swing.BoxLayout(namePane, javax.swing.BoxLayout.LINE_AXIS));
+        repositoryInnerPanel.setLayout(new javax.swing.BoxLayout(repositoryInnerPanel, javax.swing.BoxLayout.LINE_AXIS));
 
-        prefixField.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        prefixField.setText(org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.prefixField.text")); // NOI18N
-        prefixField.setToolTipText(org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.prefixField.toolTipText")); // NOI18N
-        prefixField.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+        repositoryPrefixField.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        repositoryPrefixField.setText(org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.repositoryPrefixField.text")); // NOI18N
+        repositoryPrefixField.setToolTipText(org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.repositoryPrefixField.toolTipText")); // NOI18N
+        repositoryPrefixField.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
             public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                prefixFieldPropertyChange(evt);
+                repositoryPrefixFieldPropertyChange(evt);
             }
         });
-        namePane.add(prefixField);
+        repositoryInnerPanel.add(repositoryPrefixField);
 
-        entityLabel.setForeground(javax.swing.UIManager.getDefaults().getColor("Button.shadow"));
-        entityLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        org.openide.awt.Mnemonics.setLocalizedText(entityLabel, org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.entityLabel.text")); // NOI18N
-        entityLabel.setPreferredSize(new java.awt.Dimension(70, 27));
-        entityLabel.setRequestFocusEnabled(false);
-        namePane.add(entityLabel);
+        repositoryEntityLabel.setForeground(javax.swing.UIManager.getDefaults().getColor("Button.shadow"));
+        repositoryEntityLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        org.openide.awt.Mnemonics.setLocalizedText(repositoryEntityLabel, org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.repositoryEntityLabel.text")); // NOI18N
+        repositoryEntityLabel.setPreferredSize(new java.awt.Dimension(70, 27));
+        repositoryEntityLabel.setRequestFocusEnabled(false);
+        repositoryInnerPanel.add(repositoryEntityLabel);
 
-        suffixField.setText(org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.suffixField.text")); // NOI18N
-        suffixField.setToolTipText(org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.suffixField.toolTipText")); // NOI18N
-        suffixField.setPreferredSize(new java.awt.Dimension(100, 27));
-        suffixField.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+        repositorySuffixField.setText(org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.repositorySuffixField.text")); // NOI18N
+        repositorySuffixField.setToolTipText(org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.repositorySuffixField.toolTipText")); // NOI18N
+        repositorySuffixField.setPreferredSize(new java.awt.Dimension(100, 27));
+        repositorySuffixField.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
             public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                suffixFieldPropertyChange(evt);
+                repositorySuffixFieldPropertyChange(evt);
             }
         });
-        namePane.add(suffixField);
+        repositoryInnerPanel.add(repositorySuffixField);
 
-        suffixPanel.add(namePane, java.awt.BorderLayout.CENTER);
+        repositoryPanel.add(repositoryInnerPanel, java.awt.BorderLayout.CENTER);
 
-        nameLabel.setLabelFor(suffixField);
-        org.openide.awt.Mnemonics.setLocalizedText(nameLabel, org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.nameLabel.text")); // NOI18N
-        nameLabel.setPreferredSize(new java.awt.Dimension(100, 17));
-        suffixPanel.add(nameLabel, java.awt.BorderLayout.WEST);
+        repositoryPanelLabel.setLabelFor(repositorySuffixField);
+        org.openide.awt.Mnemonics.setLocalizedText(repositoryPanelLabel, org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.repositoryPanelLabel.text")); // NOI18N
+        repositoryPanelLabel.setPreferredSize(new java.awt.Dimension(120, 17));
+        repositoryPanel.add(repositoryPanelLabel, java.awt.BorderLayout.WEST);
 
-        jPanel1.add(suffixPanel);
+        jPanel1.add(repositoryPanel);
 
-        packagePanel.setLayout(new java.awt.BorderLayout(10, 0));
+        repositoryPackagePanel.setLayout(new java.awt.BorderLayout(10, 0));
 
-        org.openide.awt.Mnemonics.setLocalizedText(packageLabel, org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.packageLabel.text")); // NOI18N
-        packageLabel.setPreferredSize(new java.awt.Dimension(100, 17));
-        packagePanel.add(packageLabel, java.awt.BorderLayout.LINE_START);
+        org.openide.awt.Mnemonics.setLocalizedText(repositoryPackageLabel, org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.repositoryPackageLabel.text")); // NOI18N
+        repositoryPackageLabel.setPreferredSize(new java.awt.Dimension(120, 17));
+        repositoryPackagePanel.add(repositoryPackageLabel, java.awt.BorderLayout.LINE_START);
 
-        packageWrapper.setLayout(new java.awt.BorderLayout());
+        repositoryPackageWrapper.setLayout(new java.awt.BorderLayout());
 
-        packagePrefixLabel.setForeground(new java.awt.Color(153, 153, 153));
-        org.openide.awt.Mnemonics.setLocalizedText(packagePrefixLabel, org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.packagePrefixLabel.text")); // NOI18N
-        packagePrefixLabel.setPreferredSize(new java.awt.Dimension(185, 14));
-        packageWrapper.add(packagePrefixLabel, java.awt.BorderLayout.WEST);
+        repositoryPackagePrefixLabel.setForeground(new java.awt.Color(153, 153, 153));
+        org.openide.awt.Mnemonics.setLocalizedText(repositoryPackagePrefixLabel, org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.repositoryPackagePrefixLabel.text")); // NOI18N
+        repositoryPackagePrefixLabel.setPreferredSize(new java.awt.Dimension(185, 14));
+        repositoryPackageWrapper.add(repositoryPackagePrefixLabel, java.awt.BorderLayout.WEST);
 
-        packageTextField.setText(org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.packageTextField.text")); // NOI18N
-        packageWrapper.add(packageTextField, java.awt.BorderLayout.CENTER);
+        repositoryPackageTextField.setText(org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.repositoryPackageTextField.text")); // NOI18N
+        repositoryPackageWrapper.add(repositoryPackageTextField, java.awt.BorderLayout.CENTER);
 
-        packagePanel.add(packageWrapper, java.awt.BorderLayout.CENTER);
+        repositoryPackagePanel.add(repositoryPackageWrapper, java.awt.BorderLayout.CENTER);
 
-        jPanel1.add(packagePanel);
+        jPanel1.add(repositoryPackagePanel);
+
+        separatorPane.setLayer(separator, javax.swing.JLayeredPane.DEFAULT_LAYER);
+
+        javax.swing.GroupLayout separatorPaneLayout = new javax.swing.GroupLayout(separatorPane);
+        separatorPane.setLayout(separatorPaneLayout);
+        separatorPaneLayout.setHorizontalGroup(
+            separatorPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(separator, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 647, Short.MAX_VALUE)
+        );
+        separatorPaneLayout.setVerticalGroup(
+            separatorPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(separatorPaneLayout.createSequentialGroup()
+                .addGap(8, 8, 8)
+                .addComponent(separator, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel1.add(separatorPane);
+
+        servicePanel.setLayout(new java.awt.BorderLayout(10, 0));
+
+        serviceInnerPanel.setLayout(new javax.swing.BoxLayout(serviceInnerPanel, javax.swing.BoxLayout.LINE_AXIS));
+
+        servicePrefixField.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        servicePrefixField.setText(org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.servicePrefixField.text")); // NOI18N
+        servicePrefixField.setToolTipText(org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.servicePrefixField.toolTipText")); // NOI18N
+        servicePrefixField.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                servicePrefixFieldPropertyChange(evt);
+            }
+        });
+        serviceInnerPanel.add(servicePrefixField);
+
+        serviceEntityLabel.setForeground(javax.swing.UIManager.getDefaults().getColor("Button.shadow"));
+        serviceEntityLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        org.openide.awt.Mnemonics.setLocalizedText(serviceEntityLabel, org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.serviceEntityLabel.text")); // NOI18N
+        serviceEntityLabel.setPreferredSize(new java.awt.Dimension(70, 27));
+        serviceEntityLabel.setRequestFocusEnabled(false);
+        serviceInnerPanel.add(serviceEntityLabel);
+
+        serviceSuffixField.setText(org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.serviceSuffixField.text")); // NOI18N
+        serviceSuffixField.setToolTipText(org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.serviceSuffixField.toolTipText")); // NOI18N
+        serviceSuffixField.setPreferredSize(new java.awt.Dimension(100, 27));
+        serviceSuffixField.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                serviceSuffixFieldPropertyChange(evt);
+            }
+        });
+        serviceInnerPanel.add(serviceSuffixField);
+
+        servicePanel.add(serviceInnerPanel, java.awt.BorderLayout.CENTER);
+
+        servicePanelLabel.setLabelFor(repositorySuffixField);
+        org.openide.awt.Mnemonics.setLocalizedText(servicePanelLabel, org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.servicePanelLabel.text")); // NOI18N
+        servicePanelLabel.setPreferredSize(new java.awt.Dimension(170, 17));
+        servicePanel.add(servicePanelLabel, java.awt.BorderLayout.WEST);
+
+        jPanel1.add(servicePanel);
+
+        servicePackagePanel.setLayout(new java.awt.BorderLayout(10, 0));
+
+        org.openide.awt.Mnemonics.setLocalizedText(servicePackageLabel, org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.servicePackageLabel.text")); // NOI18N
+        servicePackageLabel.setPreferredSize(new java.awt.Dimension(160, 17));
+        servicePackagePanel.add(servicePackageLabel, java.awt.BorderLayout.LINE_START);
+
+        servicePackageWrapper.setLayout(new java.awt.BorderLayout());
+
+        servicePackagePrefixLabel.setForeground(new java.awt.Color(153, 153, 153));
+        org.openide.awt.Mnemonics.setLocalizedText(servicePackagePrefixLabel, org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.servicePackagePrefixLabel.text")); // NOI18N
+        servicePackagePrefixLabel.setPreferredSize(new java.awt.Dimension(185, 14));
+        servicePackageWrapper.add(servicePackagePrefixLabel, java.awt.BorderLayout.WEST);
+
+        servicePackageTextField.setText(org.openide.util.NbBundle.getMessage(RepositoryPanel.class, "RepositoryPanel.servicePackageTextField.text")); // NOI18N
+        servicePackageWrapper.add(servicePackageTextField, java.awt.BorderLayout.CENTER);
+
+        servicePackagePanel.add(servicePackageWrapper, java.awt.BorderLayout.CENTER);
+
+        jPanel1.add(servicePackagePanel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 615, Short.MAX_VALUE)
+            .addGap(0, 677, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 595, Short.MAX_VALUE)
+                    .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 647, Short.MAX_VALUE)
                     .addContainerGap()))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
@@ -224,42 +378,62 @@ public class RepositoryPanel extends LayerConfigPanel<RepositoryData> {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 187, Short.MAX_VALUE)
+            .addGap(0, 260, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                    .addContainerGap(156, Short.MAX_VALUE)
+                    .addContainerGap(224, Short.MAX_VALUE)
                     .addComponent(warningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap()))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(50, Short.MAX_VALUE)))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(84, Short.MAX_VALUE)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void suffixFieldPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_suffixFieldPropertyChange
+    private void repositorySuffixFieldPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_repositorySuffixFieldPropertyChange
         fire();
-    }//GEN-LAST:event_suffixFieldPropertyChange
+    }//GEN-LAST:event_repositorySuffixFieldPropertyChange
 
-    private void prefixFieldPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_prefixFieldPropertyChange
+    private void repositoryPrefixFieldPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_repositoryPrefixFieldPropertyChange
         fire();
-    }//GEN-LAST:event_prefixFieldPropertyChange
+    }//GEN-LAST:event_repositoryPrefixFieldPropertyChange
 
+    private void serviceSuffixFieldPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_serviceSuffixFieldPropertyChange
+        fire();
+    }//GEN-LAST:event_serviceSuffixFieldPropertyChange
+
+    private void servicePrefixFieldPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_servicePrefixFieldPropertyChange
+        fire();
+    }//GEN-LAST:event_servicePrefixFieldPropertyChange
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel entityLabel;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JLabel nameLabel;
-    private javax.swing.JLayeredPane namePane;
-    private javax.swing.JLabel packageLabel;
-    private javax.swing.JPanel packagePanel;
-    private javax.swing.JLabel packagePrefixLabel;
-    private javax.swing.JTextField packageTextField;
-    private javax.swing.JLayeredPane packageWrapper;
-    private javax.swing.JTextField prefixField;
-    private javax.swing.JTextField suffixField;
-    private javax.swing.JPanel suffixPanel;
+    private javax.swing.JLabel repositoryEntityLabel;
+    private javax.swing.JLayeredPane repositoryInnerPanel;
+    private javax.swing.JLabel repositoryPackageLabel;
+    private javax.swing.JPanel repositoryPackagePanel;
+    private javax.swing.JLabel repositoryPackagePrefixLabel;
+    private javax.swing.JTextField repositoryPackageTextField;
+    private javax.swing.JLayeredPane repositoryPackageWrapper;
+    private javax.swing.JPanel repositoryPanel;
+    private javax.swing.JLabel repositoryPanelLabel;
+    private javax.swing.JTextField repositoryPrefixField;
+    private javax.swing.JTextField repositorySuffixField;
+    private javax.swing.JSeparator separator;
+    private javax.swing.JLayeredPane separatorPane;
+    private javax.swing.JLabel serviceEntityLabel;
+    private javax.swing.JLayeredPane serviceInnerPanel;
+    private javax.swing.JLabel servicePackageLabel;
+    private javax.swing.JPanel servicePackagePanel;
+    private javax.swing.JLabel servicePackagePrefixLabel;
+    private javax.swing.JTextField servicePackageTextField;
+    private javax.swing.JLayeredPane servicePackageWrapper;
+    private javax.swing.JPanel servicePanel;
+    private javax.swing.JLabel servicePanelLabel;
+    private javax.swing.JTextField servicePrefixField;
+    private javax.swing.JTextField serviceSuffixField;
     private javax.swing.JLabel warningLabel;
     private javax.swing.JPanel warningPanel;
     // End of variables declaration//GEN-END:variables

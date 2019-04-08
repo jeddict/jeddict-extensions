@@ -81,9 +81,9 @@ import java.util.Set;
 import java.util.function.Function;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
-import org.apache.commons.lang.StringUtils;
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
+import io.github.jeddict.util.StringUtils;
+import static io.github.jeddict.util.StringUtils.EMPTY;
+import static io.github.jeddict.util.StringUtils.isNotEmpty;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
@@ -217,7 +217,11 @@ public class RESTGenerator implements Generator {
         SERVICE_TEMPLATES.add(new Template("security/TokenProvider.java.ftl", "TokenProvider", "security"));
         SERVICE_TEMPLATES.add(new Template("producer/TemplateEngineProducer.java.ftl", "TemplateEngineProducer", "producer"));
         SERVICE_TEMPLATES.add(new Template("util/RandomUtil.java.ftl", "RandomUtil", "util"));
-        SERVICE_TEMPLATES.add(new Template("service/UserService.java.ftl", "UserService", "service"));
+        SERVICE_TEMPLATES.add(new Template(
+                "service/UserService.java.ftl",
+                repositoryData.getServicePrefixName() + "User" + repositoryData.getServiceSuffixName(),
+                repositoryData.getServicePackage()
+        ));
         if (restData.isMetrics()) {
             SERVICE_TEMPLATES.add(new Template("web/WebConfigurer.java.ftl", "WebConfigurer", "web"));
         }
@@ -225,7 +229,11 @@ public class RESTGenerator implements Generator {
 
         SERVICE_TEMPLATES.add(new Template("mail/MailEvent.java.ftl", "MailEvent", "mail"));
         SERVICE_TEMPLATES.add(new Template("mail/MailNotifier.java.ftl", "MailNotifier", "mail"));
-        SERVICE_TEMPLATES.add(new Template("mail/MailService.java.ftl", "MailService", "service"));
+        SERVICE_TEMPLATES.add(new Template(
+                "mail/MailService.java.ftl",
+                repositoryData.getServicePrefixName() + "Mail" + repositoryData.getServiceSuffixName(),
+                repositoryData.getServicePackage()
+        ));
 
         CONTROLLER_TEMPLATES.add(new Template("rest/AccountController.java.ftl", "Account"));
         CONTROLLER_TEMPLATES.add(new Template("rest/UserController.java.ftl", "User"));
@@ -286,8 +294,8 @@ public class RESTGenerator implements Generator {
         params.put("applicationConfig_FQN", appConfigData.isGateway() ? appConfigData.getGatewayPackage() : appConfigData.getTargetPackage() + '.' + restData.getPackage() + '.' + restData.getRestConfigData().getApplicationClass());
         params.put("applicationConfig", restData.getRestConfigData().getApplicationClass());
         params.put("applicationPath", restData.getRestConfigData().getApplicationPath());
-        params.put("beanPrefix", repositoryData.getPrefixName());
-        params.put("beanSuffix", repositoryData.getSuffixName());
+        params.put("beanPrefix", repositoryData.getRepositoryPrefixName());
+        params.put("beanSuffix", repositoryData.getRepositorySuffixName());
         params.put("restPrefix", restData.getPrefixName());
         params.put("restSuffix", restData.getSuffixName());
         params.put("security", restData.getSecurityType().name());
@@ -347,14 +355,16 @@ public class RESTGenerator implements Generator {
     private void reloadTargetPackage(Map<String, Object> params) {
         params.put("entityPackage", appConfigData.getTargetPackage() + "." + entityPackage);
         params.put("appPackage", appConfigData.getTargetPackage());
-        params.put("repositoryPackage", appConfigData.getTargetPackage() + "." + repositoryData.getPackage());
+        params.put("repositoryPackage", appConfigData.getTargetPackage() + "." + repositoryData.getRepositoryPackage());
+        params.put("servicePackage", appConfigData.getTargetPackage() + "." + repositoryData.getServicePackage());
         params.put("restPackage", appConfigData.getTargetPackage() + "." + restData.getPackage());
     }
 
     private void reloadGatewayPackage(Map<String, Object> params) {
         params.put("entityPackage", appConfigData.getGatewayPackage() + "." + entityPackage);
         params.put("appPackage", appConfigData.getGatewayPackage());
-        params.put("repositoryPackage", appConfigData.getGatewayPackage() + "." + repositoryData.getPackage());
+        params.put("repositoryPackage", appConfigData.getGatewayPackage() + "." + repositoryData.getRepositoryPackage());
+        params.put("servicePackage", appConfigData.getGatewayPackage() + "." + repositoryData.getServicePackage());
         params.put("restPackage", appConfigData.getGatewayPackage() + "." + restData.getPackage());
     }
 
@@ -363,8 +373,10 @@ public class RESTGenerator implements Generator {
         boolean overrideExisting = true, dto = false;
         final String entitySimpleName = entity.getClazz();
 
-        String repositoryFileName = repositoryData.getPrefixName() + entitySimpleName + repositoryData.getSuffixName();
-        String fqRepositoryFileName = entity.getAbsolutePackage(repositoryData.getPackage()) + '.' + repositoryFileName;
+        String repositoryFileName = repositoryData.getRepositoryPrefixName() + entitySimpleName + repositoryData.getRepositorySuffixName();
+        String fqRepositoryFileName = entity.getAbsolutePackage(repositoryData.getRepositoryPackage()) + '.' + repositoryFileName;
+        String serviceFileName = repositoryData.getServicePrefixName()+ entitySimpleName + repositoryData.getServiceSuffixName();
+        String fqServiceFileName = entity.getAbsolutePackage(repositoryData.getServicePackage()) + '.' + serviceFileName;
 
         String controllerFileName = restData.getPrefixName() + entitySimpleName + restData.getSuffixName();
 
@@ -389,6 +401,10 @@ public class RESTGenerator implements Generator {
         contollerParams.put("EntityRepository", repositoryFileName);
         contollerParams.put("entityRepository", firstLower(repositoryFileName));
         contollerParams.put("EntityRepository_FQN", '.' + fqRepositoryFileName);
+        
+        contollerParams.put("EntityService", serviceFileName);
+        contollerParams.put("entityService", firstLower(serviceFileName));
+        contollerParams.put("EntityService_FQN", '.' + fqServiceFileName);
 
         contollerParams.put("instanceType", dto ? entityClass + "DTO" : entityClass);
         contollerParams.put("instanceName", dto ? entityInstance + "DTO" : entityInstance);
@@ -552,12 +568,12 @@ public class RESTGenerator implements Generator {
     private Map<String, Object> generateServerSideComponent(Map<String, Object> params) throws IOException {
         registerTemplates();
 
-        final String abstractRepository = repositoryData.getPrefixName() + REPOSITORY_ABSTRACT + repositoryData.getSuffixName();
+        final String abstractRepository = repositoryData.getRepositoryPrefixName() + REPOSITORY_ABSTRACT + repositoryData.getRepositorySuffixName();
         params.put("cdi", repositoryData.isCDI());
         params.put("named", repositoryData.isNamed());
 
         params.put("AbstractRepository", abstractRepository);
-        params.put("AbstractRepository_FQN", '.' + repositoryData.getPackage() + '.' + abstractRepository);
+        params.put("AbstractRepository_FQN", '.' + repositoryData.getRepositoryPackage() + '.' + abstractRepository);
         params.put("EntityManagerProducer_FQN", ".producer.EntityManagerProducer");
         params.put("LoggerProducer_FQN", ".producer.LoggerProducer");
         params.put("PU", entityMapping.getPersistenceUnitName());
@@ -578,7 +594,7 @@ public class RESTGenerator implements Generator {
             //contoller ext
             expandServerSideComponent(gatewaySource, appConfigData.getGatewayPackage(), null, EMPTY, EMPTY, DTO_TEMPLATES, params);
             //repository
-            expandServerSideComponent(gatewaySource, appConfigData.getGatewayPackage(), repositoryData.getPackage(), repositoryData.getPrefixName(), repositoryData.getSuffixName(), REPOSITORY_TEMPLATES, params);
+            expandServerSideComponent(gatewaySource, appConfigData.getGatewayPackage(), repositoryData.getRepositoryPackage(), repositoryData.getRepositoryPrefixName(), repositoryData.getRepositorySuffixName(), REPOSITORY_TEMPLATES, params);
             //metrics
             expandServerSideComponent(gatewaySource, appConfigData.getGatewayPackage(), null, EMPTY, EMPTY, METRICS_TEMPLATES, params);
             //vm
