@@ -15,7 +15,7 @@
  */
 package io.github.jeddict.mvc;
 
-import org.netbeans.modules.websvc.rest.model.api.RestConstants;
+import io.github.jeddict.jcode.JAXRSConstants;
 
 /**
  *
@@ -78,10 +78,10 @@ public class MVCConstants {
 
     public enum HttpMethodType {
 
-        GET("get", RestConstants.GET),
-        PUT("put", RestConstants.PUT),
-        POST("post", RestConstants.POST),
-        DELETE("delete", RestConstants.DELETE);
+        GET("get", JAXRSConstants.GET),
+        PUT("put", JAXRSConstants.PUT),
+        POST("post", JAXRSConstants.POST),
+        DELETE("delete", JAXRSConstants.DELETE);
 
         private final String prefix;
         private final String annotationType;

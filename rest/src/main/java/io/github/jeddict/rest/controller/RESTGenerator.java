@@ -40,6 +40,7 @@ import io.github.jeddict.jcode.util.BuildManager;
 import static io.github.jeddict.jcode.util.Constants.JAVA_EXT;
 import io.github.jeddict.jcode.util.FileUtil;
 import static io.github.jeddict.jcode.util.FileUtil.expandTemplate;
+import io.github.jeddict.jcode.util.JavaIdentifiers;
 import static io.github.jeddict.jcode.util.JavaUtil.getMethodName;
 import static io.github.jeddict.jcode.util.PersistenceUtil.addClasses;
 import static io.github.jeddict.jcode.util.PersistenceUtil.addProperty;
@@ -86,7 +87,6 @@ import static io.github.jeddict.util.StringUtils.EMPTY;
 import static io.github.jeddict.util.StringUtils.isNotEmpty;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
-import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
 import org.netbeans.modules.j2ee.persistence.dd.common.PersistenceUnit;
 import org.netbeans.modules.j2ee.persistence.dd.common.Property;
 import org.openide.filesystems.FileObject;
@@ -529,7 +529,7 @@ public class RESTGenerator implements Generator {
             contollerParams.put("attributes", basicAttributes);
             contollerParams.put("versionAttributes", entity.getAttributes().getSuperVersion().stream().map(con).collect(toList()));
             Set<String> connectedClasses = entity.getAttributes().getConnectedClass();
-            contollerParams.put("connectedClasses", connectedClasses.stream().map(jc -> JavaIdentifiers.unqualify(jc)).collect(toList()));
+            contollerParams.put("connectedClasses", connectedClasses.stream().map(JavaIdentifiers::unqualify).collect(toList()));
             contollerParams.put("connectedFQClasses", connectedClasses);
 
             FileObject targetTestFolder = getFolderForPackage(targetTestSource,
@@ -847,15 +847,15 @@ public class RESTGenerator implements Generator {
         BuildManager.getInstance(project)
                 .copy(TEMPLATE + pom)
                 .setExtensionOverrideFilter((source, target) -> {
-            if ("fileset".equalsIgnoreCase(source.getName())) {
-                return false;
-            }
-            if ("concat".equals(source.getName())) {
-                target.getExtensibilityElements()
-                        .forEach(target::removeExtensibilityElement);
-                return true;
-            }
-            return true;
+                    if ("fileset".equalsIgnoreCase(source.getName())) {
+                        return false;
+                    }
+                    if ("concat".equals(source.getName())) {
+                        target.getExtensibilityElements()
+                                .forEach(target::removeExtensibilityElement);
+                        return true;
+                    }
+                    return true;
                 })
                 .commit();
     }

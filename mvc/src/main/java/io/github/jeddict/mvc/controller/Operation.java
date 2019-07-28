@@ -15,9 +15,9 @@
  */
 package io.github.jeddict.mvc.controller;
 
+import static io.github.jeddict.jcode.JAXRSConstants.GET;
+import static io.github.jeddict.jcode.JAXRSConstants.POST;
 import io.github.jeddict.rest.util.RestMethod;
-import static org.netbeans.modules.websvc.rest.model.api.RestConstants.GET;
-import static org.netbeans.modules.websvc.rest.model.api.RestConstants.POST;
 
 public enum Operation implements RestMethod {
 
@@ -37,8 +37,7 @@ public enum Operation implements RestMethod {
     FIND_ALL(GET, "findAll",
             "list", "<entity>/list.jsp");
 
-    private final String method, methodName;
-    private final String uriPath, view;
+    private final String method, methodName, uriPath, view;
 
     private Operation(String method, String methodName, String uriPath, String view) {
         this.method = method;

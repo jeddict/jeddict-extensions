@@ -30,10 +30,6 @@
                             <type>impl</type>
                         </dependency>
                         <dependency>
-                            <id>org.netbeans.modules:org-netbeans-modules-j2ee-core-utilities</id>
-                            <type>impl</type>
-                        </dependency>
-                        <dependency>
                             <id>org.netbeans.modules:org-netbeans-modules-maven-embedder</id>
                             <type>impl</type>
                         </dependency>
@@ -61,11 +57,6 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-modules-projectapi</artifactId>
-            <version>${netbeans.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.modules</groupId>
-            <artifactId>org-netbeans-modules-j2ee-core-utilities</artifactId>
             <version>${netbeans.version}</version>
         </dependency>
         <dependency>

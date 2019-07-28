@@ -16,7 +16,7 @@
 package io.github.jeddict.mvc.controller.event;
 
 import io.github.jeddict.jcode.util.Constants;
-import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
+import io.github.jeddict.jcode.util.JavaIdentifiers;
 
 /**
  *

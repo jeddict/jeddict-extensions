@@ -29,6 +29,7 @@ import static io.github.jeddict.jcode.util.AttributeType.isPrimitive;
 import io.github.jeddict.jcode.util.BuildManager;
 import static io.github.jeddict.jcode.util.Constants.JAVA_EXT;
 import static io.github.jeddict.jcode.util.FileUtil.expandTemplate;
+import io.github.jeddict.jcode.util.JavaIdentifiers;
 import static io.github.jeddict.jcode.util.ProjectHelper.getFolderForPackage;
 import static io.github.jeddict.jcode.util.StringHelper.firstLower;
 import static io.github.jeddict.jcode.util.StringHelper.firstUpper;
@@ -48,7 +49,6 @@ import static java.util.stream.Collectors.toList;
 import static io.github.jeddict.util.StringUtils.EMPTY;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
-import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
 import org.openide.filesystems.FileObject;
 import org.openide.util.lookup.ServiceProvider;
 

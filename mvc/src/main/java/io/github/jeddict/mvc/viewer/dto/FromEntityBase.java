@@ -15,6 +15,7 @@
  */
 package io.github.jeddict.mvc.viewer.dto;
 
+import io.github.jeddict.jcode.util.JavaIdentifiers;
 import io.github.jeddict.mvc.util.CustomJpaControllerUtil;
 import io.github.jeddict.mvc.util.NotGetterMethodException;
 import static io.github.jeddict.jcode.util.JavaUtil.isGetterMethod;
@@ -44,8 +45,7 @@ import javax.lang.model.util.Types;
 import org.netbeans.api.java.source.CompilationController;
 import org.netbeans.api.java.source.JavaSource;
 import org.netbeans.api.java.source.Task;
-import org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers;
-import static org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers.getPackageName;
+import static io.github.jeddict.jcode.util.JavaIdentifiers.getPackageName;
 import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle;
 

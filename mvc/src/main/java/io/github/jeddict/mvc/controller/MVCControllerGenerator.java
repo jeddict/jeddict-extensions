@@ -34,6 +34,7 @@ import static io.github.jeddict.jcode.BeanVaildationConstants.VALIDATE_ON_EXECUT
 import static io.github.jeddict.jcode.BeanVaildationConstants.VALID_FQN;
 import static io.github.jeddict.jcode.CDIConstants.INJECT;
 import io.github.jeddict.jcode.Generator;
+import io.github.jeddict.jcode.JAXRSConstants;
 import static io.github.jeddict.jcode.JAXRSConstants.BEAN_PARAM;
 import static io.github.jeddict.jcode.JAXRSConstants.FORM_PARAM;
 import static io.github.jeddict.jcode.JAXRSConstants.GET_PROPERTIES;
@@ -114,6 +115,8 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
 import io.github.jeddict.util.StringUtils;
+import org.netbeans.api.java.source.Comment;
+import org.netbeans.api.java.source.CompilationController;
 import org.netbeans.api.java.source.JavaSource;
 import org.netbeans.api.java.source.JavaSource.Phase;
 import org.netbeans.api.java.source.Task;
@@ -124,11 +127,8 @@ import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
 import org.netbeans.modules.j2ee.core.api.support.java.SourceUtils;
-import org.netbeans.modules.websvc.rest.model.api.RestConstants;
-import org.netbeans.modules.websvc.rest.model.api.RestServicesModel;
-import org.netbeans.modules.websvc.rest.spi.MiscUtilities;
-import org.netbeans.modules.websvc.rest.spi.RestSupport;
-import static org.netbeans.modules.websvc.rest.spi.RestSupport.JAX_RS_APPLICATION_CLASS;
+//import org.netbeans.modules.websvc.rest.model.api.RestServicesModel;
+//import org.netbeans.modules.websvc.rest.spi.RestSupport;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
@@ -293,7 +293,7 @@ public class MVCControllerGenerator implements Generator {
                     ExpressionTree annArgument = maker.Literal(uriPath);
                     modifiersTree
                             = maker.addModifiersAnnotation(modifiersTree,
-                                    genUtils.createAnnotation(RestConstants.PATH,
+                                    genUtils.createAnnotation(JAXRSConstants.PATH,
                                             Collections.<ExpressionTree>singletonList(
                                                     annArgument)));
 
@@ -422,7 +422,7 @@ public class MVCControllerGenerator implements Generator {
             }
 
             modifiersTree = maker.addModifiersAnnotation(modifiersTree,
-                    genUtils.createAnnotation(RestConstants.PATH,
+                    genUtils.createAnnotation(JAXRSConstants.PATH,
                             Collections.<ExpressionTree>singletonList(maker.Literal(variableName))
                     ));
 
@@ -619,15 +619,15 @@ public class MVCControllerGenerator implements Generator {
         if (mvcData.getRestConfigData() == null) {
             return;
         }
-        final RestSupport restSupport = project.getLookup().lookup(RestSupport.class);
-        RestSupport.RestConfig.IDE.setAppClassName(mvcData.getPackage() + "." + mvcData.getRestConfigData().getApplicationClass());
-        if (restSupport != null) {
-            try {
-                restSupport.ensureRestDevelopmentReady(RestSupport.RestConfig.IDE);
-            } catch (IOException ex) {
-                Exceptions.printStackTrace(ex);
-            }
-        }
+//        final RestSupport restSupport = project.getLookup().lookup(RestSupport.class);
+//        RestSupport.RestConfig.IDE.setAppClassName(mvcData.getPackage() + "." + mvcData.getRestConfigData().getApplicationClass());
+//        if (restSupport != null) {
+//            try {
+//                restSupport.ensureRestDevelopmentReady(RestSupport.RestConfig.IDE);
+//            } catch (IOException ex) {
+//                Exceptions.printStackTrace(ex);
+//            }
+//        }
 
         FileObject restAppPack = getFolderForPackage(sourceGroup, mvcData.getPackage(), true);
 
@@ -635,7 +635,7 @@ public class MVCControllerGenerator implements Generator {
         try {
             if (restAppPack != null && appClassName != null) {
 
-                FileObject configFO = createApplicationConfigClass(restSupport, mvcData.getRestConfigData(),
+                FileObject configFO = createApplicationConfigClass(mvcData.getRestConfigData(),
                         restAppPack, null, null, handler);
                 JavaSource javaSource = JavaSource.forFileObject(configFO);//add some cutom properties/method specific to MVC
                 if (javaSource != null) {
@@ -653,16 +653,16 @@ public class MVCControllerGenerator implements Generator {
                 }
 
             }
-            disableRestServicesChangeListner(project);
-            restSupport.configure("Jeddict - REST support");
+//            disableRestServicesChangeListner(project);
+//            restSupport.configure("Jeddict - REST support");
         } catch (IOException | IllegalArgumentException iox) {
             Exceptions.printStackTrace(iox);
         } finally {
-            enableRestServicesChangeListner(project);
+//            enableRestServicesChangeListner(project);
         }
     }
 
-    public static FileObject createApplicationConfigClass(final RestSupport restSupport, RestConfigData configData,
+    public static FileObject createApplicationConfigClass(RestConfigData configData,
             FileObject packageFolder, String appPackage,
             List<String> providerClasses, ProgressHandler handler) throws IOException {
 
@@ -688,21 +688,21 @@ public class MVCControllerGenerator implements Generator {
             ClassTree tree = io.github.jeddict.jcode.util.JavaSourceHelper.getTopLevelClassTree(workingCopy);//
             TreeMaker maker = workingCopy.getTreeMaker();
             ClassTree newTree = maker.setExtends(tree,
-                    maker.QualIdent(JAX_RS_APPLICATION_CLASS)); // NOI18N
+                    maker.QualIdent(JAXRSConstants.JAX_RS_APPLICATION_CLASS)); // NOI18N
 
             //Singletons imports
             TypeElement classElement = SourceUtils.getPublicTopLevelElement(workingCopy);
             GenerationUtils genUtils = GenerationUtils.newInstance(workingCopy);
 
-            newTree = createGetClasses(workingCopy, maker, newTree, restSupport, providerClasses);
-            newTree = MiscUtilities.createAddResourceClasses(maker, newTree, workingCopy, "{}", true);
+            newTree = createGetClasses(workingCopy, maker, newTree, providerClasses);
+            newTree = createAddResourceClasses(maker, newTree, workingCopy, "{}", true);
 
             workingCopy.rewrite(tree, newTree);
         }).commit();
         return appClass;
     }
 
-    private static ClassTree createGetClasses(WorkingCopy workingCopy, TreeMaker maker, ClassTree newTree, RestSupport restSupport, List<String> providerClasses) {
+    private static ClassTree createGetClasses(WorkingCopy workingCopy, TreeMaker maker, ClassTree newTree, List<String> providerClasses) {
 
         ModifiersTree modifiersTree = maker.Modifiers(
                 EnumSet.of(Modifier.PUBLIC), Collections.singletonList(
@@ -720,7 +720,7 @@ public class MVCControllerGenerator implements Generator {
                 Collections.singletonList(wildClass));
 
         MethodTree methodTree = maker.Method(modifiersTree,
-                RestConstants.GET_CLASSES, wildSet,
+                JAXRSConstants.GET_CLASSES, wildSet,
                 Collections.<TypeParameterTree>emptyList(),
                 Collections.<VariableTree>emptyList(),
                 Collections.<ExpressionTree>emptyList(),
@@ -735,7 +735,7 @@ public class MVCControllerGenerator implements Generator {
         if (provideClasses != null) {
             provideClasses.forEach(_class -> builder.append("resources.add(").append(_class).append(".class);"));
         }
-        builder.append(RestConstants.GET_REST_RESOURCE_CLASSES2 + "(resources);");
+        builder.append(JAXRSConstants.GET_REST_RESOURCE_CLASSES2 + "(resources);");
         builder.append("return resources;}");
         return builder.toString();
     }
@@ -850,7 +850,7 @@ public class MVCControllerGenerator implements Generator {
         redirectUpdateOptions.setRestMethod(Operation.REDIRECT_TO_UPDATE);
         redirectUpdateOptions.setReturnType(VOID);
         redirectUpdateOptions.setParameterNames(new String[]{"id"});
-        redirectUpdateOptions.setParameterAnnoations(new String[]{RestConstants.PATH_PARAM});
+        redirectUpdateOptions.setParameterAnnoations(new String[]{JAXRSConstants.PATH_PARAM});
         redirectUpdateOptions.setParameterAnnoationValues(new String[]{"id"});
         StringBuilder builder = new StringBuilder();
         if (needPathSegment) {
@@ -881,7 +881,7 @@ public class MVCControllerGenerator implements Generator {
         destroyOptions.setRestMethod(Operation.REMOVE);
         destroyOptions.setReturnType(VOID);
         destroyOptions.setParameterNames(new String[]{"id"});
-        destroyOptions.setParameterAnnoations(new String[]{RestConstants.PATH_PARAM_ANNOTATION});
+        destroyOptions.setParameterAnnoations(new String[]{JAXRSConstants.PATH_PARAM_ANNOTATION});
         destroyOptions.setParameterAnnoationValues(new String[]{"id"});
         if (needPathSegment) {
             destroyOptions.setParameterTypes(new String[]{"javax.ws.rs.core.PathSegment"}); // NOI18N
@@ -899,7 +899,7 @@ public class MVCControllerGenerator implements Generator {
         findOptions.setReturnType(VOID);
         findOptions.setProduces(new String[]{MimeType.XML.toString(), MimeType.JSON.toString()});
         findOptions.setParameterAnnoationValues(new String[]{"id"});
-        findOptions.setParameterAnnoations(new String[]{RestConstants.PATH_PARAM_ANNOTATION});
+        findOptions.setParameterAnnoations(new String[]{JAXRSConstants.PATH_PARAM_ANNOTATION});
         findOptions.setParameterNames(new String[]{"id"});
         if (needPathSegment) {
             findOptions.setParameterTypes(new String[]{"javax.ws.rs.core.PathSegment"}); // NOI18N
@@ -946,28 +946,72 @@ public class MVCControllerGenerator implements Generator {
         }
     }
 
-    public static RestServicesModel getRestServicesMetadataModel(Project project) {
-        RestSupport support = project.getLookup().lookup(RestSupport.class);;
-        if (support != null) {
-            return support.getRestServicesModel();
+//    public static RestServicesModel getRestServicesMetadataModel(Project project) {
+//        RestSupport support = project.getLookup().lookup(RestSupport.class);;
+//        if (support != null) {
+//            return support.getRestServicesModel();
+//        }
+//        return null;
+//    }
+//
+//    public static void disableRestServicesChangeListner(Project project) {
+//        final RestServicesModel wsModel = getRestServicesMetadataModel(project);
+//        if (wsModel == null) {
+//            return;
+//        }
+//        wsModel.disablePropertyChangeListener();
+//    }
+//
+//    public static void enableRestServicesChangeListner(Project project) {
+//        final RestServicesModel wsModel = getRestServicesMetadataModel(project);
+//        if (wsModel == null) {
+//            return;
+//        }
+//        wsModel.enablePropertyChangeListener();
+//    }
+    /**
+     * creates addResourceClasses method
+     *
+     * @param maker tree maker
+     * @param classTree class tree
+     * @param controller compilation controller
+     * @param methodBody method body
+     * @param addComment add comment or not
+     * @return modified class tree
+     * @throws IOException 
+     */
+    public static ClassTree createAddResourceClasses(TreeMaker maker,
+            ClassTree classTree, CompilationController controller,
+            String methodBody, boolean addComment) throws IOException
+    {
+        WildcardTree wildCard = maker.Wildcard(Tree.Kind.UNBOUNDED_WILDCARD,
+                null);
+        ParameterizedTypeTree wildClass = maker.ParameterizedType(
+                maker.QualIdent(Class.class.getCanonicalName()),
+                Collections.singletonList(wildCard));
+        ParameterizedTypeTree wildSet = maker.ParameterizedType(
+                maker.QualIdent(Set.class.getCanonicalName()),
+                Collections.singletonList(wildClass));
+        ModifiersTree modifiersTree = maker.Modifiers(EnumSet
+                .of(Modifier.PRIVATE));
+        VariableTree newParam = maker.Variable(
+                maker.Modifiers(Collections.<Modifier>emptySet()),
+                "resources", wildSet, null);
+        MethodTree methodTree = maker.Method(modifiersTree,
+                JAXRSConstants.GET_REST_RESOURCE_CLASSES2, maker.Type("void"),
+                Collections.<TypeParameterTree> emptyList(),
+                Arrays.asList(newParam),
+                Collections.<ExpressionTree> emptyList(), methodBody,
+                null);
+        if (addComment) {
+            Comment comment = Comment.create(Comment.Style.JAVADOC,// -2, -2, -2,
+                    "Do not modify "+JAXRSConstants.GET_REST_RESOURCE_CLASSES2+"() method.\n"
+                    + "It is automatically populated with\n"
+                    + "all resources defined in the project.\n"
+                    + "If required, comment out calling this method in getClasses()."); // NOI18N
+            maker.addComment(methodTree, comment, true);
         }
-        return null;
-    }
-
-    public static void disableRestServicesChangeListner(Project project) {
-        final RestServicesModel wsModel = getRestServicesMetadataModel(project);
-        if (wsModel == null) {
-            return;
-        }
-        wsModel.disablePropertyChangeListener();
-    }
-
-    public static void enableRestServicesChangeListner(Project project) {
-        final RestServicesModel wsModel = getRestServicesMetadataModel(project);
-        if (wsModel == null) {
-            return;
-        }
-        wsModel.enablePropertyChangeListener();
+        return maker.addClassMember(classTree, methodTree);
     }
 
 }

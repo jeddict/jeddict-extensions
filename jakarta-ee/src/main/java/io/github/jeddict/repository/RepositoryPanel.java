@@ -16,12 +16,12 @@
 package io.github.jeddict.repository;
 
 import io.github.jeddict.jcode.LayerConfigPanel;
+import static io.github.jeddict.jcode.util.JavaIdentifiers.isValidPackageName;
 import javax.lang.model.SourceVersion;
 import static io.github.jeddict.util.StringUtils.equalsIgnoreCase;
 import static io.github.jeddict.util.StringUtils.isNotBlank;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
-import static org.netbeans.modules.j2ee.core.api.support.java.JavaIdentifiers.isValidPackageName;
 import static org.openide.util.NbBundle.getMessage;
 
 /**
