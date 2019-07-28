@@ -99,8 +99,8 @@ public class RepositoryData extends LayerConfigData {
      * @return the servicePackage
      */
     public String getServicePackage() {
-        if (isBlank(repositorySuffixName)) {
-            repositorySuffixName = "Repository";
+        if (isBlank(servicePackage)) {
+            servicePackage = "service";
         }
         return servicePackage;
     }
