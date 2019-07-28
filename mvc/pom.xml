@@ -86,5 +86,11 @@
             <artifactId>org-openide-util-lookup</artifactId>
             <version>${netbeans.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.external</groupId>
+            <artifactId>nb-javac-api</artifactId>
+            <version>RELEASE82</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>
