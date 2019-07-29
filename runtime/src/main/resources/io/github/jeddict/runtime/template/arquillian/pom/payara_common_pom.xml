@@ -205,11 +205,11 @@
         </profile>
     </profiles>
     
-    <repositories>
+<!--    <repositories>
         <repository>
             <id>payara-milestones</id>
             <name>Payara Milestones</name>
             <url>https://raw.github.com/payara/Payara_PatchedProjects/master</url>
         </repository>
-    </repositories>
+    </repositories>-->
 </project>
