@@ -20,8 +20,8 @@
                 <!-- The actual Arquillian connector -->
                 <dependency>
                     <groupId>fish.payara.arquillian</groupId>
-                    <artifactId>arquillian-payara-server-4-remote</artifactId>
-                    <version>${version.arquillian-payara-server}</version>
+                    <artifactId>arquillian-payara-server-remote</artifactId>
+                    <version>${version.arquillian-payara}</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>

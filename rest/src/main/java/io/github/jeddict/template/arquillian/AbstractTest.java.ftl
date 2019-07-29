@@ -42,7 +42,6 @@ public abstract class AbstractTest {
         File[] libs
                 = RESOLVER.loadPomFromFile("pom.xml")
                         .importCompileAndRuntimeDependencies()
-                        .importTestDependencies()
                         .resolve()
                         .withTransitivity()
                         .asFile();

@@ -10,14 +10,13 @@
 
 
     <properties>
-        <version.arquillian>1.1.13.Final</version.arquillian>
-        <version.jacoco>0.8.2</version.jacoco>
+        <version.arquillian>1.4.1.Final</version.arquillian>
+        <version.jacoco>0.8.4</version.jacoco>
         <version.valid4j>1.1</version.valid4j>
         <version.junit>4.12</version.junit>
         <version.commons-lang>2.6</version.commons-lang>
-        <version.arquillian-payara-client>1.0.Beta3-m1</version.arquillian-payara-client>
-        <version.arquillian-payara-server>1.0.Beta3-m1</version.arquillian-payara-server>
-        <version.payara>5.191</version.payara>
+        <version.arquillian-payara>1.1</version.arquillian-payara>
+        <version.payara>5.192</version.payara>
     </properties>
 
     <dependencyManagement>
@@ -42,7 +41,7 @@
             <dependency>
                 <groupId>fish.payara.arquillian</groupId>
                 <artifactId>payara-client-ee8</artifactId>
-                <version>${version.arquillian-payara-client}</version>
+                <version>${version.arquillian-payara}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
@@ -81,6 +80,12 @@
             <groupId>org.valid4j</groupId>
             <artifactId>http-matchers</artifactId>
             <version>${version.valid4j}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.smallrye</groupId>
+            <artifactId>smallrye-config</artifactId>
+            <version>1.3.7</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -126,8 +131,8 @@
                 <!-- The actual Arquillian connector -->
                 <dependency>
                     <groupId>fish.payara.arquillian</groupId>
-                    <artifactId>arquillian-payara-server-4-managed</artifactId>
-                    <version>${version.arquillian-payara-server}</version>
+                    <artifactId>arquillian-payara-server-managed</artifactId>
+                    <version>${version.arquillian-payara}</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>

@@ -10,8 +10,8 @@
 
     <properties>
         <version.javaee>8.0</version.javaee>
-        <version.maven-compiler-plugin>3.7.0</version.maven-compiler-plugin>
-        <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
+        <!--<version.maven-compiler-plugin>3.7.0</version.maven-compiler-plugin>-->
+        <!--<endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>-->
     </properties>
     
     <dependencies>
@@ -48,13 +48,13 @@
         
         <dependency>
             <groupId>javax</groupId>
-            <artifactId>javaee-web-api</artifactId>
+            <artifactId>javaee-api</artifactId>
             <version>${version.javaee}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
     
-    <build>
+<!--    <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -69,7 +69,7 @@
                 </configuration>
             </plugin>
         </plugins>
-    </build>
+    </build>-->
 <!--    <repositories>
         <repository>
             <id>jvnet-nexus-promoted</id>

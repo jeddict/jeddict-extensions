@@ -67,9 +67,6 @@ public abstract class ApplicationTest extends AbstractTest {
                         ${AuthorityRepository}.class,
                         ${UserService}.class,
                         ${AuthenticationController}.class,
-                        ${AuthenticationController}Client.class,
-                        AbstractTest.class,
-                        ApplicationTest.class,
                         ${applicationConfig}.class)
                 .addAsResource("META-INF/sql/insert.sql")
                 .addAsResource(new File("src/main/resources/config/application-common.properties"), "META-INF/microprofile-config.properties")

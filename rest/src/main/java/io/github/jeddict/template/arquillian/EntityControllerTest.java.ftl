@@ -9,7 +9,6 @@ import ${connectedFQClass};
 import static java.util.Collections.singletonMap;
 </#if>
 import java.util.List;
-import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import static javax.ws.rs.core.Response.Status.CREATED;
@@ -22,6 +21,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
 import static org.hamcrest.CoreMatchers.*;
+import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import static org.valid4j.matchers.http.HttpResponseMatchers.hasContentType;
@@ -32,6 +32,7 @@ import static org.valid4j.matchers.http.HttpResponseMatchers.hasStatus;
  *
  */
 @RunWith(Arquillian.class)
+@RunAsClient
 public class ${controllerClass}Test extends <#if microservices>Abstract<#else>Application</#if>Test {
 
 <#if eid>
@@ -50,9 +51,6 @@ public class ${controllerClass}Test extends <#if microservices>Abstract<#else>Ap
 
     private static ${instanceType} ${instanceName};
 
-    @Inject
-    private ${EntityRepository} ${entityRepository};
-
     private ${controllerClass}Client client;
 
     @Deployment
@@ -63,8 +61,8 @@ public class ${controllerClass}Test extends <#if microservices>Abstract<#else>Ap
                         <#list connectedClasses as connectedClass>${connectedClass}.class,
                         </#list>
                         ${EntityRepository}.class,
-                        ${controllerClass}.class,
-                        ${controllerClass}Client.class);
+                        ${controllerClass}.class
+                );
     }
 
     @Before
@@ -75,7 +73,7 @@ public class ${controllerClass}Test extends <#if microservices>Abstract<#else>Ap
     @Test
     @InSequence(1)
     public void create${EntityClass}() throws Exception {
-        int databaseSizeBeforeCreate = ${entityRepository}.findAll().size();
+        int databaseSizeBeforeCreate = client.getAll${EntityClassPlural}().size();
 
         // Create the ${instanceType}
         ${instanceName} = new ${instanceType}();
@@ -98,7 +96,7 @@ public class ${controllerClass}Test extends <#if microservices>Abstract<#else>Ap
         ${instanceName} = response.readEntity(${instanceType}.class);
 
         // Validate the ${EntityClass} in the database
-        List<${EntityClass}> ${entityInstancePlural} = ${entityRepository}.findAll();
+        List<${EntityClass}> ${entityInstancePlural} = client.getAll${EntityClassPlural}();
         assertThat(${entityInstancePlural}.size(), is(databaseSizeBeforeCreate + 1));
         ${EntityClass} test${EntityClass} = ${entityInstancePlural}.get(${entityInstancePlural}.size() - 1);
 <#list idAttributes as attribute>
@@ -112,11 +110,9 @@ public class ${controllerClass}Test extends <#if microservices>Abstract<#else>Ap
     @Test
     @InSequence(2)
     public void getAll${EntityClassPlural}() throws Exception {
-        int databaseSize = ${entityRepository}.findAll().size();
-
         // Get all the ${entityInstancePlural}
         List<${instanceType}> ${entityInstancePlural} = client.getAll${EntityClassPlural}(<#if pagination!= "no">0, 10</#if>);
-        assertThat(${entityInstancePlural}.size(), is(databaseSize));
+        assertThat(${entityInstancePlural}.size(), is(1));
     }
 
     @Test
@@ -161,8 +157,6 @@ public class ${controllerClass}Test extends <#if microservices>Abstract<#else>Ap
     @Test
     @InSequence(5)
     public void update${EntityClass}() throws Exception {
-        int databaseSizeBeforeUpdate = ${entityRepository}.findAll().size();
-
         // Update the ${instanceName}
         ${instanceType} updated${instanceType} = new ${instanceType}();
 <#if eid>
@@ -183,8 +177,7 @@ public class ${controllerClass}Test extends <#if microservices>Abstract<#else>Ap
         assertThat(response, hasStatus(OK));
 
         // Validate the ${EntityClass} in the database
-        List<${EntityClass}> ${entityInstancePlural} = ${entityRepository}.findAll();
-        assertThat(${entityInstancePlural}.size(), is(databaseSizeBeforeUpdate));
+        List<${EntityClass}> ${entityInstancePlural} = client.getAll${EntityClassPlural}();
         ${EntityClass} test${EntityClass} = ${entityInstancePlural}.get(${entityInstancePlural}.size() - 1);
 <#list idAttributes as attribute>
         assertThat(test${EntityClass}<#if eid>.${pkGetter}()</#if>.${attribute.getter}(), is(${instanceName}<#if eid>.${pkGetter}()</#if>.${attribute.getter}()));
@@ -197,7 +190,7 @@ public class ${controllerClass}Test extends <#if microservices>Abstract<#else>Ap
     @Test
     @InSequence(6)
     public void remove${EntityClass}() throws Exception {
-        int databaseSizeBeforeDelete = ${entityRepository}.findAll().size();
+        int databaseSizeBeforeDelete = client.getAll${EntityClassPlural}().size();
 
         // Delete the ${instanceName}
 <#if allIdAttributes?size=1>
@@ -212,7 +205,7 @@ public class ${controllerClass}Test extends <#if microservices>Abstract<#else>Ap
         assertThat(response, hasStatus(OK));
 
         // Validate the database is empty
-        List<${EntityClass}> ${entityInstancePlural} = ${entityRepository}.findAll();
+        List<${EntityClass}> ${entityInstancePlural} = client.getAll${EntityClassPlural}();
         assertThat(${entityInstancePlural}.size(), is(databaseSizeBeforeDelete - 1));
     }
 

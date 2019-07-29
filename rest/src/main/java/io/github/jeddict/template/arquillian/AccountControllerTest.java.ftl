@@ -1,19 +1,13 @@
 package ${package};
 
 import static ${appPackage}${ApplicationTest_FQN}.USERNAME;
-import ${appPackage}${AuthoritiesConstants_FQN};
-import ${appPackage}${AuthorityRepository_FQN};
-import ${appPackage}${UserRepository_FQN};
 import ${appPackage}${KeyAndPasswordVM_FQN};
 import ${appPackage}${ManagedUserVM_FQN};
 import ${appPackage}${PasswordChangeVM_FQN};
 import ${appPackage}${UserDTO_FQN};
-import ${appPackage}${User_FQN};
 import static ${appPackage}${AuthoritiesConstants_FQN}.ADMIN;
 import static ${appPackage}${AuthoritiesConstants_FQN}.USER;
 import static java.util.Collections.singleton;
-import java.util.Optional;
-import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.CREATED;
@@ -21,15 +15,13 @@ import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.OK;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.runner.RunWith;
 import org.junit.Test;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.Before;
 import static org.valid4j.matchers.http.HttpResponseMatchers.hasStatus;
@@ -39,21 +31,15 @@ import static org.valid4j.matchers.http.HttpResponseMatchers.hasStatus;
  *
  */
 @RunWith(Arquillian.class)
+@RunAsClient
 public class ${AccountControllerTest} extends ApplicationTest {
-
-    @Inject
-    private ${UserRepository} ${userRepository};
-
-    @Inject
-    private ${AuthorityRepository} ${authorityRepository};
 
     private ${AccountController}Client client;
 
     @Deployment
     public static WebArchive createDeployment() {
         return buildApplication()
-                .addClass(${AccountController}.class)
-                .addClass(${AccountController}Client.class);
+                .addClass(${AccountController}.class);
     }
 
     @Before
@@ -96,9 +82,6 @@ public class ${AccountControllerTest} extends ApplicationTest {
 
         Response response = client.registerAccount(validUser);
         assertThat(response, hasStatus(CREATED));
-
-        Optional<User> user = ${userRepository}.findOneByLogin("joe");
-        assertTrue(user.isPresent());
     }
 
 <#--
@@ -234,9 +217,6 @@ public class ${AccountControllerTest} extends ApplicationTest {
 
         // Duplicate login
         assertWebException(BAD_REQUEST, () -> client.registerAccount(duplicatedUser));
-
-        Optional<User> userDup = ${userRepository}.findOneByEmail("alicejr@example.com");
-        assertFalse(userDup.isPresent());
     }
 
     @Test
@@ -274,9 +254,6 @@ public class ${AccountControllerTest} extends ApplicationTest {
 
         // Duplicate  e-mail
         assertWebException(BAD_REQUEST, () -> client.registerAccount(duplicatedUser));
-
-        Optional<User> userDup = ${userRepository}.findOneByLogin("johnjr");
-        assertFalse(userDup.isPresent());
     }
 
     @Test
@@ -300,11 +277,11 @@ public class ${AccountControllerTest} extends ApplicationTest {
         Response response = client.registerAccount(validUser);
         assertThat(response, hasStatus(CREATED));
 
-        Optional<User> userDup = ${userRepository}.findOneByLogin("badguy");
-        assertTrue(userDup.isPresent());
-        assertThat(userDup.get().getAuthorities().size(), is(1));
-        assertThat(userDup.get().getAuthorities(), hasItems(${authorityRepository}.find(AuthoritiesConstants.USER)));
-
+<#--
+        //Optional<User> userDup = ${userRepository}.findOneByLogin("badguy");
+        //assertTrue(userDup.isPresent());
+        //assertThat(userDup.get().getAuthorities().size(), is(1));
+        //assertThat(userDup.get().getAuthorities(), hasItems(${authorityRepository}.find(AuthoritiesConstants.USER))); -->
     }
 
     @Test
