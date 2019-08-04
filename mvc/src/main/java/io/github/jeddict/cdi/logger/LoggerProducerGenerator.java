@@ -28,6 +28,8 @@ import io.github.jeddict.jcode.task.progress.ProgressHandler;
 import static io.github.jeddict.jcode.util.Constants.JAVA_EXT;
 import static io.github.jeddict.jcode.util.Constants.LOGGER;
 import io.github.jeddict.jcode.util.JavaSourceHelper;
+import io.github.jeddict.mvc.GenerationUtils;
+import io.github.jeddict.mvc.SourceUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,8 +40,6 @@ import javax.lang.model.element.TypeElement;
 import org.netbeans.api.java.source.JavaSource;
 import org.netbeans.api.java.source.TreeMaker;
 import org.netbeans.api.java.source.WorkingCopy;
-import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
-import org.netbeans.modules.j2ee.core.api.support.java.SourceUtils;
 import org.openide.filesystems.FileObject;
 
 /**

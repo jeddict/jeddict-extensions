@@ -8,7 +8,7 @@ package io.github.jeddict.mvc;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import org.netbeans.api.java.source.TreeMaker;
-import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
+import io.github.jeddict.mvc.GenerationUtils;
 import com.sun.source.tree.AnnotationTree;
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.CompilationUnitTree;

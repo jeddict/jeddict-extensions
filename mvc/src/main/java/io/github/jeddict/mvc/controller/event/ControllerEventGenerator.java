@@ -39,8 +39,8 @@ import javax.lang.model.type.TypeKind;
 import org.netbeans.api.java.source.JavaSource;
 import org.netbeans.api.java.source.TreeMaker;
 import org.netbeans.api.java.source.WorkingCopy;
-import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
-import org.netbeans.modules.j2ee.core.api.support.java.SourceUtils;
+import io.github.jeddict.mvc.GenerationUtils;
+import io.github.jeddict.mvc.SourceUtils;
 import org.openide.filesystems.FileObject;
 
 /**

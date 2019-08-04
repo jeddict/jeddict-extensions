@@ -27,8 +27,8 @@ import static io.github.jeddict.jcode.util.Constants.NAMED;
 import static io.github.jeddict.jcode.util.Constants.REQUEST_SCOPE;
 import io.github.jeddict.mvc.JavaSourceHelper;
 import io.github.jeddict.jcode.task.progress.ProgressHandler;
-import org.netbeans.modules.j2ee.core.api.support.java.GenerationUtils;
-import org.netbeans.modules.j2ee.core.api.support.java.SourceUtils;
+import io.github.jeddict.mvc.GenerationUtils;
+import io.github.jeddict.mvc.SourceUtils;
 import org.openide.filesystems.FileObject;
 
 /**
