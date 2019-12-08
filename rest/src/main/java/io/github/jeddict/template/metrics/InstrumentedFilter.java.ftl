@@ -26,7 +26,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
-import org.eclipse.microprofile.metrics.Counter;
+import org.eclipse.microprofile.metrics.ConcurrentGauge;
 import org.eclipse.microprofile.metrics.Meter;
 import org.eclipse.microprofile.metrics.MetricRegistry;
 import org.eclipse.microprofile.metrics.Timer;
@@ -39,7 +39,7 @@ public class InstrumentedFilter implements Filter {
     private Meter otherMeter;
     private Meter timeoutsMeter;
     private Meter errorsMeter;
-    private Counter activeRequests;
+    private ConcurrentGauge activeRequests;
     private Timer requestTimer;
 
     private static final int OK = 200;
@@ -75,7 +75,7 @@ public class InstrumentedFilter implements Filter {
         otherMeter = registry.meter(OTHER_METRICS);
         timeoutsMeter = registry.meter(TIMEOUTS_METRICS);
         errorsMeter = registry.meter(ERRORS_METRICS);
-        activeRequests = registry.counter(ACTIVE_REQUESTS_METRICS);
+        activeRequests = registry.concurrentGauge(ACTIVE_REQUESTS_METRICS);
         requestTimer = registry.timer(REQUESTS_METRICS);
     }
 
