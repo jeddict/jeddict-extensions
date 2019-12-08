@@ -4,7 +4,7 @@
     <groupId>io.github.jeddict</groupId>
     <artifactId>jeddict-extensions</artifactId>
     <name>Jeddict Extensions</name>
-    <version>5.3</version>
+    <version>5.4</version>
     <packaging>pom</packaging>
     <modules>
         <module>rest</module>
@@ -117,12 +117,6 @@
     </dependencies>
 
     <repositories>
-        <repository>
-            <id>netbeans111</id>
-            <url>
-                https://repository.apache.org/content/repositories/orgapachenetbeans-1035
-            </url>
-        </repository>
         <repository>
             <id>netbeans-modules</id>
             <name>Repository hosting NetBeans modules</name>
