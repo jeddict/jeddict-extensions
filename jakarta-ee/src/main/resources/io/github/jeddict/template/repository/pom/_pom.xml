@@ -9,7 +9,7 @@
     <name>app_pom</name>
 
     <properties>
-        <version.javaee>8.0</version.javaee>
+        <version.jakartaee>8.0.0</version.jakartaee>
         <!--<version.maven-compiler-plugin>3.7.0</version.maven-compiler-plugin>-->
         <!--<endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>-->
     </properties>
@@ -47,9 +47,9 @@
         </dependency>-->
         
         <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
-            <version>${version.javaee}</version>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-api</artifactId>
+            <version>${version.jakartaee}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
