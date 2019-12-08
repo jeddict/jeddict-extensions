@@ -1,4 +1,4 @@
-FROM payara/server-full:5.192
+FROM payara/server-full:5.194
 
 ARG BINARY
 ARG EXPOSE_PORT
