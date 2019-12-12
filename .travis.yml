@@ -1,0 +1,27 @@
+language: java
+cache:
+  timeout: 1000
+  directories:
+  - $HOME/.m2
+jdk:
+- openjdk8
+- openjdk11
+os:
+  - linux
+env:
+ - TEST_CASE="RepositoryApplication"
+before_install:
+    - export M2_HOME=/usr/local/maven-3.6.0
+
+    - git clone https://github.com/jeddict/netbeans-modeler.git ~/builds/netbeans-modeler
+    - pushd ~/builds/netbeans-modeler
+    - mvn clean install -q
+    - popd
+
+    - git clone https://github.com/jeddict/jeddict.git ~/builds/jeddict
+    - pushd ~/builds/jeddict
+    - mvn clean install -DskipTests -q
+    - popd
+    
+script:
+    - mvn test -B -Dtestcase=${TEST_CASE}
