@@ -114,7 +114,7 @@ public final class RepositoryGenerator implements Generator {
                     generateAbstract(true, targetSource, appConfigData.getTargetPackage());
                     generateProducer(targetSource, appConfigData.getTargetPackage());
                 }
-                addMavenDependencies("repository/pom/_pom.xml", targetProject);
+                addMavenDependencies("repository/pom/pom.xml", targetProject);
             }
             generateRepository();
         }
@@ -123,7 +123,7 @@ public final class RepositoryGenerator implements Generator {
                 generateAbstract(true, gatewaySource, appConfigData.getGatewayPackage());
                 generateProducer(gatewaySource, appConfigData.getGatewayPackage());
             }
-            addMavenDependencies("repository/pom/_pom.xml", gatewayProject);
+            addMavenDependencies("repository/pom/pom.xml", gatewayProject);
         }
 
     }

@@ -1,0 +1,8 @@
+version: 1
+
+update_configs:
+  - package_manager: "java:maven"
+    directory: "/jakarta-ee/src/main/resources/io/github/jeddict/template/repository/pom"
+    update_schedule: "weekly"
+    default_labels:
+      - "dependencies"
