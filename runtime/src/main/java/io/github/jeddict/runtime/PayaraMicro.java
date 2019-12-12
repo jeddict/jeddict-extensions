@@ -50,7 +50,7 @@ public final class PayaraMicro extends Payara {
 
     @Override
     public void addDependency(boolean docker) {
-        POMManager pomManager = new POMManager(project, TEMPLATE + "payara/micro/pom/_pom.xml");
+        POMManager pomManager = new POMManager(project, TEMPLATE + "payara/micro/pom.xml");
         pomManager.setExtensionOverrideFilter((source, target) -> {
             if ("option".equalsIgnoreCase(source.getName())) {
                 for (POMExtensibilityElement element : target.getExtensibilityElements()) {
@@ -76,7 +76,7 @@ public final class PayaraMicro extends Payara {
 
         if (docker) {
             BuildManager.getInstance(project)
-                .copy(TEMPLATE + "payara/micro/pom/_pom_docker.xml")
+                .copy(TEMPLATE + "payara/micro/docker/pom.xml")
                 .commit();
         }
     }
@@ -84,8 +84,8 @@ public final class PayaraMicro extends Payara {
     @Override
     public void addTestDependency(boolean docker) {
         BuildManager.getInstance(project)
-                .copy(TEMPLATE + "arquillian/pom/payara_common_pom.xml")
-                .copy(TEMPLATE + "arquillian/pom/payara_micro_pom.xml")
+                .copy(TEMPLATE + "payara/common/arquillian/pom.xml")
+                .copy(TEMPLATE + "payara/micro/arquillian/pom.xml")
                 .commit();
     }
 }

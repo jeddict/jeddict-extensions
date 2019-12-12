@@ -18,3 +18,53 @@ update_configs:
     update_schedule: "weekly"
     default_labels:
       - "dependencies"
+      
+  - package_manager: "java:maven"
+    directory: "runtime/src/main/resources/io/github/jeddict/runtime/template/payara/common/arquillian"
+    update_schedule: "weekly"
+    default_labels:
+      - "dependencies"
+      
+  - package_manager: "java:maven"
+    directory: "runtime/src/main/resources/io/github/jeddict/runtime/template/payara/micro"
+    update_schedule: "weekly"
+    default_labels:
+      - "dependencies"  
+      
+  - package_manager: "java:maven"
+    directory: "runtime/src/main/resources/io/github/jeddict/runtime/template/payara/micro/arquillian"
+    update_schedule: "weekly"
+    default_labels:
+      - "dependencies"  
+      
+  - package_manager: "java:maven"
+    directory: "runtime/src/main/resources/io/github/jeddict/runtime/template/payara/micro/docker"
+    update_schedule: "weekly"
+    default_labels:
+      - "dependencies"  
+ 
+  - package_manager: "java:maven"
+    directory: "runtime/src/main/resources/io/github/jeddict/runtime/template/payara/persistence/provider/hibernate"
+    update_schedule: "weekly"
+    default_labels:
+      - "dependencies" 
+
+  - package_manager: "java:maven"
+    directory: "runtime/src/main/resources/io/github/jeddict/runtime/template/payara/server/arquillian"
+    update_schedule: "weekly"
+    default_labels:
+      - "dependencies"  
+      
+  - package_manager: "java:maven"
+    directory: "runtime/src/main/resources/io/github/jeddict/runtime/template/payara/server/docker/arquillian"
+    update_schedule: "weekly"
+    default_labels:
+      - "dependencies"  
+      
+  - package_manager: "java:maven"
+    directory: "runtime/src/main/resources/io/github/jeddict/runtime/template/payara/server/no_docker/arquillian"
+    update_schedule: "weekly"
+    default_labels:
+      - "dependencies" 
+
+      

@@ -59,7 +59,7 @@ public abstract class Payara implements RuntimeProvider {
                 PersistenceUtil.updatePersistenceUnit(project, punit);
             }
             BuildManager.getInstance(project)
-                    .copy(TEMPLATE + "persistence/provider/pom/PAYARA_HIBERNATE.xml")
+                    .copy(TEMPLATE + "payara/persistence/provider/hibernate/pom.xml")
                     .commit();
         }
     }

@@ -47,7 +47,7 @@ public abstract class Wildfly implements RuntimeProvider {
     public void updatePersistenceProvider(DatabaseType databaseType) {
         if (entityMapping.getPersistenceProviderType() == PersistenceProviderType.ECLIPSELINK) {
             BuildManager.getInstance(project)
-                    .copy(TEMPLATE + "persistence/provider/pom/WILDFLY_ECLIPSELINK.xml")
+                    .copy(TEMPLATE + "wildfly/persistence/provider/eclipselink/pom.xml")
                     .commit();
         }
     }

@@ -47,12 +47,12 @@ public final class PayaraServer extends Payara {
     @Override
     public void addTestDependency(boolean docker) {
         BuildManager buildManager = BuildManager.getInstance(project)
-                .copy(TEMPLATE + "arquillian/pom/payara_common_pom.xml")
-                .copy(TEMPLATE + "arquillian/pom/payara_server_pom.xml");
+                .copy(TEMPLATE + "payara/common/arquillian/pom.xml")
+                .copy(TEMPLATE + "payara/server/arquillian/pom.xml");
         if (docker) {
-            buildManager.copy(TEMPLATE + "arquillian/pom/payara_server_docker_pom.xml");
+            buildManager.copy(TEMPLATE + "payara/server/docker/arquillian/pom.xml");
         } else {
-            buildManager.copy(TEMPLATE + "arquillian/pom/payara_server_non_docker_pom.xml");
+            buildManager.copy(TEMPLATE + "payara/server/no_docker/arquillian/pom.xml");
         }
         buildManager.commit();
     }
