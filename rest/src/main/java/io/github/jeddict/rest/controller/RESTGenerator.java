@@ -813,21 +813,18 @@ public class RESTGenerator implements Generator {
     }
 
     private void addRestMavenDependencies(Project project) {
-        addMavenDependencies("rest/pom/_pom.xml", project);
-        if (restData.isMetrics()) {
-            addMavenDependencies("metrics/pom/_pom.xml", project);
-        }
+        addMavenDependencies("rest/pom/pom.xml", project);
         if (restData.isLogger()) {
-            addMavenDependencies("logger/pom/_pom.xml", project);
+            addMavenDependencies("logger/pom/pom.xml", project);
         }
         if (restData.isTestCase()) {
             infraConfig.getRuntimeProvider().addTestDependency(infraConfig.isDockerActivated());
         }
         if (appConfigData.isGateway()) {
             addMavenDependencies("routing/pom/_pom.xml", project);
-            addMavenDependencies("routing/pom/"+appConfigData.getRegistryType().name().toLowerCase()+"_pom.xml", project);
+            addMavenDependencies("routing/pom/" + appConfigData.getRegistryType().name().toLowerCase() + "_pom.xml", project);
         } else if (appConfigData.isMicroservice()) {
-            addMavenDependencies("registry/pom/"+appConfigData.getRegistryType().name().toLowerCase()+"_pom.xml", project);
+            addMavenDependencies("registry/pom/" + appConfigData.getRegistryType().name().toLowerCase() + "_pom.xml", project);
         }
     }
 

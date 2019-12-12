@@ -6,3 +6,15 @@ update_configs:
     update_schedule: "weekly"
     default_labels:
       - "dependencies"
+
+  - package_manager: "java:maven"
+    directory: "/rest/src/main/java/io/github/jeddict/template/logger/pom"
+    update_schedule: "weekly"
+    default_labels:
+      - "dependencies"
+
+  - package_manager: "java:maven"
+    directory: "/rest/src/main/java/io/github/jeddict/template/rest/pom"
+    update_schedule: "weekly"
+    default_labels:
+      - "dependencies"
