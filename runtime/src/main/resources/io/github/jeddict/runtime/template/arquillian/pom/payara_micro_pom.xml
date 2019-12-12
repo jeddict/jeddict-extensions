@@ -59,7 +59,9 @@
                         </executions>
                     </plugin>
                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
+                        <version>3.0.0-M4</version>
                         <configuration>
                             <environmentVariables>
                                 <MICRO_JAR>${session.executionRootDirectory}/target/payara-micro-${version.payara}.jar</MICRO_JAR>
@@ -70,5 +72,5 @@
             </build>
         </profile>
     </profiles>
-   
+
 </project>
