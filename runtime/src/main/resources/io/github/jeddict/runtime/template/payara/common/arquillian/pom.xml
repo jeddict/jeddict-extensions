@@ -15,7 +15,7 @@
         <version.valid4j>1.1</version.valid4j>
         <version.junit>4.12</version.junit>
         <version.commons-lang>2.6</version.commons-lang>
-        <version.arquillian-payara>1.1</version.arquillian-payara>
+        <version.arquillian-payara>2.0</version.arquillian-payara>
         <version.payara>5.194</version.payara>
     </properties>
 
