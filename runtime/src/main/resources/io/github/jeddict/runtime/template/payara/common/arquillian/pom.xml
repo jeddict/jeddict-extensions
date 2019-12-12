@@ -10,7 +10,7 @@
 
 
     <properties>
-        <version.arquillian>1.4.1.Final</version.arquillian>
+        <version.arquillian>1.5.0.Final</version.arquillian>
         <version.jacoco>0.8.4</version.jacoco>
         <version.valid4j>1.1</version.valid4j>
         <version.junit>4.12</version.junit>
