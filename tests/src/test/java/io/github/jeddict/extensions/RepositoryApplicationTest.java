@@ -13,13 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.github.jeddict.repository;
+package io.github.jeddict.extensions;
 
 import io.github.jeddict.test.FullStackApplicationTest;
 import io.github.jeddict.docker.generator.DockerConfigData;
 import io.github.jeddict.docker.generator.DockerGenerator;
 import static io.github.jeddict.jcode.DatabaseType.H2;
 import io.github.jeddict.jcode.TechContext;
+import io.github.jeddict.repository.RepositoryData;
+import io.github.jeddict.repository.RepositoryGenerator;
 import io.github.jeddict.runtime.PayaraMicro;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -33,7 +35,7 @@ import org.netbeans.api.project.Project;
 public class RepositoryApplicationTest extends FullStackApplicationTest {
 
     @Test
-    void test() throws Exception {
+    protected void test() throws Exception {
         Project project = generateMonolith("cdi-jpa-repository-sample-app", "default-monolith.jpa");
         fireMavenBuild(project, singletonList("install"), emptyList(), null);
     }

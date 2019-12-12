@@ -10,8 +10,9 @@ os:
   - linux
 env:
  - TEST_CASE="RepositoryApplication"
+ - TEST_CASE="RestApplication"
 before_install:
-    - export M2_HOME=/usr/local/maven-3.6.0
+    - export M2_HOME=/usr/local/maven-3.6.2
 
     - git clone https://github.com/jeddict/netbeans-modeler.git ~/builds/netbeans-modeler
     - pushd ~/builds/netbeans-modeler
