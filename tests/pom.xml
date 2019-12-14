@@ -4,7 +4,7 @@
     <parent>
         <groupId>io.github.jeddict</groupId>
         <artifactId>jeddict-extensions</artifactId>
-        <version>5.4</version>
+        <version>5.4.1</version>
     </parent>
     <artifactId>jeddict-extensions-tests</artifactId>
     <name>Jeddict Extensions Tests</name>
@@ -66,24 +66,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <id>default-jar</id>
-                        <phase>none</phase>
-                        <configuration>
-                            <finalName>unwanted</finalName>
-                            <classifier>unwanted</classifier>
-                        </configuration>
-                    </execution>
-                </executions>
+                <configuration combine.self="override" />
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>3.0.0-M1</version>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>nbm-maven-plugin</artifactId>
                 <configuration>
-                    <skip>true</skip>
+                    <skipNbm>true</skipNbm>
                 </configuration>
             </plugin>
         </plugins>
