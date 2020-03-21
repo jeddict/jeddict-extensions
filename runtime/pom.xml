@@ -24,20 +24,6 @@
                     <publicPackages>
                         <publicPackage>io.github.jeddict.runtime</publicPackage>
                     </publicPackages>
-                    <moduleDependencies>
-                        <dependency>
-                            <id>org.netbeans.modules:org-netbeans-modules-j2ee-persistence</id>
-                            <type>impl</type>
-                        </dependency>
-                        <dependency>
-                            <id>org.netbeans.modules:org-netbeans-modules-maven-model</id>
-                            <type>impl</type>
-                        </dependency>
-                        <dependency>
-                            <id>org.netbeans.modules:org-netbeans-modules-maven-embedder</id>
-                            <type>impl</type>
-                        </dependency>
-                    </moduleDependencies>
                 </configuration>
             </plugin>
         </plugins>

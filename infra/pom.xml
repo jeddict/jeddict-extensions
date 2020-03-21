@@ -24,12 +24,6 @@
                     <publicPackages>
                         <publicPackage>io.github.jeddict.docker.generator</publicPackage>
                     </publicPackages>
-                    <moduleDependencies>
-                        <dependency>
-                            <id>org.netbeans.modules:org-netbeans-modules-j2ee-persistence</id>
-                            <type>impl</type>
-                        </dependency>
-                    </moduleDependencies>
                 </configuration>
             </plugin>
         </plugins>
