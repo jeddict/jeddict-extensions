@@ -12,7 +12,7 @@
         <version.velocity>1.7</version.velocity>
         <version.slf4j>1.7.21</version.slf4j>
         <version.jjwt>0.9.0</version.jjwt>
-        <version.commons-lang3>3.7</version.commons-lang3>
+        <version.commons-lang3>3.9</version.commons-lang3>
         <version.commons-email>1.5</version.commons-email>
         <version.microprofile>3.2</version.microprofile>
         <version.maven-war-plugin>3.2.0</version.maven-war-plugin>
