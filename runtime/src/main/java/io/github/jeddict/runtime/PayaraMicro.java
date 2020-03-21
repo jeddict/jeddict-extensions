@@ -29,7 +29,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = RuntimeProvider.class)
 @Runtime(name = "PAYARA_MICRO",
         displayName = "Payara Micro",
-        version = "5.194",
+        version = "5.201",
         persistenceProvider = ECLIPSELINK,
         embeddedDB = H2)
 public final class PayaraMicro extends Payara {
