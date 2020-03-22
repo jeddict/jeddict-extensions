@@ -10,14 +10,6 @@
 
     <profiles>
         <profile>
-            <id>payara-ci-managed</id>
-            <activation>
-                <property>
-                    <name>!skipTests</name>
-                </property>
-            </activation>
-        </profile>
-        <profile>
             <id>payara-micro-managed</id>
             <dependencies>
                 <dependency>
