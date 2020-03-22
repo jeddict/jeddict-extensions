@@ -7,14 +7,14 @@
     <packaging>war</packaging>
 
     <properties>
-        <version.eclipselink>2.6.0</version.eclipselink>
-        <version.eclipse.persistence>2.1.0</version.eclipse.persistence>
+        <version.eclipselink>2.7.6</version.eclipselink>
+        <version.eclipse.persistence>2.2.3</version.eclipse.persistence>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
-            <artifactId>javax.persistence</artifactId>
+            <artifactId>jakarta.persistence</artifactId>
             <version>${version.eclipse.persistence}</version>
         </dependency>
         <dependency>
