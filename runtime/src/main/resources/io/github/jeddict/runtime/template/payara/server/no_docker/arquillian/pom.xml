@@ -8,15 +8,4 @@
     <packaging>war</packaging>
     <name>arquillian_pom</name>
 
-    <profiles>
-        <profile>
-            <id>payara-remote</id>
-            <activation>
-                <property>
-                    <name>!skipTests</name>
-                </property>
-            </activation>
-        </profile>
-    </profiles>
-   
 </project>

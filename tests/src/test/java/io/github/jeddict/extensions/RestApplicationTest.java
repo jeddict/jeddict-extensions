@@ -15,13 +15,13 @@
  */
 package io.github.jeddict.extensions;
 
-//import io.github.jeddict.client.i18n.I18NConfigData;
-//import io.github.jeddict.client.i18n.I18NGenerator;
-//import io.github.jeddict.client.i18n.LanguageUtil;
+import io.github.jeddict.docker.generator.DockerConfigData;
+import io.github.jeddict.docker.generator.DockerGenerator;
+import static io.github.jeddict.jcode.DatabaseType.H2;
 import io.github.jeddict.jcode.TechContext;
 import io.github.jeddict.rest.controller.RESTData;
 import io.github.jeddict.rest.controller.RESTGenerator;
-import static java.util.Collections.emptyList;
+import io.github.jeddict.runtime.PayaraServer;
 import static java.util.Collections.singletonList;
 import org.junit.jupiter.api.*;
 import org.netbeans.api.project.Project;
@@ -36,22 +36,30 @@ public class RestApplicationTest extends RepositoryApplicationTest {
     @Override
     protected void test() throws Exception {
         Project project = generateMonolith("jaxrs-sample-app", "default-monolith.jpa");
-        fireMavenBuild(project, singletonList("install"), emptyList(), null);
+        fireMavenBuild(project, singletonList("install"), singletonList("payara-ci-managed"), null);
+    }
+
+    @Override
+    protected TechContext getRepositoryContext() {
+        DockerConfigData dockerConfigData = new DockerConfigData();
+        dockerConfigData.setRuntimeProviderClass(PayaraServer.class);
+        dockerConfigData.setDatabaseType(H2);
+        dockerConfigData.setDbName(null);
+        dockerConfigData.setDbHost(null);
+
+        TechContext techContext = super.getRepositoryContext();
+        techContext.findSiblingTechContext(DockerGenerator.class)
+                .ifPresent(context -> context.setConfigData(dockerConfigData));
+        return techContext;
     }
 
     @Override
     protected TechContext getControllerContext() {
-//        I18NConfigData i18nData = new I18NConfigData();
-//        i18nData.setEnabled(true);
-//        i18nData.setNativeLanguage(LanguageUtil.getDefaultLanguage());
-
         RESTData restData = new RESTData();
         restData.setPrefixName("");
         restData.setPackage("controller");
         restData.setTestCase(true);
         TechContext techContext = new TechContext(RESTGenerator.class);
-//        techContext.findSiblingTechContext(I18NGenerator.class)
-//                .ifPresent(context -> context.setConfigData(i18nData));
         techContext.setConfigData(restData);
         return techContext;
     }
