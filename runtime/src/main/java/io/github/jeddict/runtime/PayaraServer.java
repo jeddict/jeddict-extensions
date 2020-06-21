@@ -25,7 +25,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = RuntimeProvider.class)
 @Runtime(name = "PAYARA_SERVER",
         displayName = "Payara Server",
-        version = "5.201",
+        version = "5.2020.2",
         persistenceProvider = ECLIPSELINK,
         embeddedDB = H2)
 public final class PayaraServer extends Payara {
