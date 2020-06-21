@@ -7,8 +7,6 @@
     <version>1.0</version>
     <packaging>war</packaging>
 
-    <name>ShoppingSystem</name>
-
     <properties>
         <version.mvc>1.0-edr2</version.mvc>
         <version.ozark>1.0.0-m02</version.ozark>
