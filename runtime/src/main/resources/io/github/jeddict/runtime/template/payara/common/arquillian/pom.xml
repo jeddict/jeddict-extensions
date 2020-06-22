@@ -181,7 +181,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
-                        <version>3.0.0-M4</version>
+                        <version>3.0.0-M5</version>
                         <configuration>
                             <environmentVariables>
                                 <GLASSFISH_HOME>${session.executionRootDirectory}/target/payara5</GLASSFISH_HOME>
