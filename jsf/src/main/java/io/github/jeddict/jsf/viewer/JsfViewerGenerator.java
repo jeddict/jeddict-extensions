@@ -24,12 +24,11 @@ import io.github.jeddict.jcode.task.progress.ProgressHandler;
 import io.github.jeddict.jcode.util.BuildManager;
 import io.github.jeddict.jcode.util.FileUtil;
 import io.github.jeddict.jcode.util.ProjectHelper;
-import io.github.jeddict.jcode.util.StringHelper;
 import static io.github.jeddict.jcode.util.StringHelper.firstLower;
-import static io.github.jeddict.jcode.util.StringHelper.firstUpper;
 import io.github.jeddict.jpa.spec.Entity;
 import io.github.jeddict.jpa.spec.EntityMappings;
 import io.github.jeddict.jpa.spec.extend.Attribute;
+import io.github.jeddict.jpa.spec.extend.AttributeAnnotation;
 import io.github.jeddict.jsf.controller.JsfControllerData;
 import io.github.jeddict.jsf.controller.JsfControllerGenerator;
 import java.io.IOException;
@@ -41,6 +40,7 @@ import static java.util.stream.Collectors.toList;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import org.openide.filesystems.FileObject;
+import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -128,32 +128,33 @@ public final class JsfViewerGenerator implements Generator {
     }
 
     private void generate() throws IOException {
-        for (Entity entity : entityMapping.getGeneratedEntity().collect(toList())) {
+        List<Entity> entityList = entityMapping.getGeneratedEntity().collect(toList());
+        for (Entity entity : entityList) {
             handler.progress(jsfViewerData.getPrefixName() + entity.getClazz() + jsfViewerData.getSuffixName());
             generateCRUD(entity, true);
-            generatePropertiesFile(entity, false);
         }
+        generatePropertiesFile(entityList);
     }
 
-    private void generatePropertiesFile(final Entity entity, boolean overrideExisting) throws IOException {
+    private void generatePropertiesFile(List<Entity> entityList) {
         final FileObject resourceFolder = projectHelper.getResourceDirectory(gatewayProject);
+        FileObject rootFolder = projectHelper.getProjectWebRoot(targetProject);//getFolderForPackage(source, _package, true);
 
-        final String entitySimpleName = entity.getClazz();
-        String entityClass = firstUpper(entitySimpleName);
-
-        List<Attribute> attributeList = entity.getAttributes().getAllAttribute();
-        List<String> attributes = new ArrayList<>();
-        for (Attribute attribute : attributeList) {
-            String attributeAsString = firstUpper(attribute.getName());
-            attributes.add(attributeAsString);
+        String indexFilename = "index";
+        String bundleFileName = "Bundle";
+        List<String> entityNames = new ArrayList<>();
+        for (Entity entity : entityList) {
+            entityNames.add(entity.getName());
         }
-        String fileName = "Bundle";
-        Map<String, Object> param = new HashMap<>();
-        param.put("Entity", entityClass);
-        param.put("attributes", attributes);
+        Map<String, Object> params = new HashMap<>();
+        params.put("Entities", entityNames.toArray());
 
-        handler.progress(fileName);
-        FileUtil.expandTemplate(TEMPLATE + "util/Bundle.properties.ftl", resourceFolder, fileName + '.' + "properties", param);
+        try {
+            io.github.jeddict.jcode.util.FileUtil.expandTemplate(TEMPLATE + "jsf/index.xhtml.ftl", rootFolder, indexFilename + '.' + "xhtml", params);
+            FileUtil.expandTemplate(TEMPLATE + "util/Bundle.properties.ftl", resourceFolder, bundleFileName + '.' + "properties", params);
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+        }
     }
 
     private void generateLayout() throws IOException {
@@ -173,7 +174,7 @@ public final class JsfViewerGenerator implements Generator {
     public void generateCRUD(final Entity entity, boolean overrideExisting) throws IOException {
         String entityName = entity.getName();
         List<Attribute> attributes = entity.getAttributes().getAllAttribute();
-        String entityInstance = firstLower(entityName);
+         String entityInstance = firstLower(entityName);
         String targetPath = "app/entities/" + entityInstance;
 
         FileObject rootFolder = projectHelper.getProjectWebRoot(targetProject);//getFolderForPackage(source, _package, true);
@@ -183,7 +184,6 @@ public final class JsfViewerGenerator implements Generator {
         String viewFileName = "view" + entityName;
         String editFileName = "edit" + entityName;
         String listFileName = "list" + entityName;
-        String indexFilename = "index";
         String controllerName = firstLower(controllerData.getPrefixName() + entityName + controllerData.getSuffixName());
 
         Map<String, Object> params = new HashMap<>();
@@ -197,8 +197,6 @@ public final class JsfViewerGenerator implements Generator {
         io.github.jeddict.jcode.util.FileUtil.expandTemplate(TEMPLATE + "jsf/view.xhtml.ftl", targetFolder, viewFileName + '.' + "xhtml", params);
         io.github.jeddict.jcode.util.FileUtil.expandTemplate(TEMPLATE + "jsf/edit.xhtml.ftl", targetFolder, editFileName + '.' + "xhtml", params);
         io.github.jeddict.jcode.util.FileUtil.expandTemplate(TEMPLATE + "jsf/list.xhtml.ftl", targetFolder, listFileName + '.' + "xhtml", params);
-        io.github.jeddict.jcode.util.FileUtil.expandTemplate(TEMPLATE + "jsf/index.xhtml.ftl", rootFolder, indexFilename + '.' + "xhtml", params);
-
     }
 
     public void generateResources() throws IOException {
@@ -216,4 +214,5 @@ public final class JsfViewerGenerator implements Generator {
 //        io.github.jeddict.jcode.util.FileUtil.expandTemplate(TEMPLATE + "jsf/images.js.ftl", jsTargetFolder, fileName + '.' + "js", params);
 
     }
+
 }

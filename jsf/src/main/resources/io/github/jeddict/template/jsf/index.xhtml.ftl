@@ -4,14 +4,15 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets">
 
-
-
     <h:head>
         <title>Facelet Title</title>
         <h:outputStylesheet name="css/jsfcrud.css"/>
     </h:head>
     <h:body >
-        <h:link outcome="app/entities/${entityInstance}/list${Entity}" value="Show ${Entity} Items Latest"/>   
+        <#list Entities as Entity>
+            <h:link outcome="app/entities/${Entity?lower_case}/list${Entity}" value="Show ${Entity} Items Latest"/>  
+            <br/>
+        </#list> 
     </h:body>
 </html>
 

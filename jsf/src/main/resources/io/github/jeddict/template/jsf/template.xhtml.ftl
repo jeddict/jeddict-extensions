@@ -19,8 +19,6 @@
         <p:layout fullPage="true"  >
             <p:layoutUnit position="north"  size="100"  resizable="true" closable="true" collapsible="true" >
 
-<!--                <h:graphicImage value = "/resources/images/jeddictLogo.jpg" height="90" width="90" style="margin-left: 1%"/>-->
-
             <p:commandButton id="home" icon="ui-icon-home" value="Home" style="float:right; margin-right: 2%"></p:commandButton>
 
                 <ui:insert name="header" />

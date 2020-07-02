@@ -21,7 +21,6 @@
 
             </div>
             <h:form id="StudentListForm" style="margin-left: 2%; margin-right: 2%">
-                <!--<p:panel header="${hash}{bundle.ListStudentTitle}">-->
                 <p:dataTable id="datalist" value="${hash}{${EntityController}.items}" var="item"
                              selection="${hash}{${EntityController}.selected}"
                              rowKey="${hash}{item.id}"
@@ -47,7 +46,6 @@
                         </p:confirmDialog>
                     </p:column>
                 </p:dataTable>
-                <!--</p:panel>-->
             </h:form>
 
         </ui:define>

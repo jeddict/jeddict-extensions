@@ -22,31 +22,27 @@
             <h:form id="add" style="margin-left: 20%;margin-right: 20%">
                 <h:panelGrid columns="3" cellpadding="5" style="margin: 0 auto;">
                     <#list attributes as attribute>
-                        <#if attribute.attributeType == "String">
+                        <#if (attribute.attributeType == "String")|| 
+                    (attribute.attributeType == "long") || (attribute.attributeType == "Long") ||
+                    (attribute.attributeType == "int") || (attribute.attributeType == "Integer")||
+                    (attribute.attributeType == "char") || (attribute.attributeType == "Character")||
+                    (attribute.attributeType == "byte") || (attribute.attributeType == "Byte")||
+                    (attribute.attributeType == "float") || (attribute.attributeType == "Float")||
+                    (attribute.attributeType == "double") || (attribute.attributeType == "Double")||
+                    (attribute.attributeType == "short") || (attribute.attributeType == "Short")||
+                    (attribute.attributeType == "java.math.BigInteger") || (attribute.attributeType == "java.math.BigDecimal")>
                     <p:outputLabel for="${attribute.name}" value="${attribute.name}" />
-                    <p:inputText id="${attribute.name}" value="${hash}{${EntityController}.selected.${attribute.name}}" />
-                    <p:message for="${attribute.name}" />
-                    
-                        <#elseif attribute.attributeType == "long" >
+                    <p:inputText id="${attribute.name}" value="${hash}{${EntityController}.selected.${attribute.name}}">
+                    </p:inputText>  
+                    <p:messages for="${attribute.name}">                        
+                        <p:autoUpdate />                    
+                    </p:messages>
+
+                        <#elseif (attribute.attributeType == "boolean") || (attribute.attributeType == "Boolean")  >
                     <p:outputLabel for="${attribute.name}" value="${attribute.name}" />
-                    <p:inputText id="${attribute.name}" value="${hash}{${EntityController}.selected.${attribute.name}}" />
-                    <p:message for="${attribute.name}" />
-                    
-                         <#elseif attribute.attributeType == "int" >
-                    <p:outputLabel for="${attribute.name}" value="${attribute.name}" />
-                    <p:inputText id="${attribute.name}" value="${hash}{${EntityController}.selected.${attribute.name}}" />
-                    <p:message for="${attribute.name}" />
-                    
-                        <#elseif attribute.attributeType == "boolean" >
-                    <p:outputLabel for="${attribute.name}" value="${attribute.name}" />
-                    <p:selectOneRadio id="${attribute.name}" value="${hash}{${EntityController}.selected.${attribute.name}}" validatorMessage="${attribute.name} is required">
-                        <f:selectItem itemValue="M" itemLabel="Male" />
-                        <f:selectItem itemValue="F" itemLabel="Female" />
-                        <f:validateRequired/>
-                    </p:selectOneRadio>
-                    <p:message for="${attribute.name}" />
-                        </#if>
-                    </#list>
+                    <p:selectBooleanCheckbox value="${hash}{${EntityController}.selected.${attribute.name}}" id="${attribute.name}"/>
+                     </#if>
+                </#list>
                     <p:commandButton  value="Create" action="${hash}{${EntityController}.create}">
                     </p:commandButton>
                     <p:commandButton value="Cancel" action="${hash}{${EntityController}.prepareList}" immediate="true">
