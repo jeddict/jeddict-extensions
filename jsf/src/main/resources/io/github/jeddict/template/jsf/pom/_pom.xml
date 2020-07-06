@@ -60,7 +60,7 @@
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
             <type>jar</type>
-            <version>6.2</version>
+            <version>8.0</version>
         </dependency>
         <dependency>
             <groupId>org.primefaces.themes</groupId>

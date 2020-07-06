@@ -22,7 +22,12 @@
             </div>
             <h:form id="edit" style="margin-left: 20%;margin-right: 20%">
                 <h:panelGrid columns="3" cellpadding="5" style="margin: 0 auto;">
-                 <#list attributes as attribute>
+                  <#list attributes as attribute>
+                    <#if (attribute.getClass().getSimpleName()) == "Id">
+                        <h:inputHidden id="${attribute.name}" value="${hash}{${EntityController}.selected.${attribute.name}}" required="true" >
+                        </h:inputHidden>
+                    </#if>
+                    <#if (attribute.getClass().getSimpleName()) == "Basic">
                         <#if (attribute.attributeType == "String")|| 
                     (attribute.attributeType == "long") || (attribute.attributeType == "Long") ||
                     (attribute.attributeType == "int") || (attribute.attributeType == "Integer")||
@@ -42,7 +47,42 @@
                         <#elseif (attribute.attributeType == "boolean") || (attribute.attributeType == "Boolean")  >
                     <p:outputLabel for="${attribute.name}" value="${attribute.name}" />
                     <p:selectBooleanCheckbox value="${hash}{${EntityController}.selected.${attribute.name}}" id="${attribute.name}"/>
-                    </#if>
+                    
+                    <#elseif (attribute.attributeType == "java.time.LocalDateTime")>
+                    <p:outputLabel for="${attribute.name}" value="${attribute.name}" />
+                    <p:datePicker id="${attribute.name}" value="${hash}{${EntityController}.selected.${attribute.name}}" showTime="true" showSeconds="true" pattern="MM/dd/yyyy HH:mm:ss"/>
+                    <p:messages for="${attribute.name}">
+                        <p:autoUpdate />
+                    </p:messages>
+                    
+                    <#elseif (attribute.attributeType == "java.time.LocalDate")  >
+                    <p:outputLabel for="${attribute.name}" value="${attribute.name}" />
+                    <p:datePicker id="${attribute.name}" value="${hash}{${EntityController}.selected.${attribute.name}}"/>
+                    <p:messages for="${attribute.name}">
+                        <p:autoUpdate />
+                    </p:messages>
+                    
+                    <#elseif (attribute.attributeType == "java.time.LocalTime")  >
+                    <p:outputLabel for="${attribute.name}" value="${attribute.name}" />
+                    <p:datePicker id="${attribute.name}" value="${hash}{${EntityController}.selected.${attribute.name}}" timeOnly="true" showSeconds="true" pattern="HH:mm:ss"/>
+                    <p:messages for="${attribute.name}">
+                        <p:autoUpdate />
+                    </p:messages>  
+                    
+                    <#elseif (attribute.attributeType == "java.util.Date")>
+                    <p:outputLabel for="${attribute.name}" value="${attribute.name}" />
+                        <#if (attribute.temporal == "DATE")>
+                    <p:datePicker id="${attribute.name}" value="${hash}{${EntityController}.selected.${attribute.name}}" pattern="MM/dd/yyyy"/>
+                        <#elseif (attribute.temporal == "TIME")>
+                    <p:datePicker id="${attribute.name}" value="${hash}{${EntityController}.selected.${attribute.name}}" timeOnly="true" showSeconds="true" pattern="HH:mm:ss"/>
+                        <#elseif (attribute.temporal == "TIMESTAMP")>
+                    <p:datePicker id="${attribute.name}" value="${hash}{${EntityController}.selected.${attribute.name}}" showTime="true" showSeconds="true" pattern="MM/dd/yyyy HH:mm:ss"/>
+                        </#if>
+                    <p:messages for="${attribute.name}">
+                        <p:autoUpdate />
+                    </p:messages>
+                </#if>
+                </#if>
                 </#list>
                     <p:commandButton  value="Update" action="${hash}{${EntityController}.update}">
                     </p:commandButton>

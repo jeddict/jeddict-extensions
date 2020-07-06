@@ -26,11 +26,21 @@
                              rowKey="${hash}{item.id}"
                 >
                     <#list attributes as attribute>
-                    <p:column>
-                        <f:facet name="header">
+                        <p:column>
+                         <f:facet name="header">
                             <h:outputText value="${attribute.name}"/>
                         </f:facet>
-                        <h:outputText value="${hash}{item.${attribute.name}}"/>
+                        <h:outputText value="${hash}{item.${attribute.name}}">
+                            <#if attribute.temporal??>
+                                <#if (attribute.temporal == "DATE")>
+                                <f:convertDateTime pattern="MM/dd/yyyy" />
+                                <#elseif (attribute.temporal == "TIME")>
+                                <f:convertDateTime pattern="HH:mm:ss" />
+                                <#elseif (attribute.temporal == "TIMESTAMP")>
+                                <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss"/>
+                                </#if>
+                                </#if>   
+                        </h:outputText>
                     </p:column>
                     </#list>
                     <p:column>

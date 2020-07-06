@@ -17,7 +17,7 @@ package io.github.jeddict.jsf.viewer;
 
 import io.github.jeddict.jcode.LayerConfigPanel;
 import javax.lang.model.SourceVersion;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
 import static io.github.jeddict.jcode.util.JavaIdentifiers.isValidPackageName;
