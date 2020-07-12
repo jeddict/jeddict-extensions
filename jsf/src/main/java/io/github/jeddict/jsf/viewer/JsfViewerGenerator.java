@@ -28,7 +28,6 @@ import static io.github.jeddict.jcode.util.StringHelper.firstLower;
 import io.github.jeddict.jpa.spec.Entity;
 import io.github.jeddict.jpa.spec.EntityMappings;
 import io.github.jeddict.jpa.spec.extend.Attribute;
-import io.github.jeddict.jpa.spec.extend.AttributeAnnotation;
 import io.github.jeddict.jsf.controller.JsfControllerData;
 import io.github.jeddict.jsf.controller.JsfControllerGenerator;
 import java.io.IOException;

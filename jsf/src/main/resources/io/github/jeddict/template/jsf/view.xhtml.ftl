@@ -22,10 +22,11 @@
             <h:form id="view">
                 <h:panelGrid columns="2" style="margin-left: 25%; width: 50%" border = "1" cellpadding = "5" >
                    
-                    <#list attributes as attribute>
-                        <p:outputLabel for="${attribute.name}" value="${attribute.name}" />
-                        <p:outputLabel id="${attribute.name}" value="${hash}{${EntityController}.selected.${attribute.name}}" />
-                    </#list>
+                <#list attributes as attribute>
+                    <p:outputLabel for="${attribute.name}" value="${attribute.name}" />
+                    <p:outputLabel id="${attribute.name}" value="${hash}{${EntityController}.selected.${attribute.name}}" />
+                    
+                </#list>
                 </h:panelGrid>
                 <p:commandButton style="margin-left: 50%" value="Back" action="${hash}{${EntityController}.prepareList}" immediate="true"></p:commandButton>
 

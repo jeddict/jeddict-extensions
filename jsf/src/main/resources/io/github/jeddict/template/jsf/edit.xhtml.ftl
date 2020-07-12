@@ -44,7 +44,7 @@
                         <p:autoUpdate />                    
                     </p:messages>
 
-                        <#elseif (attribute.attributeType == "boolean") || (attribute.attributeType == "Boolean")  >
+                    <#elseif (attribute.attributeType == "boolean") || (attribute.attributeType == "Boolean")  >
                     <p:outputLabel for="${attribute.name}" value="${attribute.name}" />
                     <p:selectBooleanCheckbox value="${hash}{${EntityController}.selected.${attribute.name}}" id="${attribute.name}"/>
                     
@@ -81,8 +81,18 @@
                     <p:messages for="${attribute.name}">
                         <p:autoUpdate />
                     </p:messages>
-                </#if>
-                </#if>
+                    
+                    <#elseif (attribute.enumerated == "STRING") || (attribute.enumerated == "ORDINAL")  || (attribute.enumerated == "DEFAULT")>
+                    <p:outputLabel for="${attribute.name}" value="${attribute.name}" />
+                    <h:selectOneMenu id="${attribute.name}" value="${hash}{${EntityController}.selected.${attribute.name}}" >
+                        <f:selectItems value="${hash}{${EntityController}.${attribute.name}}" />
+                    </h:selectOneMenu>
+                    <p:messages for="${attribute.name}">
+                        <p:autoUpdate />
+                    </p:messages>
+                    
+                    </#if>
+                  </#if>
                 </#list>
                     <p:commandButton  value="Update" action="${hash}{${EntityController}.update}">
                     </p:commandButton>

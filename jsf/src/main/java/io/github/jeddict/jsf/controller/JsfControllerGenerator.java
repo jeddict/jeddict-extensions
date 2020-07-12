@@ -40,6 +40,8 @@ import org.netbeans.api.project.SourceGroup;
 import org.openide.filesystems.FileObject;
 import org.openide.util.lookup.ServiceProvider;
 import io.github.jeddict.jcode.util.FileUtil;
+import io.github.jeddict.jpa.spec.extend.Attribute;
+import java.util.List;
 
 /**
  * Generates repository for entity classes.
@@ -141,6 +143,8 @@ public final class JsfControllerGenerator implements Generator {
         String repositoryInstance = firstLower(repositoryName);
         String repositoryFQN = entity.getAbsolutePackage(repositoryData.getRepositoryPackage()) + '.' + repositoryName;;
 
+        List<Attribute> attributes = entity.getAttributes().getAllAttribute();
+       
         Map<String, Object> params = new HashMap<>();
         params.put("entityInstance", entityInstance);
         params.put("Entity", entityClass);
@@ -149,6 +153,7 @@ public final class JsfControllerGenerator implements Generator {
         params.put("EntityRepository", repositoryName);
         params.put("RepositoryInstance", repositoryInstance);
         params.put("EntityClass_FQN", entityFQN);
+        params.put("attributes", attributes);
         params.put("RepositoryClass_FQN", targetPackage + '.' + repositoryFQN);
         params.put("JsfUtil_FQN", targetPackage + ".util.JsfUtil");
         params.put("PaginationHelper_FQN", targetPackage + ".util.PaginationHelper");

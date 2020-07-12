@@ -28,7 +28,17 @@ public class ${EntityController} implements Serializable{
     private int selectedItemIndex;
     private PaginationHelper pagination;
 
-    
+    <#list attributes as attribute>
+     <#if (attribute.getClass().getSimpleName()) == "Basic">
+     <#if attribute.enumerated??>
+      <#if (attribute.enumerated == "STRING") || (attribute.enumerated == "ORDINAL") || (attribute.enumerated == "DEFAULT")>
+    public ${attribute.getDataTypeLabel()}[] get${attribute.name}() {
+       return ${attribute.getDataTypeLabel()}.values();
+    }
+      </#if>
+      </#if>
+     </#if>
+    </#list>
 
     public ${Entity} getSelected() {
         if (${entityInstance} == null) {

@@ -18,31 +18,31 @@
         <ui:define name="body" >
             <div>
                 <h1 style="margin-left: 2%">${Entity} Registration <p:commandButton id="createButton" icon="ui-icon-plus" value="Create ${Entity} for registration" style="float:right; margin-right: 2%" action="${hash}{${EntityController}.prepareCreate}"></p:commandButton></h1>
-
             </div>
             <h:form id="StudentListForm" style="margin-left: 2%; margin-right: 2%">
                 <p:dataTable id="datalist" value="${hash}{${EntityController}.items}" var="item"
                              selection="${hash}{${EntityController}.selected}"
-                             rowKey="${hash}{item.id}"
-                >
+                             rowKey="${hash}{item.id}">
+                    
                     <#list attributes as attribute>
-                        <p:column>
-                         <f:facet name="header">
+                    <p:column>
+                        <f:facet name="header">
                             <h:outputText value="${attribute.name}"/>
                         </f:facet>
                         <h:outputText value="${hash}{item.${attribute.name}}">
-                            <#if attribute.temporal??>
-                                <#if (attribute.temporal == "DATE")>
-                                <f:convertDateTime pattern="MM/dd/yyyy" />
-                                <#elseif (attribute.temporal == "TIME")>
-                                <f:convertDateTime pattern="HH:mm:ss" />
-                                <#elseif (attribute.temporal == "TIMESTAMP")>
-                                <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss"/>
-                                </#if>
-                                </#if>   
+                        <#if attribute.temporal??>
+                         <#if (attribute.temporal == "DATE")>
+                            <f:convertDateTime pattern="MM/dd/yyyy" />
+                         <#elseif (attribute.temporal == "TIME")>
+                            <f:convertDateTime pattern="HH:mm:ss" />
+                         <#elseif (attribute.temporal == "TIMESTAMP")>
+                            <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss"/>
+                         </#if>
+                        </#if>   
                         </h:outputText>
                     </p:column>
                     </#list>
+                    
                     <p:column>
                         <p:commandButton id="viewButton" icon="ui-icon-document"  title="View"  value="View" action="${hash}{${EntityController}.prepareView}" style="width:58px;height:20px"/>
                         <p:commandButton id="editButton" icon="ui-icon-pencil"  title="Edit"  value="Edit" action="${hash}{${EntityController}.prepareEdit}"  style="width:58px;height:20px"/>
