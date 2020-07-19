@@ -16,6 +16,18 @@ import ${EntityClass_FQN};
 import ${RepositoryClass_FQN};
 import ${JsfUtil_FQN};
 import ${PaginationHelper_FQN};
+<#list attributes as attribute>
+<#if (attribute.getClass().getSimpleName()) == "Embedded">
+import ${embeddableFQN}.${attribute.name?cap_first};
+</#if>
+<#if (attribute.getClass().getSimpleName()) == "Basic">
+<#if attribute.enumerated??>
+<#if (attribute.enumerated == "STRING") || (attribute.enumerated == "ORDINAL") || (attribute.enumerated == "DEFAULT")>
+import ${attribute.attributeType};
+</#if>
+</#if>
+</#if>   
+</#list>   
 
 @Named("${entityInstance}Controller")
 @RequestScoped
@@ -29,20 +41,29 @@ public class ${EntityController} implements Serializable{
     private PaginationHelper pagination;
 
     <#list attributes as attribute>
-     <#if (attribute.getClass().getSimpleName()) == "Basic">
-     <#if attribute.enumerated??>
-      <#if (attribute.enumerated == "STRING") || (attribute.enumerated == "ORDINAL") || (attribute.enumerated == "DEFAULT")>
-    public ${attribute.getDataTypeLabel()}[] get${attribute.name}() {
-       return ${attribute.getDataTypeLabel()}.values();
+    <#if (attribute.getClass().getSimpleName()) == "Embedded">
+    private ${attribute.name?cap_first} ${attribute.name};
+    </#if>           
+    <#if (attribute.getClass().getSimpleName()) == "Basic">
+    <#if attribute.enumerated??>
+    <#if (attribute.enumerated == "STRING") || (attribute.enumerated == "ORDINAL") || (attribute.enumerated == "DEFAULT")>
+    public ${attribute.attributeType}[] get${attribute.name}() {
+       return ${attribute.attributeType}.values();
     }
-      </#if>
-      </#if>
-     </#if>
+    </#if>
+    </#if>
+    </#if>
     </#list>
 
     public ${Entity} getSelected() {
         if (${entityInstance} == null) {
             ${entityInstance} = new ${Entity}();
+        <#list attributes as attribute>
+        <#if (attribute.getClass().getSimpleName()) == "Embedded">
+            ${attribute.name} = new ${attribute.name?cap_first}();
+            ${entityInstance}.set${attribute.name?cap_first}(${attribute.name});
+        </#if>
+        </#list>   
             selectedItemIndex = -1;
         }
         return ${entityInstance};

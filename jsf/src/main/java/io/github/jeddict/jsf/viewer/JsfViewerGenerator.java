@@ -25,6 +25,8 @@ import io.github.jeddict.jcode.util.BuildManager;
 import io.github.jeddict.jcode.util.FileUtil;
 import io.github.jeddict.jcode.util.ProjectHelper;
 import static io.github.jeddict.jcode.util.StringHelper.firstLower;
+import io.github.jeddict.jpa.spec.Embeddable;
+import io.github.jeddict.jpa.spec.EmbeddableAttributes;
 import io.github.jeddict.jpa.spec.Entity;
 import io.github.jeddict.jpa.spec.EntityMappings;
 import io.github.jeddict.jpa.spec.extend.Attribute;
@@ -173,7 +175,9 @@ public final class JsfViewerGenerator implements Generator {
     public void generateCRUD(final Entity entity, boolean overrideExisting) throws IOException {
         String entityName = entity.getName();
         List<Attribute> attributes = entity.getAttributes().getAllAttribute();
-         String entityInstance = firstLower(entityName);
+        List<Embeddable> embeddables = entity.getRootElement().getEmbeddable();
+      
+        String entityInstance = firstLower(entityName);
         String targetPath = "app/entities/" + entityInstance;
 
         FileObject rootFolder = projectHelper.getProjectWebRoot(targetProject);//getFolderForPackage(source, _package, true);
@@ -190,6 +194,7 @@ public final class JsfViewerGenerator implements Generator {
         params.put("Entity", entityName);
         params.put("hash", "#");
         params.put("attributes", attributes);
+        params.put("embeddables", embeddables);
         params.put("entityInstance", entityInstance);
         handler.progress(createFileName);
         io.github.jeddict.jcode.util.FileUtil.expandTemplate(TEMPLATE + "jsf/create.xhtml.ftl", targetFolder, createFileName + '.' + "xhtml", params);

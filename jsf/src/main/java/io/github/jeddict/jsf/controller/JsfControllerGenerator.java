@@ -138,13 +138,13 @@ public final class JsfControllerGenerator implements Generator {
         String entityClass = firstUpper(entitySimpleName);
         String entityInstance = firstLower(entitySimpleName);
         String entityFQN = entity.getFQN();
+        String embeddableFQN = entityFQN.substring(0, entityFQN.lastIndexOf("."));
 
         String repositoryName = repositoryData.getRepositoryPrefixName() + entitySimpleName + repositoryData.getRepositorySuffixName();
         String repositoryInstance = firstLower(repositoryName);
         String repositoryFQN = entity.getAbsolutePackage(repositoryData.getRepositoryPackage()) + '.' + repositoryName;;
 
         List<Attribute> attributes = entity.getAttributes().getAllAttribute();
-       
         Map<String, Object> params = new HashMap<>();
         params.put("entityInstance", entityInstance);
         params.put("Entity", entityClass);
@@ -154,6 +154,7 @@ public final class JsfControllerGenerator implements Generator {
         params.put("RepositoryInstance", repositoryInstance);
         params.put("EntityClass_FQN", entityFQN);
         params.put("attributes", attributes);
+        params.put("embeddableFQN", embeddableFQN);
         params.put("RepositoryClass_FQN", targetPackage + '.' + repositoryFQN);
         params.put("JsfUtil_FQN", targetPackage + ".util.JsfUtil");
         params.put("PaginationHelper_FQN", targetPackage + ".util.PaginationHelper");

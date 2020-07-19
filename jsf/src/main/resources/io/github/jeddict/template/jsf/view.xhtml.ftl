@@ -23,9 +23,27 @@
                 <h:panelGrid columns="2" style="margin-left: 25%; width: 50%" border = "1" cellpadding = "5" >
                    
                 <#list attributes as attribute>
+                <#if (attribute.getClass().getSimpleName()) == "Id">
+                    
                     <p:outputLabel for="${attribute.name}" value="${attribute.name}" />
                     <p:outputLabel id="${attribute.name}" value="${hash}{${EntityController}.selected.${attribute.name}}" />
+                </#if>
+                <#if (attribute.getClass().getSimpleName()) == "Basic">
                     
+                    <p:outputLabel for="${attribute.name}" value="${attribute.name}" />
+                    <p:outputLabel id="${attribute.name}" value="${hash}{${EntityController}.selected.${attribute.name}}" />
+                </#if>
+                <#if (attribute.getClass().getSimpleName()) == "Embedded">
+                <#list embeddables as embeddable>
+                <#if attribute.name?matches(embeddable.name, "i")>
+                 <#list embeddable.getAttributes().getAllAttribute() as emAttribute>
+                    
+                    <p:outputLabel for="${emAttribute.name}" value="${emAttribute.name}" />
+                    <p:outputLabel id="${emAttribute.name}" value="${hash}{${EntityController}.selected.${attribute.name}.${emAttribute.name}}" />
+                 </#list>
+                 </#if>
+                </#list>
+                </#if>
                 </#list>
                 </h:panelGrid>
                 <p:commandButton style="margin-left: 50%" value="Back" action="${hash}{${EntityController}.prepareList}" immediate="true"></p:commandButton>

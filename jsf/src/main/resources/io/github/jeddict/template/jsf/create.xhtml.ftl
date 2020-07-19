@@ -88,6 +88,34 @@
                     
                     </#if>
                   </#if>
+                  
+                <#if (attribute.getClass().getSimpleName()) == "Embedded">
+                <#list embeddables as embeddable>
+                <#if attribute.name?matches(embeddable.name, "i")>
+                 <#list embeddable.getAttributes().getAllAttribute() as emAttribute>
+                  <#if emAttribute.attributeType??>
+                   <#if (emAttribute.attributeType == "String")|| 
+                    (emAttribute.attributeType == "long") || (emAttribute.attributeType == "Long") ||
+                    (emAttribute.attributeType == "int") || (emAttribute.attributeType == "Integer")||
+                    (emAttribute.attributeType == "char") || (emAttribute.attributeType == "Character")||
+                    (emAttribute.attributeType == "byte") || (emAttribute.attributeType == "Byte")||
+                    (emAttribute.attributeType == "float") || (emAttribute.attributeType == "Float")||
+                    (emAttribute.attributeType == "double") || (emAttribute.attributeType == "Double")||
+                    (emAttribute.attributeType == "short") || (emAttribute.attributeType == "Short")||
+                    (emAttribute.attributeType == "java.math.BigInteger") || (emAttribute.attributeType == "java.math.BigDecimal")>
+                    <p:outputLabel for="${emAttribute.name}" value="${emAttribute.name}" />
+                    <p:inputText id="${emAttribute.name}" value="${hash}{${EntityController}.selected.${attribute.name}.${emAttribute.name}}">
+                    </p:inputText>  
+                    <p:messages for="${emAttribute.name}">                        
+                        <p:autoUpdate />                    
+                    </p:messages>
+                    
+                   </#if>
+                  </#if>
+                 </#list>
+                 </#if>
+                </#list>
+                </#if>
                 </#list>
                     <p:commandButton  value="Create" action="${hash}{${EntityController}.create}">
                     </p:commandButton>

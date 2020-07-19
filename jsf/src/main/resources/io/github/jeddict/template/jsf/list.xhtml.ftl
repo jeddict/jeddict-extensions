@@ -24,7 +24,18 @@
                              selection="${hash}{${EntityController}.selected}"
                              rowKey="${hash}{item.id}">
                     
-                    <#list attributes as attribute>
+            <#list attributes as attribute>
+                <#if (attribute.getClass().getSimpleName()) == "Id">
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="${attribute.name}"/>
+                        </f:facet>
+                        <h:outputText value="${hash}{item.${attribute.name}}">
+                        </h:outputText>
+                    </p:column>
+                </#if>
+                <#if (attribute.getClass().getSimpleName()) == "Basic">
+                
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="${attribute.name}"/>
@@ -41,7 +52,22 @@
                         </#if>   
                         </h:outputText>
                     </p:column>
-                    </#list>
+                </#if>
+                <#if (attribute.getClass().getSimpleName()) == "Embedded">
+                <#list embeddables as embeddable>
+                <#if attribute.name?matches(embeddable.name, "i")>
+                <#list embeddable.getAttributes().getAllAttribute() as emAttribute>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="${emAttribute.name}"/>
+                        </f:facet>
+                        <h:outputText value="${hash}{item.${attribute.name}.${emAttribute.name}}"/>
+                    </p:column>
+                </#list>
+                </#if>
+                </#list>
+                </#if>
+            </#list>
                     
                     <p:column>
                         <p:commandButton id="viewButton" icon="ui-icon-document"  title="View"  value="View" action="${hash}{${EntityController}.prepareView}" style="width:58px;height:20px"/>
