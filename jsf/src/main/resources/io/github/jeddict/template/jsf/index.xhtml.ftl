@@ -10,7 +10,7 @@
     </h:head>
     <h:body >
         <#list Entities as Entity>
-            <h:link outcome="app/entities/${Entity?lower_case}/list${Entity}" value="Show ${Entity} Items Latest"/>  
+            <h:link outcome="app/entities/${Entity?uncap_first}/list${Entity}" value="Show ${Entity} Items Latest"/>
             <br/>
         </#list> 
     </h:body>

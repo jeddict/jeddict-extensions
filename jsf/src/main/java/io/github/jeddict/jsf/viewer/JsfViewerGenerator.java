@@ -176,7 +176,7 @@ public final class JsfViewerGenerator implements Generator {
         String entityName = entity.getName();
         List<Attribute> attributes = entity.getAttributes().getAllAttribute();
         List<Embeddable> embeddables = entity.getRootElement().getEmbeddable();
-      
+
         String entityInstance = firstLower(entityName);
         String targetPath = "app/entities/" + entityInstance;
 
