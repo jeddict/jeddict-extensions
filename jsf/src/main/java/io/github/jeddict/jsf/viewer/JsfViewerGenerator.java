@@ -185,7 +185,7 @@ public final class JsfViewerGenerator implements Generator {
 
         String createFileName = "create" + entityName;
         String viewFileName = "view" + entityName;
-        String editFileName = "edit" + entityName;
+        String updateFileName = "update" + entityName;
         String listFileName = "list" + entityName;
         String controllerName = firstLower(controllerData.getPrefixName() + entityName + controllerData.getSuffixName());
 
@@ -196,11 +196,14 @@ public final class JsfViewerGenerator implements Generator {
         params.put("attributes", attributes);
         params.put("embeddables", embeddables);
         params.put("entityInstance", entityInstance);
+        params.put("path", TEMPLATE + "jsf/");
         handler.progress(createFileName);
-        io.github.jeddict.jcode.util.FileUtil.expandTemplate(TEMPLATE + "jsf/create.xhtml.ftl", targetFolder, createFileName + '.' + "xhtml", params);
         io.github.jeddict.jcode.util.FileUtil.expandTemplate(TEMPLATE + "jsf/view.xhtml.ftl", targetFolder, viewFileName + '.' + "xhtml", params);
-        io.github.jeddict.jcode.util.FileUtil.expandTemplate(TEMPLATE + "jsf/edit.xhtml.ftl", targetFolder, editFileName + '.' + "xhtml", params);
         io.github.jeddict.jcode.util.FileUtil.expandTemplate(TEMPLATE + "jsf/list.xhtml.ftl", targetFolder, listFileName + '.' + "xhtml", params);
+        params.put("pageType", "Create");
+        io.github.jeddict.jcode.util.FileUtil.expandTemplate(TEMPLATE + "jsf/createUpdate.xhtml.ftl", targetFolder, createFileName + '.' + "xhtml", params);
+        params.put("pageType", "Update");
+        io.github.jeddict.jcode.util.FileUtil.expandTemplate(TEMPLATE + "jsf/createUpdate.xhtml.ftl", targetFolder, updateFileName + '.' + "xhtml", params);
     }
 
     public void generateResources() throws IOException {

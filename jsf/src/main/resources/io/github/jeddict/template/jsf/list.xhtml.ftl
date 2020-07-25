@@ -61,7 +61,17 @@
                         <f:facet name="header">
                             <h:outputText value="${emAttribute.name}"/>
                         </f:facet>
-                        <h:outputText value="${hash}{item.${attribute.name}.${emAttribute.name}}"/>
+                        <h:outputText value="${hash}{item.${attribute.name}.${emAttribute.name}}">
+                        <#if emAttribute.temporal??>
+                         <#if (emAttribute.temporal == "DATE")>
+                            <f:convertDateTime pattern="MM/dd/yyyy" />
+                         <#elseif (emAttribute.temporal == "TIME")>
+                            <f:convertDateTime pattern="HH:mm:ss" />
+                         <#elseif (emAttribute.temporal == "TIMESTAMP")>
+                            <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss"/>
+                         </#if>
+                        </#if>
+                        </h:outputText>
                     </p:column>
                 </#list>
                 </#if>
@@ -71,7 +81,7 @@
                     
                     <p:column>
                         <p:commandButton id="viewButton" icon="ui-icon-document"  title="View"  value="View" action="${hash}{${EntityController}.prepareView}" style="width:58px;height:20px"/>
-                        <p:commandButton id="editButton" icon="ui-icon-pencil"  title="Edit"  value="Edit" action="${hash}{${EntityController}.prepareEdit}"  style="width:58px;height:20px"/>
+                        <p:commandButton id="editButton" icon="ui-icon-pencil"  title="Update"  value="Update" action="${hash}{${EntityController}.prepareUpdate}"  style="width:70px;height:20px"/>
                         <p:commandButton id="deleteButton" icon="ui-icon-trash"  title="Delete" value="Delete" actionListener="${hash}{${EntityController}.destroy}" immediate="true" update="datalist" style="width:68px;height:20px">
                             <p:confirm header="Delete ${Entity}" message="Are you sure to delete this ${Entity} ?" icon="ui-icon-alert" />
                         </p:commandButton>

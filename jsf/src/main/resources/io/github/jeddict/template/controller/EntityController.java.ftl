@@ -122,10 +122,10 @@ public class ${EntityController} implements Serializable{
         }
     }
 
-    public String prepareEdit() {
+    public String prepareUpdate() {
         ${entityInstance} = (${Entity}) getItems().getRowData();
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "edit${Entity}";
+        return "update${Entity}";
     }
 
     public String update() {
