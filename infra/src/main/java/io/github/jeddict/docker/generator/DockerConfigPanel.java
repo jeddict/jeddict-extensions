@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 import javax.swing.DefaultComboBoxModel;
 import io.github.jeddict.util.StringUtils;
 import java.io.File;
+import java.util.Collection;
 import org.netbeans.api.db.explorer.ConnectionManager;
 import org.netbeans.api.db.explorer.DatabaseConnection;
 import org.netbeans.api.db.explorer.support.DatabaseExplorerUIs;
@@ -146,7 +147,15 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
         }
         dockerMachineCheckBox.setSelected(data.isDockerActivated());
         if (data.isDockerActivated() && StringUtils.isNotEmpty(data.getDockerMachine())) {
-            setDockerMachine(data.getDockerMachine());
+            //setDockerMachine(data.getDockerMachine());
+            Collection<? extends DockerInstance> instances = DockerSupport.getDefault().getInstances();
+            instances.forEach(inst -> {
+                String url = inst.getUrl();
+                url = url.replaceFirst("file", "unix");
+                if (StringUtils.equals(url, data.getDockerMachine())) {
+                    buildInstanceVisual1.setInstance(inst);
+                }
+            });
         }
         dockerMachineCheckBoxActionPerformed(null);//automates serverComboBoxActionPerformed(null);
         
