@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 import javax.swing.DefaultComboBoxModel;
 import io.github.jeddict.util.StringUtils;
 import java.io.File;
+import java.util.Collection;
 import org.netbeans.api.db.explorer.ConnectionManager;
 import org.netbeans.api.db.explorer.DatabaseConnection;
 import org.netbeans.api.db.explorer.support.DatabaseExplorerUIs;
@@ -146,9 +147,16 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
         }
         dockerMachineCheckBox.setSelected(data.isDockerActivated());
         if (data.isDockerActivated() && StringUtils.isNotEmpty(data.getDockerMachine())) {
-            setDockerMachine(data.getDockerMachine());
+            Collection<? extends DockerInstance> instances = DockerSupport.getDefault().getInstances();
+            instances.forEach(inst -> {
+                String url = inst.getUrl();
+                url = url.replaceFirst("file", "unix");
+                if (StringUtils.equals(url, data.getDockerMachine())) {
+                    buildInstanceVisual1.setInstance(inst);
+                }
+            });
         }
-        dockerMachineCheckBoxActionPerformed(null);//automates serverComboBoxActionPerformed(null);
+        dockerMachineCheckBoxActionPerformed(null);
         
         if (data.getDatabaseType() != null) {
             dbComboBox.setSelectedItem(data.getDatabaseType());
@@ -192,7 +200,6 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
             if (dockerInstance != null && dockerInstance.getKeyFile() != null) {
                 data.setDockerMachine(dockerInstance.getKeyFile().getParentFile().getName());
             }
-            //data.setDockerMachine("hhhhh");
             data.setDbName(dbNameTextField.getText());
             data.setDbUserName(dbUserTextField.getText());
             data.setDbPassword(dbPasswordTextField.getText());
@@ -202,7 +209,6 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
                 String url = dockerInstance.getUrl();
                 url = url.replaceFirst("file", "unix");
                 data.setDockerUrl(url);
-                //data.setDockerUrl(dockerInstance.getUrl());
                 if ( dockerInstance.getCaCertificateFile() != null ) {
                     data.setDockerCertPath(dockerInstance.getCertificateFile().toPath().getParent().toAbsolutePath().toString());
                 }
