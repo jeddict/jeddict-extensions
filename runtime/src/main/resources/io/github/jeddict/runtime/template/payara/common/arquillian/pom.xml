@@ -16,7 +16,7 @@
         <version.junit>4.13</version.junit>
         <version.commons-lang>2.6</version.commons-lang>
         <version.arquillian-payara>2.3.1</version.arquillian-payara>
-        <version.payara>5.2020.4</version.payara>
+        <version.payara>5.2020.7</version.payara>
     </properties>
 
     <dependencyManagement>
