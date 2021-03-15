@@ -8,7 +8,7 @@
     <name>application_pom</name>
     
     <properties>
-        <version.deltaspike>1.9.4</version.deltaspike>
+        <version.deltaspike>1.9.5</version.deltaspike>
         <version.velocity>1.7</version.velocity>
         <version.slf4j>1.7.30</version.slf4j>
         <version.jjwt>0.9.1</version.jjwt>
