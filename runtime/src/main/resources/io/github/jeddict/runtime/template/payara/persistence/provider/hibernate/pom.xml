@@ -7,7 +7,7 @@
     <packaging>war</packaging>
     
     <properties>
-        <version.hibernate>5.4.21.Final</version.hibernate>
+        <version.hibernate>5.5.3.Final</version.hibernate>
     </properties>
     
     <dependencies>
