@@ -61,9 +61,10 @@
             <version>${netbeans.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.netbeans.external</groupId>
-            <artifactId>nb-javac-api</artifactId>
-            <version>RELEASE82</version>
+            <groupId>com.dukescript.nbjavac</groupId>
+            <artifactId>nb-javac</artifactId>
+            <version>16.0.0.0</version>
+            <classifier>api</classifier>
             <scope>provided</scope>
         </dependency>
     </dependencies>
