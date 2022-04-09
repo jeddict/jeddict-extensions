@@ -9,7 +9,7 @@
     <name>app_pom</name>
 
     <properties>
-        <version.jakartaee>8.0.0</version.jakartaee>
+        <version.jakartaee>9.1.0</version.jakartaee>
     </properties>
     
     <dependencies>
