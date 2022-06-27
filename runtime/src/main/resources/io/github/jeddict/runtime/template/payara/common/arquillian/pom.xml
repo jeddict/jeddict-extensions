@@ -13,7 +13,7 @@
         <version.arquillian>1.6.0.Final</version.arquillian>
         <version.jacoco>0.8.6</version.jacoco>
         <version.valid4j>1.1</version.valid4j>
-        <version.junit>4.13</version.junit>
+        <version.junit>4.13.1</version.junit>
         <version.commons-lang>2.6</version.commons-lang>
         <version.arquillian-payara>2.3.1</version.arquillian-payara>
         <version.payara>5.2020.7</version.payara>
