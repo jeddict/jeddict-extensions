@@ -24,7 +24,7 @@ import io.github.jeddict.mvc.controller.event.ControllerEventType;
 import io.github.jeddict.mvc.controller.returntype.ControllerReturnType;
 import io.github.jeddict.repository.RepositoryData;
 import io.github.jeddict.rest.applicationconfig.RestConfigData;
-import javax.json.bind.annotation.JsonbProperty;
+import jakarta.json.bind.annotation.JsonbProperty;
 
 /**
  *

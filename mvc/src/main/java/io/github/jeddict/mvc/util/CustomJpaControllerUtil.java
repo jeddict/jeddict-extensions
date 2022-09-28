@@ -50,7 +50,7 @@ public class CustomJpaControllerUtil extends JpaControllerUtil {
 
         // First we will traverse up the element chain to get to the super classes
         while (typeElement != null) {
-            if (isAnnotatedWith(typeElement, "javax.persistence.Entity") || isAnnotatedWith(typeElement, "javax.persistence.MappedSuperclass")) { // NOI18N
+            if (isAnnotatedWith(typeElement, "jakarta.persistence.Entity") || isAnnotatedWith(typeElement, "jakarta.persistence.MappedSuperclass")) { // NOI18N
                 typeElements.add(typeElement);
             }
             typeElement = getSuperclassTypeElement(typeElement);
@@ -255,7 +255,7 @@ public class CustomJpaControllerUtil extends JpaControllerUtil {
                     if (f != null) {
                         int a = -1;
                         AnnotationMirror columnAnnotation = null;
-                        String[] columnAnnotationFqns = {"javax.persistence.EmbeddedId", "javax.persistence.JoinColumns", "javax.persistence.JoinColumn", "javax.persistence.Column"}; //NOI18N
+                        String[] columnAnnotationFqns = {"jakarta.persistence.EmbeddedId", "jakarta.persistence.JoinColumns", "jakarta.persistence.JoinColumn", "jakarta.persistence.Column"}; //NOI18N
                         for (int i = 0; i < columnAnnotationFqns.length; i++) {
                             String columnAnnotationFqn = columnAnnotationFqns[i];
                             AnnotationMirror columnAnnotationMirror = findAnnotation(f, columnAnnotationFqn);
@@ -269,8 +269,8 @@ public class CustomJpaControllerUtil extends JpaControllerUtil {
                             //populate pkAccessorMethodToColumnName and columnNameToAccessorString
                             populateMapsForEmbedded(method);
                         } else if ((a == 1 || a == 2)
-                                && (isAnnotatedWith(f, "javax.persistence.OneToOne")
-                                || isAnnotatedWith(f, "javax.persistence.ManyToOne"))) {
+                                && (isAnnotatedWith(f, "jakarta.persistence.OneToOne")
+                                || isAnnotatedWith(f, "jakarta.persistence.ManyToOne"))) {
                             //populate joinColumnNameToRelationshipMethod, relationshipMethodToJoinColumnNames, and joinColumnNameToReferencedColumnName
                             populateJoinColumnNameMaps(method, columnAnnotationFqns[a], columnAnnotation);
                         } else if (a == 3) {
@@ -326,7 +326,7 @@ public class CustomJpaControllerUtil extends JpaControllerUtil {
             }//something is missed, may be getter name do not match variable name, see #190854
             String pkMethodName = pkMethod.getSimpleName().toString();
             String columnName = null;
-            AnnotationMirror columnAnnotation = findAnnotation(pkFieldElement, "javax.persistence.Column"); //NOI18N
+            AnnotationMirror columnAnnotation = findAnnotation(pkFieldElement, "jakarta.persistence.Column"); //NOI18N
             if (columnAnnotation != null) {
                 columnName = findAnnotationValueAsString(columnAnnotation, "name"); //NOI18N
             }
@@ -346,11 +346,11 @@ public class CustomJpaControllerUtil extends JpaControllerUtil {
 
         private void populateJoinColumnNameMaps(ExecutableElement m, String columnAnnotationFqn, AnnotationMirror columnAnnotation) {
             List<AnnotationMirror> joinColumnAnnotations;
-            if ("javax.persistence.JoinColumn".equals(columnAnnotationFqn)) {
+            if ("jakarta.persistence.JoinColumn".equals(columnAnnotationFqn)) {
                 joinColumnAnnotations = new ArrayList<>();
                 joinColumnAnnotations.add(columnAnnotation);
-            } else {  //columnAnnotation is a javax.persistence.JoinColumns
-                joinColumnAnnotations = findNestedAnnotations(columnAnnotation, "javax.persistence.JoinColumn"); //NOI18N
+            } else {  //columnAnnotation is a jakarta.persistence.JoinColumns
+                joinColumnAnnotations = findNestedAnnotations(columnAnnotation, "jakarta.persistence.JoinColumn"); //NOI18N
             }
             for (AnnotationMirror joinColumnAnnotation : joinColumnAnnotations) {
                 String columnName = findAnnotationValueAsString(joinColumnAnnotation, "name"); //NOI18N

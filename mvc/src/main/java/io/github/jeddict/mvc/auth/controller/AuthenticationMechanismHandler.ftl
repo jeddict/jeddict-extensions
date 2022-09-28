@@ -1,19 +1,19 @@
 package ${package};
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.security.auth.message.AuthException;
-import javax.security.auth.message.AuthStatus;
-import javax.security.authentication.mechanism.http.HttpAuthenticationMechanism;
-import javax.security.authentication.mechanism.http.HttpMessageContext;
-import javax.security.authentication.mechanism.http.annotation.AutoApplySession;
-import javax.security.identitystore.CredentialValidationResult;
-import static javax.security.identitystore.CredentialValidationResult.Status.VALID;
-import javax.security.identitystore.IdentityStore;
-import javax.security.identitystore.credential.Password;
-import javax.security.identitystore.credential.UsernamePasswordCredential;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.security.auth.message.AuthException;
+import jakarta.security.auth.message.AuthStatus;
+import jakarta.security.authentication.mechanism.http.HttpAuthenticationMechanism;
+import jakarta.security.authentication.mechanism.http.HttpMessageContext;
+import jakarta.security.authentication.mechanism.http.annotation.AutoApplySession;
+import jakarta.security.identitystore.CredentialValidationResult;
+import static jakarta.security.identitystore.CredentialValidationResult.Status.VALID;
+import jakarta.security.identitystore.IdentityStore;
+import jakarta.security.identitystore.credential.Password;
+import jakarta.security.identitystore.credential.UsernamePasswordCredential;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @AutoApplySession
 @RequestScoped

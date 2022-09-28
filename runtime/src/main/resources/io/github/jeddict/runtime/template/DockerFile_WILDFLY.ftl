@@ -25,7 +25,7 @@ RUN /bin/sh -c '$JBOSS_HOME/bin/standalone.sh &' && \
   cd /tmp && \
   curl -L -o mysql-$MYSQL_VERSION.jar http://central.maven.org/maven2/mysql/mysql-connector-java/$MYSQL_VERSION/mysql-connector-java-$MYSQL_VERSION.jar && \
   $JBOSS_HOME/bin/jboss-cli.sh --connect --command="deploy /tmp/mysql-$MYSQL_VERSION.jar"  && \
-  $JBOSS_HOME/bin/jboss-cli.sh --connect --command="module add --name=com.mysql --resources=/tmp/mysql-$MYSQL_VERSION.jar --dependencies=javax.api,javax.transaction.api" && \
+  $JBOSS_HOME/bin/jboss-cli.sh --connect --command="module add --name=com.mysql --resources=/tmp/mysql-$MYSQL_VERSION.jar --dependencies=javax.api,jakarta.transaction.api" && \
   $JBOSS_HOME/bin/jboss-cli.sh --connect --command="/subsystem=datasources/jdbc-driver=mysql:add(driver-name=mysql,driver-module-name=com.mysql,driver-xa-datasource-class-name=com.mysql.jdbc.jdbc2.optional.MysqlXADataSource)" && \
   $JBOSS_HOME/bin/jboss-cli.sh --connect --command="data-source add --name=$DB_DATASOURCE --driver-name=mysql --jndi-name=$DB_JNDI --connection-url=jdbc:mysql://$DB_SVC:$DB_PORT/$DB_NAME --user-name=$DB_USER --password=$DB_PASS --use-ccm=false --max-pool-size=25 --blocking-timeout-wait-millis=5000 --enabled=true" && \
 <#elseif DB_TYPE == "mariadb">
@@ -36,7 +36,7 @@ RUN /bin/sh -c '$JBOSS_HOME/bin/standalone.sh &' && \
   cd /tmp && \
   curl -L -o mariadb-$MARIADB_VERSION.jar http://central.maven.org/maven2/org/mariadb/jdbc/mariadb-java-client/$MARIADB_VERSION/mariadb-java-client-$MARIADB_VERSION.jar && \
   $JBOSS_HOME/bin/jboss-cli.sh --connect --command="deploy /tmp/mariadb-$MARIADB_VERSION.jar"  && \
-  $JBOSS_HOME/bin/jboss-cli.sh --connect --command="module add --name=com.mariadb --resources=/tmp/mariadb-$MARIADB_VERSION.jar --dependencies=javax.api,javax.transaction.api" && \
+  $JBOSS_HOME/bin/jboss-cli.sh --connect --command="module add --name=com.mariadb --resources=/tmp/mariadb-$MARIADB_VERSION.jar --dependencies=javax.api,jakarta.transaction.api" && \
   $JBOSS_HOME/bin/jboss-cli.sh --connect --command="/subsystem=datasources/jdbc-driver=mariadb:add(driver-name=mariadb,driver-module-name=com.mariadb,driver-xa-datasource-class-name=org.mariadb.jdbc.MariaDbDataSource)" && \
   $JBOSS_HOME/bin/jboss-cli.sh --connect --command="data-source add --name=$DB_DATASOURCE --driver-name=mariadb --jndi-name=$DB_JNDI --connection-url=jdbc:mariadb://$DB_SVC:$DB_PORT/$DB_NAME --user-name=$DB_USER --password=$DB_PASS --use-ccm=false --max-pool-size=25 --blocking-timeout-wait-millis=5000 --enabled=true" && \
 <#elseif DB_TYPE == "postgres">
@@ -47,7 +47,7 @@ RUN /bin/sh -c '$JBOSS_HOME/bin/standalone.sh &' && \
   cd /tmp && \
   curl -L -o postgresql-$POSTGRESQL_VERSION.jar https://repo1.maven.org/maven2/postgresql/postgresql/$POSTGRESQL_VERSION/postgresql-$POSTGRESQL_VERSION.jar && \
   $JBOSS_HOME/bin/jboss-cli.sh --connect --command="deploy /tmp/postgresql-$POSTGRESQL_VERSION.jar" && \
-  $JBOSS_HOME/bin/jboss-cli.sh --connect --command="module add --name=com.postgresql --resources=/tmp/postgresql-$POSTGRESQL_VERSION.jar --dependencies=javax.api,javax.transaction.api" && \
+  $JBOSS_HOME/bin/jboss-cli.sh --connect --command="module add --name=com.postgresql --resources=/tmp/postgresql-$POSTGRESQL_VERSION.jar --dependencies=javax.api,jakarta.transaction.api" && \
   $JBOSS_HOME/bin/jboss-cli.sh --connect --command="/subsystem=datasources/jdbc-driver=postgresql:add(driver-name=postgresql,driver-module-name=com.postgresql,driver-xa-datasource-class-name=org.postgresql.xa.PGXADataSource)" && \
   $JBOSS_HOME/bin/jboss-cli.sh --connect --command="data-source add --name=$DB_DATASOURCE --driver-name=postgresql --jndi-name=$DB_JNDI --connection-url=jdbc:postgresql://$DB_SVC:$DB_PORT/$DB_NAME --user-name=$DB_USER --password=$DB_PASS --use-ccm=false --max-pool-size=25 --blocking-timeout-wait-millis=5000 --enabled=true" && \
 </#if>

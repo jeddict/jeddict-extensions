@@ -8,13 +8,13 @@
     <name>application_pom</name>
     
     <properties>
-        <version.deltaspike>1.9.5</version.deltaspike>
+        <!--<version.deltaspike>1.9.6</version.deltaspike>-->
         <version.velocity>1.7</version.velocity>
-        <version.slf4j>1.7.32</version.slf4j>
+        <version.slf4j>2.0.0</version.slf4j>
         <version.jjwt>0.9.1</version.jjwt>
         <version.commons-lang3>3.12.0</version.commons-lang3>
         <version.commons-email>1.5</version.commons-email>
-        <version.microprofile>4.1</version.microprofile>
+        <version.microprofile>5.0</version.microprofile>
         <version.maven-war-plugin>3.3.1</version.maven-war-plugin>
     </properties>
     
@@ -26,7 +26,7 @@
             <scope>provided</scope>
             <type>pom</type>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>org.apache.deltaspike.core</groupId>
             <artifactId>deltaspike-core-api</artifactId>
             <version>${version.deltaspike}</version>
@@ -37,7 +37,7 @@
             <artifactId>deltaspike-core-impl</artifactId>
             <version>${version.deltaspike}</version>
             <scope>runtime</scope>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.apache.velocity</groupId>
             <artifactId>velocity</artifactId>

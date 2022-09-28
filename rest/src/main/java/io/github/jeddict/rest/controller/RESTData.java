@@ -22,8 +22,8 @@ import java.util.List;
 import static io.github.jeddict.util.StringUtils.isBlank;
 import io.github.jeddict.rest.applicationconfig.RestConfigData;
 import static io.github.jeddict.rest.controller.SecurityType.SECURITY_JWT;
-import javax.json.bind.annotation.JsonbProperty;
-import javax.json.bind.annotation.JsonbTransient;
+import jakarta.json.bind.annotation.JsonbProperty;
+import jakarta.json.bind.annotation.JsonbTransient;
 
 /**
  *

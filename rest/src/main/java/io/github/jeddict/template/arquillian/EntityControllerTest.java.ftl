@@ -9,11 +9,11 @@ import ${connectedFQClass};
 import static java.util.Collections.singletonMap;
 </#if>
 import java.util.List;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import static javax.ws.rs.core.Response.Status.CREATED;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-import static javax.ws.rs.core.Response.Status.OK;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import static jakarta.ws.rs.core.Response.Status.CREATED;
+import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
+import static jakarta.ws.rs.core.Response.Status.OK;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Before;
@@ -24,8 +24,6 @@ import static org.hamcrest.CoreMatchers.*;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import static org.valid4j.matchers.http.HttpResponseMatchers.hasContentType;
-import static org.valid4j.matchers.http.HttpResponseMatchers.hasStatus;
 
 /**
  * Test class for the ${controllerClass} REST controller.
@@ -92,7 +90,7 @@ public class ${controllerClass}Test extends <#if microservices>Abstract<#else>Ap
         ${instanceName}.${attribute.setter}(DEFAULT_${attribute.NAME});
 </#list>
         Response response = client.create${EntityClass}(${instanceName});
-        assertThat(response, hasStatus(CREATED));
+        assertEquals(CREATED.getStatusCode(), response.getStatus());
         ${instanceName} = response.readEntity(${instanceType}.class);
 
         // Validate the ${EntityClass} in the database
@@ -129,8 +127,8 @@ public class ${controllerClass}Test extends <#if microservices>Abstract<#else>Ap
         );
 </#if>
         ${instanceType} test${instanceType} = response.readEntity(${instanceType}.class);
-        assertThat(response, hasStatus(OK));
-        assertThat(response, hasContentType(MediaType.APPLICATION_JSON_TYPE));
+        assertEquals(OK.getStatusCode(), response.getStatus());
+        assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getMediaType());
 <#list allIdAttributes as attribute>
         assertThat(test${instanceType}<#if eid>.${pkGetter}()</#if>.${attribute.getter}(), is(${instanceName}<#if eid>.${pkGetter}()</#if>.${attribute.getter}()));
 </#list>
@@ -174,7 +172,7 @@ public class ${controllerClass}Test extends <#if microservices>Abstract<#else>Ap
 </#list>
 
         Response response = client.update${EntityClass}(updated${instanceType});
-        assertThat(response, hasStatus(OK));
+        assertEquals(OK.getStatusCode(), response.getStatus());
 
         // Validate the ${EntityClass} in the database
         List<${EntityClass}> ${entityInstancePlural} = client.getAll${EntityClassPlural}();
@@ -202,7 +200,7 @@ public class ${controllerClass}Test extends <#if microservices>Abstract<#else>Ap
             </#list>
         );
 </#if>
-        assertThat(response, hasStatus(OK));
+        assertEquals(OK.getStatusCode(), response.getStatus());
 
         // Validate the database is empty
         List<${EntityClass}> ${entityInstancePlural} = client.getAll${EntityClassPlural}();

@@ -1,12 +1,12 @@
 package ${package};
 
-<#if !cdi>import javax.ejb.Stateless;</#if>
-<#if named>import javax.inject.Named;</#if>
+<#if cdi>import jakarta.enterprise.context.Dependent;</#if><if !cdi>import jakarta.ejb.Stateless;</#if>
+<#if named>import jakarta.inject.Named;</#if>
 import ${appPackage}${Authority_FQN};
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 
-<#if !cdi>@Stateless</#if>
+<#if cdi>@Dependent</#if><if !cdi>@Stateless</#if>
 <#if named>@Named("authority")</#if>
 public class ${AuthorityRepository} extends ${AbstractRepository}<Authority, String> {
 

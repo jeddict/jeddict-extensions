@@ -5,24 +5,24 @@ import ${appPackage}${EntityRepository_FQN};
 import ${appPackage}${HeaderUtil_FQN};
 import static ${appPackage}${AuthoritiesConstants_FQN}.USER;
 import org.slf4j.Logger;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.security.RolesAllowed;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;<#if pagination != "no">
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Response.ResponseBuilder;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;<#if pagination != "no">
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
 import ${appPackage}${Page_FQN};
 import ${appPackage}${PaginationUtil_FQN};</#if><#if metrics>
 import org.eclipse.microprofile.metrics.annotation.Timed;</#if>

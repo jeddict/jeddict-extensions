@@ -1,15 +1,15 @@
 package ${package};
 
-<#if !cdi>import javax.ejb.Stateless;</#if>
-<#if named>import javax.inject.Named;</#if>
+<#if cdi>import jakarta.enterprise.context.Dependent;</#if><#if !cdi>import jakarta.ejb.Stateless;</#if>
+<#if named>import jakarta.inject.Named;</#if>
 import ${appPackage}${User_FQN};
 import static java.util.Collections.singletonMap;
 import java.util.List;
 import java.util.Optional;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 
-<#if !cdi>@Stateless</#if>
+<#if cdi>@Dependent</#if><if !cdi>@Stateless</#if>
 <#if named>@Named("user")</#if>
 public class ${UserRepository} extends ${AbstractRepository}<User, Long> {
 

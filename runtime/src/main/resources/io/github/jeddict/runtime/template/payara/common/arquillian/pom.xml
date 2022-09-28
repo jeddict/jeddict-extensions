@@ -10,13 +10,13 @@
 
 
     <properties>
-        <version.arquillian>1.6.0.Final</version.arquillian>
+        <version.arquillian>1.7.0.Alpha12</version.arquillian>
         <version.jacoco>0.8.7</version.jacoco>
-        <version.valid4j>1.1</version.valid4j>
+        <!--<version.valid4j>1.1</version.valid4j>-->
         <version.junit>4.13.1</version.junit>
         <version.commons-lang>2.6</version.commons-lang>
-        <version.arquillian-payara>2.3.1</version.arquillian-payara>
-        <version.payara>5.2021.7</version.payara>
+        <version.arquillian-payara>3.0.alpha6</version.arquillian-payara>
+        <version.payara>6.2022.1.Alpha4</version.payara>
     </properties>
 
     <dependencyManagement>
@@ -40,7 +40,7 @@
             </dependency>
             <dependency>
                 <groupId>fish.payara.arquillian</groupId>
-                <artifactId>payara-client-ee8</artifactId>
+                <artifactId>payara-client-ee9</artifactId>
                 <version>${version.arquillian-payara}</version>
                 <scope>test</scope>
             </dependency>
@@ -65,39 +65,34 @@
             <scope>test</scope>
         </dependency>
         
-        <!--        <dependency>
-            <groupId>org.jboss.arquillian.protocol</groupId>
-            <artifactId>arquillian-protocol-servlet</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.shrinkwrap.resolver</groupId>
-            <artifactId>shrinkwrap-resolver-impl-maven-archive</artifactId>
-            <scope>test</scope>
-        </dependency>-->
-        
-        <dependency>
+<!--        <dependency>
             <groupId>org.valid4j</groupId>
             <artifactId>http-matchers</artifactId>
             <version>${version.valid4j}</version>
+            <scope>test</scope>
+        </dependency>-->
+        <dependency>
+            <artifactId>jersey-mp-rest-client</artifactId>
+            <groupId>org.glassfish.jersey.ext.microprofile</groupId>
+            <version>3.1.0-M7</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.smallrye</groupId>
             <artifactId>smallrye-config</artifactId>
-            <version>1.4.1</version>
+            <version>1.5.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>3.0.1</version>
+            <version>4.0.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
-            <version>3.0.1</version>
+            <version>4.0.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -137,7 +132,7 @@
             <dependencies>
                 <dependency>
                     <groupId>fish.payara.arquillian</groupId>
-                    <artifactId>payara-client-ee8</artifactId>
+                    <artifactId>payara-client-ee9</artifactId>
                 </dependency>
 		
                 <!-- The actual Arquillian connector -->
@@ -181,16 +176,18 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
-                        <version>3.0.0-M5</version>
+                        <version>3.0.0-M7</version>
                         <configuration>
                             <environmentVariables>
                                 <GLASSFISH_HOME>${session.executionRootDirectory}/target/payara5</GLASSFISH_HOME>
                             </environmentVariables>
                             <!-- This needs tuning -->
                             <systemPropertyVariables>
-                                <glassfishRemote_gfHome>${session.executionRootDirectory}/target/payara5</glassfishRemote_gfHome>
+                                <glassfishRemote_gfHome>${session.executionRootDirectory}/target/payara6</glassfishRemote_gfHome>
                                 <javaEEServer>payara-remote</javaEEServer>
                                 <arquillian.launch>payara</arquillian.launch>
+                                <payara.home>${session.executionRootDirectory}/target/payara6</payara.home>
+                                <payara.domain.name>domain1</payara.domain.name>
                             </systemPropertyVariables>
                         </configuration>
                     </plugin>
@@ -199,11 +196,4 @@
         </profile>
     </profiles>
     
-<!--    <repositories>
-        <repository>
-            <id>payara-milestones</id>
-            <name>Payara Milestones</name>
-            <url>https://raw.github.com/payara/Payara_PatchedProjects/master</url>
-        </repository>
-    </repositories>-->
 </project>

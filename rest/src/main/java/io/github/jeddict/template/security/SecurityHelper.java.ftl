@@ -1,10 +1,10 @@
 package ${package};
 
-import javax.enterprise.context.RequestScoped;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.inject.Inject;
-import javax.security.enterprise.SecurityContext;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.inject.Inject;
+import jakarta.security.enterprise.SecurityContext;
 
 /**
  * Utility class for Security.

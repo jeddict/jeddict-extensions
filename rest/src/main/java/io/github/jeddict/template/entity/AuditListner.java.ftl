@@ -2,9 +2,9 @@ package ${package};
 
 import ${appPackage}${SecurityHelper_FQN};
 import java.time.Instant;
-import javax.inject.Inject;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
+import jakarta.inject.Inject;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 
 /**
  * Entity listener class for audit info

@@ -470,7 +470,7 @@ public class MVCControllerGenerator implements Generator {
                     VariableTree var = maker.Variable(maker.Modifiers(
                             EnumSet.noneOf(Modifier.class)),
                             "pathSegment", JavaSourceHelper.createTypeTree(workingCopy,
-                                    "javax.ws.rs.core.PathSegment"), null);     // NOI18N
+                                    "jakarta.ws.rs.core.PathSegment"), null);     // NOI18N
                     vars.add(var);
 
                     MethodTree methodTree = maker.Method(modifiersTree,
@@ -518,7 +518,7 @@ public class MVCControllerGenerator implements Generator {
                     builder.append(javaClass.getName());
                     builder.append("();");                              // NOI18N
 
-                    StringBuilder keyBuidler = new StringBuilder("javax.ws.rs.core.MultivaluedMap<String,String>");// NOI18N
+                    StringBuilder keyBuidler = new StringBuilder("jakarta.ws.rs.core.MultivaluedMap<String,String>");// NOI18N
                     keyBuidler.append(" map = pathSegment.getMatrixParameters();");// NOI18N
                     for (Attribute fieldInfo : fieldInfos) {
                         String name = fieldInfo.getName();
@@ -683,7 +683,7 @@ public class MVCControllerGenerator implements Generator {
         javaSource.runModificationTask((WorkingCopy workingCopy) -> {
             workingCopy.toPhase(JavaSource.Phase.RESOLVED);
             JavaSourceHelper.addClassAnnotation(workingCopy,
-                    new String[]{"javax.ws.rs.ApplicationPath"},
+                    new String[]{"jakarta.ws.rs.ApplicationPath"},
                     new String[]{applicationPath});         // NOI18N
             ClassTree tree = io.github.jeddict.jcode.util.JavaSourceHelper.getTopLevelClassTree(workingCopy);//
             TreeMaker maker = workingCopy.getTreeMaker();
@@ -854,7 +854,7 @@ public class MVCControllerGenerator implements Generator {
         redirectUpdateOptions.setParameterAnnoationValues(new String[]{"id"});
         StringBuilder builder = new StringBuilder();
         if (needPathSegment) {
-            redirectUpdateOptions.setParameterTypes(new String[]{"javax.ws.rs.core.PathSegment"}); // NOI18N
+            redirectUpdateOptions.setParameterTypes(new String[]{"jakarta.ws.rs.core.PathSegment"}); // NOI18N
             builder.append(idType);
             builder.append(" key=getPrimaryKey(id);\n");
             paramArg = "key";
@@ -884,7 +884,7 @@ public class MVCControllerGenerator implements Generator {
         destroyOptions.setParameterAnnoations(new String[]{JAXRSConstants.PATH_PARAM_ANNOTATION});
         destroyOptions.setParameterAnnoationValues(new String[]{"id"});
         if (needPathSegment) {
-            destroyOptions.setParameterTypes(new String[]{"javax.ws.rs.core.PathSegment"}); // NOI18N
+            destroyOptions.setParameterTypes(new String[]{"jakarta.ws.rs.core.PathSegment"}); // NOI18N
         } else {
             destroyOptions.setParameterTypes(new String[]{idType});
         }
@@ -902,7 +902,7 @@ public class MVCControllerGenerator implements Generator {
         findOptions.setParameterAnnoations(new String[]{JAXRSConstants.PATH_PARAM_ANNOTATION});
         findOptions.setParameterNames(new String[]{"id"});
         if (needPathSegment) {
-            findOptions.setParameterTypes(new String[]{"javax.ws.rs.core.PathSegment"}); // NOI18N
+            findOptions.setParameterTypes(new String[]{"jakarta.ws.rs.core.PathSegment"}); // NOI18N
         } else {
             findOptions.setParameterTypes(new String[]{idType});
         }
