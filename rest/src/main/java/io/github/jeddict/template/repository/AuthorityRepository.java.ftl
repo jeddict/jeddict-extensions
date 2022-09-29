@@ -6,7 +6,7 @@ import ${appPackage}${Authority_FQN};
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 
-<#if cdi>@Dependent</#if><if !cdi>@Stateless</#if>
+<#if cdi>@Dependent</#if><#if !cdi>@Stateless</#if>
 <#if named>@Named("authority")</#if>
 public class ${AuthorityRepository} extends ${AbstractRepository}<Authority, String> {
 

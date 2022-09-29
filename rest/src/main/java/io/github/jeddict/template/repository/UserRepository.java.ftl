@@ -9,7 +9,7 @@ import java.util.Optional;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 
-<#if cdi>@Dependent</#if><if !cdi>@Stateless</#if>
+<#if cdi>@Dependent</#if><#if !cdi>@Stateless</#if>
 <#if named>@Named("user")</#if>
 public class ${UserRepository} extends ${AbstractRepository}<User, Long> {
 
