@@ -6,14 +6,14 @@ import com.orbitz.consul.Consul;
 import com.orbitz.consul.model.health.Service;<#elseif registryType == "SNOOPEE">
 import eu.agilejava.snoop.client.SnoopConfig;
 import eu.agilejava.snoop.client.SnoopServiceUnavailableException;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.ClientBuilder;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import javax.ws.rs.core.Response;</#if>
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.client.ClientBuilder;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+import jakarta.ws.rs.core.Response;</#if>
 import java.net.MalformedURLException;
 import java.net.URL;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 

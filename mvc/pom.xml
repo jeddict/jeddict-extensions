@@ -4,7 +4,7 @@
     <parent>
         <groupId>io.github.jeddict</groupId>
         <artifactId>jeddict-extensions</artifactId>
-        <version>5.4.4</version>
+        <version>6.1.0</version>
     </parent>
     <artifactId>mvc-generator</artifactId>
     <name>MVC Generator</name>
@@ -13,7 +13,23 @@
     <properties>
         <root.dir>${basedir}/../</root.dir>
     </properties>
-
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.netbeans.utilities</groupId>
+                <artifactId>nbm-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <moduleDependencies>
+                        <dependency>
+                            <id>org.netbeans.api:org-netbeans-api-web-webmodule</id>
+                            <type>impl</type>
+                        </dependency>
+                    </moduleDependencies>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -61,9 +77,15 @@
             <version>${netbeans.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.netbeans.external</groupId>
-            <artifactId>nb-javac-api</artifactId>
-            <version>RELEASE82</version>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-api-web-webmodule</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.dukescript.nbjavac</groupId>
+            <artifactId>nb-javac</artifactId>
+            <version>16.0.0.0</version>
+            <classifier>api</classifier>
             <scope>provided</scope>
         </dependency>
     </dependencies>

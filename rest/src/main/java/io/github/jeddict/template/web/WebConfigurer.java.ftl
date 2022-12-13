@@ -1,15 +1,15 @@
 package ${package};
 
 import java.util.EnumSet;
-import javax.inject.Inject;
-import static javax.servlet.DispatcherType.ASYNC;
-import static javax.servlet.DispatcherType.FORWARD;
-import static javax.servlet.DispatcherType.REQUEST;
-import javax.servlet.FilterRegistration;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.annotation.WebListener;
+import jakarta.inject.Inject;
+import static jakarta.servlet.DispatcherType.ASYNC;
+import static jakarta.servlet.DispatcherType.FORWARD;
+import static jakarta.servlet.DispatcherType.REQUEST;
+import jakarta.servlet.FilterRegistration;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.annotation.WebListener;
 import org.slf4j.Logger;
 <#if metrics>import ${appPackage}${InstrumentedFilter_FQN};</#if>
 

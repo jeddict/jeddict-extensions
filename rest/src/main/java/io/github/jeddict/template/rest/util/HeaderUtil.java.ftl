@@ -1,6 +1,6 @@
 package ${package};
 
-import javax.ws.rs.core.Response.ResponseBuilder;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
 
 /**
  * Utility class for HTTP headers creation.

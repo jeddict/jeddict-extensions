@@ -2,7 +2,7 @@ package ${package};
 
 import java.time.Instant;
 import java.util.Set;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 import ${appPackage}${UserDTO_FQN};
 import static ${appPackage}${Constants_FQN}.PASSWORD_MAX_LENGTH;
 import static ${appPackage}${Constants_FQN}.PASSWORD_MIN_LENGTH;

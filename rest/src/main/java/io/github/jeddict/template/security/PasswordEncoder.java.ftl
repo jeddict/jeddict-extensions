@@ -1,10 +1,12 @@
 package ${package};
 
+import jakarta.enterprise.context.Dependent;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import org.slf4j.Logger;
 
+@Dependent
 public class PasswordEncoder {
 
     @Inject

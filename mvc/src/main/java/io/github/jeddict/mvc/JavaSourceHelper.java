@@ -288,7 +288,7 @@ public class JavaSourceHelper {
                     List<? extends AnnotationMirror> annotations = controller.getElements().getAllAnnotationMirrors(classElement);
 
                     for (AnnotationMirror annotation : annotations) {
-                        if (annotation.toString().equals("@javax.persistence.Entity")) {
+                        if (annotation.toString().equals("@jakarta.persistence.Entity")) {
                             //NOI18N
                             isBoolean[0] = true;
 

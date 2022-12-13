@@ -2,9 +2,9 @@ package ${package};
 
 import static ${appPackage}${AuthoritiesConstants_FQN}.ADMIN;
 import static ${appPackage}${AuthoritiesConstants_FQN}.USER;
-import javax.annotation.security.DeclareRoles;
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
+import jakarta.annotation.security.DeclareRoles;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.core.Application;
 import org.eclipse.microprofile.auth.LoginConfig;
 <#if microservices && registryType == "SNOOPEE">
 import eu.agilejava.snoop.annotation.EnableSnoopClient;

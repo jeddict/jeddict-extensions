@@ -6,15 +6,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-<#if cdi>import javax.transaction.Transactional;
-import static javax.transaction.Transactional.TxType.REQUIRED;
-import static javax.transaction.Transactional.TxType.SUPPORTS;</#if>
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
+<#if cdi>import jakarta.transaction.Transactional;
+import static jakarta.transaction.Transactional.TxType.REQUIRED;
+import static jakarta.transaction.Transactional.TxType.SUPPORTS;</#if>
 
 <#if cdi>@Transactional(SUPPORTS)</#if>
 public abstract class ${AbstractRepository}<E,P> {
@@ -67,7 +67,7 @@ public abstract class ${AbstractRepository}<E,P> {
         q.setMaxResults(size);
         q.setFirstResult(startPosition);
         if (entityGraph != null) {
-            q.setHint("javax.persistence.loadgraph", getEntityManager().getEntityGraph(entityGraph));
+            q.setHint("jakarta.persistence.loadgraph", getEntityManager().getEntityGraph(entityGraph));
         }
         return q.getResultList();
     }
@@ -93,7 +93,7 @@ public abstract class ${AbstractRepository}<E,P> {
         TypedQuery<E> query = getEntityManager().createNamedQuery(namedQueryName, entityClass);
         rawParameters.forEach(entry -> query.setParameter(entry.getKey(), entry.getValue()));
         if(entityGraph != null){
-            query.setHint("javax.persistence.loadgraph", getEntityManager().getEntityGraph(entityGraph));
+            query.setHint("jakarta.persistence.loadgraph", getEntityManager().getEntityGraph(entityGraph));
         }
         return findOrEmpty(query::getSingleResult);
     }

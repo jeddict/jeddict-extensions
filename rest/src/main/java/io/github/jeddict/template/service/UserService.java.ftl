@@ -13,13 +13,15 @@ import ${appPackage}${UserDTO_FQN};
 import java.time.Instant;
 import java.util.*;
 import static java.util.stream.Collectors.*;
-import javax.inject.Inject;
-import javax.security.enterprise.AuthenticationException;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.security.enterprise.AuthenticationException;
 import org.slf4j.Logger;
 
 /**
  * Service class for managing users.
  */
+@ApplicationScoped
 public class UserService {
 
     @Inject

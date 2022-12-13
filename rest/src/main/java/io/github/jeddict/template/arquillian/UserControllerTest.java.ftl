@@ -4,12 +4,11 @@ import static ${appPackage}${ApplicationTest_FQN}.USERNAME;
 import ${appPackage}${ManagedUserVM_FQN};
 import static ${appPackage}${AuthoritiesConstants_FQN}.USER;
 import static java.util.Collections.singleton;
-import javax.ws.rs.core.Response;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.CREATED;
-import static javax.ws.rs.core.Response.Status.OK;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+import jakarta.ws.rs.core.Response;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.Response.Status.CREATED;
+import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
+import static jakarta.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.hamcrest.CoreMatchers.is;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -19,9 +18,9 @@ import org.junit.runner.RunWith;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
-import static org.valid4j.matchers.http.HttpResponseMatchers.hasHeader;
-import static org.valid4j.matchers.http.HttpResponseMatchers.hasStatus;
-import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static jakarta.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static jakarta.ws.rs.core.Response.Status.OK;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 
 /**
@@ -64,10 +63,10 @@ public class ${UserControllerTest} extends ApplicationTest {
         );
 
         Response response = client.createUser(validUser);
-        assertThat(response, hasStatus(CREATED));
+        assertEquals(CREATED.getStatusCode(), response.getStatus());
 
         response = client.getUser("joe");
-        assertThat(response, hasStatus(OK));
+        assertEquals(OK.getStatusCode(), response.getStatus());
     }
 
     @Test
@@ -108,7 +107,7 @@ public class ${UserControllerTest} extends ApplicationTest {
 
         // Good user
         Response response = client.createUser(validUser);
-        assertThat(response, hasStatus(CREATED));
+        assertEquals(CREATED.getStatusCode(), response.getStatus());
 
         // Duplicate login
         assertWebException(BAD_REQUEST, () -> client.createUser(duplicatedUser));
@@ -154,7 +153,7 @@ public class ${UserControllerTest} extends ApplicationTest {
 
         // Good user
         Response response = client.createUser(validUser);
-        assertThat(response, hasStatus(CREATED));
+        assertEquals(CREATED.getStatusCode(), response.getStatus());
 
         // Duplicate  e-mail
         assertWebException(BAD_REQUEST, () -> client.createUser(duplicatedUser));
@@ -170,7 +169,7 @@ public class ${UserControllerTest} extends ApplicationTest {
     @Test
     public void testGetAllUser() throws Exception {
         Response response = client.getAllUsers(0, 5);
-        assertThat(response, hasStatus(OK));
+        assertEquals(OK.getStatusCode(), response.getStatus());
     }
 
     @Test
@@ -181,25 +180,25 @@ public class ${UserControllerTest} extends ApplicationTest {
     @Test
     public void testUpdateUser() throws Exception {
         Response response = client.getUser("user");
-        assertThat(response, hasStatus(OK));
+        assertEquals(OK.getStatusCode(), response.getStatus());
         ManagedUserVM user = response.readEntity(ManagedUserVM.class);
         user.setLastName("Gupta");
 
         response = client.updateUser(user);
-        assertThat(response, hasStatus(OK));
+        assertEquals(OK.getStatusCode(), response.getStatus());
     }
 
     @Test
     public void testDeleteUser() throws Exception {
         Response response = client.deleteUser("user");
-        assertThat(response, hasStatus(OK));
+        assertEquals(OK.getStatusCode(), response.getStatus());
     }
 
     @Test
     public void testValidLogin() throws Exception {
         Response response = login(USERNAME, PASSWORD);
-        assertThat(response, hasStatus(OK));
-        assertThat(response, hasHeader(AUTHORIZATION));
+        assertEquals(OK.getStatusCode(), response.getStatus());
+        assertNotNull(response.getHeaderString(AUTHORIZATION));
         String token = response.getHeaderString(AUTHORIZATION);
         assertNotNull(token);
     }
@@ -211,7 +210,7 @@ public class ${UserControllerTest} extends ApplicationTest {
 
     private void testExistingUser(String id, String email) throws Exception {
         Response response = client.getUser(id);
-        assertThat(response, hasStatus(OK));
+        assertEquals(OK.getStatusCode(), response.getStatus());
         ManagedUserVM user = response.readEntity(ManagedUserVM.class);
         assertThat(user.getEmail(), is(email));
     }

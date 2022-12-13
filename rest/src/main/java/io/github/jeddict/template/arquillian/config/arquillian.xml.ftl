@@ -3,9 +3,10 @@
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
 
-    <defaultProtocol type="Servlet 3.0"/>
+    <defaultProtocol type="Servlet 5.0"/>
     <container qualifier="payara">
         <configuration>
+            <property name="allowConnectingToRunningServer">true</property>
             <!--<property name="domain">production</property>-->
         </configuration>
     </container>

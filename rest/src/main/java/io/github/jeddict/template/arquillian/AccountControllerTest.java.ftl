@@ -8,12 +8,12 @@ import ${appPackage}${UserDTO_FQN};
 import static ${appPackage}${AuthoritiesConstants_FQN}.ADMIN;
 import static ${appPackage}${AuthoritiesConstants_FQN}.USER;
 import static java.util.Collections.singleton;
-import javax.ws.rs.core.Response;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.CREATED;
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
-import static javax.ws.rs.core.Response.Status.OK;
-import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+import jakarta.ws.rs.core.Response;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.Response.Status.CREATED;
+import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static jakarta.ws.rs.core.Response.Status.OK;
+import static jakarta.ws.rs.core.Response.Status.UNAUTHORIZED;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -21,10 +21,8 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.junit.runner.RunWith;
 import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
-import static org.valid4j.matchers.http.HttpResponseMatchers.hasStatus;
 
 /**
  * Test class for the ${AccountController} REST controller.
@@ -50,10 +48,10 @@ public class ${AccountControllerTest} extends ApplicationTest {
     @Test
     public void testGetExistingAccount() {
         Response response = client.getAccount();
-        assertThat(response, hasStatus(OK));
+        assertEquals(OK.getStatusCode(), response.getStatus());
         UserDTO user = response.readEntity(UserDTO.class);
         assertNotNull(user);
-        assertThat(user.getLogin(), is(USERNAME));
+        assertEquals(USERNAME, user.getLogin());
     }
 
     @Test
@@ -81,7 +79,7 @@ public class ${AccountControllerTest} extends ApplicationTest {
         );
 
         Response response = client.registerAccount(validUser);
-        assertThat(response, hasStatus(CREATED));
+        assertEquals(CREATED.getStatusCode(), response.getStatus());
     }
 
 <#--
@@ -213,7 +211,7 @@ public class ${AccountControllerTest} extends ApplicationTest {
 
         // Good user
         Response response = client.registerAccount(validUser);
-        assertThat(response, hasStatus(CREATED));
+        assertEquals(CREATED.getStatusCode(), response.getStatus());
 
         // Duplicate login
         assertWebException(BAD_REQUEST, () -> client.registerAccount(duplicatedUser));
@@ -250,7 +248,7 @@ public class ${AccountControllerTest} extends ApplicationTest {
 
         // Good user
         Response response = client.registerAccount(validUser);
-        assertThat(response, hasStatus(CREATED));
+        assertEquals(CREATED.getStatusCode(), response.getStatus());
 
         // Duplicate  e-mail
         assertWebException(BAD_REQUEST, () -> client.registerAccount(duplicatedUser));
@@ -275,7 +273,7 @@ public class ${AccountControllerTest} extends ApplicationTest {
         );
 
         Response response = client.registerAccount(validUser);
-        assertThat(response, hasStatus(CREATED));
+        assertEquals(CREATED.getStatusCode(), response.getStatus());
 
 <#--
         //Optional<User> userDup = ${userRepository}.findOneByLogin("badguy");
@@ -303,7 +301,7 @@ public class ${AccountControllerTest} extends ApplicationTest {
         );
 
         Response response = client.registerAccount(user);
-        assertThat(response, hasStatus(CREATED));
+        assertEquals(CREATED.getStatusCode(), response.getStatus());
 
         assertWebException(BAD_REQUEST, () -> client.requestPasswordReset("gaurav.gupta.jc@example.com"));
     }
@@ -313,7 +311,7 @@ public class ${AccountControllerTest} extends ApplicationTest {
         assertWebException(BAD_REQUEST, () -> client.requestPasswordReset("john.doe@example.com"));
 
         Response response = client.requestPasswordReset("admin@example.com");
-        assertThat(response, hasStatus(OK));
+        assertEquals(OK.getStatusCode(), response.getStatus());
     }
 
     @Test
@@ -330,18 +328,18 @@ public class ${AccountControllerTest} extends ApplicationTest {
     @Test
     public void testSaveAccount() throws Exception {
         Response response = client.getAccount();
-        assertThat(response, hasStatus(OK));
+        assertEquals(OK.getStatusCode(), response.getStatus());
         ManagedUserVM user = response.readEntity(ManagedUserVM.class);
         user.setLastName("Gupta");
 
         response = client.saveAccount(user);
-        assertThat(response, hasStatus(OK));
+        assertEquals(OK.getStatusCode(), response.getStatus());
     }
 
     @Test
     public void testSaveUserDuplicateEmail() throws Exception {
         Response response = client.getAccount();
-        assertThat(response, hasStatus(OK));
+        assertEquals(OK.getStatusCode(), response.getStatus());
         ManagedUserVM user = response.readEntity(ManagedUserVM.class);
         user.setEmail("user@example.com");
         assertWebException(BAD_REQUEST, () -> client.saveAccount(user));
@@ -360,13 +358,13 @@ public class ${AccountControllerTest} extends ApplicationTest {
         //Valid password
         passwordChangeVM.setNewPassword(NEW_PASSWORD);
         response = client.changePassword(passwordChangeVM);
-        assertThat(response, hasStatus(OK));
+        assertEquals(OK.getStatusCode(), response.getStatus());
         
         //Valid password
         passwordChangeVM.setCurrentPassword(NEW_PASSWORD);
         passwordChangeVM.setNewPassword(PASSWORD);
         response = client.changePassword(passwordChangeVM);
-        assertThat(response, hasStatus(OK));
+        assertEquals(OK.getStatusCode(), response.getStatus());
     }
 
     @Test

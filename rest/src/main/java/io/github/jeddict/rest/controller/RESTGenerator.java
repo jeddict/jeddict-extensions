@@ -748,9 +748,9 @@ public class RESTGenerator implements Generator {
         Optional<PersistenceUnit> punitOptional = getPersistenceUnit(project, puName);
         if (punitOptional.isPresent()) {
             PersistenceUnit punit = punitOptional.get();
-            String SCHEMA_GEN_ACTION = "javax.persistence.schema-generation.database.action";
+            String SCHEMA_GEN_ACTION = "jakarta.persistence.schema-generation.database.action";
             String DROP_CREATE = "drop-and-create";
-            String SQL_LOAD_SCRIPT = "javax.persistence.sql-load-script-source";
+            String SQL_LOAD_SCRIPT = "jakarta.persistence.sql-load-script-source";
             for (Property property : punit.getProperties().getProperty2()) {
                 if (property.getName() == null) {
                     punit.getProperties().removeProperty2(property);

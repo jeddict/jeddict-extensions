@@ -4,7 +4,7 @@
     <groupId>io.github.jeddict</groupId>
     <artifactId>jeddict-extensions</artifactId>
     <name>Jeddict Extensions</name>
-    <version>5.4.4</version>
+    <version>6.1.0</version>
     <packaging>pom</packaging>
     <modules>
         <module>rest</module>
@@ -17,17 +17,17 @@
     <properties>
         <root.dir>${basedir}</root.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <netbeans.version>RELEASE122</netbeans.version>
+        <netbeans.version>RELEASE150</netbeans.version>
         <netbeans.installation>${root.dir}/../incubator-netbeans/nbbuild/netbeans</netbeans.installation>
         <nbm.cluster>jeddict</nbm.cluster>
         <nbm.build.dir>${root.dir}/../jeddict-cluster</nbm.build.dir>
-        <nbm.maven.plugin.version>4.1</nbm.maven.plugin.version>
+        <nbm.maven.plugin.version>4.7</nbm.maven.plugin.version>
     </properties>
     
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
+                <groupId>org.apache.netbeans.utilities</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
                 <version>${nbm.maven.plugin.version}</version>
                 <extensions>true</extensions>
@@ -39,7 +39,7 @@
                     <licenseFile>${root.dir}/LICENSE</licenseFile>
                     <cluster>${nbm.cluster}</cluster>
                     <nbmBuildDir>${nbm.build.dir}</nbmBuildDir>
-                    <clusterBuildDir>${nbm.build.dir}/netbeans</clusterBuildDir>
+                    <clusterBuildDir>${nbm.build.dir}/clusters</clusterBuildDir>
                 </configuration>
             </plugin>
             <plugin>
@@ -47,8 +47,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.7.0</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>11</source>
+                    <target>11</target>
                 </configuration>
             </plugin>
             <plugin>

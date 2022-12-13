@@ -102,7 +102,7 @@ public abstract class FromEntityBase {
                 if(fd.isFieldAccess()){
                     element = fd.getFieldElement();
                 }
-                if (CustomJpaControllerUtil.findAnnotation(element, "javax.persistence.Transient") != null) { //NOI18N
+                if (CustomJpaControllerUtil.findAnnotation(element, "jakarta.persistence.Transient") != null) { //NOI18N
                     continue;
                 }
                 if (fd.isValid()) {
@@ -476,7 +476,7 @@ public abstract class FromEntityBase {
 
         public Integer getMaxSize() {
             if (getFieldElement() != null) {
-                AnnotationMirror sizeAnnotation = CustomJpaControllerUtil.findAnnotation(getFieldElement(), "javax.validation.constraints.Size");
+                AnnotationMirror sizeAnnotation = CustomJpaControllerUtil.findAnnotation(getFieldElement(), "jakarta.validation.constraints.Size");
                 if (sizeAnnotation != null) {
                     String stringMemberValue = CustomJpaControllerUtil.findAnnotationValueAsString(sizeAnnotation, "max");
                     if (stringMemberValue != null) {
@@ -533,7 +533,7 @@ public abstract class FromEntityBase {
         public boolean isVersionField() {
             versionField = false;
             if (getFieldElement() != null) {
-                versionField = CustomJpaControllerUtil.isAnnotatedWith(getFieldElement(), "javax.persistence.Version");
+                versionField = CustomJpaControllerUtil.isAnnotatedWith(getFieldElement(), "jakarta.persistence.Version");
             }
             return versionField;
         }
@@ -564,7 +564,7 @@ public abstract class FromEntityBase {
             if (fieldElement == null) {
                 fieldElement = method;
             }
-            return CustomJpaControllerUtil.isAnnotatedWith(fieldElement, "javax.persistence.Lob"); // NOI18N
+            return CustomJpaControllerUtil.isAnnotatedWith(fieldElement, "jakarta.persistence.Lob"); // NOI18N
         }
 
         @Override
@@ -731,7 +731,7 @@ public abstract class FromEntityBase {
             if (fieldElement == null) {
                 fieldElement = method;
             }
-            return CustomJpaControllerUtil.isAnnotatedWith(fieldElement, "javax.persistence.JoinTable"); // NOI18N
+            return CustomJpaControllerUtil.isAnnotatedWith(fieldElement, "jakarta.persistence.JoinTable"); // NOI18N
         }
 
         /**

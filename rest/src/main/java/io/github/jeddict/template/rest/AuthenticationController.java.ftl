@@ -7,16 +7,16 @@ import ${appPackage}${UserService_FQN};
 import ${appPackage}${LoginDTO_FQN};
 import static ${appPackage}${Constants_FQN}.BEARER_PREFIX;
 import static java.util.stream.Collectors.toSet;
-import javax.inject.Inject;
-import javax.security.enterprise.AuthenticationException;
-import javax.validation.Valid;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.MediaType;
-import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
-import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;<#if metrics>
+import jakarta.inject.Inject;
+import jakarta.security.enterprise.AuthenticationException;
+import jakarta.validation.Valid;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.MediaType;
+import static jakarta.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static jakarta.ws.rs.core.Response.Status.UNAUTHORIZED;<#if metrics>
 import org.eclipse.microprofile.metrics.annotation.Timed;</#if><#if openAPI>
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;</#if>

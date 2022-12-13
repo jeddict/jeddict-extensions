@@ -9,13 +9,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import org.slf4j.Logger;
-import javax.enterprise.context.ApplicationScoped;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.servlet.http.HttpServletResponse;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipException;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class SendResponseFilter extends ZuulFilter {

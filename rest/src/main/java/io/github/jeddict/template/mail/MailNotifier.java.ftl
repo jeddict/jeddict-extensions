@@ -5,13 +5,13 @@ import ${appPackage}${User_FQN};
 import java.io.StringWriter;
 import java.util.Locale;
 import java.util.function.Function;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.ObservesAsync;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.ObservesAsync;
+import jakarta.inject.Inject;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.HtmlEmail;
-import org.apache.deltaspike.core.api.message.Message;
-import org.apache.deltaspike.core.api.message.MessageContext;
+<#--import org.apache.deltaspike.core.api.message.Message;
+import org.apache.deltaspike.core.api.message.MessageContext;--> 
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -29,9 +29,9 @@ public class MailNotifier {
     @Inject
     private VelocityEngine engine;
 
-    @Inject
+<#--@Inject
     private MessageContext messageContext;
-
+--> 
     @Inject
     private MailConfig mailConfig;
 
@@ -40,9 +40,11 @@ public class MailNotifier {
              log.debug("Mail servce is not enabled");         
         }
         String to = event.getUser().getEmail();
-        Message message = getMessage(event.getUser());
+<#--    Message message = getMessage(event.getUser());
         String subject = message.template(String.format("{%s}", event.getSubjectTemplate())).toString();
-        String content = getContent(event, message);
+        String content = getContent(event, message);-->
+        String subject = "";
+        String content = "";
         try {
             log.debug("Send e-mail to '{}' with subject '{}' and content={}", to, subject, content);
             // Prepare message
@@ -61,7 +63,7 @@ public class MailNotifier {
             log.warn("e-mail could not be sent to user '{}', exception is: {}", to, e.getMessage());
         }
     }
-
+<#--
     private String getContent(MailEvent mailEvent, Message message) {
         Template t = engine.getTemplate(String.format("mails/%s.html", mailEvent.getContentTemplate()));
         VelocityContext context = new VelocityContext();
@@ -78,5 +80,5 @@ public class MailNotifier {
                 .localeResolver(() -> Locale.forLanguageTag(user.getLangKey()))
                 .message();
     }
-
+-->
 }

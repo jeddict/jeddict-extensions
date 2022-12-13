@@ -16,11 +16,13 @@ import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.*;
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
 import org.eclipse.microprofile.jwt.Claims;
 import org.slf4j.Logger;
 
+@Dependent
 public class TokenProvider {
 
     private PrivateKey privateKey;

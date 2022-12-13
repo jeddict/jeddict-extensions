@@ -9,11 +9,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Map;
 import java.util.function.Supplier;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 import junit.framework.AssertionFailedError;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.jboss.arquillian.test.api.ArquillianResource;
@@ -23,9 +23,8 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.jboss.shrinkwrap.resolver.api.maven.MavenResolverSystem;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static org.valid4j.matchers.http.HttpResponseMatchers.hasStatus;
 
 /**
  * Abstract class for base application packaging.
@@ -95,7 +94,7 @@ public abstract class AbstractTest {
             supplier.get();
             fail("WebApplicationException not thrown");
         } catch (WebApplicationException wae) {
-            assertThat(wae.getResponse(), hasStatus(status));
+            assertEquals(status.getStatusCode(), wae.getResponse().getStatus());
         } catch (Throwable throwable) {
             throw new AssertionFailedError("Unexpected exception type thrown : " + throwable.getClass());
         }

@@ -9,7 +9,7 @@
     <name>logger_pom</name>
 
     <properties>
-        <version.logback>1.2.3</version.logback>
+        <version.logback>1.4.0</version.logback>
     </properties>
     <dependencies>
         <dependency>
