@@ -69,6 +69,8 @@ public class DockerGenerator implements Generator {
 
     private static final String TEMPLATE = "io/github/jeddict/docker/template/";
     private static final String DOCKER_MACHINE_PROPERTY = "docker.machine";
+    private static final String DOCKER_URL_PROPERTY = "docker.url";
+    private static final String DOCKER_CERT_PATH = "docker.certPath";
     private static final String BINARY = "binary";
     private static final String DOCKER_IMAGE = "docker.image";
     private static final String DB_NAME = "db.name";
@@ -140,7 +142,12 @@ public class DockerGenerator implements Generator {
             handler.progress(expandTemplate(config.getRuntimeProvider().getDockerTemplate(), targetFolder, DOCKER_FILE, params));
             handler.progress(expandTemplate(TEMPLATE + DOCKER_COMPOSE + ".ftl", targetFolder, DOCKER_COMPOSE, params));
             if (POMManager.isMavenProject(project)) {
-                POMManager pomManager = new POMManager(project, TEMPLATE + "fabric8io/pom/_pom.xml");
+                POMManager pomManager;
+                if ( config.getDockerCertPath() != null && !StringUtils.isBlank(config.getDockerCertPath())) {
+                    pomManager = new POMManager(project, TEMPLATE + "fabric8io/pom/docker_machine_pom_cert.xml");
+                } else {
+                    pomManager = new POMManager(project, TEMPLATE + "fabric8io/pom/_pom.xml");
+                }
                 pomManager.commit();
                 appConfigData.getEnvironment("dev")
                         .addProfile(DOCKER_PROFILE);
@@ -156,6 +163,10 @@ public class DockerGenerator implements Generator {
                     pomManager = new POMManager(project, TEMPLATE + "fabric8io/pom/docker_machine_pom.xml");
                     pomManager.commit();
                     properties.put(DOCKER_MACHINE_PROPERTY, config.getDockerMachine());
+                    properties.put(DOCKER_URL_PROPERTY, config.getDockerUrl());
+                    if ( config.getDockerCertPath() != null && !StringUtils.isBlank(config.getDockerCertPath())) {
+                        properties.put(DOCKER_CERT_PATH, config.getDockerCertPath());
+                    }
                 } 
                 properties.put(BINARY, config.getRuntimeProvider().getBuildName());
                 properties.put(DOCKER_IMAGE, config.getDockerNamespace()
@@ -360,3 +371,9 @@ public class DockerGenerator implements Generator {
         config.getRuntimeProvider().postExecute();
     }
 }
+
+
+
+
+
+

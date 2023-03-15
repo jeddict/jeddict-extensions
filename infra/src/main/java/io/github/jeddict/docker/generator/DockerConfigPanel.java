@@ -27,11 +27,15 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import javax.swing.DefaultComboBoxModel;
 import io.github.jeddict.util.StringUtils;
+import java.io.File;
+import java.util.Collection;
 import org.netbeans.api.db.explorer.ConnectionManager;
 import org.netbeans.api.db.explorer.DatabaseConnection;
 import org.netbeans.api.db.explorer.support.DatabaseExplorerUIs;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.SourceGroup;
+import org.netbeans.modules.docker.api.DockerInstance;
+import org.netbeans.modules.docker.api.DockerSupport;
 import org.openide.util.Lookup;
 import static org.openide.util.NbBundle.getMessage;
 
@@ -143,9 +147,16 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
         }
         dockerMachineCheckBox.setSelected(data.isDockerActivated());
         if (data.isDockerActivated() && StringUtils.isNotEmpty(data.getDockerMachine())) {
-            setDockerMachine(data.getDockerMachine());
+            Collection<? extends DockerInstance> instances = DockerSupport.getDefault().getInstances();
+            instances.forEach(inst -> {
+                String url = inst.getUrl();
+                url = url.replaceFirst("file", "unix");
+                if (StringUtils.equals(url, data.getDockerMachine())) {
+                    buildInstanceVisual1.setInstance(inst);
+                }
+            });
         }
-        dockerMachineCheckBoxActionPerformed(null);//automates serverComboBoxActionPerformed(null);
+        dockerMachineCheckBoxActionPerformed(null);
         
         if (data.getDatabaseType() != null) {
             dbComboBox.setSelectedItem(data.getDatabaseType());
@@ -185,16 +196,23 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
         if (dockerMachineCheckBox.isSelected()) {
             data.setDockerNamespace(namespaceTextField.getText().trim());
             data.setDockerRepository(repositoryTextField.getText().trim());
-//            DockerInstance dockerInstance = buildInstanceVisual.getInstance();
-//            if (dockerInstance != null && dockerInstance.getKeyFile() != null) {
-//                data.setDockerMachine(dockerInstance.getKeyFile().getParentFile().getName());
-//            }
-            data.setDockerMachine("hhhhh");
+            DockerInstance dockerInstance = buildInstanceVisual1.getInstance();
+            if (dockerInstance != null && dockerInstance.getKeyFile() != null) {
+                data.setDockerMachine(dockerInstance.getKeyFile().getParentFile().getName());
+            }
             data.setDbName(dbNameTextField.getText());
             data.setDbUserName(dbUserTextField.getText());
             data.setDbPassword(dbPasswordTextField.getText());
             data.setDbHost(null);
             data.setDbPort(getDatabaseType().getDefaultPort());
+            if ( dockerInstance != null ) {
+                String url = dockerInstance.getUrl();
+                url = url.replaceFirst("file", "unix");
+                data.setDockerUrl(url);
+                if ( dockerInstance.getCaCertificateFile() != null ) {
+                    data.setDockerCertPath(dockerInstance.getCertificateFile().toPath().getParent().toAbsolutePath().toString());
+                }
+            }
         } else {
             Optional<DatabaseConnection> databaseConnection = getDatabaseConnection();
             if (databaseConnection.isPresent()) {
@@ -237,12 +255,12 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
     }
 
     private void setDockerMachine(String machineName) {
-//        DockerSupport.getDefault()
-//                .getInstances()
-//                .stream()
-//                .filter(inst -> inst.getKeyFile() != null && StringUtils.equals(machineName, inst.getKeyFile().getParentFile().getName()))
-//                .findAny()
-//                .ifPresent(buildInstanceVisual::setInstance);
+        DockerSupport.getDefault()
+                .getInstances()
+                .stream()
+                .filter(inst -> inst.getKeyFile() != null && StringUtils.equals(machineName, inst.getKeyFile().getParentFile().getName()))
+                .findAny()
+                .ifPresent(buildInstanceVisual1::setInstance);
     }
 
     //buildInstanceVisual = new org.netbeans.modules.docker.ui.build2.BuildInstanceVisual();
@@ -254,8 +272,7 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
         dockerMachineLayeredPane = new javax.swing.JLayeredPane();
         dockerMachineCheckBox = new javax.swing.JCheckBox();
         buildInstanceVisual = new javax.swing.JLayeredPane();
-        dockerMachineTextField = new javax.swing.JTextField();
-        dockerMachineLabel = new javax.swing.JLabel();
+        buildInstanceVisual1 = new org.netbeans.modules.docker.ui.build2.BuildInstanceVisual();
         dockerImageLayeredPane = new javax.swing.JLayeredPane();
         dockerImageLabel = new javax.swing.JLabel();
         dockerImageSubLayeredPane = new javax.swing.JLayeredPane();
@@ -311,40 +328,21 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
         });
         dockerMachineLayeredPane.add(dockerMachineCheckBox, java.awt.BorderLayout.WEST);
 
-        dockerMachineTextField.setText(org.openide.util.NbBundle.getMessage(DockerConfigPanel.class, "DockerConfigPanel.dockerMachineTextField.text")); // NOI18N
-        dockerMachineTextField.setPreferredSize(new java.awt.Dimension(6, 22));
-
-        org.openide.awt.Mnemonics.setLocalizedText(dockerMachineLabel, org.openide.util.NbBundle.getMessage(DockerConfigPanel.class, "DockerConfigPanel.dockerMachineLabel.text")); // NOI18N
-        dockerMachineLabel.setMaximumSize(new java.awt.Dimension(72, 20));
-        dockerMachineLabel.setMinimumSize(new java.awt.Dimension(32, 20));
-        dockerMachineLabel.setPreferredSize(new java.awt.Dimension(42, 20));
-
-        buildInstanceVisual.setLayer(dockerMachineTextField, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        buildInstanceVisual.setLayer(dockerMachineLabel, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        buildInstanceVisual.setLayer(buildInstanceVisual1, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout buildInstanceVisualLayout = new javax.swing.GroupLayout(buildInstanceVisual);
         buildInstanceVisual.setLayout(buildInstanceVisualLayout);
         buildInstanceVisualLayout.setHorizontalGroup(
             buildInstanceVisualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 603, Short.MAX_VALUE)
-            .addGroup(buildInstanceVisualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(buildInstanceVisualLayout.createSequentialGroup()
-                    .addGap(0, 15, Short.MAX_VALUE)
-                    .addComponent(dockerMachineLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(dockerMachineTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 455, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGroup(buildInstanceVisualLayout.createSequentialGroup()
+                .addComponent(buildInstanceVisual1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 178, Short.MAX_VALUE))
         );
         buildInstanceVisualLayout.setVerticalGroup(
             buildInstanceVisualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 22, Short.MAX_VALUE)
-            .addGroup(buildInstanceVisualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(buildInstanceVisualLayout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addGroup(buildInstanceVisualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(dockerMachineLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(dockerMachineTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGroup(buildInstanceVisualLayout.createSequentialGroup()
+                .addComponent(buildInstanceVisual1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         dockerMachineLayeredPane.add(buildInstanceVisual, java.awt.BorderLayout.CENTER);
@@ -678,6 +676,7 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLayeredPane buildInstanceVisual;
+    private org.netbeans.modules.docker.ui.build2.BuildInstanceVisual buildInstanceVisual1;
     private javax.swing.JComboBox<DatabaseType> dbComboBox;
     private javax.swing.JComboBox dbConnectionComboBox;
     private javax.swing.JLabel dbConnectionLabel;
@@ -700,9 +699,7 @@ public class DockerConfigPanel extends LayerConfigPanel<DockerConfigData> {
     private javax.swing.JLayeredPane dockerImageLayeredPane;
     private javax.swing.JLayeredPane dockerImageSubLayeredPane;
     private javax.swing.JCheckBox dockerMachineCheckBox;
-    private javax.swing.JLabel dockerMachineLabel;
     private javax.swing.JLayeredPane dockerMachineLayeredPane;
-    private javax.swing.JTextField dockerMachineTextField;
     private javax.swing.JLabel dsLabel;
     private javax.swing.JPanel dsPanel;
     private javax.swing.JTextField dsTextField;

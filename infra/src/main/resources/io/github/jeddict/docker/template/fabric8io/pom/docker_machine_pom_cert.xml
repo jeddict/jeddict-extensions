@@ -17,6 +17,7 @@
                         <version>${version.fabric8}</version>
                         <configuration>
                             <dockerHost>${docker.url}</dockerHost>
+                            <certPath>${docker.certPath}</certPath>
                             <useColor>true</useColor>
                             <!--<machine>
                                 <name>${docker.machine}</name>

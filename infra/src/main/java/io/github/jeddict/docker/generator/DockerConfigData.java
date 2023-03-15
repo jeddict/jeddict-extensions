@@ -45,6 +45,8 @@ public class DockerConfigData extends LayerConfigData {
     private String dbPort;
 
     private String dockerMachine;
+    private String dockerUrl;
+    private String dockerCertPath;
     private boolean dockerEnable;
     private boolean dockerActivated;//checkbox
     private String dockerNamespace;
@@ -158,6 +160,34 @@ public class DockerConfigData extends LayerConfigData {
     }
 
     /**
+     * @return the dockerUrl
+     */
+    public String getDockerUrl() {
+        return dockerUrl;
+    }
+
+    /**
+     * @param dockerUrl the dockerUrl to set
+     */
+    public void setDockerUrl(String dockerUrl) {
+        this.dockerUrl = dockerUrl;
+    }
+
+    /**
+     * @return the dockerCertPath
+     */
+    public String getDockerCertPath() {
+        return dockerCertPath;
+    }
+
+    /**
+     * @param dockerCertPath the dockerCertPath to set
+     */
+    public void setDockerCertPath(String dockerCertPath) {
+        this.dockerCertPath = dockerCertPath;
+    }
+
+    /**
      * @return the dockerEnable
      */
     public boolean isDockerEnable() {
@@ -256,3 +286,5 @@ public class DockerConfigData extends LayerConfigData {
         this.dockerRepository = dockerRepository;
     }
 }
+
+
