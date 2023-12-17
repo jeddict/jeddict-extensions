@@ -17,11 +17,11 @@
     <properties>
         <root.dir>${basedir}</root.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <netbeans.version>RELEASE150</netbeans.version>
+        <netbeans.version>RELEASE200</netbeans.version>
         <netbeans.installation>${root.dir}/../incubator-netbeans/nbbuild/netbeans</netbeans.installation>
         <nbm.cluster>jeddict</nbm.cluster>
         <nbm.build.dir>${root.dir}/../jeddict-cluster</nbm.build.dir>
-        <nbm.maven.plugin.version>4.7</nbm.maven.plugin.version>
+        <nbm.maven.plugin.version>14.0</nbm.maven.plugin.version>
     </properties>
     
     <build>
