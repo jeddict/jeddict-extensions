@@ -6,7 +6,7 @@
     <version>1.0-SNAPSHOT</version>
     
     <properties>
-        <version.payara.micro>6.2022.1.Alpha4</version.payara.micro>
+        <version.payara.micro>6.2023.11</version.payara.micro>
     </properties>
     
     <build>

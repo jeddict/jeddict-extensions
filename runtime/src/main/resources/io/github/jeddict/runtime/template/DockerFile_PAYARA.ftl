@@ -1,4 +1,4 @@
-FROM payara/server-full:6.2022.1.Alpha4
+FROM payara/server-full:6.2023.11
 
 ARG BINARY
 ARG EXPOSE_PORT

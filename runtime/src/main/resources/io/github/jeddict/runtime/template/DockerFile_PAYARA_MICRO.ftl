@@ -1,4 +1,4 @@
-FROM payara/micro:6.2022.1.Alpha4
+FROM payara/micro:6.2023.11
 WORKDIR $PAYARA_PATH
 
 ARG BINARY

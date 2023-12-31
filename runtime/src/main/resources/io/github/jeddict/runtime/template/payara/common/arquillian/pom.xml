@@ -10,13 +10,13 @@
 
 
     <properties>
-        <version.arquillian>1.7.0.Alpha12</version.arquillian>
-        <version.jacoco>0.8.7</version.jacoco>
+        <version.arquillian>1.8.0.Final</version.arquillian>
+        <version.jacoco>0.8.11</version.jacoco>
         <!--<version.valid4j>1.1</version.valid4j>-->
-        <version.junit>4.13.1</version.junit>
+        <version.junit>4.13.2</version.junit>
         <version.commons-lang>2.6</version.commons-lang>
-        <version.arquillian-payara>3.0.alpha6</version.arquillian-payara>
-        <version.payara>6.2022.1.Alpha4</version.payara>
+        <version.arquillian-payara>3.0.alpha8</version.arquillian-payara>
+        <version.payara>6.2023.11</version.payara>
     </properties>
 
     <dependencyManagement>
@@ -178,10 +178,6 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>3.0.0-M7</version>
                         <configuration>
-                            <environmentVariables>
-                                <GLASSFISH_HOME>${session.executionRootDirectory}/target/payara5</GLASSFISH_HOME>
-                            </environmentVariables>
-                            <!-- This needs tuning -->
                             <systemPropertyVariables>
                                 <glassfishRemote_gfHome>${session.executionRootDirectory}/target/payara6</glassfishRemote_gfHome>
                                 <javaEEServer>payara-remote</javaEEServer>
