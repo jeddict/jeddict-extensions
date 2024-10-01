@@ -13,6 +13,7 @@
         <module>infra</module>
         <module>jakarta-ee</module>
         <module>tests</module>
+        <module>jsf</module>
     </modules>
     <properties>
         <root.dir>${basedir}</root.dir>

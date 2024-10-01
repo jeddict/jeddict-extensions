@@ -1,8 +1,8 @@
 /target/
 /infra/target/
-/jakartaee/target/
 /mvc/target/
 /rest/target/
 /runtime/target/
 /jakarta-ee/target/
 /tests/target/
+/jsf/target/
