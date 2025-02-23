@@ -4,7 +4,7 @@
     <groupId>io.github.jeddict</groupId>
     <artifactId>jeddict-extensions</artifactId>
     <name>Jeddict Extensions</name>
-    <version>6.3.1</version>
+    <version>6.5.0</version>
     <packaging>pom</packaging>
     <modules>
         <module>rest</module>
@@ -17,7 +17,7 @@
     <properties>
         <root.dir>${basedir}</root.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <netbeans.version>RELEASE220</netbeans.version>
+        <netbeans.version>RELEASE250</netbeans.version>
         <netbeans.installation>${root.dir}/../incubator-netbeans/nbbuild/netbeans</netbeans.installation>
         <nbm.cluster>jeddict</nbm.cluster>
         <nbm.build.dir>${root.dir}/../jeddict-cluster</nbm.build.dir>
