@@ -1,0 +1,94 @@
+version: 2
+updates:
+- package-ecosystem: maven
+  directory: "/jakarta-ee/src/main/resources/io/github/jeddict/template/repository/pom"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 10
+  labels:
+  - dependencies
+- package-ecosystem: maven
+  directory: "/rest/src/main/java/io/github/jeddict/template/logger/pom"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 10
+  labels:
+  - dependencies
+- package-ecosystem: maven
+  directory: "/rest/src/main/java/io/github/jeddict/template/rest/pom"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 10
+  labels:
+  - dependencies
+- package-ecosystem: maven
+  directory: "/runtime/src/main/resources/io/github/jeddict/runtime/template/payara/common/arquillian"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 10
+  labels:
+  - dependencies
+  ignore:
+  - dependency-name: fish.payara.arquillian:arquillian-payara-server-managed
+    versions:
+    - 2.3.3
+    - "2.4"
+  - dependency-name: fish.payara.arquillian:payara-client-ee8
+    versions:
+    - 2.3.3
+    - "2.4"
+- package-ecosystem: maven
+  directory: "/runtime/src/main/resources/io/github/jeddict/runtime/template/payara/micro"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 10
+  labels:
+  - dependencies
+- package-ecosystem: maven
+  directory: "/runtime/src/main/resources/io/github/jeddict/runtime/template/payara/micro/arquillian"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 10
+  labels:
+  - dependencies
+- package-ecosystem: maven
+  directory: "/runtime/src/main/resources/io/github/jeddict/runtime/template/payara/micro/docker"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 10
+  labels:
+  - dependencies
+- package-ecosystem: maven
+  directory: "/runtime/src/main/resources/io/github/jeddict/runtime/template/payara/persistence/provider/hibernate"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 10
+  labels:
+  - dependencies
+  ignore:
+  - dependency-name: org.hibernate:hibernate-entitymanager
+    versions:
+    - 5.4.27.Final
+    - 5.4.28.Final
+    - 5.4.29.Final
+- package-ecosystem: maven
+  directory: "/runtime/src/main/resources/io/github/jeddict/runtime/template/payara/server/arquillian"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 10
+  labels:
+  - dependencies
+- package-ecosystem: maven
+  directory: "/runtime/src/main/resources/io/github/jeddict/runtime/template/payara/server/docker/arquillian"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 10
+  labels:
+  - dependencies
+- package-ecosystem: maven
+  directory: "/runtime/src/main/resources/io/github/jeddict/runtime/template/payara/server/no_docker/arquillian"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 10
+  labels:
+  - dependencies
